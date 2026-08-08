@@ -1,0 +1,20 @@
+version: "0.0.1-test"
+status: demo
+notice: "Fixture minima valida, usada apenas para testar o contrato Taxonomy."
+subjects:
+  - id: redes-de-computadores
+    name: Redes de Computadores
+    topics:
+      - id: camada-de-transporte
+        name: Camada de Transporte
+        concepts:
+          - id: tcp
+            name: TCP
+            aliases: ["Transmission Control Protocol"]
+            keywords: ["conexao", "confiavel"]
+            prerequisites: []
+          - id: udp
+            name: UDP
+            aliases: ["User Datagram Protocol"]
+            keywords: ["sem-conexao"]
+            prerequisites: []

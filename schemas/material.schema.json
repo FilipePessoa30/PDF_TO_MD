@@ -1,0 +1,109 @@
+{
+  "$defs": {
+    "MaterialType": {
+      "enum": [
+        "article",
+        "video",
+        "book",
+        "course",
+        "documentation",
+        "exercise_set",
+        "other"
+      ],
+      "title": "MaterialType",
+      "type": "string"
+    },
+    "VerificationStatus": {
+      "enum": [
+        "pending",
+        "verified",
+        "unverified",
+        "broken"
+      ],
+      "title": "VerificationStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "concepts": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Concepts",
+      "type": "array"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "language": {
+      "default": "pt-BR",
+      "title": "Language",
+      "type": "string"
+    },
+    "prerequisites": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Prerequisites",
+      "type": "array"
+    },
+    "source": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source"
+    },
+    "subjects": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Subjects",
+      "type": "array"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "topics": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Topics",
+      "type": "array"
+    },
+    "type": {
+      "$ref": "#/$defs/MaterialType"
+    },
+    "url": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Url"
+    },
+    "verification_status": {
+      "$ref": "#/$defs/VerificationStatus",
+      "default": "pending"
+    }
+  },
+  "required": [
+    "id",
+    "title",
+    "type"
+  ],
+  "title": "Material",
+  "type": "object"
+}

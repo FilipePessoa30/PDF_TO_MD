@@ -1,0 +1,6 @@
+id: example-fixture-misconception
+title: "Erro conceitual de exemplo (fixture) para validar o contrato"
+description: "Descricao de exemplo usada apenas para testar o schema."
+related_concepts:
+  - arvore-de-busca
+status: draft

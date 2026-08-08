@@ -1,0 +1,467 @@
+{
+  "$defs": {
+    "Alternative": {
+      "additionalProperties": false,
+      "properties": {
+        "letter": {
+          "pattern": "^[A-E]$",
+          "title": "Letter",
+          "type": "string"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "letter",
+        "text"
+      ],
+      "title": "Alternative",
+      "type": "object"
+    },
+    "AlternativeDiagnostic": {
+      "additionalProperties": false,
+      "description": "Diagnosis attached to a single wrong alternative of a question.",
+      "properties": {
+        "concepts": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Concepts",
+          "type": "array"
+        },
+        "explanation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Explanation"
+        },
+        "misconception_id": {
+          "title": "Misconception Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "misconception_id"
+      ],
+      "title": "AlternativeDiagnostic",
+      "type": "object"
+    },
+    "AnswerValidationStatus": {
+      "enum": [
+        "pending",
+        "validated",
+        "annulled",
+        "conflicting_sources",
+        "not_applicable",
+        "unknown"
+      ],
+      "title": "AnswerValidationStatus",
+      "type": "string"
+    },
+    "Asset": {
+      "additionalProperties": false,
+      "properties": {
+        "alt_text": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Alt Text"
+        },
+        "caption": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Caption"
+        },
+        "extraction_method": {
+          "$ref": "#/$defs/AssetExtractionMethod",
+          "default": "pending"
+        },
+        "id": {
+          "description": "slug unique within the owning question, e.g. 'figure-01'",
+          "title": "Id",
+          "type": "string"
+        },
+        "path": {
+          "description": "portable, relative path under data/assets/questions/",
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sha256"
+        },
+        "source_page": {
+          "minimum": 1,
+          "title": "Source Page",
+          "type": "integer"
+        },
+        "type": {
+          "$ref": "#/$defs/AssetType"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "path",
+        "source_page"
+      ],
+      "title": "Asset",
+      "type": "object"
+    },
+    "AssetExtractionMethod": {
+      "enum": [
+        "manual",
+        "raster_crop",
+        "vector_export",
+        "ocr",
+        "unknown",
+        "pending"
+      ],
+      "title": "AssetExtractionMethod",
+      "type": "string"
+    },
+    "AssetType": {
+      "enum": [
+        "image",
+        "diagram",
+        "graph",
+        "table",
+        "equation",
+        "page_crop"
+      ],
+      "title": "AssetType",
+      "type": "string"
+    },
+    "CourseCode": {
+      "description": "Computing-area undergraduate courses/modalities present in the corpus.\n\n``ALL_COMPUTING`` is a deliberate alias meaning \"applies to every\ncomputing course in the given exam booklet\" (e.g. Formacao Geral and\nComponente Especifico Comum in the unified 2011 booklet). It exists so\na question does not need to enumerate every concrete course by hand.\nSee docs/decisions.md (ADR on applicable_courses) for the constraint\nthat ``ALL_COMPUTING`` may not be combined with other explicit codes.",
+      "enum": [
+        "ciencia-da-computacao-bacharelado",
+        "ciencia-da-computacao-licenciatura",
+        "engenharia-da-computacao",
+        "sistemas-de-informacao",
+        "all-computing"
+      ],
+      "title": "CourseCode",
+      "type": "string"
+    },
+    "DifficultyLevel": {
+      "enum": [
+        "easy",
+        "medium",
+        "hard"
+      ],
+      "title": "DifficultyLevel",
+      "type": "string"
+    },
+    "ExtractionMethod": {
+      "enum": [
+        "manual",
+        "text_layer",
+        "ocr",
+        "hybrid",
+        "unknown",
+        "pending"
+      ],
+      "title": "ExtractionMethod",
+      "type": "string"
+    },
+    "ExtractionStatus": {
+      "enum": [
+        "pending",
+        "extracted",
+        "needs_review",
+        "verified"
+      ],
+      "title": "ExtractionStatus",
+      "type": "string"
+    },
+    "QuestionType": {
+      "enum": [
+        "multiple_choice",
+        "discursive",
+        "perception_survey"
+      ],
+      "title": "QuestionType",
+      "type": "string"
+    },
+    "SourceOccurrence": {
+      "additionalProperties": false,
+      "description": "One concrete appearance of a canonical question inside a source PDF.\n\nA canonical question may have several of these (see docs/data-contract.md\n- \"source occurrences and duplicates\"): the same question can be printed\nverbatim in more than one exam booklet/year.",
+      "properties": {
+        "exam_id": {
+          "description": "manifest exam bundle id, e.g. 'enade-2021-cc-b'",
+          "title": "Exam Id",
+          "type": "string"
+        },
+        "pages": {
+          "items": {
+            "type": "integer"
+          },
+          "minItems": 1,
+          "title": "Pages",
+          "type": "array"
+        },
+        "pdf_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Pdf Sha256",
+          "type": "string"
+        },
+        "question_number": {
+          "minimum": 1,
+          "title": "Question Number",
+          "type": "integer"
+        },
+        "section": {
+          "minLength": 1,
+          "title": "Section",
+          "type": "string"
+        },
+        "source_path": {
+          "description": "path relative to the repo root",
+          "title": "Source Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "exam_id",
+        "pdf_sha256",
+        "source_path",
+        "pages",
+        "question_number",
+        "section"
+      ],
+      "title": "SourceOccurrence",
+      "type": "object"
+    },
+    "TaxonomyReviewStatus": {
+      "enum": [
+        "pending",
+        "draft",
+        "reviewed"
+      ],
+      "title": "TaxonomyReviewStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "alternative_diagnostics": {
+      "additionalProperties": {
+        "$ref": "#/$defs/AlternativeDiagnostic"
+      },
+      "title": "Alternative Diagnostics",
+      "type": "object"
+    },
+    "alternatives": {
+      "items": {
+        "$ref": "#/$defs/Alternative"
+      },
+      "title": "Alternatives",
+      "type": "array"
+    },
+    "answer_validation_status": {
+      "$ref": "#/$defs/AnswerValidationStatus",
+      "default": "pending"
+    },
+    "applicable_courses": {
+      "items": {
+        "$ref": "#/$defs/CourseCode"
+      },
+      "minItems": 1,
+      "title": "Applicable Courses",
+      "type": "array"
+    },
+    "assets": {
+      "items": {
+        "$ref": "#/$defs/Asset"
+      },
+      "title": "Assets",
+      "type": "array"
+    },
+    "competencies": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Competencies",
+      "type": "array"
+    },
+    "concepts": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Concepts",
+      "type": "array"
+    },
+    "correct_answer": {
+      "anyOf": [
+        {
+          "pattern": "^[A-E]$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Correct Answer"
+    },
+    "difficulty": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DifficultyLevel"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "exam_year": {
+      "maximum": 2100,
+      "minimum": 1990,
+      "title": "Exam Year",
+      "type": "integer"
+    },
+    "extraction_method": {
+      "$ref": "#/$defs/ExtractionMethod",
+      "default": "pending"
+    },
+    "extraction_status": {
+      "$ref": "#/$defs/ExtractionStatus",
+      "default": "pending"
+    },
+    "id": {
+      "description": "e.g. 'enade-2021-cc-b-q12', see docs/data-contract.md",
+      "title": "Id",
+      "type": "string"
+    },
+    "keywords": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Keywords",
+      "type": "array"
+    },
+    "ocr_confidence": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ocr Confidence"
+    },
+    "official_answer_source": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "reference (e.g. exam_id/path) to the gabarito this was validated against",
+      "title": "Official Answer Source"
+    },
+    "prerequisites": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Prerequisites",
+      "type": "array"
+    },
+    "question_number": {
+      "minimum": 1,
+      "title": "Question Number",
+      "type": "integer"
+    },
+    "question_type": {
+      "$ref": "#/$defs/QuestionType"
+    },
+    "section": {
+      "minLength": 1,
+      "title": "Section",
+      "type": "string"
+    },
+    "source_occurrences": {
+      "items": {
+        "$ref": "#/$defs/SourceOccurrence"
+      },
+      "minItems": 1,
+      "title": "Source Occurrences",
+      "type": "array"
+    },
+    "statement": {
+      "minLength": 1,
+      "title": "Statement",
+      "type": "string"
+    },
+    "subjects": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Subjects",
+      "type": "array"
+    },
+    "taxonomy_review_status": {
+      "$ref": "#/$defs/TaxonomyReviewStatus",
+      "default": "pending"
+    },
+    "topics": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Topics",
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "exam_year",
+    "source_occurrences",
+    "applicable_courses",
+    "section",
+    "question_number",
+    "question_type",
+    "statement"
+  ],
+  "title": "Question",
+  "type": "object"
+}

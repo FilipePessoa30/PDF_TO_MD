@@ -1,0 +1,34 @@
+{
+  "additionalProperties": false,
+  "description": "Diagnosis attached to a single wrong alternative of a question.",
+  "properties": {
+    "concepts": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Concepts",
+      "type": "array"
+    },
+    "explanation": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Explanation"
+    },
+    "misconception_id": {
+      "title": "Misconception Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "misconception_id"
+  ],
+  "title": "AlternativeDiagnostic",
+  "type": "object"
+}

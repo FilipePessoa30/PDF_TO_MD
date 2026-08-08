@@ -1,0 +1,30 @@
+# DEMO MISCONCEPTION CATALOG - NOT a corpus-wide diagnosis pass.
+#
+# Validates the MisconceptionDefinition contract (src/enade/models/misconception.py)
+# with a couple of plausible, hand-written examples tied to the demo taxonomy
+# in demo-taxonomy.yaml. No corpus question has been diagnosed against these
+# in Phase 0 - see docs/data-contract.md, "misconceptions".
+misconceptions:
+  - id: assumes-tree-is-balanced
+    title: Assume que toda árvore binária de busca está balanceada
+    description: >-
+      O estudante analisa o custo de operações (busca, insercao, remocao) em
+      uma BST assumindo complexidade O(log n) no pior caso, sem considerar
+      que uma BST nao balanceada pode degenerar para uma lista ligada,
+      custando O(n).
+    related_concepts:
+      - arvore-de-busca
+      - arvore-balanceada
+      - big-o
+    status: draft
+
+  - id: confuses-tree-traversal-order
+    title: Confunde a ordem de percurso em-ordem com pré-ordem
+    description: >-
+      O estudante troca a ordem de visitacao (esquerda, raiz, direita) do
+      percurso em-ordem pela ordem (raiz, esquerda, direita) do percurso
+      pre-ordem, levando a uma sequencia de saida incorreta.
+    related_concepts:
+      - percursos-em-arvore
+      - arvore-binaria
+    status: draft

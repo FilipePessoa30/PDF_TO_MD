@@ -1,0 +1,347 @@
+{
+  "$defs": {
+    "CourseCode": {
+      "description": "Computing-area undergraduate courses/modalities present in the corpus.\n\n``ALL_COMPUTING`` is a deliberate alias meaning \"applies to every\ncomputing course in the given exam booklet\" (e.g. Formacao Geral and\nComponente Especifico Comum in the unified 2011 booklet). It exists so\na question does not need to enumerate every concrete course by hand.\nSee docs/decisions.md (ADR on applicable_courses) for the constraint\nthat ``ALL_COMPUTING`` may not be combined with other explicit codes.",
+      "enum": [
+        "ciencia-da-computacao-bacharelado",
+        "ciencia-da-computacao-licenciatura",
+        "engenharia-da-computacao",
+        "sistemas-de-informacao",
+        "all-computing"
+      ],
+      "title": "CourseCode",
+      "type": "string"
+    },
+    "DocType": {
+      "description": "The three physical document roles found per exam sitting.",
+      "enum": [
+        "exam",
+        "answer_key",
+        "answer_standard"
+      ],
+      "title": "DocType",
+      "type": "string"
+    },
+    "DocumentRecord": {
+      "additionalProperties": false,
+      "description": "Everything discovered about one physical PDF file.",
+      "properties": {
+        "course_codes": {
+          "items": {
+            "$ref": "#/$defs/CourseCode"
+          },
+          "title": "Course Codes",
+          "type": "array"
+        },
+        "course_letter": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Course Letter"
+        },
+        "document_type": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DocType"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "encrypted": {
+          "title": "Encrypted",
+          "type": "boolean"
+        },
+        "file_size_bytes": {
+          "title": "File Size Bytes",
+          "type": "integer"
+        },
+        "filename": {
+          "title": "Filename",
+          "type": "string"
+        },
+        "has_text_layer": {
+          "title": "Has Text Layer",
+          "type": "boolean"
+        },
+        "page_count": {
+          "title": "Page Count",
+          "type": "integer"
+        },
+        "parse_warnings": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Parse Warnings",
+          "type": "array"
+        },
+        "readable": {
+          "title": "Readable",
+          "type": "boolean"
+        },
+        "sequence": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Sequence"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "source_path": {
+          "title": "Source Path",
+          "type": "string"
+        },
+        "text_layer_char_count": {
+          "title": "Text Layer Char Count",
+          "type": "integer"
+        },
+        "year": {
+          "title": "Year",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "source_path",
+        "filename",
+        "year",
+        "course_letter",
+        "course_codes",
+        "sequence",
+        "document_type",
+        "sha256",
+        "file_size_bytes",
+        "page_count",
+        "has_text_layer",
+        "text_layer_char_count",
+        "encrypted",
+        "readable"
+      ],
+      "title": "DocumentRecord",
+      "type": "object"
+    },
+    "ExamBundle": {
+      "additionalProperties": false,
+      "description": "One year+course exam sitting: up to 3 documents (exam/key/standard).",
+      "properties": {
+        "answer_key": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DocumentRecord"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "answer_standard": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DocumentRecord"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "course_codes": {
+          "items": {
+            "$ref": "#/$defs/CourseCode"
+          },
+          "title": "Course Codes",
+          "type": "array"
+        },
+        "course_letter": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Course Letter"
+        },
+        "exam": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DocumentRecord"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "exam_id": {
+          "title": "Exam Id",
+          "type": "string"
+        },
+        "is_unified_booklet": {
+          "title": "Is Unified Booklet",
+          "type": "boolean"
+        },
+        "missing": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Missing",
+          "type": "array"
+        },
+        "year": {
+          "title": "Year",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "exam_id",
+        "year",
+        "course_letter",
+        "course_codes",
+        "is_unified_booklet"
+      ],
+      "title": "ExamBundle",
+      "type": "object"
+    },
+    "InventoryIssue": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "title": "Kind",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Path"
+        },
+        "severity": {
+          "title": "Severity",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "severity",
+        "message"
+      ],
+      "title": "InventoryIssue",
+      "type": "object"
+    },
+    "SourceRepository": {
+      "additionalProperties": false,
+      "description": "Identifies the exact upstream corpus snapshot used, for reproducibility.",
+      "properties": {
+        "commit_sha": {
+          "pattern": "^[0-9a-f]{7,40}$",
+          "title": "Commit Sha",
+          "type": "string"
+        },
+        "ref": {
+          "description": "branch or tag name at fetch time, e.g. 'master'",
+          "title": "Ref",
+          "type": "string"
+        },
+        "repository_url": {
+          "description": "e.g. https://github.com/geacc/enade",
+          "title": "Repository Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "repository_url",
+        "ref",
+        "commit_sha"
+      ],
+      "title": "SourceRepository",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "bundles": {
+      "items": {
+        "$ref": "#/$defs/ExamBundle"
+      },
+      "title": "Bundles",
+      "type": "array"
+    },
+    "corpus_root": {
+      "title": "Corpus Root",
+      "type": "string"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "issues": {
+      "items": {
+        "$ref": "#/$defs/InventoryIssue"
+      },
+      "title": "Issues",
+      "type": "array"
+    },
+    "orphan_files": {
+      "items": {
+        "$ref": "#/$defs/DocumentRecord"
+      },
+      "title": "Orphan Files",
+      "type": "array"
+    },
+    "repository": {
+      "$ref": "#/$defs/SourceRepository"
+    },
+    "schema_version": {
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "summary": {
+      "additionalProperties": {
+        "type": "integer"
+      },
+      "title": "Summary",
+      "type": "object"
+    },
+    "tool_version": {
+      "title": "Tool Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "generated_at",
+    "tool_version",
+    "repository",
+    "corpus_root",
+    "bundles"
+  ],
+  "title": "SourceManifest",
+  "type": "object"
+}

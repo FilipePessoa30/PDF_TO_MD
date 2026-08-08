@@ -1,0 +1,38 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "description": {
+      "title": "Description",
+      "type": "string"
+    },
+    "id": {
+      "description": "e.g. 'assumes-tree-is-balanced'",
+      "title": "Id",
+      "type": "string"
+    },
+    "related_concepts": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Related Concepts",
+      "type": "array"
+    },
+    "status": {
+      "default": "draft",
+      "description": "'draft' or 'reviewed'",
+      "title": "Status",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "title",
+    "description"
+  ],
+  "title": "MisconceptionDefinition",
+  "type": "object"
+}

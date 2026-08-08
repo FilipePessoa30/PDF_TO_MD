@@ -1,0 +1,14 @@
+version: "0.0.1-test"
+status: demo
+notice: "Fixture invalida: dois conceitos usam o mesmo id."
+subjects:
+  - id: estruturas-de-dados
+    name: Estruturas de Dados
+    topics:
+      - id: arvores
+        name: Árvores
+        concepts:
+          - id: arvore-binaria
+            name: Árvore Binária
+          - id: arvore-binaria
+            name: Árvore Binária (duplicada)

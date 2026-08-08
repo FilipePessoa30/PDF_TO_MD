@@ -1,0 +1,949 @@
+schema_version: '1.0'
+generated_at: '2026-08-08T18:15:24.789008Z'
+tool_version: 0.1.0
+repository:
+  repository_url: https://github.com/geacc/enade.git
+  ref: master
+  commit_sha: a657632b72b97468c8a5eb3b433d1abb4a5511c5
+corpus_root: C:\Users\Filip\Downloads\PDF_TO_MD\data\raw\geacc-enade
+bundles:
+- exam_id: enade-2005-b
+  year: 2005
+  course_letter: b
+  course_codes:
+  - ciencia-da-computacao-bacharelado
+  is_unified_booklet: false
+  exam:
+    source_path: 2005/b1_prova.pdf
+    filename: b1_prova.pdf
+    year: 2005
+    course_letter: b
+    course_codes:
+    - ciencia-da-computacao-bacharelado
+    sequence: 1
+    document_type: exam
+    sha256: ba95b66e95b6a4071a970f794e0b0c71aeebf18740b95b6ca02dfcb72d0be76c
+    file_size_bytes: 6893560
+    page_count: 32
+    has_text_layer: true
+    text_layer_char_count: 100622
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_key:
+    source_path: 2005/b2_gabarito.pdf
+    filename: b2_gabarito.pdf
+    year: 2005
+    course_letter: b
+    course_codes:
+    - ciencia-da-computacao-bacharelado
+    sequence: 2
+    document_type: answer_key
+    sha256: 8d06e732aa0e69dd82325adaec2f6200f664557d92df146af5ccf0cebd13ec09
+    file_size_bytes: 8478
+    page_count: 2
+    has_text_layer: true
+    text_layer_char_count: 614
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_standard:
+    source_path: 2005/b3_padrao.pdf
+    filename: b3_padrao.pdf
+    year: 2005
+    course_letter: b
+    course_codes:
+    - ciencia-da-computacao-bacharelado
+    sequence: 3
+    document_type: answer_standard
+    sha256: f68a5fab4aa09c9875919a51e75b3b10e96e18b5b3ee9418267e425976686627
+    file_size_bytes: 112164
+    page_count: 5
+    has_text_layer: true
+    text_layer_char_count: 10894
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  missing: []
+- exam_id: enade-2005-e
+  year: 2005
+  course_letter: e
+  course_codes:
+  - engenharia-da-computacao
+  is_unified_booklet: false
+  exam:
+    source_path: 2005/e1_prova.pdf
+    filename: e1_prova.pdf
+    year: 2005
+    course_letter: e
+    course_codes:
+    - engenharia-da-computacao
+    sequence: 1
+    document_type: exam
+    sha256: 38d62be88bcee8bcab6810a2ecb194634f6b9aae089dce51db00e5aab98bfdaa
+    file_size_bytes: 692940
+    page_count: 40
+    has_text_layer: true
+    text_layer_char_count: 63791
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_key:
+    source_path: 2005/e2_gabarito.pdf
+    filename: e2_gabarito.pdf
+    year: 2005
+    course_letter: e
+    course_codes:
+    - engenharia-da-computacao
+    sequence: 2
+    document_type: answer_key
+    sha256: bf812be763d16d7c44d7a597760132bcaab6cad50a421e9b92fadb7a957eca13
+    file_size_bytes: 7883
+    page_count: 1
+    has_text_layer: true
+    text_layer_char_count: 540
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_standard:
+    source_path: 2005/e3_padrao.pdf
+    filename: e3_padrao.pdf
+    year: 2005
+    course_letter: e
+    course_codes:
+    - engenharia-da-computacao
+    sequence: 3
+    document_type: answer_standard
+    sha256: 3cdabb1b8b06fddeb9e66b2b0da2d748ef94ae953055e613b7409017bef82b2b
+    file_size_bytes: 89857
+    page_count: 4
+    has_text_layer: true
+    text_layer_char_count: 3328
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  missing: []
+- exam_id: enade-2008-b
+  year: 2008
+  course_letter: b
+  course_codes:
+  - ciencia-da-computacao-bacharelado
+  is_unified_booklet: false
+  exam:
+    source_path: 2008/b1_prova.pdf
+    filename: b1_prova.pdf
+    year: 2008
+    course_letter: b
+    course_codes:
+    - ciencia-da-computacao-bacharelado
+    sequence: 1
+    document_type: exam
+    sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    file_size_bytes: 1564836
+    page_count: 36
+    has_text_layer: true
+    text_layer_char_count: 89875
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_key:
+    source_path: 2008/b2_gabarito.pdf
+    filename: b2_gabarito.pdf
+    year: 2008
+    course_letter: b
+    course_codes:
+    - ciencia-da-computacao-bacharelado
+    sequence: 2
+    document_type: answer_key
+    sha256: 707a326330c6982a9368957c6d9af1563b886d32d6c6720319faeb71803f2425
+    file_size_bytes: 12000
+    page_count: 2
+    has_text_layer: true
+    text_layer_char_count: 773
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_standard:
+    source_path: 2008/b3_padrao.pdf
+    filename: b3_padrao.pdf
+    year: 2008
+    course_letter: b
+    course_codes:
+    - ciencia-da-computacao-bacharelado
+    sequence: 3
+    document_type: answer_standard
+    sha256: 7021d115731ddcbad3c227da50f6d8c9c2c7f8a5a4b4d7dabce4b3726d0d35ef
+    file_size_bytes: 387720
+    page_count: 6
+    has_text_layer: true
+    text_layer_char_count: 7861
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  missing: []
+- exam_id: enade-2008-e
+  year: 2008
+  course_letter: e
+  course_codes:
+  - engenharia-da-computacao
+  is_unified_booklet: false
+  exam:
+    source_path: 2008/e1_prova.pdf
+    filename: e1_prova.pdf
+    year: 2008
+    course_letter: e
+    course_codes:
+    - engenharia-da-computacao
+    sequence: 1
+    document_type: exam
+    sha256: 2c3f96b48dbb7943f46a4c91b4b7f8605bc649f96a9e6bac77fb2af73b224a14
+    file_size_bytes: 10023038
+    page_count: 36
+    has_text_layer: true
+    text_layer_char_count: 62895
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_key:
+    source_path: 2008/e2_gabarito.pdf
+    filename: e2_gabarito.pdf
+    year: 2008
+    course_letter: e
+    course_codes:
+    - engenharia-da-computacao
+    sequence: 2
+    document_type: answer_key
+    sha256: 0eecb1058df30656867e6c26c6ec0358fffba35ef25f1048d3eefd79e94d2e6c
+    file_size_bytes: 13749
+    page_count: 2
+    has_text_layer: true
+    text_layer_char_count: 627
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_standard:
+    source_path: 2008/e3_padrao.pdf
+    filename: e3_padrao.pdf
+    year: 2008
+    course_letter: e
+    course_codes:
+    - engenharia-da-computacao
+    sequence: 3
+    document_type: answer_standard
+    sha256: c2fcd0989022dfe22ad3ed85ecf7b2c4ca3e0e040d546537247a8b481c32b556
+    file_size_bytes: 168949
+    page_count: 8
+    has_text_layer: true
+    text_layer_char_count: 6371
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  missing: []
+- exam_id: enade-2011-unificado
+  year: 2011
+  course_letter: null
+  course_codes:
+  - all-computing
+  is_unified_booklet: true
+  exam:
+    source_path: 2011/1_prova.pdf
+    filename: 1_prova.pdf
+    year: 2011
+    course_letter: null
+    course_codes:
+    - all-computing
+    sequence: 1
+    document_type: exam
+    sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    file_size_bytes: 1886812
+    page_count: 32
+    has_text_layer: true
+    text_layer_char_count: 73557
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_key:
+    source_path: 2011/2_gabarito.pdf
+    filename: 2_gabarito.pdf
+    year: 2011
+    course_letter: null
+    course_codes:
+    - all-computing
+    sequence: 2
+    document_type: answer_key
+    sha256: e799cac6ced431c0e5341e583592568d28db66e0e0c43c2f2e7757bdd807577b
+    file_size_bytes: 24369
+    page_count: 1
+    has_text_layer: true
+    text_layer_char_count: 310
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_standard:
+    source_path: 2011/3_padrao.pdf
+    filename: 3_padrao.pdf
+    year: 2011
+    course_letter: null
+    course_codes:
+    - all-computing
+    sequence: 3
+    document_type: answer_standard
+    sha256: 386353635a8e2fa8081dce177f37918bcaf9426d8ee6881b88aa739bdf0cd412
+    file_size_bytes: 115597
+    page_count: 5
+    has_text_layer: true
+    text_layer_char_count: 7887
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  missing: []
+- exam_id: enade-2014-b
+  year: 2014
+  course_letter: b
+  course_codes:
+  - ciencia-da-computacao-bacharelado
+  is_unified_booklet: false
+  exam:
+    source_path: 2014/b1_prova.pdf
+    filename: b1_prova.pdf
+    year: 2014
+    course_letter: b
+    course_codes:
+    - ciencia-da-computacao-bacharelado
+    sequence: 1
+    document_type: exam
+    sha256: bd3e8436b4d2da2211eaedc4fd6a28a3a2583c0c0b3280aa210cd3d305bcce42
+    file_size_bytes: 1235065
+    page_count: 32
+    has_text_layer: true
+    text_layer_char_count: 58057
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_key:
+    source_path: 2014/b2_gabarito.pdf
+    filename: b2_gabarito.pdf
+    year: 2014
+    course_letter: b
+    course_codes:
+    - ciencia-da-computacao-bacharelado
+    sequence: 2
+    document_type: answer_key
+    sha256: fbd23a3e9e5da2d5f305e4ab6cf705eda42bb2a2bf3f43cb041a752b8a194659
+    file_size_bytes: 193602
+    page_count: 1
+    has_text_layer: true
+    text_layer_char_count: 305
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_standard:
+    source_path: 2014/b3_padrao.pdf
+    filename: b3_padrao.pdf
+    year: 2014
+    course_letter: b
+    course_codes:
+    - ciencia-da-computacao-bacharelado
+    sequence: 3
+    document_type: answer_standard
+    sha256: 35f342eed6e6befc1819edee393cd6e5728d03a89af310a2869e89b4e33fda8d
+    file_size_bytes: 765040
+    page_count: 8
+    has_text_layer: true
+    text_layer_char_count: 5683
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  missing: []
+- exam_id: enade-2014-e
+  year: 2014
+  course_letter: e
+  course_codes:
+  - engenharia-da-computacao
+  is_unified_booklet: false
+  exam:
+    source_path: 2014/e1_prova.pdf
+    filename: e1_prova.pdf
+    year: 2014
+    course_letter: e
+    course_codes:
+    - engenharia-da-computacao
+    sequence: 1
+    document_type: exam
+    sha256: dec086301663a25d3c2d9dcd824a771889c9953107c1a97c12ed1552cadb0010
+    file_size_bytes: 1175686
+    page_count: 32
+    has_text_layer: true
+    text_layer_char_count: 61609
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_key:
+    source_path: 2014/e2_gabarito.pdf
+    filename: e2_gabarito.pdf
+    year: 2014
+    course_letter: e
+    course_codes:
+    - engenharia-da-computacao
+    sequence: 2
+    document_type: answer_key
+    sha256: 3d5d420358a989042ebd580f6d8468e50af243b9cd7ceedd7d2cb6743118affc
+    file_size_bytes: 193578
+    page_count: 1
+    has_text_layer: true
+    text_layer_char_count: 313
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_standard:
+    source_path: 2014/e3_padrao.pdf
+    filename: e3_padrao.pdf
+    year: 2014
+    course_letter: e
+    course_codes:
+    - engenharia-da-computacao
+    sequence: 3
+    document_type: answer_standard
+    sha256: 438f5f3b04c6a3171bd8422a92504640e92c59bf3e0752f8033ce7716ddc430d
+    file_size_bytes: 686832
+    page_count: 8
+    has_text_layer: true
+    text_layer_char_count: 7425
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  missing: []
+- exam_id: enade-2014-l
+  year: 2014
+  course_letter: l
+  course_codes:
+  - ciencia-da-computacao-licenciatura
+  is_unified_booklet: false
+  exam:
+    source_path: 2014/l1_prova.pdf
+    filename: l1_prova.pdf
+    year: 2014
+    course_letter: l
+    course_codes:
+    - ciencia-da-computacao-licenciatura
+    sequence: 1
+    document_type: exam
+    sha256: 6244002c601c8173c151642bea4df1af04f989b38b34ffb3a62bf5cde3a23c85
+    file_size_bytes: 1304907
+    page_count: 32
+    has_text_layer: true
+    text_layer_char_count: 62625
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_key:
+    source_path: 2014/l2_gabarito.pdf
+    filename: l2_gabarito.pdf
+    year: 2014
+    course_letter: l
+    course_codes:
+    - ciencia-da-computacao-licenciatura
+    sequence: 2
+    document_type: answer_key
+    sha256: 94f64f4fcad153a931575ad702646426c74b261a009f602dbb9886c7a58158b1
+    file_size_bytes: 193484
+    page_count: 1
+    has_text_layer: true
+    text_layer_char_count: 294
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_standard:
+    source_path: 2014/l3_padrao.pdf
+    filename: l3_padrao.pdf
+    year: 2014
+    course_letter: l
+    course_codes:
+    - ciencia-da-computacao-licenciatura
+    sequence: 3
+    document_type: answer_standard
+    sha256: 88dd25733d172037c449a8c0104e11430c6146130dd73cfd981bdbce901fb5e4
+    file_size_bytes: 651478
+    page_count: 7
+    has_text_layer: true
+    text_layer_char_count: 5296
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  missing: []
+- exam_id: enade-2017-b
+  year: 2017
+  course_letter: b
+  course_codes:
+  - ciencia-da-computacao-bacharelado
+  is_unified_booklet: false
+  exam:
+    source_path: 2017/b1_prova.pdf
+    filename: b1_prova.pdf
+    year: 2017
+    course_letter: b
+    course_codes:
+    - ciencia-da-computacao-bacharelado
+    sequence: 1
+    document_type: exam
+    sha256: c9ffd7b52f24f382f2546a2ee72d1331ad830fbee903e597888c512c32552518
+    file_size_bytes: 1303897
+    page_count: 40
+    has_text_layer: true
+    text_layer_char_count: 62501
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_key:
+    source_path: 2017/b2_gabarito.pdf
+    filename: b2_gabarito.pdf
+    year: 2017
+    course_letter: b
+    course_codes:
+    - ciencia-da-computacao-bacharelado
+    sequence: 2
+    document_type: answer_key
+    sha256: 2db27c0d8d82c4cc47ad52556b1923222ba083ef9ef5aff614169c1bf8535fe7
+    file_size_bytes: 216892
+    page_count: 1
+    has_text_layer: true
+    text_layer_char_count: 304
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_standard:
+    source_path: 2017/b3_padrao.pdf
+    filename: b3_padrao.pdf
+    year: 2017
+    course_letter: b
+    course_codes:
+    - ciencia-da-computacao-bacharelado
+    sequence: 3
+    document_type: answer_standard
+    sha256: 283649fd660736c73045013c29a03c9c365f750106b38ccf69fd213a3d72f34d
+    file_size_bytes: 1185706
+    page_count: 11
+    has_text_layer: true
+    text_layer_char_count: 6873
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  missing: []
+- exam_id: enade-2017-e
+  year: 2017
+  course_letter: e
+  course_codes:
+  - engenharia-da-computacao
+  is_unified_booklet: false
+  exam:
+    source_path: 2017/e1_prova.pdf
+    filename: e1_prova.pdf
+    year: 2017
+    course_letter: e
+    course_codes:
+    - engenharia-da-computacao
+    sequence: 1
+    document_type: exam
+    sha256: 25d070cf2b40264c74df05e1550b670711f67a242a47e6415cbe6d2088aa55c2
+    file_size_bytes: 1268083
+    page_count: 40
+    has_text_layer: true
+    text_layer_char_count: 67228
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_key:
+    source_path: 2017/e2_gabarito.pdf
+    filename: e2_gabarito.pdf
+    year: 2017
+    course_letter: e
+    course_codes:
+    - engenharia-da-computacao
+    sequence: 2
+    document_type: answer_key
+    sha256: 234e58522f4f8bf5e9ec22754db6f5d2e5e9f09398f990c2f01016e07cf7293b
+    file_size_bytes: 216884
+    page_count: 1
+    has_text_layer: true
+    text_layer_char_count: 295
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_standard:
+    source_path: 2017/e3_padrao.pdf
+    filename: e3_padrao.pdf
+    year: 2017
+    course_letter: e
+    course_codes:
+    - engenharia-da-computacao
+    sequence: 3
+    document_type: answer_standard
+    sha256: ea8eaab217f325c94019e8ff8c171e5fdae461035b2161c037087cef047462fd
+    file_size_bytes: 902328
+    page_count: 10
+    has_text_layer: true
+    text_layer_char_count: 10632
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  missing: []
+- exam_id: enade-2017-l
+  year: 2017
+  course_letter: l
+  course_codes:
+  - ciencia-da-computacao-licenciatura
+  is_unified_booklet: false
+  exam:
+    source_path: 2017/l1_prova.pdf
+    filename: l1_prova.pdf
+    year: 2017
+    course_letter: l
+    course_codes:
+    - ciencia-da-computacao-licenciatura
+    sequence: 1
+    document_type: exam
+    sha256: 7ae440c22df812f9b28bcd3f746ea4ec1f836ad15dbe81ff468a883007f90348
+    file_size_bytes: 1165508
+    page_count: 32
+    has_text_layer: true
+    text_layer_char_count: 64015
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_key:
+    source_path: 2017/l2_gabarito.pdf
+    filename: l2_gabarito.pdf
+    year: 2017
+    course_letter: l
+    course_codes:
+    - ciencia-da-computacao-licenciatura
+    sequence: 2
+    document_type: answer_key
+    sha256: d9f15f88f17eb223010592c65bb99f2df5a88f159276331fb41be569f45a1549
+    file_size_bytes: 216881
+    page_count: 1
+    has_text_layer: true
+    text_layer_char_count: 305
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_standard:
+    source_path: 2017/l3_padrao.pdf
+    filename: l3_padrao.pdf
+    year: 2017
+    course_letter: l
+    course_codes:
+    - ciencia-da-computacao-licenciatura
+    sequence: 3
+    document_type: answer_standard
+    sha256: 1039dd50765b5ab48ab5dcc47da6cff7283bc179e91b3340ca65b671c5cc001f
+    file_size_bytes: 1118405
+    page_count: 11
+    has_text_layer: true
+    text_layer_char_count: 11666
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  missing: []
+- exam_id: enade-2017-s
+  year: 2017
+  course_letter: s
+  course_codes:
+  - sistemas-de-informacao
+  is_unified_booklet: false
+  exam:
+    source_path: 2017/s1_prova.pdf
+    filename: s1_prova.pdf
+    year: 2017
+    course_letter: s
+    course_codes:
+    - sistemas-de-informacao
+    sequence: 1
+    document_type: exam
+    sha256: 8174039f8a8db4ac538bb39272264ac04bb3deb219e0c45d62959adf3409a705
+    file_size_bytes: 1229756
+    page_count: 40
+    has_text_layer: true
+    text_layer_char_count: 69560
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_key:
+    source_path: 2017/s2_gabarito.pdf
+    filename: s2_gabarito.pdf
+    year: 2017
+    course_letter: s
+    course_codes:
+    - sistemas-de-informacao
+    sequence: 2
+    document_type: answer_key
+    sha256: ed1625f6de70da5e6018abaeb1ea9c7a2fc84e3f7af5cca0cf673839b9fe61a3
+    file_size_bytes: 216878
+    page_count: 1
+    has_text_layer: true
+    text_layer_char_count: 298
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_standard:
+    source_path: 2017/s3_padrao.pdf
+    filename: s3_padrao.pdf
+    year: 2017
+    course_letter: s
+    course_codes:
+    - sistemas-de-informacao
+    sequence: 3
+    document_type: answer_standard
+    sha256: 67565b5fff579a274e396fe205d5823f15ea41d0000baf68270336f85111e24e
+    file_size_bytes: 820190
+    page_count: 8
+    has_text_layer: true
+    text_layer_char_count: 7386
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  missing: []
+- exam_id: enade-2019-e
+  year: 2019
+  course_letter: e
+  course_codes:
+  - engenharia-da-computacao
+  is_unified_booklet: false
+  exam:
+    source_path: 2019/e1_prova.pdf
+    filename: e1_prova.pdf
+    year: 2019
+    course_letter: e
+    course_codes:
+    - engenharia-da-computacao
+    sequence: 1
+    document_type: exam
+    sha256: ad30a6586d0ec844ce0cbd4159b59c5544c18c540dd73625cccd6f02f88f66de
+    file_size_bytes: 3093347
+    page_count: 40
+    has_text_layer: true
+    text_layer_char_count: 63075
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_key:
+    source_path: 2019/e2_gabarito.pdf
+    filename: e2_gabarito.pdf
+    year: 2019
+    course_letter: e
+    course_codes:
+    - engenharia-da-computacao
+    sequence: 2
+    document_type: answer_key
+    sha256: 0c2caa1e804ae9fcb9db7813fc251c97c82e502e225f21181b8ff93a4aa47127
+    file_size_bytes: 95039
+    page_count: 1
+    has_text_layer: true
+    text_layer_char_count: 518
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_standard:
+    source_path: 2019/e3_padrao.pdf
+    filename: e3_padrao.pdf
+    year: 2019
+    course_letter: e
+    course_codes:
+    - engenharia-da-computacao
+    sequence: 3
+    document_type: answer_standard
+    sha256: 0863c773b487ffbf2c19b0b47b1075604880876ffb712c8193ff223ebc83c842
+    file_size_bytes: 709178
+    page_count: 9
+    has_text_layer: true
+    text_layer_char_count: 8419
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  missing: []
+- exam_id: enade-2021-b
+  year: 2021
+  course_letter: b
+  course_codes:
+  - ciencia-da-computacao-bacharelado
+  is_unified_booklet: false
+  exam:
+    source_path: 2021/b1_prova.pdf
+    filename: b1_prova.pdf
+    year: 2021
+    course_letter: b
+    course_codes:
+    - ciencia-da-computacao-bacharelado
+    sequence: 1
+    document_type: exam
+    sha256: 0254b274cc4adddbb503cf18553ee70c26014cbb0848fe3c5b787c80137b11e8
+    file_size_bytes: 8169650
+    page_count: 48
+    has_text_layer: true
+    text_layer_char_count: 83555
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_key:
+    source_path: 2021/b2_gabarito.pdf
+    filename: b2_gabarito.pdf
+    year: 2021
+    course_letter: b
+    course_codes:
+    - ciencia-da-computacao-bacharelado
+    sequence: 2
+    document_type: answer_key
+    sha256: 62e5d3812e9b639a2590dad07c30f32d96367ed0d0e6450f0b0a753e023f475b
+    file_size_bytes: 509018
+    page_count: 1
+    has_text_layer: true
+    text_layer_char_count: 667
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_standard:
+    source_path: 2021/b3_padrao.pdf
+    filename: b3_padrao.pdf
+    year: 2021
+    course_letter: b
+    course_codes:
+    - ciencia-da-computacao-bacharelado
+    sequence: 3
+    document_type: answer_standard
+    sha256: c0348ce0006201f25e9f97502f59ad1b802c6c3e83c232b9c3c8330f6a6e7ded
+    file_size_bytes: 1486319
+    page_count: 8
+    has_text_layer: true
+    text_layer_char_count: 12223
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  missing: []
+- exam_id: enade-2021-l
+  year: 2021
+  course_letter: l
+  course_codes:
+  - ciencia-da-computacao-licenciatura
+  is_unified_booklet: false
+  exam:
+    source_path: 2021/l1_prova.pdf
+    filename: l1_prova.pdf
+    year: 2021
+    course_letter: l
+    course_codes:
+    - ciencia-da-computacao-licenciatura
+    sequence: 1
+    document_type: exam
+    sha256: 9537deb2d2d7f7e00eacd526a06b887e932fedf4b5e7abf9be6501138d561b72
+    file_size_bytes: 6926341
+    page_count: 40
+    has_text_layer: true
+    text_layer_char_count: 83512
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_key:
+    source_path: 2021/l2_gabarito.pdf
+    filename: l2_gabarito.pdf
+    year: 2021
+    course_letter: l
+    course_codes:
+    - ciencia-da-computacao-licenciatura
+    sequence: 2
+    document_type: answer_key
+    sha256: 92874d01d2cfc5f622abc3523ab91f7c6c60ba9eed18fb550479d4f391d6eae5
+    file_size_bytes: 510632
+    page_count: 1
+    has_text_layer: true
+    text_layer_char_count: 656
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_standard:
+    source_path: 2021/l3_padrao.pdf
+    filename: l3_padrao.pdf
+    year: 2021
+    course_letter: l
+    course_codes:
+    - ciencia-da-computacao-licenciatura
+    sequence: 3
+    document_type: answer_standard
+    sha256: e8083c85e549eefeb4a31ff9220fb52eb8c657f903c65d2fed221db985d6e53e
+    file_size_bytes: 1412073
+    page_count: 8
+    has_text_layer: true
+    text_layer_char_count: 14140
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  missing: []
+- exam_id: enade-2021-s
+  year: 2021
+  course_letter: s
+  course_codes:
+  - sistemas-de-informacao
+  is_unified_booklet: false
+  exam:
+    source_path: 2021/s1_prova.pdf
+    filename: s1_prova.pdf
+    year: 2021
+    course_letter: s
+    course_codes:
+    - sistemas-de-informacao
+    sequence: 1
+    document_type: exam
+    sha256: 13d81a46488d93fb66836e7c704f9de1ba722c3b130ccb4f0aa9d3522c855ba7
+    file_size_bytes: 6921221
+    page_count: 40
+    has_text_layer: true
+    text_layer_char_count: 74899
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_key:
+    source_path: 2021/s2_gabarito.pdf
+    filename: s2_gabarito.pdf
+    year: 2021
+    course_letter: s
+    course_codes:
+    - sistemas-de-informacao
+    sequence: 2
+    document_type: answer_key
+    sha256: aba7bbc12f549710bf0553ed2ac642423de22076418ff9ff06c810cd86092d85
+    file_size_bytes: 522400
+    page_count: 1
+    has_text_layer: true
+    text_layer_char_count: 662
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  answer_standard:
+    source_path: 2021/s3_padrao.pdf
+    filename: s3_padrao.pdf
+    year: 2021
+    course_letter: s
+    course_codes:
+    - sistemas-de-informacao
+    sequence: 3
+    document_type: answer_standard
+    sha256: 4c9ea3b838717c88fec4512c60b10b894c92e982c8aefce630d97075c0f0473f
+    file_size_bytes: 2371401
+    page_count: 6
+    has_text_layer: true
+    text_layer_char_count: 13074
+    encrypted: false
+    readable: true
+    parse_warnings: []
+  missing: []
+orphan_files: []
+issues: []
+summary:
+  answer_keys: 16
+  answer_standards: 16
+  bundles: 16
+  errors: 0
+  exams: 16
+  orphan_files: 0
+  total_pdfs: 48
+  warnings: 0
+  years: 7

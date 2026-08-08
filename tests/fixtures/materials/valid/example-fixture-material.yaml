@@ -1,0 +1,16 @@
+# Fixture only - not a real recommended material. No material URLs are
+# invented in Phase 0 (see PROMPT section 15), so `url` is intentionally null.
+id: example-fixture-material
+title: "Material de exemplo (fixture) para validar o contrato Material"
+type: documentation
+url: null
+language: pt-BR
+subjects:
+  - estruturas-de-dados
+topics:
+  - arvores
+concepts:
+  - arvore-de-busca
+prerequisites: []
+source: test-fixture
+verification_status: pending

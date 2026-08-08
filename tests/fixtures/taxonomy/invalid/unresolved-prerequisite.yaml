@@ -1,0 +1,14 @@
+version: "0.0.1-test"
+status: demo
+notice: "Fixture invalida: referencia um pre-requisito inexistente."
+subjects:
+  - id: estruturas-de-dados
+    name: Estruturas de Dados
+    topics:
+      - id: arvores
+        name: Árvores
+        concepts:
+          - id: arvore-binaria
+            name: Árvore Binária
+            prerequisites:
+              - conceito-que-nao-existe

@@ -1,0 +1,98 @@
+{
+  "$defs": {
+    "AssetExtractionMethod": {
+      "enum": [
+        "manual",
+        "raster_crop",
+        "vector_export",
+        "ocr",
+        "unknown",
+        "pending"
+      ],
+      "title": "AssetExtractionMethod",
+      "type": "string"
+    },
+    "AssetType": {
+      "enum": [
+        "image",
+        "diagram",
+        "graph",
+        "table",
+        "equation",
+        "page_crop"
+      ],
+      "title": "AssetType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "alt_text": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Alt Text"
+    },
+    "caption": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Caption"
+    },
+    "extraction_method": {
+      "$ref": "#/$defs/AssetExtractionMethod",
+      "default": "pending"
+    },
+    "id": {
+      "description": "slug unique within the owning question, e.g. 'figure-01'",
+      "title": "Id",
+      "type": "string"
+    },
+    "path": {
+      "description": "portable, relative path under data/assets/questions/",
+      "title": "Path",
+      "type": "string"
+    },
+    "sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Sha256"
+    },
+    "source_page": {
+      "minimum": 1,
+      "title": "Source Page",
+      "type": "integer"
+    },
+    "type": {
+      "$ref": "#/$defs/AssetType"
+    }
+  },
+  "required": [
+    "id",
+    "type",
+    "path",
+    "source_page"
+  ],
+  "title": "Asset",
+  "type": "object"
+}

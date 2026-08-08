@@ -1,0 +1,36 @@
+# --- Raw / cached source corpus -------------------------------------------
+# The pristine clone of https://github.com/geacc/enade (and any other raw
+# source PDFs) lives under data/raw/. It is large, binary, and fully
+# reproducible via `python scripts/fetch_corpus.py`, so it is never committed.
+data/raw/
+
+# Large derived binary assets extracted from PDFs (images/crops) are also
+# kept out of git for now; only small, reviewable artifacts (YAML/JSON/MD
+# manifests, fixtures) are tracked in this phase.
+data/assets/questions/*
+!data/assets/questions/.gitkeep
+
+# --- Python ------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# --- Editors / OS -------------------------------------------------------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Scratch --------------------------------------------------------------
+*.tmp
+*.bak

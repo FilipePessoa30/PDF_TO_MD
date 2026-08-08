@@ -1,0 +1,64 @@
+schema_version: "1.0"
+generated_at: "2026-01-01T00:00:00Z"
+tool_version: "0.0.0-test"
+repository:
+  repository_url: "https://github.com/geacc/enade.git"
+  ref: "master"
+  commit_sha: "a657632b72b97468c8a5eb3b433d1abb4a5511c5"
+corpus_root: "/fixtures/corpus"
+bundles:
+  - exam_id: enade-2021-b
+    year: 2021
+    course_letter: b
+    course_codes: ["ciencia-da-computacao-bacharelado"]
+    is_unified_booklet: false
+    exam:
+      source_path: "2021/b1_prova.pdf"
+      filename: "b1_prova.pdf"
+      year: 2021
+      course_letter: b
+      course_codes: ["ciencia-da-computacao-bacharelado"]
+      sequence: 1
+      document_type: exam
+      sha256: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+      file_size_bytes: 1000
+      page_count: 10
+      has_text_layer: true
+      text_layer_char_count: 500
+      encrypted: false
+      readable: true
+      parse_warnings: []
+    answer_key:
+      source_path: "2021/b2_gabarito.pdf"
+      filename: "b2_gabarito.pdf"
+      year: 2021
+      course_letter: b
+      course_codes: ["ciencia-da-computacao-bacharelado"]
+      sequence: 2
+      document_type: answer_key
+      sha256: "cafef00dcafef00dcafef00dcafef00dcafef00dcafef00dcafef00dcafef00d"
+      file_size_bytes: 200
+      page_count: 1
+      has_text_layer: true
+      text_layer_char_count: 50
+      encrypted: false
+      readable: true
+      parse_warnings: []
+    answer_standard: null
+    missing: ["answer_standard"]
+orphan_files: []
+issues:
+  - kind: exam_without_answer_standard
+    severity: warning
+    message: "exam bundle 'enade-2021-b' has a prova but no padrao de resposta"
+    path: "2021/b1_prova.pdf"
+summary:
+  answer_keys: 1
+  answer_standards: 0
+  bundles: 1
+  errors: 0
+  exams: 1
+  orphan_files: 0
+  total_pdfs: 2
+  warnings: 1
+  years: 1

@@ -1,0 +1,138 @@
+{
+  "$defs": {
+    "Concept": {
+      "additionalProperties": false,
+      "properties": {
+        "aliases": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Aliases",
+          "type": "array"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "keywords": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Keywords",
+          "type": "array"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "prerequisites": {
+          "description": "ids of other concepts",
+          "items": {
+            "type": "string"
+          },
+          "title": "Prerequisites",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "title": "Concept",
+      "type": "object"
+    },
+    "Subject": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "topics": {
+          "items": {
+            "$ref": "#/$defs/Topic"
+          },
+          "title": "Topics",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "title": "Subject",
+      "type": "object"
+    },
+    "TaxonomyStatus": {
+      "description": "Maturity of a taxonomy document. Phase 0 only ever produces ``demo``.",
+      "enum": [
+        "demo",
+        "draft",
+        "reviewed",
+        "definitive"
+      ],
+      "title": "TaxonomyStatus",
+      "type": "string"
+    },
+    "Topic": {
+      "additionalProperties": false,
+      "properties": {
+        "concepts": {
+          "items": {
+            "$ref": "#/$defs/Concept"
+          },
+          "title": "Concepts",
+          "type": "array"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "title": "Topic",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "notice": {
+      "description": "Human-readable disclaimer about the maturity/completeness of this taxonomy.",
+      "minLength": 1,
+      "title": "Notice",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/TaxonomyStatus"
+    },
+    "subjects": {
+      "items": {
+        "$ref": "#/$defs/Subject"
+      },
+      "title": "Subjects",
+      "type": "array"
+    },
+    "version": {
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "version",
+    "status",
+    "notice"
+  ],
+  "title": "Taxonomy",
+  "type": "object"
+}

@@ -1,0 +1,56 @@
+# DEMO TAXONOMY - NOT THE DEFINITIVE COMPUTING TAXONOMY.
+#
+# This file exists only to validate the Taxonomy data contract
+# (src/enade/models/taxonomy.py) end to end - hierarchy depth, multiple
+# subjects, cross-concept prerequisites. Coverage is intentionally tiny
+# (two subjects) and does not attempt to represent the full ENADE
+# Computing syllabus. See docs/taxonomy.md before extending it for real.
+version: "0.0.1-demo"
+status: demo
+notice: >-
+  This is a small demonstration taxonomy used to validate the schema shape.
+  It is NOT the definitive Computing taxonomy for this platform. Building
+  the real taxonomy (informed by the actual ENADE syllabus/matriz de
+  referencia) is out of scope for Phase 0.
+subjects:
+  - id: estruturas-de-dados
+    name: Estruturas de Dados
+    topics:
+      - id: arvores
+        name: Árvores
+        concepts:
+          - id: arvore-binaria
+            name: Árvore Binária
+            aliases: ["binary tree"]
+            keywords: ["arvore", "no", "raiz", "folha"]
+            prerequisites: []
+          - id: arvore-de-busca
+            name: Árvore de Busca (BST)
+            aliases: ["binary search tree", "BST"]
+            keywords: ["arvore", "busca", "ordenacao"]
+            prerequisites: ["arvore-binaria"]
+          - id: arvore-balanceada
+            name: Árvore Balanceada
+            aliases: ["AVL", "rubro-negra", "red-black tree"]
+            keywords: ["arvore", "balanceamento", "rotacao"]
+            prerequisites: ["arvore-de-busca"]
+          - id: percursos-em-arvore
+            name: Percursos em Árvore
+            aliases: ["tree traversal"]
+            keywords: ["arvore", "percurso", "em-ordem", "pre-ordem", "pos-ordem"]
+            prerequisites: ["arvore-binaria"]
+  - id: complexidade-de-algoritmos
+    name: Complexidade de Algoritmos
+    topics:
+      - id: notacao-assintotica
+        name: Notação Assintótica
+        concepts:
+          - id: big-o
+            name: Notação Big-O
+            aliases: ["O(n)", "ordem de grandeza"]
+            keywords: ["complexidade", "pior-caso", "assintotica"]
+            prerequisites: []
+          - id: analise-de-algoritmos-em-arvores
+            name: Análise de Complexidade em Árvores
+            keywords: ["complexidade", "arvore", "altura"]
+            prerequisites: ["big-o", "arvore-de-busca"]
