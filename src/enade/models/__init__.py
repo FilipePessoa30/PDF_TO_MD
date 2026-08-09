@@ -18,13 +18,19 @@ from enade.models.enums import (
 )
 from enade.models.material import Material
 from enade.models.misconception import AlternativeDiagnostic, MisconceptionDefinition
-from enade.models.provenance import PdfProvenance, SourceOccurrence, SourceRepository
+from enade.models.provenance import (
+    AnswerStandardReference,
+    PdfProvenance,
+    SourceOccurrence,
+    SourceRepository,
+)
 from enade.models.question import Alternative, Question
 from enade.models.taxonomy import Concept, Subject, Taxonomy, Topic
 
 __all__ = [
     "Alternative",
     "AlternativeDiagnostic",
+    "AnswerStandardReference",
     "AnswerValidationStatus",
     "Asset",
     "AssetExtractionMethod",

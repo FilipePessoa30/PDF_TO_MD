@@ -16,6 +16,15 @@ question_type: discursive
 correct_answer: null
 official_answer_source: null
 answer_validation_status: not_applicable
+answer_standard:
+  source_path: 2011/3_padrao.pdf
+  pdf_sha256: deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef
+  pages: [3]
+  text: >-
+    Texto de exemplo (fixture sintética) do padrão de resposta oficial: o
+    respondente deve descrever corretamente a operação de busca em uma
+    árvore binária de busca, incluindo o caso em que o elemento não é
+    encontrado.
 assets: []
 subjects:
   - estruturas-de-dados
@@ -38,6 +47,6 @@ taxonomy_review_status: pending
 
 Enunciado de exemplo (fixture sintética) de uma questão discursiva: não
 possui alternativas, e a correção não é automática por gabarito - o
-"padrão de resposta" (answer_standard) é quem descreve os critérios de
-correção esperados, referenciado via `official_answer_source` quando
-disponível.
+"padrão de resposta" oficial (campo `answer_standard`) descreve os
+critérios de correção esperados, com sua própria proveniência (PDF +
+páginas), separado do enunciado mostrado ao estudante.

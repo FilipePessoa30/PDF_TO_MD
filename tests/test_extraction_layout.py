@@ -1,0 +1,65 @@
+from __future__ import annotations
+
+from enade.extraction.layout import Line, _detect_column_split, _merge_orphan_markers
+
+
+def _line(x0: float, y0: float, text: str, x1: float | None = None) -> Line:
+    return Line(
+        page_number=1, text=text, x0=x0, y0=y0, x1=x1 if x1 is not None else x0 + 150, y1=y0 + 12
+    )
+
+
+def test_detect_column_split_finds_two_column_layout():
+    lines = []
+    for i in range(6):
+        lines.append(_line(30, i * 20, f"linha esquerda numero {i} com texto suficiente", x1=280))
+        lines.append(_line(290, i * 20, f"linha direita numero {i} com texto suficiente", x1=540))
+    split = _detect_column_split(lines)
+    assert split is not None
+    # split falls between the two columns' left margins (30 and 290) - every
+    # left-column line's x0 (30) is below it, every right-column line's x0
+    # (290) is above it, which is what actually matters for classification.
+    assert 30 < split < 290
+    assert all(ln.x0 < split for ln in lines if ln.x0 == 30)
+    assert all(ln.x0 > split for ln in lines if ln.x0 == 290)
+
+
+def test_detect_column_split_none_for_single_column_page():
+    lines = [_line(30, i * 20, f"parágrafo único linha {i}", x1=530) for i in range(6)]
+    assert _detect_column_split(lines) is None
+
+
+def test_detect_column_split_ignores_short_figure_labels():
+    # A handful of short labels at a different x should not trigger a false
+    # column split on an otherwise single-column page.
+    lines = [_line(30, i * 20, f"parágrafo linha {i} com bastante texto", x1=530) for i in range(6)]
+    lines.append(_line(300, 50, "rótulo"))  # short, width < MIN_COLUMN_LINE_WIDTH
+    lines.append(_line(310, 70, "outro"))
+    assert _detect_column_split(lines) is None
+
+
+def test_merge_orphan_markers_joins_bare_letter_with_nearby_line():
+    lines = [
+        _line(30, 100, "C"),  # orphan marker, no text
+        _line(47, 98, "Texto da alternativa C que ficou separado."),
+    ]
+    merged = _merge_orphan_markers(lines)
+    assert len(merged) == 1
+    assert merged[0].text.startswith("C\t")
+    assert "Texto da alternativa C" in merged[0].text
+
+
+def test_merge_orphan_markers_leaves_normal_lines_untouched():
+    lines = [_line(30, 10, "A\t Texto já junto, nada a fazer.")]
+    merged = _merge_orphan_markers(lines)
+    assert merged == lines
+
+
+def test_merge_orphan_markers_ignores_distant_candidates():
+    lines = [
+        _line(30, 10, "C"),
+        _line(30, 500, "Texto muito distante, não deve ser unido."),
+    ]
+    merged = _merge_orphan_markers(lines)
+    # No plausible partner within tolerance - orphan line is kept as-is, not lost.
+    assert len(merged) == 2

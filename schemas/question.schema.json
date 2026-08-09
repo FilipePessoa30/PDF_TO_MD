@@ -55,6 +55,44 @@
       "title": "AlternativeDiagnostic",
       "type": "object"
     },
+    "AnswerStandardReference": {
+      "additionalProperties": false,
+      "description": "The official grading rubric (\"padrao de resposta\") for a discursive question.\n\nAdded in Phase 1A after encountering the real 2021 corpus: the answer\nstandard PDF (e.g. ``2021/b3_padrao.pdf``) contains the actual grading\ncriteria text for each discursive question, distinct from both the\nquestion's own source (the \"prova\") and an objective question's\n``correct_answer`` (which comes from the \"gabarito\"). See\ndocs/decisions.md, ADR \"answer_standard for discursive questions\", for\nthe full PROBLEMA/EXEMPLO/LIMITACAO/ALTERACAO/TESTE rationale.\n\nThis is deliberately a *separate* field from ``official_answer_source``\n(which remains a lightweight pointer usable by objective questions) so\nthat existing data is unaffected: this field is optional and additive.",
+      "properties": {
+        "pages": {
+          "items": {
+            "type": "integer"
+          },
+          "minItems": 1,
+          "title": "Pages",
+          "type": "array"
+        },
+        "pdf_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Pdf Sha256",
+          "type": "string"
+        },
+        "source_path": {
+          "description": "path relative to the repo root, e.g. '2021/b3_padrao.pdf'",
+          "title": "Source Path",
+          "type": "string"
+        },
+        "text": {
+          "description": "verbatim official grading rubric text",
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_path",
+        "pdf_sha256",
+        "pages",
+        "text"
+      ],
+      "title": "AnswerStandardReference",
+      "type": "object"
+    },
     "AnswerValidationStatus": {
       "enum": [
         "pending",
@@ -289,6 +327,18 @@
       },
       "title": "Alternatives",
       "type": "array"
+    },
+    "answer_standard": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/AnswerStandardReference"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "official grading rubric for discursive questions (see docs/decisions.md)"
     },
     "answer_validation_status": {
       "$ref": "#/$defs/AnswerValidationStatus",

@@ -15,6 +15,7 @@ from enade.inventory.manifest import SourceManifest
 from enade.models.asset import Asset
 from enade.models.material import Material
 from enade.models.misconception import AlternativeDiagnostic, MisconceptionDefinition
+from enade.models.provenance import AnswerStandardReference
 from enade.models.question import Question
 from enade.models.taxonomy import Taxonomy
 
@@ -27,6 +28,7 @@ MODELS = {
     "taxonomy.schema.json": Taxonomy,
     "misconception-definition.schema.json": MisconceptionDefinition,
     "alternative-diagnostic.schema.json": AlternativeDiagnostic,
+    "answer-standard-reference.schema.json": AnswerStandardReference,
     "material.schema.json": Material,
     "source-manifest.schema.json": SourceManifest,
 }

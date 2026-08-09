@@ -7,7 +7,7 @@ from pydantic import ValidationError
 
 from enade.markdown_format import load_question_markdown
 from enade.models.enums import CourseCode
-from enade.models.provenance import SourceOccurrence
+from enade.models.provenance import AnswerStandardReference, SourceOccurrence
 from enade.models.question import Alternative, Question
 
 
@@ -171,3 +171,46 @@ def test_duplicate_asset_ids_are_rejected():
 def test_question_id_must_be_kebab_case():
     with pytest.raises(ValidationError, match="kebab-case"):
         _question(id="Not Valid ID")
+
+
+# --- Phase 1A: answer_standard (see docs/decisions.md, "Phase 1A" ADR 11) ---
+
+
+def test_discursive_question_can_carry_an_answer_standard():
+    q = _question(
+        question_type="discursive",
+        alternatives=[],
+        answer_standard=AnswerStandardReference(
+            source_path="2021/b3_padrao.pdf",
+            pdf_sha256="b" * 64,
+            pages=[3],
+            text="O respondente deve descrever corretamente o algoritmo pedido.",
+        ),
+    )
+    assert q.answer_standard is not None
+    assert q.answer_standard.pages == [3]
+    assert "algoritmo" in q.answer_standard.text
+
+
+def test_answer_standard_defaults_to_none_and_is_backward_compatible():
+    q = _question()
+    assert q.answer_standard is None
+
+
+def test_answer_standard_is_never_folded_into_the_rendered_statement():
+    from enade.markdown_format import render_question_markdown
+
+    q = _question(
+        question_type="discursive",
+        alternatives=[],
+        answer_standard=AnswerStandardReference(
+            source_path="2021/b3_padrao.pdf",
+            pdf_sha256="b" * 64,
+            pages=[3],
+            text="ESTE TEXTO DE GABARITO NAO DEVE APARECER NO CORPO DO MARKDOWN.",
+        ),
+        statement="Enunciado visivel ao estudante.",
+    )
+    rendered = render_question_markdown(q)
+    body = rendered.split("---", 2)[2]
+    assert "ESTE TEXTO DE GABARITO" not in body

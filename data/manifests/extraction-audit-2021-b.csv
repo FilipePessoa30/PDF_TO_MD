@@ -1,0 +1,41 @@
+id,exam_year,kind,number,section,start_page,end_page,num_alternatives,has_assets,num_assets,answer,answer_validation_status,answer_standard_available,extraction_method,extraction_status,warning_count,warnings
+enade-2021-cc-b-d01,2021,discursive,1,formacao-geral-discursiva,2,2,0,False,0,,not_applicable,True,text_layer,needs_review,1,"possible ligature/word-break artifact(s) detected: ['questi o', 'discuti r', 'justi f', 'questi o', 'semióti c', 'remeti d', 'semioti z', 'questi o', 'debati d', 'disti n', 'garanti n', 'garanti d', 'educati v', 'garanti r']"
+enade-2021-cc-b-d02,2021,discursive,2,formacao-geral-discursiva,4,4,0,False,0,,not_applicable,True,text_layer,needs_review,1,"possible ligature/word-break artifact(s) detected: ['benefi c', 'comprometi d', 'holísti c', 'efeti v', 'investi m', 'políti c', 'parti r']"
+enade-2021-cc-b-d03,2021,discursive,3,componente-especifico-discursiva,14,15,0,False,0,,not_applicable,True,text_layer,verified,0,
+enade-2021-cc-b-d04,2021,discursive,4,componente-especifico-discursiva,16,16,0,True,1,,not_applicable,True,text_layer,verified,0,
+enade-2021-cc-b-d05,2021,discursive,5,componente-especifico-discursiva,17,18,0,True,1,,not_applicable,True,text_layer,needs_review,1,statement contains a code/pseudocode block spanning multiple pages - column layout + code formatting fidelity needs manual confirmation
+enade-2021-cc-b-q01,2021,multiple_choice,1,formacao-geral-objetiva,5,5,5,False,0,E,validated,False,text_layer,needs_review,1,"possible ligature/word-break artifact(s) detected: ['esti m', 'difi c', 'qualifi c', 'parti r', 'demográfi c', 'políti c', 'repeti n']"
+enade-2021-cc-b-q02,2021,multiple_choice,2,formacao-geral-objetiva,6,7,5,True,1,C,validated,False,text_layer,needs_review,1,"possible ligature/word-break artifact(s) detected: ['estéti c', 'alternati v', 'esteti c', 'conscienti z', 'produti v', 'noti c', 'noti c', 'sinteti z', 'disti n', 'estéti c', 'produti v', 'justi f', 'cati v', 'justi f', 'cati v']"
+enade-2021-cc-b-q03,2021,multiple_choice,3,formacao-geral-objetiva,8,8,5,True,1,B,validated,False,text_layer,needs_review,1,"possible ligature/word-break artifact(s) detected: ['automoti v', 'parti r']"
+enade-2021-cc-b-q04,2021,multiple_choice,4,formacao-geral-objetiva,9,9,5,False,0,B,validated,False,text_layer,needs_review,1,"possible ligature/word-break artifact(s) detected: ['aplicati v', 'aplicati v', 'profi s', 'moti v', 'parti r', 'justi f', 'cati v', 'justi f', 'cati v']"
+enade-2021-cc-b-q05,2021,multiple_choice,5,formacao-geral-objetiva,10,11,5,True,1,A,validated,False,text_layer,needs_review,1,possible ligature/word-break artifact(s) detected: ['preventi v']
+enade-2021-cc-b-q06,2021,multiple_choice,6,formacao-geral-objetiva,11,11,5,False,0,A,validated,False,text_layer,needs_review,1,"possible ligature/word-break artifact(s) detected: ['negati v', 'intensifi c', 'verifi c', 'expectati v', 'expectati v', 'expectati v', 'últi m', 'expectati v', 'lati n', 'expectati v', 'lati n', 'signifi c', 'expectati v', 'lati n', 'expectati v', 'lati n', 'justi f', 'cati v', 'justi f', 'cati v']"
+enade-2021-cc-b-q07,2021,multiple_choice,7,formacao-geral-objetiva,12,12,5,False,0,C,validated,False,text_layer,needs_review,1,"possible ligature/word-break artifact(s) detected: ['positi v', 'diagnósti c', 'preventi v', 'decodifi c', 'desafi o', 'últi m', 'objeti v', 'signifi c', 'amplifi c', 'autodiagnósti c', 'profi l', 'relati v', 'proati v']"
+enade-2021-cc-b-q08,2021,multiple_choice,8,formacao-geral-objetiva,13,14,5,False,0,D,validated,False,text_layer,needs_review,1,"possible ligature/word-break artifact(s) detected: ['defi n', 'esti v', 'alternati v', 'desafi o', 'políti c', 'politi c', 'parti r', 'democráti c', 'políti c', 'competi t', 'combati v', 'políti c', 'senti d']"
+enade-2021-cc-b-q09,2021,multiple_choice,9,componente-especifico-objetiva,19,19,5,False,0,E,validated,False,text_layer,verified,0,
+enade-2021-cc-b-q10,2021,multiple_choice,10,componente-especifico-objetiva,19,19,5,False,0,B,validated,False,text_layer,verified,0,
+enade-2021-cc-b-q11,2021,multiple_choice,11,componente-especifico-objetiva,20,20,5,True,1,D,validated,False,text_layer,verified,0,
+enade-2021-cc-b-q12,2021,multiple_choice,12,componente-especifico-objetiva,21,21,5,False,0,B,validated,False,text_layer,verified,0,
+enade-2021-cc-b-q13,2021,multiple_choice,13,componente-especifico-objetiva,22,22,5,False,0,E,validated,False,text_layer,verified,0,
+enade-2021-cc-b-q14,2021,multiple_choice,14,componente-especifico-objetiva,23,23,5,False,0,C,validated,False,text_layer,verified,0,
+enade-2021-cc-b-q15,2021,multiple_choice,15,componente-especifico-objetiva,24,24,5,False,0,C,validated,False,text_layer,verified,0,
+enade-2021-cc-b-q16,2021,multiple_choice,16,componente-especifico-objetiva,25,25,5,True,2,B,validated,False,text_layer,verified,0,
+enade-2021-cc-b-q17,2021,multiple_choice,17,componente-especifico-objetiva,26,27,5,True,1,C,validated,False,text_layer,verified,0,
+enade-2021-cc-b-q18,2021,multiple_choice,18,componente-especifico-objetiva,27,27,5,False,0,E,validated,False,text_layer,verified,0,
+enade-2021-cc-b-q19,2021,multiple_choice,19,componente-especifico-objetiva,28,28,5,False,0,D,validated,False,text_layer,verified,0,
+enade-2021-cc-b-q20,2021,multiple_choice,20,componente-especifico-objetiva,29,29,5,False,0,A,validated,False,text_layer,verified,0,
+enade-2021-cc-b-q21,2021,multiple_choice,21,componente-especifico-objetiva,30,30,5,True,1,E,validated,False,text_layer,verified,0,
+enade-2021-cc-b-q22,2021,multiple_choice,22,componente-especifico-objetiva,31,31,5,True,1,A,validated,False,text_layer,verified,0,
+enade-2021-cc-b-q23,2021,multiple_choice,23,componente-especifico-objetiva,32,32,5,True,1,C,validated,False,text_layer,verified,0,
+enade-2021-cc-b-q24,2021,multiple_choice,24,componente-especifico-objetiva,33,33,5,False,0,E,validated,False,text_layer,verified,0,
+enade-2021-cc-b-q25,2021,multiple_choice,25,componente-especifico-objetiva,34,34,5,False,0,B,validated,False,text_layer,verified,0,
+enade-2021-cc-b-q26,2021,multiple_choice,26,componente-especifico-objetiva,35,35,5,False,0,A,validated,False,text_layer,verified,0,
+enade-2021-cc-b-q27,2021,multiple_choice,27,componente-especifico-objetiva,36,36,5,True,1,D,validated,False,text_layer,verified,0,
+enade-2021-cc-b-q28,2021,multiple_choice,28,componente-especifico-objetiva,36,37,5,True,2,B,validated,False,text_layer,verified,0,
+enade-2021-cc-b-q29,2021,multiple_choice,29,componente-especifico-objetiva,38,38,5,True,4,,annulled,False,text_layer,verified,0,
+enade-2021-cc-b-q30,2021,multiple_choice,30,componente-especifico-objetiva,39,39,5,False,0,E,validated,False,text_layer,verified,0,
+enade-2021-cc-b-q31,2021,multiple_choice,31,componente-especifico-objetiva,40,40,5,True,1,E,validated,False,text_layer,verified,0,
+enade-2021-cc-b-q32,2021,multiple_choice,32,componente-especifico-objetiva,41,41,5,False,0,A,validated,False,text_layer,verified,0,
+enade-2021-cc-b-q33,2021,multiple_choice,33,componente-especifico-objetiva,42,42,5,False,0,,annulled,False,text_layer,verified,0,
+enade-2021-cc-b-q34,2021,multiple_choice,34,componente-especifico-objetiva,43,43,5,True,1,C,validated,False,text_layer,verified,0,
+enade-2021-cc-b-q35,2021,multiple_choice,35,componente-especifico-objetiva,43,43,5,False,0,D,validated,False,text_layer,verified,0,

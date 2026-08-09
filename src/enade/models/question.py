@@ -35,7 +35,7 @@ from enade.models.enums import (
     TaxonomyReviewStatus,
 )
 from enade.models.misconception import AlternativeDiagnostic
-from enade.models.provenance import SourceOccurrence
+from enade.models.provenance import AnswerStandardReference, SourceOccurrence
 
 QUESTION_ID_PATTERN = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 SECTION_PATTERN = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
@@ -72,6 +72,10 @@ class Question(BaseModel):
         description="reference (e.g. exam_id/path) to the gabarito this was validated against",
     )
     answer_validation_status: AnswerValidationStatus = AnswerValidationStatus.PENDING
+    answer_standard: AnswerStandardReference | None = Field(
+        default=None,
+        description="official grading rubric for discursive questions (see docs/decisions.md)",
+    )
 
     assets: list[Asset] = Field(default_factory=list)
 

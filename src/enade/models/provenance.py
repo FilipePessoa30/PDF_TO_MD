@@ -73,3 +73,36 @@ class SourceOccurrence(BaseModel):
         if any(p < 1 for p in v):
             raise ValueError("page numbers must be >= 1")
         return v
+
+
+class AnswerStandardReference(BaseModel):
+    """The official grading rubric ("padrao de resposta") for a discursive question.
+
+    Added in Phase 1A after encountering the real 2021 corpus: the answer
+    standard PDF (e.g. ``2021/b3_padrao.pdf``) contains the actual grading
+    criteria text for each discursive question, distinct from both the
+    question's own source (the "prova") and an objective question's
+    ``correct_answer`` (which comes from the "gabarito"). See
+    docs/decisions.md, ADR "answer_standard for discursive questions", for
+    the full PROBLEMA/EXEMPLO/LIMITACAO/ALTERACAO/TESTE rationale.
+
+    This is deliberately a *separate* field from ``official_answer_source``
+    (which remains a lightweight pointer usable by objective questions) so
+    that existing data is unaffected: this field is optional and additive.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    source_path: str = Field(
+        ..., description="path relative to the repo root, e.g. '2021/b3_padrao.pdf'"
+    )
+    pdf_sha256: str = Field(..., pattern=SHA256_PATTERN)
+    pages: list[int] = Field(..., min_length=1)
+    text: str = Field(..., min_length=1, description="verbatim official grading rubric text")
+
+    @field_validator("pages")
+    @classmethod
+    def _pages_positive(cls, v: list[int]) -> list[int]:
+        if any(p < 1 for p in v):
+            raise ValueError("page numbers must be >= 1")
+        return v

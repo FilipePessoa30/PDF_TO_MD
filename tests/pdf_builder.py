@@ -51,15 +51,24 @@ def build_minimal_pdf(page_texts: list[str | None]) -> bytes:
         add_object(
             page_num,
             (
-                f"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] "
+                f"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 600 800] "
                 f"/Resources << /Font << /F1 {font_obj} 0 R >> >> "
                 f"/Contents {content_num} 0 R >>"
             ).encode("ascii"),
         )
         if text:
-            stream_body = f"BT /F1 12 Tf 20 100 Td ({_escape_pdf_string(text)}) Tj ET".encode(
-                "ascii"
-            )
+            # Each '\n'-separated line gets its own Tj at a decremented Y
+            # position (real line breaks), rather than one Tj call holding a
+            # literal newline character - the latter does not reliably
+            # extract back out as separate lines/produces truncated output.
+            text_lines = text.split("\n")
+            stream_parts = ["BT", "/F1 12 Tf", "20 760 Td"]
+            for index, line_text in enumerate(text_lines):
+                if index > 0:
+                    stream_parts.append("0 -14 Td")
+                stream_parts.append(f"({_escape_pdf_string(line_text)}) Tj")
+            stream_parts.append("ET")
+            stream_body = "\n".join(stream_parts).encode("ascii")
         else:
             stream_body = b""
         stream_obj = (
