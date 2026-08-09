@@ -30,6 +30,8 @@ alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
 extraction_status: verified
+automatic_validation: passed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
@@ -57,7 +59,7 @@ algoritmo particao(A, lo, hi)
     return i
 ```
 
-Com relação ao algoritmo apresentado, avalie as afirmações a seguir. I.	 O algoritmo precisa de um espaço adicional O(n) para a pilha de recursão. II.	 O algoritmo apresentado é um algoritmo de ordenação recursivo e estável. III.	 O algoritmo precisa, em média, de O(n log n) comparações para ordenar n itens. IV.	 O uso do primeiro elemento do vetor como “pivot” é mais eficiente que usar o último. É correto apenas o que se afirma em
+Com relação ao algoritmo apresentado, avalie as afirmações a seguir. I. O algoritmo precisa de um espaço adicional O(n) para a pilha de recursão. II. O algoritmo apresentado é um algoritmo de ordenação recursivo e estável. III. O algoritmo precisa, em média, de O(n log n) comparações para ordenar n itens. IV. O uso do primeiro elemento do vetor como “pivot” é mais eficiente que usar o último. É correto apenas o que se afirma em
 
 ## Alternativas
 

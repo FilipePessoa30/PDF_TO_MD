@@ -24,7 +24,7 @@ assets:
   path: enade-2021-cc-b-q03/figure-01.png
   source_page: 8
   extraction_method: raster_crop
-  sha256: fda6f4e036cd08ba5b3b4133c8562e6436fbe89a69d099469935a990a8753a19
+  sha256: 6d25f9a81d2794230865e85342e9b395954f047ce89d149efbfbada5e7e6b951
   alt_text: null
   caption: null
 subjects: []
@@ -37,17 +37,19 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
+automatic_validation: passed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 3
 
-tEXtO i Na Alemanha nazista, no auge da Segunda Guerra Mundial, surgiu a necessidade de abrir mais espaço para os veículos automoti vos. Com muitos ciclistas, as bicicletas viraram um empecilho, forçando a
+TEXTO I Na Alemanha nazista, no auge da Segunda Guerra Mundial, surgiu a necessidade de abrir mais espaço para os veículos automotivos. Com muitos ciclistas, as bicicletas viraram um empecilho, forçando a criação de um espaço exclusivo para elas – talvez as primeiras ciclovias do mundo. Mas, se na década de 1940 os veículos eram prioridade, hoje, o uso de bicicletas – e das ciclovias – surge como uma das principais alternativas para melhorar a qualidade de vida nas grandes metrópoles. Quando políticas públicas incentivam o uso de bicicletas como meio de transporte para curtas e médias distâncias, um novo panorama se abre. COSTA, J. Ciclovias ajudam a humanizar o espaço urbano. Ciência e Cultura. v. 68, n. 2, São Paulo, 2016 (adaptado). TEXTO II
 
 ![Figura da questão](enade-2021-cc-b-q03/figure-01.png)
 
-ati vidade fí sica. III.  A parti r da Segunda Guerra Mundial, durante o governo da Alemanha nazista, o uso da bicicleta como meio de transporte tornou-se efi caz e passou a prevalecer nas cidades europeias. É correto o que se afi rma em
+Disponível em: http://dopedal.blogspot.com/2012/05/charge-do-silverio-voz-da-serra.html. Acesso em: 29 de abr. 2020. Considerando as informações apresentadas e o uso de bicicletas como alternativa para melhorar a qualidade de vida nas cidades, avalie as afirmações a seguir. I. Dado que as bicicletas são veículos que ocupam pouco espaço na malha viária, prescinde-se de investimentos públicos em construção de ciclovias, sendo prioritárias campanhas de conscientização de motoristas a respeito dos benefícios do uso da bicicleta como meio de transporte. II. O uso das bicicletas como meio de transporte contribui para a melhoria da qualidade de vida nas grandes metrópoles, pois elas não emitem poluentes, além de esse uso proporcionar a prática de atividade física. III. A partir da Segunda Guerra Mundial, durante o governo da Alemanha nazista, o uso da bicicleta como meio de transporte tornou-se eficaz e passou a prevalecer nas cidades europeias. É correto o que se afirma em
 
 ## Alternativas
 

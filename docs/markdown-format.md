@@ -88,9 +88,14 @@ course) fails the same way a directly-constructed `Question(...)` would.
 Referenced through the `assets` list in front matter (see
 [data-contract.md](data-contract.md), "Assets"), with **relative, portable**
 paths (no leading `/`, no `..` segments) - e.g.
-`2021-s-q20/figure-01.png`, resolved relative to
-`data/assets/questions/<question-id>/`. No image files are committed by
-Phase 0; only the contract and a couple of small fixtures exist.
+`2021-s-q20/figure-01.png`, resolved relative to **the question's own .md
+file** (`Asset.path`'s validator forbids `..` segments precisely because a
+question's asset subdirectory is always a sibling of its Markdown file, not
+reached through a separate assets root) - so the same
+`![...](2021-s-q20/figure-01.png)` link works unmodified whether opened in
+an editor preview, on GitHub, or by any other standard Markdown renderer.
+No image files are committed by Phase 0; only the contract and a couple of
+small fixtures exist.
 
 ## Duplicate ids
 

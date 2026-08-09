@@ -61,7 +61,7 @@
       "type": "string"
     },
     "path": {
-      "description": "portable, relative path under data/assets/questions/",
+      "description": "portable path, relative to the owning question's own .md file",
       "title": "Path",
       "type": "string"
     },

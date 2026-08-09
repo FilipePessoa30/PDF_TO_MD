@@ -30,12 +30,14 @@ alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
 extraction_status: verified
+automatic_validation: passed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 10
 
-A biblioteca de coleções da linguagem Java disponibiliza implementações de propósito geral para estruturas de dados elementares, como listas, filas e pilhas. Considere as seguintes definições de classes que representam implementações de estruturas de dados disponíveis na biblioteca da linguagem: •	Classe A: os objetos são organizados em uma ordem linear e podem ser inseridos somente no início ou no final dessa sequência; •	Classe B: os objetos são organizados em uma ordem linear determinada por uma referência ao próximo objeto; •	Classe C: os objetos são removidos na ordem oposta em que foram inseridos; •	Classe D: os objetos são inseridos e removidos respeitando a seguinte regra: o elemento a ser removido é sempre aquele que foi inserido primeiro. Nesse contexto, assinale a alternativa que representa, respectivamente, as estruturas de taxas monotônicas dados implementadas pelas classes A, B, C e D.
+A biblioteca de coleções da linguagem Java disponibiliza implementações de propósito geral para estruturas de dados elementares, como listas, filas e pilhas. Considere as seguintes definições de classes que representam implementações de estruturas de dados disponíveis na biblioteca da linguagem: • Classe A: os objetos são organizados em uma ordem linear e podem ser inseridos somente no início ou no final dessa sequência; • Classe B: os objetos são organizados em uma ordem linear determinada por uma referência ao próximo objeto; • Classe C: os objetos são removidos na ordem oposta em que foram inseridos; • Classe D: os objetos são inseridos e removidos respeitando a seguinte regra: o elemento a ser removido é sempre aquele que foi inserido primeiro. Nesse contexto, assinale a alternativa que representa, respectivamente, as estruturas de dados implementadas pelas classes A, B, C e D.
 
 ## Alternativas
 

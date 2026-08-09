@@ -20,7 +20,9 @@ from enade.models.enums import (
     AnswerValidationStatus,
     CourseCode,
     ExtractionMethod,
+    ExtractionStatus,
     QuestionType,
+    VisualValidationStatus,
 )
 from enade.models.provenance import AnswerStandardReference, SourceOccurrence
 from enade.models.question import Alternative, Question
@@ -106,6 +108,7 @@ def build_question(
     rendered_assets: list[RenderedAsset],
     assets_by_region: dict[int, RenderedAsset],
     validation: ValidationOutcome,
+    visual_validation: VisualValidationStatus = VisualValidationStatus.NOT_PERFORMED,
 ) -> Question:
     kind = extracted.kind
     number = extracted.number
@@ -172,6 +175,21 @@ def build_question(
         section=section,
     )
 
+    # `validation.status` (automatic-only) can be promoted to VERIFIED here,
+    # never demoted-then-promoted blindly: a real visual FAIL always wins
+    # over a clean automatic pass, and a clean automatic pass is only ever
+    # promoted when a genuine visual PASS is on record (PROMPT section
+    # 12/14 - no mass promotion, no unearned `verified`).
+    if visual_validation == VisualValidationStatus.FAILED:
+        extraction_status = ExtractionStatus.NEEDS_REVIEW
+    elif (
+        visual_validation == VisualValidationStatus.PASSED
+        and validation.status == ExtractionStatus.EXTRACTED
+    ):
+        extraction_status = ExtractionStatus.VERIFIED
+    else:
+        extraction_status = validation.status
+
     return Question(
         id=question_id,
         exam_year=exam_year,
@@ -188,5 +206,7 @@ def build_question(
         answer_standard=answer_standard,
         assets=assets,
         extraction_method=ExtractionMethod.TEXT_LAYER,
-        extraction_status=validation.status,
+        extraction_status=extraction_status,
+        automatic_validation=validation.automatic_validation,
+        visual_validation=visual_validation,
     )

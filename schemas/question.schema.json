@@ -142,7 +142,7 @@
           "type": "string"
         },
         "path": {
-          "description": "portable, relative path under data/assets/questions/",
+          "description": "portable path, relative to the owning question's own .md file",
           "title": "Path",
           "type": "string"
         },
@@ -199,6 +199,16 @@
         "page_crop"
       ],
       "title": "AssetType",
+      "type": "string"
+    },
+    "AutomaticValidationStatus": {
+      "description": "Outcome of the pipeline's own mechanical checks (see validator.py) -\nschema shape, alternative sequence, asset counts/hashes, answer linkage.\nDeliberately separate from ``VisualValidationStatus``: passing every\nmechanical check is necessary but not sufficient for ``verified`` (see\ndocs/decisions.md, Phase 1B section 12/13) - it says nothing about\nwhether the text a human actually reads matches the PDF.",
+      "enum": [
+        "pending",
+        "passed",
+        "failed"
+      ],
+      "title": "AutomaticValidationStatus",
       "type": "string"
     },
     "CourseCode": {
@@ -310,6 +320,16 @@
       ],
       "title": "TaxonomyReviewStatus",
       "type": "string"
+    },
+    "VisualValidationStatus": {
+      "description": "Outcome of an actual human/reviewer visual comparison against the\nrendered PDF page(s). ``NOT_PERFORMED`` is the only honest default - a\npipeline run alone must never claim this passed (PROMPT section 12:\n\"Não declarar visual_validation=passed se nenhuma imagem/PDF foi de\nfato inspecionada\").",
+      "enum": [
+        "not_performed",
+        "passed",
+        "failed"
+      ],
+      "title": "VisualValidationStatus",
+      "type": "string"
     }
   },
   "additionalProperties": false,
@@ -358,6 +378,10 @@
       },
       "title": "Assets",
       "type": "array"
+    },
+    "automatic_validation": {
+      "$ref": "#/$defs/AutomaticValidationStatus",
+      "default": "pending"
     },
     "competencies": {
       "items": {
@@ -500,6 +524,10 @@
       },
       "title": "Topics",
       "type": "array"
+    },
+    "visual_validation": {
+      "$ref": "#/$defs/VisualValidationStatus",
+      "default": "not_performed"
     }
   },
   "required": [

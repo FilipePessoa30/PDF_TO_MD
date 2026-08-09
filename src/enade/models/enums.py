@@ -68,6 +68,33 @@ class ExtractionStatus(StrEnum):
     VERIFIED = "verified"
 
 
+class AutomaticValidationStatus(StrEnum):
+    """Outcome of the pipeline's own mechanical checks (see validator.py) -
+    schema shape, alternative sequence, asset counts/hashes, answer linkage.
+    Deliberately separate from ``VisualValidationStatus``: passing every
+    mechanical check is necessary but not sufficient for ``verified`` (see
+    docs/decisions.md, Phase 1B section 12/13) - it says nothing about
+    whether the text a human actually reads matches the PDF.
+    """
+
+    PENDING = "pending"
+    PASSED = "passed"
+    FAILED = "failed"
+
+
+class VisualValidationStatus(StrEnum):
+    """Outcome of an actual human/reviewer visual comparison against the
+    rendered PDF page(s). ``NOT_PERFORMED`` is the only honest default - a
+    pipeline run alone must never claim this passed (PROMPT section 12:
+    "Não declarar visual_validation=passed se nenhuma imagem/PDF foi de
+    fato inspecionada").
+    """
+
+    NOT_PERFORMED = "not_performed"
+    PASSED = "passed"
+    FAILED = "failed"
+
+
 class AnswerValidationStatus(StrEnum):
     PENDING = "pending"
     VALIDATED = "validated"

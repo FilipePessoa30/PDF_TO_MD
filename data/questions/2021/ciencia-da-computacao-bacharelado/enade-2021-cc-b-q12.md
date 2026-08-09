@@ -30,12 +30,14 @@ alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
 extraction_status: verified
+automatic_validation: passed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 12
 
-A Lei Geral de Proteção de Dados Pessoais (LGPD) está em vigência desde o final de 2018 e tem por objetivo regulamentar o tratamento de dados pessoais de clientes e usuários de empresas públicas e privadas. Sobre a LGPD, avalie as afirmações a seguir. I.	 A lei reprime o uso indiscriminado de dados pessoais considerados sensíveis, como origem racial ou étnica, convicção religiosa e opinião política, informados em cadastros pelos cidadãos. II.	 Os dados anonimizados não serão considerados pessoais, mesmo que, utilizando-se de recursos próprios ou tecnológicos avançados, o processo de anonimização possa ser revertido. III.	 O indivíduo poderá exigir que uma empresa informe se possui dados pessoais dele bem como solicitar formalmente que eles sejam corrigidos, atualizados ou eliminados. IV.	 A Autoridade Nacional de Proteção de Dados (ANPD) é responsável pela fiscalização e regulação da LGPD, prestando esclarecimentos, averiguando possíveis denúncias e modificando a legislação pertinente quando necessário. É correto apenas o que se afirma em
+A Lei Geral de Proteção de Dados Pessoais (LGPD) está em vigência desde o final de 2018 e tem por objetivo regulamentar o tratamento de dados pessoais de clientes e usuários de empresas públicas e privadas. Sobre a LGPD, avalie as afirmações a seguir. I. A lei reprime o uso indiscriminado de dados pessoais considerados sensíveis, como origem racial ou étnica, convicção religiosa e opinião política, informados em cadastros pelos cidadãos. II. Os dados anonimizados não serão considerados pessoais, mesmo que, utilizando-se de recursos próprios ou tecnológicos avançados, o processo de anonimização possa ser revertido. III. O indivíduo poderá exigir que uma empresa informe se possui dados pessoais dele bem como solicitar formalmente que eles sejam corrigidos, atualizados ou eliminados. IV. A Autoridade Nacional de Proteção de Dados (ANPD) é responsável pela fiscalização e regulação da LGPD, prestando esclarecimentos, averiguando possíveis denúncias e modificando a legislação pertinente quando necessário. É correto apenas o que se afirma em
 
 ## Alternativas
 

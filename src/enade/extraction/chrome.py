@@ -42,6 +42,18 @@ _EXACT_CHROME_LINES: frozenset[str] = frozenset(
         "leia com atencao as instrucoes abaixo.",
         "item",
         "gabarito",
+        # Section-transition headings printed at the top of the page where
+        # a new part of the booklet begins. "Formacao Geral" never leaks
+        # into a question (it always sits before the very first marker in
+        # the whole document, so it belongs to no span at all), but
+        # "Componente Especifico" sits on the same page as - and textually
+        # before - Discursiva 3's own marker, which put it inside Q8's
+        # still-open span and appended it to alternative E's text (Phase
+        # 1B audit finding, see docs/decisions.md).
+        "formação geral",
+        "formacao geral",
+        "componente específico",
+        "componente especifico",
     }
 )
 

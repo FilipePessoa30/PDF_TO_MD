@@ -21,10 +21,23 @@ from enade.extraction.chrome import is_chrome_line
         "   ",
         "",
         "1 2 3 4 5 6 7 8 9 10 11 12 13 14 15",
+        "COMPONENTE ESPECÍFICO",
+        "FORMAÇÃO GERAL",
     ],
 )
 def test_known_chrome_lines_are_detected(text):
     assert is_chrome_line(text) is True
+
+
+def test_section_heading_does_not_leak_into_the_previous_questions_alternative():
+    """Regression test: "Componente Especifico" sits at the top of the page
+    where Discursiva 3 begins, but textually before its own marker line -
+    without being recognized as chrome, it was appended to the previous
+    question's (Q8's) last alternative text, e.g. "II, III e IV. COMPONENTE
+    ESPECIFICO" (Phase 1B audit finding, see docs/decisions.md).
+    """
+    assert is_chrome_line("COMPONENTE ESPECÍFICO") is True
+    assert is_chrome_line("Componente Específico") is True
 
 
 @pytest.mark.parametrize(

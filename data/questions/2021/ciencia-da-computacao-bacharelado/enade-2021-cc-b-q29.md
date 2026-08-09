@@ -24,7 +24,7 @@ assets:
   path: enade-2021-cc-b-q29/figure-01.png
   source_page: 38
   extraction_method: raster_crop
-  sha256: 3e49ab24efcbb7136da5a6742efde0a371a70f29db2e311d15f32e31f1a7b9ec
+  sha256: fcd16177346b10b6569b47e0370c5731fe5fc1089f5299bf0f8121fa110fdba9
   alt_text: null
   caption: null
 - id: figure-02
@@ -32,7 +32,7 @@ assets:
   path: enade-2021-cc-b-q29/figure-02.png
   source_page: 38
   extraction_method: raster_crop
-  sha256: 00c5c60192f46fc562f9ffca33b71817b96a6418cdf74f6a326e8bebf1c9721b
+  sha256: a5bc2283662933694008d1c92d4130fe2574baf34563e09b49aeaa2bc422c74a
   alt_text: null
   caption: null
 - id: figure-03
@@ -40,7 +40,7 @@ assets:
   path: enade-2021-cc-b-q29/figure-03.png
   source_page: 38
   extraction_method: raster_crop
-  sha256: c4b16d736497e329c06145fe0983c5a16b0220c1fcab6bdaa720224c08cf6935
+  sha256: 6c6de38bd5fdb955bfd989a4d964b8a392f6f531f08e6c7146d44285792ff194
   alt_text: null
   caption: null
 - id: figure-04
@@ -48,7 +48,7 @@ assets:
   path: enade-2021-cc-b-q29/figure-04.png
   source_page: 38
   extraction_method: raster_crop
-  sha256: d4203d3a793dd1ba636e340bdd76d53962fb6fd9c4c86ce954819f25e3d219f7
+  sha256: eb3bc02bcce32c0014bf85f3dccbbd3a4645ef95c33932373e2e90e4bde9b13c
   alt_text: null
   caption: null
 subjects: []
@@ -62,20 +62,30 @@ alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
 extraction_status: verified
+automatic_validation: passed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 29
 
-As operações morfológicas são um conjunto de operações que processam imagens com base em formas. As operações morfológicas aplicam um elemento estruturador B a uma imagem A de entrada e geram
-
-![Figura da questão](enade-2021-cc-b-q29/figure-03.png)
+As operações morfológicas são um conjunto de operações que processam imagens com base em formas. As operações morfológicas aplicam um elemento estruturador B a uma imagem A de entrada e geram uma imagem de saída. Em relação às operações morfológicas de Erosão e Dilatação, avalie as afirmações a seguir. I. Dilatação: À medida que o kernel B é aplicado sobre a imagem, calculamos o valor máximo de pixel sobreposto por B e substituímos o pixel da imagem, na posição do ponto de ancoragem, por esse valor máximo; exemplo:
 
 ![Figura da questão](enade-2021-cc-b-q29/figure-01.png)
 
+II. Dilatação: À medida que o kernel B é aplicado sobre a imagem, calculamos o valor mínimo de pixel sobreposto por B e substituímos o pixel da imagem, na posição do ponto de ancoragem, por esse valor máximo; exemplo:
+
 ![Figura da questão](enade-2021-cc-b-q29/figure-02.png)
 
+III. Erosão: À medida que o kernel B é aplicado sobre a imagem, calculamos o valor máximo de pixel sobreposto por B e substituímos o pixel da imagem, na posição do ponto de ancoragem, por esse valor máximo; exemplo:
+
+![Figura da questão](enade-2021-cc-b-q29/figure-03.png)
+
+IV. Erosão: À medida que o kernel B é aplicado sobre a imagem, calculamos o valor mínimo de pixel sobreposto por B e substituímos o pixel da imagem, na posição do ponto de ancoragem, por esse valor máximo; exemplo:
+
 ![Figura da questão](enade-2021-cc-b-q29/figure-04.png)
+
+É correto o que se afirma em
 
 ## Alternativas
 

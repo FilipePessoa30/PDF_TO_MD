@@ -65,8 +65,9 @@ def render_region(
     """Render one visual region to a PNG file at ``output_path`` (absolute).
 
     ``relative_path`` is the portable path recorded in the ``Asset`` model
-    (e.g. ``2021-cc-b-q17/figure-01.png``, relative to ``data/assets/questions/``)
-    - kept separate from ``output_path`` because the latter is a real
+    (e.g. ``2021-cc-b-q17/figure-01.png``, relative to the question's own
+    .md file - the two live as siblings under the same course directory) -
+    kept separate from ``output_path`` because the latter is a real
     filesystem location and the former must stay project-relative and
     OS-independent (see docs/data-contract.md, "Assets").
     """

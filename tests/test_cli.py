@@ -97,3 +97,129 @@ def test_validate_schema_fails_on_broken_fixture_set(tmp_path: Path):
     result = runner.invoke(app, ["validate-schema", "--fixtures-dir", str(broken_dir)])
     assert result.exit_code != 0
     assert "FAIL" in result.stdout
+
+
+def test_is_git_ignored_distinguishes_scratch_from_tracked_paths():
+    """Regression test for the Phase 1B asset-trackability gate (PROMPT
+    section 2): `enade audit-extraction` must FAIL a question whose asset
+    file would silently never make it into a commit. Probes real paths in
+    THIS repository against the real .gitignore rather than a synthetic
+    fixture repo, since the whole point is to catch drift in the actual
+    rules a future `git add` would honor.
+    """
+    from enade.cli import PROJECT_ROOT, _is_git_ignored
+
+    ignored_probe = PROJECT_ROOT / ".scratch" / "_gitignore_probe.txt"
+    tracked_probe = PROJECT_ROOT / "data" / "questions" / "_gitignore_probe.md"
+    try:
+        ignored_probe.parent.mkdir(parents=True, exist_ok=True)
+        ignored_probe.write_text("probe", encoding="utf-8")
+        tracked_probe.write_text("probe", encoding="utf-8")
+
+        assert _is_git_ignored(ignored_probe) is True
+        assert _is_git_ignored(tracked_probe) is False
+    finally:
+        ignored_probe.unlink(missing_ok=True)
+        tracked_probe.unlink(missing_ok=True)
+        if ignored_probe.parent.exists() and not any(ignored_probe.parent.iterdir()):
+            ignored_probe.parent.rmdir()
+
+
+def test_audit_extraction_fails_when_asset_is_gitignored(tmp_path: Path):
+    """A question whose declared asset resolves to a path .gitignore would
+    exclude must fail the audit, even though the file exists on disk with a
+    matching hash - existence + hash match alone is not "trackable".
+    """
+    import hashlib
+
+    from enade.cli import PROJECT_ROOT
+
+    # A real, currently-ignored location inside this repo (see .gitignore's
+    # Python-cache rule) - the asset "exists" and can be hash-verified, but
+    # would never survive a `git add .`.
+    course_dir = PROJECT_ROOT / "__pycache__" / "_gitignore_regression_probe"
+    asset_path = course_dir / "enade-2099-x-q01" / "figure-01.png"
+    md_path = course_dir / "enade-2099-x-q01.md"
+    try:
+        asset_path.parent.mkdir(parents=True, exist_ok=True)
+        png_bytes = b"\x89PNG\r\n\x1a\nnot a real png, just probe bytes"
+        asset_path.write_bytes(png_bytes)
+        sha = hashlib.sha256(png_bytes).hexdigest()
+        md_path.write_text(
+            f"""---
+id: enade-2099-x-q01
+exam_year: 2099
+source_occurrences:
+- exam_id: enade-2099-x
+  pdf_sha256: {"a" * 64}
+  source_path: 2099/x1_prova.pdf
+  pages: [1]
+  question_number: 1
+  section: componente-especifico-objetiva
+applicable_courses: [ciencia-da-computacao-bacharelado]
+section: componente-especifico-objetiva
+question_number: 1
+question_type: multiple_choice
+correct_answer: A
+official_answer_source: 2099/x2_gabarito.pdf
+answer_validation_status: validated
+answer_standard: null
+assets:
+- id: figure-01
+  type: diagram
+  path: enade-2099-x-q01/figure-01.png
+  source_page: 1
+  extraction_method: raster_crop
+  sha256: {sha}
+  alt_text: null
+  caption: null
+subjects: []
+topics: []
+concepts: []
+keywords: []
+competencies: []
+prerequisites: []
+difficulty: null
+alternative_diagnostics: {{}}
+extraction_method: text_layer
+ocr_confidence: null
+extraction_status: extracted
+taxonomy_review_status: pending
+---
+
+# Questão 1
+
+Enunciado de sondagem.
+
+![fig](enade-2099-x-q01/figure-01.png)
+
+## Alternativas
+
+A. um
+B. dois
+C. três
+D. quatro
+E. cinco
+""",
+            encoding="utf-8",
+        )
+
+        result = runner.invoke(
+            app,
+            [
+                "audit-extraction",
+                "--questions-dir",
+                str(course_dir),
+                "--corpus-root",
+                str(tmp_path),
+            ],
+        )
+        assert result.exit_code != 0
+        assert "gitignored" in result.stdout
+    finally:
+        asset_path.unlink(missing_ok=True)
+        md_path.unlink(missing_ok=True)
+        if asset_path.parent.exists():
+            asset_path.parent.rmdir()
+        if course_dir.exists():
+            course_dir.rmdir()

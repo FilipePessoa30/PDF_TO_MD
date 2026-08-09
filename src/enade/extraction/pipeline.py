@@ -30,9 +30,10 @@ from enade.extraction.layout import extract_document_lines
 from enade.extraction.markdown_writer import WriteResult, write_question_markdown
 from enade.extraction.pdf_source import PdfDocument
 from enade.extraction.to_question import COURSE_ID_SHORTHAND, build_question
+from enade.extraction.transformation_log import TransformationLogEntry
 from enade.extraction.validator import evaluate_extraction
 from enade.inventory.pdfmeta import sha256_of_file
-from enade.models.enums import CourseCode, ExtractionStatus, QuestionType
+from enade.models.enums import CourseCode, ExtractionStatus, QuestionType, VisualValidationStatus
 from enade.models.question import Question
 
 
@@ -43,6 +44,10 @@ class ExtractionMetrics:
     discursives_found: int = 0
     verified: int = 0
     needs_review: int = 0
+    #: Automatic checks passed, but no evidence-based visual comparison has
+    #: happened yet (PROMPT section 12) - never a subset of `needs_review`,
+    #: which is reserved for a concrete, mechanically-detected problem.
+    extracted_pending_visual: int = 0
     total_assets: int = 0
     total_alternatives: int = 0
     answers_linked: int = 0
@@ -64,6 +69,7 @@ class ExtractionResult:
     excluded_perception_pages: list[int] = field(default_factory=list)
     write_results: list[WriteResult] = field(default_factory=list)
     metrics: ExtractionMetrics = field(default_factory=ExtractionMetrics)
+    transformation_log: list[TransformationLogEntry] = field(default_factory=list)
 
 
 def extract_exam(
@@ -76,10 +82,19 @@ def extract_exam(
     course: CourseCode,
     exam_id: str,
     questions_output_dir: Path,
-    assets_output_dir: Path,
+    visual_audit: dict[str, VisualValidationStatus] | None = None,
 ) -> ExtractionResult:
     start = time.monotonic()
     structural_warnings: list[str] = []
+    # Assets live in a subdirectory next to their question's own Markdown
+    # file (not a separate top-level tree) so that the relative path
+    # embedded in `![...](question-id/figure-01.png)` resolves correctly
+    # for *any* standard Markdown viewer (VS Code, GitHub, a browser) - not
+    # only for this project's own audit tooling. See Asset.path's validator
+    # (models/asset.py), which forbids ".." components: a separate assets
+    # root would require a "../../.." traversal to reach from the question's
+    # directory, which that validator already rejects by design.
+    course_dir = questions_output_dir / str(exam_year) / course.value
 
     with PdfDocument(prova_path, corpus_root) as prova:
         gabarito_doc = pymupdf.open(str(gabarito_path))
@@ -105,6 +120,7 @@ def extract_exam(
 
             questions: list[Question] = []
             per_question_warnings: dict[str, list[str]] = {}
+            transformation_log: list[TransformationLogEntry] = []
             metrics = ExtractionMetrics(
                 pages_processed=prova.identity.page_count,
                 prova_size_bytes=prova_path.stat().st_size,
@@ -118,17 +134,69 @@ def extract_exam(
                 suffix = "q" if span.kind == QuestionKind.OBJECTIVE else "d"
                 question_id = f"enade-{exam_year}-{shorthand}-{suffix}{span.number:02d}"
 
+                transformation_log.extend(
+                    TransformationLogEntry(
+                        question=question_id,
+                        type="glyph_spacing_reconstruction",
+                        source_page=correction.page_number,
+                        method="character_geometry",
+                        automatic=True,
+                        detail=correction.describe(),
+                    )
+                    for correction in extracted.spacing_corrections
+                )
+                transformation_log.extend(
+                    TransformationLogEntry(
+                        question=question_id,
+                        type="label_case_normalization",
+                        source_page=correction.page_number,
+                        method="known_font_label_lookup",
+                        automatic=True,
+                        detail=correction.describe(),
+                    )
+                    for correction in extracted.label_corrections
+                )
+                transformation_log.extend(
+                    TransformationLogEntry(
+                        question=question_id,
+                        type="symbol_font_substitution",
+                        source_page=correction.page_number,
+                        method="known_symbol_font_char_map",
+                        automatic=True,
+                        detail=correction.describe(),
+                    )
+                    for correction in extracted.symbol_corrections
+                )
+
                 rendered_assets: list[RenderedAsset] = []
                 assets_by_region: dict[int, RenderedAsset] = {}
                 for index, region in enumerate(extracted.figure_regions):
                     asset_id = f"figure-{index + 1:02d}"
                     relative_path = f"{question_id}/{asset_id}.png"
-                    absolute_path = assets_output_dir / question_id / f"{asset_id}.png"
+                    absolute_path = course_dir / question_id / f"{asset_id}.png"
                     rendered = render_region(
                         prova.raw, region, absolute_path, relative_path, asset_id
                     )
                     rendered_assets.append(rendered)
                     assets_by_region[index] = rendered
+
+                # A rerun can detect fewer/different regions than a
+                # previous run (e.g. a region-detection fix now correctly
+                # merges what used to be two separate crops) - any asset
+                # file left over from before that a fresh run no longer
+                # produces must not silently keep existing, or the
+                # question's own front matter (which only lists what THIS
+                # run actually rendered) drifts out of sync with what is
+                # really on disk: a stale file present but referenced by no
+                # question (PROMPT section 10's asset-integrity check).
+                asset_dir = course_dir / question_id
+                if asset_dir.is_dir():
+                    expected_names = {f"{asset.asset_id}.png" for asset in rendered_assets}
+                    for existing in asset_dir.iterdir():
+                        if existing.name not in expected_names:
+                            existing.unlink()
+                    if not any(asset_dir.iterdir()):
+                        asset_dir.rmdir()
 
                 answer_key_entry = answer_key_result.lookup(span.kind, span.number)
                 answer_standard_entry = (
@@ -143,6 +211,9 @@ def extract_exam(
                 )
 
                 validation = evaluate_extraction(extracted, rendered_assets, has_answer=has_answer)
+                question_visual_validation = (visual_audit or {}).get(
+                    question_id, VisualValidationStatus.NOT_PERFORMED
+                )
 
                 question = build_question(
                     extracted=extracted,
@@ -164,6 +235,7 @@ def extract_exam(
                     rendered_assets=rendered_assets,
                     assets_by_region=assets_by_region,
                     validation=validation,
+                    visual_validation=question_visual_validation,
                 )
 
                 questions.append(question)
@@ -171,10 +243,12 @@ def extract_exam(
                 metrics.total_assets += len(rendered_assets)
                 metrics.total_alternatives += len(question.alternatives)
                 metrics.question_warning_count += len(validation.reasons)
-                if validation.status == ExtractionStatus.VERIFIED:
+                if question.extraction_status == ExtractionStatus.VERIFIED:
                     metrics.verified += 1
-                else:
+                elif question.extraction_status == ExtractionStatus.NEEDS_REVIEW:
                     metrics.needs_review += 1
+                else:
+                    metrics.extracted_pending_visual += 1
                 if question.question_type == QuestionType.MULTIPLE_CHOICE:
                     metrics.objectives_found += 1
                     if answer_key_entry is not None and answer_key_entry.value_kind in (
@@ -191,7 +265,6 @@ def extract_exam(
             padrao_doc.close()
 
         write_results: list[WriteResult] = []
-        course_dir = questions_output_dir / str(exam_year) / course.value
         for question in questions:
             result = write_question_markdown(question, course_dir)
             write_results.append(result)
@@ -211,4 +284,5 @@ def extract_exam(
         excluded_perception_pages=boundary_result.perception_pages,
         write_results=write_results,
         metrics=metrics,
+        transformation_log=transformation_log,
     )

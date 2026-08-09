@@ -38,6 +38,8 @@ alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
 extraction_status: verified
+automatic_validation: passed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
@@ -51,7 +53,7 @@ A partir das regras de mapeamento do Modelo Conceitual para o Modelo Lógico Rel
 
 ## Alternativas
 
-A. PESSOA(cpf: texto, nome: texto) adotante referencia PESSOA(cpf)
+A. PESSOA(cpf: texto, nome: texto) TIPO_PET(codigo: inteiro, descricao: texto) PET(codigo: inteiro, nome: texto, data_nascimento: data, codigo_tipo_pet: inteiro, adotante: texto) codigo_tipo_pet referencia TIPO_PET(codigo) adotante referencia PESSOA(cpf)
 B. PET(codigo: inteiro, nome: texto, data_nascimento: data) PESSOA(cpf: texto, nome: texto, codigo_pet: inteiro) codigo_pet referencia PET(codigo) TIPO_PET(codigo: inteiro, descricao: texto, codigo_pet: inteiro) codigo_pet referencia PET(codigo)
 C. TIPO_PET(codigo: inteiro, descricao: texto) PET(codigo: inteiro, nome: texto, data_nascimento: data, codigo_tipo_pet: inteiro) codigo_tipo_pet referencia TIPO_PET(codigo) PESSOA(cpf: texto, nome: texto, codigo_pet: inteiro) codigo_pet referencia PET(codigo)
 D. PET_PESSOA(codigo_pet: inteiro, nome_pet: texto, data_nascimento: data, cpf: texto, nome_pessoa: texto, codigo_tipo_pet: inteiro, descricao_tipo_pet: texto)

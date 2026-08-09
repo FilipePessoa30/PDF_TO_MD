@@ -30,6 +30,8 @@ alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
 extraction_status: verified
+automatic_validation: passed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
@@ -40,7 +42,7 @@ Quando um computador é multiprogramado, ele geralmente tem múltiplos processos
 ## Alternativas
 
 A. Primeiro a chegar, último a sair (first in, last out - FILO); propício para sistemas de tempo real.
-B. Escalonamento por (rate monotonic scheduling - RMS); propício para sistemas em lote.
+B. Escalonamento por taxas monotônicas (rate monotonic scheduling - RMS); propício para sistemas em lote.
 C. Tarefa mais curta primeiro; propício para sistemas interativos.
 D. Escalonamento por chave circular (round-robin); propício para sistemas de tempo real.
 E. Escalonamento por prioridades; propício para sistemas interativos.

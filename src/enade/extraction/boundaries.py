@@ -26,7 +26,27 @@ from enade.extraction.chrome import is_chrome_line, normalize_for_chrome_check
 from enade.extraction.layout import Line
 
 _MARKER_RE = re.compile(r"(?i)quest[aã]o\s+(discursiva\s+)?0*(\d+)\b")
-_PERCEPTION_MARKER_RE = re.compile(r"(?i)question[aá]rio\s+de\s+percep[cç][aã]o")
+# Anchored to the *whole* (normalized) line - deliberately stricter than a
+# bare substring search. The exact same phrase "questionario de percepcao da
+# prova" also appears as a table-row label in page 1's instruction table and
+# inside prose sentences elsewhere ("... e do questionario de percepcao da
+# prova deverao ser ...", see docs/decisions.md); only when the phrase *is*
+# the entire line - as it is for the real section heading on the actual
+# questionnaire page - does it mean "this page belongs to the questionnaire".
+# A loose, unanchored match on a faux-space-corrected line was observed to
+# wrongly flag page 1 once "questi onario" was correctly reconstructed to
+# "questionario" (Phase 1B regression, see docs/decisions.md).
+#
+# Anchoring alone is *not* sufficient, though: page 1's structure table has
+# this exact phrase, and nothing else, on its own line - textually identical
+# to the real section heading on page 44. Disambiguating requires a second,
+# independent signal: the real questionnaire page also contains the reused
+# "QUESTAO 01".."QUESTAO 09" marker lines the heading introduces, while a
+# page that merely *mentions* the concept (page 1) has none (empirically
+# confirmed: page 1 has 0 QUESTAO-marker lines, page 44 has 9). See
+# ``detect_question_boundaries``, which requires both signals to co-occur on
+# the same page before treating it as a perception page.
+_PERCEPTION_MARKER_RE = re.compile(r"(?i)^question[aá]rio\s+de\s+percep[cç][aã]o(\s+da\s+prova)?$")
 
 
 class QuestionKind(StrEnum):
@@ -59,7 +79,7 @@ class BoundaryDetectionResult:
 
 
 def _line_matches_perception_marker(line: Line) -> bool:
-    return bool(_PERCEPTION_MARKER_RE.search(line.text))
+    return bool(_PERCEPTION_MARKER_RE.match(normalize_for_chrome_check(line.text)))
 
 
 def detect_question_boundaries(all_lines: list[Line]) -> BoundaryDetectionResult:
@@ -70,9 +90,11 @@ def detect_question_boundaries(all_lines: list[Line]) -> BoundaryDetectionResult
     """
     warnings: list[str] = []
 
-    perception_pages = sorted(
-        {ln.page_number for ln in all_lines if _line_matches_perception_marker(ln)}
-    )
+    candidate_perception_pages = {
+        ln.page_number for ln in all_lines if _line_matches_perception_marker(ln)
+    }
+    pages_with_question_markers = {ln.page_number for ln in all_lines if _MARKER_RE.search(ln.text)}
+    perception_pages = sorted(candidate_perception_pages & pages_with_question_markers)
     perception_pages_set = set(perception_pages)
 
     markers: list[Marker] = []

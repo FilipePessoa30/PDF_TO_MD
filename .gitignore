@@ -4,11 +4,10 @@
 # reproducible via `python scripts/fetch_corpus.py`, so it is never committed.
 data/raw/
 
-# Large derived binary assets extracted from PDFs (images/crops) are also
-# kept out of git for now; only small, reviewable artifacts (YAML/JSON/MD
-# manifests, fixtures) are tracked in this phase.
-data/assets/questions/*
-!data/assets/questions/.gitkeep
+# Canonical question assets (rendered PNG crops under
+# data/questions/<year>/<course>/<question-id>/*.png) are deliberately NOT
+# ignored - they are referenced by the canonical Markdown's own image links
+# and are part of the dataset (see docs/decisions.md, Phase 1B).
 
 # --- Python ------------------------------------------------------------
 __pycache__/
@@ -32,5 +31,10 @@ htmlcov/
 Thumbs.db
 
 # --- Scratch --------------------------------------------------------------
+# Ad hoc investigation output (full-page renders, rejected candidate crops,
+# raw-text dumps) produced while auditing extraction quality - never a
+# source of truth, always reproducible from the raw PDF. All such work uses
+# this one directory name by convention so nothing needs a bespoke rule.
+.scratch/
 *.tmp
 *.bak

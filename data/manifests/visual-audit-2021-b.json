@@ -1,0 +1,162 @@
+{
+  "enade-2021-cc-b-d01": {
+    "status": "passed",
+    "notes": "Compared full statement (TEXTO I + TEXTO II + prompt) against rendered page 2. Matches exactly, including TEXTO I/TEXTO II labels (fixed from font case-mangling) and the faux-space-corrected word 'atividades'. One disclosed non-structural residual: the citation book title 'direito, arte e liberdade' should read 'Direito, arte e liberdade' (capital D) - a single-letter capitalization defect in a bold citation span that could not be safely fixed by the whole-line label mechanism (mid-line, single occurrence). Does not affect statement substance."
+  },
+  "enade-2021-cc-b-d02": {
+    "status": "passed",
+    "notes": "Compared full statement (TEXTO I + TEXTO II + items a/b) against rendered page 4. Matches exactly. One disclosed non-structural residual: citation 'Cadernos FGV projetos' should read 'Cadernos FGV Projetos' (capital P) - same class of single-word citation-title capitalization defect as D1, not fixed for the same reason (mid-line, single occurrence, not safely generalizable without linguistic guessing)."
+  },
+  "enade-2021-cc-b-d03": {
+    "status": "failed",
+    "notes": "CONFIRMED STRUCTURAL FAILURE. Page 14's propositional-logic connective symbols (implication/conjunction/disjunction/negation) were extracted as wrong Latin characters (registered-trademark sign, U-grave, U-acute, O-slash) because their PDF font ('EuclidSymbol-BoldItalic') has no working ToUnicode mapping for those glyphs. Fixed via a new, visually-confirmed, evidence-based font-character substitution (symbol_fonts.py) - all six formulas and the connective definitions now render correctly (->, ^, v, not). HOWEVER: the truth-table (6 formula columns x 4 rows of F/V values, with numeric column headers) has no vector-drawn grid lines for detect_visual_regions to pick up, and its cell-by-cell text layout collapses into an unreadable flat string when read in raster order ('a -> not b b ^ a ... F F V F V F ...'). D3 has zero preserved assets, so unlike D5 there is no visual fallback either - the table content is neither correctly represented as text nor as an image. This directly affects a reader's ability to answer items (a)-(d), all of which reference the table. A safe fix requires a genuine table/grid reconstruction capability not built in Phase 1B. Recommendation: keep needs_review (currently NOT flagged by automatic checks, since they don't detect table-shaped content - this question needs a warning added), visual_validation=failed, and treat as a second primary open structural issue alongside D5."
+  },
+  "enade-2021-cc-b-d04": {
+    "status": "passed",
+    "notes": "Compared statement, embedded full-adder circuit diagram (Entradas/Saidas box with A/B/Cin inputs, S/Cout outputs), and the closing prompt against rendered page 16. Image crop is complete, text matches exactly. No residuals found."
+  },
+  "enade-2021-cc-b-d05": {
+    "status": "failed",
+    "notes": "CONFIRMED STRUCTURAL FAILURE (PROMPT Phase 1B section 8/27). D5's page (17) is a genuine two-column layout: left column is prose + a heap-array table image + a binary-tree diagram image + more prose + citation; right column is the complete C-style heapify/buildHeap pseudocode. The rendered statement text is severely broken: it starts mid-sentence ('máximo especifica que...'), is missing the entire opening paragraph, the array table, the tree diagram, and - critically - almost the entire heapify() function body (only fragments of buildHeap survive, interleaved with a misplaced citation fragment and a stray unmatched '}'). This makes the rendered text statement actively misleading for a reader trying to answer item (b), which is specifically about heapify's complexity. HOWEVER: the question's single visual-fidelity asset (figure-01.png) independently captures BOTH columns in full - the complete prose, table, diagram, AND the complete, correctly-indented heapify/buildHeap code - so no information is actually lost to a reader who views the image. Root cause is the two-column layout algorithm (layout.py) not correctly interleaving code-column content with left-column content for this specific figure-heavy, code-heavy page; a general, safe fix requires reworking two-column+code layout reconstruction, which was not attempted in Phase 1B given the risk of an untested change to a core layout algorithm. This question is NOT promoted to verified. Recommendation: keep needs_review, keep automatic_validation=failed, and treat this as a primary open structural issue blocking a full READY_FOR_2011 classification (see final report)."
+  },
+  "enade-2021-cc-b-q01": {
+    "status": "passed",
+    "notes": "Compared full statement and all 5 alternatives against rendered page 5. Matches exactly, including the word 'atingissem' (previously the reported faux-space artifact 'ati ngissem', now correctly reconstructed). No residuals found."
+  },
+  "enade-2021-cc-b-q02": {
+    "status": "passed",
+    "notes": "Compared statement, TEXTO I label, embedded infographic image, and all 5 alternatives against rendered pages 6-7. Image crop is complete (not clipped), text matches exactly. No residuals found."
+  },
+  "enade-2021-cc-b-q03": {
+    "status": "passed",
+    "notes": "Major fix verified: prior to the Phase 1B figure-region absorption fix, the comic-strip figure's region wrongly absorbed ~15 lines of surrounding statement text (rest of TEXTO I, TEXTO II heading, citation, intro sentence, and statement items I and II), silently deleting them from the rendered Markdown. After the fix (tighter x-touch tolerance + paragraph-continuation + margin-aware marker exclusion), the full statement (TEXTO I, TEXTO II, comic image, citation, intro sentence, items I-III) is present and matches the rendered page 8 exactly. Comic image crop confirmed complete."
+  },
+  "enade-2021-cc-b-q04": {
+    "status": "passed",
+    "notes": "Compared full statement (including the PORQUE connector, now correctly cased after the label_normalization.py fix) and all 5 alternatives against rendered page 9. Matches exactly. No residuals found."
+  },
+  "enade-2021-cc-b-q05": {
+    "status": "passed",
+    "notes": "Compared statement, TEXTO I/TEXTO II, embedded Brazil suicide-map image with legend, and all 5 alternatives against rendered pages 10-11. Image crop is complete (map + full legend, not clipped). Text matches exactly. No residuals found."
+  },
+  "enade-2021-cc-b-q06": {
+    "status": "passed",
+    "notes": "Compared full statement (including PORQUE, now correctly cased) and all 5 alternatives against rendered page 11. Matches exactly. No residuals found."
+  },
+  "enade-2021-cc-b-q07": {
+    "status": "passed",
+    "notes": "Compared full statement (TEXTO I + TEXTO II) and all 5 alternatives against rendered page 12. Matches exactly. One disclosed non-structural residual: citation 'TABAKMAN, R. a saúde na mídia' should read 'A saúde na mídia' (capital A) - same class of single-word citation-title capitalization defect as D1/D2."
+  },
+  "enade-2021-cc-b-q08": {
+    "status": "passed",
+    "notes": "Major fix verified: prior to the Phase 1B chrome-list fix, the section-transition heading 'COMPONENTE ESPECÍFICO' (printed at the top of the next page, before Discursiva 3's own marker) was not recognized as chrome and got appended to the end of alternative E's text ('II, III e IV. COMPONENTE ESPECÍFICO'). After adding it to chrome.py's exact-line list, alternative E now reads exactly 'II, III e IV.' matching the rendered page 13. Full statement and all 5 alternatives compared and match."
+  },
+  "enade-2021-cc-b-q09": {
+    "status": "passed",
+    "notes": "Compared full statement and all 5 alternatives against rendered page 19 (left column). Matches exactly, including alternative B's 'taxas monotônicas (rate monotonic scheduling - RMS)' text, which is the source of the Q9/Q10 cross-column bleed bug (see Q10 notes) - confirmed alternative B itself is complete and correct after the fix."
+  },
+  "enade-2021-cc-b-q10": {
+    "status": "passed",
+    "notes": "Major fix verified: prior to the Phase 1B two-column margin fix, PyMuPDF's dict-mode extraction split Q9's own alternative B row ('B Escalonamento por taxas monotônicas') into 4 separate fragments with unusually wide (14.4pt) gaps between them; a midpoint-based column split let the tail fragments ('taxas', 'monotônicas') cross into Q10's line range, corrupting Q10's statement into '...as estruturas de taxas monotônicas dados implementadas...'. After changing column classification to use the right column's own detected margin (not a midpoint), Q10's statement now reads correctly: '...as estruturas de dados implementadas pelas classes A, B, C e D.', matching rendered page 19 (right column) exactly. All 5 alternatives also verified correct."
+  },
+  "enade-2021-cc-b-q11": {
+    "status": "passed",
+    "notes": "Compared statement, embedded deep-learning-architecture diagram (Entrada/Camadas/Otimizador/Função de Perda flow), citation, and 5 roman-numeral affirmations/alternatives against rendered page 20. Image crop complete. Text matches exactly. No residuals found."
+  },
+  "enade-2021-cc-b-q12": {
+    "status": "passed",
+    "notes": "Compared full statement (LGPD) and 4 roman-numeral affirmations plus 5 alternatives against rendered page 21. Matches exactly. No residuals found."
+  },
+  "enade-2021-cc-b-q13": {
+    "status": "passed",
+    "notes": "Compared full statement, citation, and 5 alternatives against rendered page 22. Matches exactly. No residuals found."
+  },
+  "enade-2021-cc-b-q14": {
+    "status": "passed",
+    "notes": "Compared full statement (ENIAC/Von Neumann), PORQUE connector (already clean uppercase - Componente Especifico page), and 5 alternatives against rendered page 23. Matches exactly. No residuals found."
+  },
+  "enade-2021-cc-b-q15": {
+    "status": "passed",
+    "notes": "Compared full statement (SCRUM), citation, 3 roman-numeral affirmations, and 5 alternatives against rendered page 24. Matches exactly. No residuals found."
+  },
+  "enade-2021-cc-b-q16": {
+    "status": "passed",
+    "notes": "Compared statement, two logic-gate diagrams (basic AND/OR/NOT gates + a combinational circuit with X1/X2/X3 inputs), and 5 alternatives against rendered page 25. The Phase 1B overlap-merge fix combined what were two separate figure regions (with an intervening transition sentence) into one crop showing both diagrams plus the connecting sentence in full - not clipped, not lossy, just a different (valid) packaging than two separate images. All content present and correct."
+  },
+  "enade-2021-cc-b-q17": {
+    "status": "passed",
+    "notes": "Major fix verified: this is the 'mutex diagram' the original TEXT_ABSORPTION_PADDING constant was tuned for. Before the margin-aware marker-exclusion fix, the diagram's own first label ('A entra na região crítica') was wrongly treated as an alternative marker (matches 'A ' prefix pattern) and excluded from absorption, clipping it out of the rendered crop. After requiring marker-shaped candidates to also be at the page's real body-text margin, the label is correctly absorbed and the full diagram (all 5 labels, Processo A/B timelines, T1-T4, 'Tempo ->', figure caption, citation) renders complete. Statement and PORQUE-based alternatives verified against rendered page 26-27, match exactly."
+  },
+  "enade-2021-cc-b-q18": {
+    "status": "passed",
+    "notes": "Compared full statement (aprendizado supervisionado/não supervisionado), citation, 4 roman-numeral affirmations, and 5 alternatives against rendered page 27. Matches exactly. No residuals found."
+  },
+  "enade-2021-cc-b-q19": {
+    "status": "passed",
+    "notes": "Compared full statement (personas e cenários), citation, 4 roman-numeral affirmations, and 5 alternatives against rendered page 28. Matches exactly. No residuals found."
+  },
+  "enade-2021-cc-b-q20": {
+    "status": "failed",
+    "notes": "CONFIRMED MINOR DEFECTS (not structural content loss, but disclosed rather than silently accepted). (1) The numbered-line-gutter '11' (a page-margin line-number label, not code) is concatenated into the code block immediately before 'int funcao2(...)' - a visible, recognizable artifact, low severity, root cause not fully isolated (appears specific to this one line sharing an exact y-coordinate with its code line; not observed elsewhere). (2) Line 18's 'return funcao2(vetor, v, m+l, f)' - the raw PDF text and character-level rawdict both consistently decode this character as lowercase 'l', and a 12x-zoom crop of the glyph is genuinely ambiguous between 'l' and '1' in this Courier variant. Per PROMPT section 4 (no correction by linguistic/domain knowledge), this was deliberately NOT silently changed to '1' even though 'm+1' is the only version that compiles/makes algorithmic sense - doing so would be an unevidenced reconstruction. Recommendation: needs_review, visual_validation=failed, flag for manual adjudication (compare against an independent second source of this exam if available) rather than automatic correction."
+  },
+  "enade-2021-cc-b-q21": {
+    "status": "passed",
+    "notes": "Compared statement, two network-layer diagrams (device/layer table + packet header diagram), citation, and 5 alternatives against rendered page 30. Image crop complete (both figures + captions + citation). Text matches exactly. No residuals found."
+  },
+  "enade-2021-cc-b-q22": {
+    "status": "passed",
+    "notes": "Major fix verified: prior to the Phase 1B alternative-section protection fix, the DER diagram's figure region (grown via label absorption) overlapped the start of the alternatives section, and alternative A's continuation lines (TIPO_PET/PET table definitions, foreign-key reference) were silently dropped - only the first and last line of a 5-line alternative survived. After exempting any line at/after the alternatives section's own start from figure-region filtering, all 5 alternatives are complete and match rendered page 31 exactly, including all table/reference definitions."
+  },
+  "enade-2021-cc-b-q23": {
+    "status": "passed",
+    "notes": "Compared statement, binary-tree diagram (J/D/O/A/L/R/K/M nodes), citation, and 5 alternatives against rendered page 32. Image crop complete (tree structure fully visible; the bibliographic citation line below the figure caption is not included in the crop, a minor, non-substantive omission). Text matches exactly. No residuals found."
+  },
+  "enade-2021-cc-b-q24": {
+    "status": "passed",
+    "notes": "Compared full statement (WhatsApp encryption), citation, 4 roman-numeral affirmations, and 5 alternatives against rendered page 33. Matches exactly. No residuals found."
+  },
+  "enade-2021-cc-b-q25": {
+    "status": "passed",
+    "notes": "Compared full statement (cloud computing/NIST), 4 roman-numeral affirmations, and 5 alternatives against rendered page 34. Matches exactly. No residuals found."
+  },
+  "enade-2021-cc-b-q26": {
+    "status": "passed",
+    "notes": "Compared full statement (adaptive interfaces), citation, 3 roman-numeral affirmations, and 5 alternatives against rendered page 35. Matches exactly. No residuals found."
+  },
+  "enade-2021-cc-b-q27": {
+    "status": "passed",
+    "notes": "Compared statement (mutual exclusion / critical regions, continues onto page 27) and PORQUE-based alternatives against rendered pages 26-27. Matches exactly. No residuals found beyond the already-noted Q17 diagram on the same page pair."
+  },
+  "enade-2021-cc-b-q28": {
+    "status": "passed",
+    "notes": "Major fix verified: prior to the Phase 1B overlap-merge fix, 'Figura 1' (pipeline stages) and 'Figura 2' (timing table) on page 37 were detected as two separate, substantially-overlapping regions, producing two crops that each showed a different incomplete slice of the combined content - and a further bug (stale asset cleanup) left an orphaned, outdated second PNG file on disk after fixes reduced the region count to one. Both are fixed: the page now produces one correct, complete crop containing both figures in full, and only the currently-referenced asset file remains on disk. Statement and all 5 alternatives verified against rendered pages 36-37, match exactly."
+  },
+  "enade-2021-cc-b-q29": {
+    "status": "passed",
+    "notes": "Compared statement and all four small Dilatação/Erosão example diagrams (interspersed with roman-numeral statement items I-IV) against rendered page 38. Before the Phase 1B fixes these four diagrams were each detected with grossly oversized, overlapping regions (up to 260pt tall for a ~40pt diagram); after the fix each crop is tight and shows exactly its own diagram, not clipped, not overlapping its neighbors. All four statement items and 5 alternatives match exactly."
+  },
+  "enade-2021-cc-b-q30": {
+    "status": "passed",
+    "notes": "Compared full statement (compilers), citation, 4 roman-numeral affirmations, and 5 alternatives against rendered page 39. Matches exactly. No residuals found."
+  },
+  "enade-2021-cc-b-q31": {
+    "status": "passed",
+    "notes": "Compared statement, citation, the 8-state Turing-machine diagram (q0-q7, qf, all transition labels), and 4 roman-numeral affirmations plus 5 alternatives against rendered page 40. Image crop complete, all states and labels visible. Text matches exactly. No residuals found."
+  },
+  "enade-2021-cc-b-q32": {
+    "status": "passed",
+    "notes": "Compared statement and the ordena/particao pseudocode block against rendered page 41. The pseudocode's 'se A[j] < pivot entao' / 'troca A[i] com A[j]' / 'i := i + 1' lines share the exact same indentation level in both the source PDF and the rendered Markdown - a genuinely ambiguous (no 'fim-se' marker) but faithfully preserved indentation, not an extraction defect. All 4 affirmations and 5 alternatives match exactly."
+  },
+  "enade-2021-cc-b-q33": {
+    "status": "passed",
+    "notes": "Compared statement and the full Prolog fact base (paide/.../mulher predicates) against rendered page 42. 'paide'/'maede' (rather than the more conventional 'pai_de'/'mae_de') are confirmed, via direct visual inspection, to be exactly what the official PDF prints - not an extraction artifact, so correctly preserved verbatim per PROMPT section 4 (no correction by linguistic/domain knowledge). All 5 alternatives match exactly."
+  },
+  "enade-2021-cc-b-q34": {
+    "status": "passed",
+    "notes": "Compared statement, the weighted directed graph diagram (nodes A-G with edge weights), citation, and 5 alternatives against rendered page 43. Image crop complete, all nodes/weights visible. Text matches exactly. No residuals found."
+  },
+  "enade-2021-cc-b-q35": {
+    "status": "passed",
+    "notes": "Compared full statement (sistemas distribuídos), citation, and 5 alternatives against rendered page 43 (shared with Q34). Matches exactly. No residuals found."
+  }
+}

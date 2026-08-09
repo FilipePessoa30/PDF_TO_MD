@@ -23,10 +23,10 @@ answer_standard:
   pdf_sha256: c0348ce0006201f25e9f97502f59ad1b802c6c3e83c232b9c3c8330f6a6e7ded
   pages:
   - 8
-  text: "a) \t O respondente deve mostrar que após a execução da função buildHeap\
-    \ o arranjo ficará da seguinte forma: {34, 21, 8, 13, 2, 1, 3, 5}. b) \t O respondente\
-    \ deve apresentar que no pior caso para a função heapify a complexidade de tempo\
-    \ ficará da seguinte forma: O(log n), sendo n o número de elementos do heap."
+  text: 'a) O respondente deve mostrar que após a execução da função buildHeap o arranjo
+    ficará da seguinte forma: {34, 21, 8, 13, 2, 1, 3, 5}. b) O respondente deve apresentar
+    que no pior caso para a função heapify a complexidade de tempo ficará da seguinte
+    forma: O(log n), sendo n o número de elementos do heap.'
 assets:
 - id: figure-01
   type: diagram
@@ -47,6 +47,8 @@ alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
 extraction_status: needs_review
+automatic_validation: failed
+visual_validation: failed
 taxonomy_review_status: pending
 ---
 
@@ -54,9 +56,7 @@ taxonomy_review_status: pending
 
 ![Figura da questão](enade-2021-cc-b-d05/figure-01.png)
 
-máximo especifica que um nó filho (no código calculado pelas funções left e right) tem sempre armazenado um valor menor ou igual ao seu pai. CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Introduction to Algorithms. 3. ed. MIT Press and McGraw-Hill.
-
-Considerando a implementação a seguir, o heapify é uma função auxiliar para reorganizar o arranjo (garantindo a propriedade de heap máximo em uma determinada posição do arranjo) e buildHeap é uma função que usa heapify para reorganizar todas as posições do arranjo (garantindo a propriedade de heap máximo para todos os elementos).
+máximo especifica que um nó filho (no código calculado pelas funções left e right) tem sempre armazenado um valor menor ou igual ao seu pai. CORMEN, T. H.; LEISERSON, C. E.; RIVEST, R. L.; STEIN, C. Introduction to Algorithms. 3. ed. MIT Press and McGraw-Hill. p. 131-161, 2009 (adaptado). Considerando a implementação a seguir, o heapify é uma função auxiliar para reorganizar o arranjo (garantindo a propriedade de heap máximo em uma determinada posição do arranjo) e buildHeap é uma função que usa heapify para reorganizar todas as posições do arranjo (garantindo a propriedade de heap máximo para todos os elementos).
 
 ```
 }
@@ -65,13 +65,8 @@ void buildHeap(int *a, int n)
 {
    int i;
    for (i = (n-1)/2; i >= 0; i--)
-```
-
-p. 131-161, 2009 (adaptado).
-
-```
       heapify(a, n, i);
 }
 ```
 
-De acordo com as informações apresentadas, faça o que se pede nos itens a seguir. a)	 Como ficará o arranjo int a[ ] = {2, 5, 8 ,13, 21, 1, 3, 34} após a execução da função buildHeap(a, 8). (valor: 5,0 pontos) b)	 Apresente a complexidade de tempo no pior caso para a função heapify, use a notação O ou Q. (valor: 5,0 pontos)
+De acordo com as informações apresentadas, faça o que se pede nos itens a seguir. a) Como ficará o arranjo int a[ ] = {2, 5, 8 ,13, 21, 1, 3, 34} após a execução da função buildHeap(a, 8). (valor: 5,0 pontos) b) Apresente a complexidade de tempo no pior caso para a função heapify, use a notação O ou Q. (valor: 5,0 pontos)

@@ -22,7 +22,9 @@ class Asset(BaseModel):
 
     id: str = Field(..., description="slug unique within the owning question, e.g. 'figure-01'")
     type: AssetType
-    path: str = Field(..., description="portable, relative path under data/assets/questions/")
+    path: str = Field(
+        ..., description="portable path, relative to the owning question's own .md file"
+    )
     source_page: int = Field(..., ge=1)
     extraction_method: AssetExtractionMethod = AssetExtractionMethod.PENDING
     sha256: str | None = Field(default=None, pattern=SHA256_PATTERN)

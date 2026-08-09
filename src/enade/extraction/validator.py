@@ -1,11 +1,17 @@
 """The fidelity gate: decide `verified` vs `needs_review` for one question.
 
-Implements PROMPT section 32 literally: `extraction_status = verified` only
-when there is positive evidence the statement is complete, alternatives are
-complete/ordered (when applicable), visual elements are preserved, source
-pages are correct, and nothing was silently reconstructed. Any assembler
-warning, missing asset, or structural anomaly routes to `needs_review`
-instead - this function never "forces" verified to make a count look better.
+This module only ever performs *mechanical* checks (schema shape,
+alternative sequence, asset counts/hashes, answer linkage) - its verdict is
+``automatic_validation``, not ``extraction_status`` directly. Per PROMPT
+section 12/13 (Phase 1B), passing every mechanical check is necessary but
+not sufficient for ``extraction_status='verified'``: that additionally
+requires a real human visual comparison against the rendered PDF
+(``visual_validation``, applied afterwards - see to_question.py). A
+question with mechanical warnings always routes to ``needs_review``
+regardless of any visual check; a question with none is only ever
+``extracted`` (automatic-clean, visual pending) until that separate,
+evidence-based visual confirmation happens - this function never "forces"
+verified to make a count look better.
 """
 
 from __future__ import annotations
@@ -15,7 +21,7 @@ from dataclasses import dataclass, field
 from enade.extraction.assembler import CodeSegment, ExtractedQuestion
 from enade.extraction.assets import RenderedAsset
 from enade.extraction.boundaries import QuestionKind
-from enade.models.enums import ExtractionStatus
+from enade.models.enums import AutomaticValidationStatus, ExtractionStatus
 
 EXPECTED_ALTERNATIVE_LETTERS = ["A", "B", "C", "D", "E"]
 
@@ -23,6 +29,7 @@ EXPECTED_ALTERNATIVE_LETTERS = ["A", "B", "C", "D", "E"]
 @dataclass
 class ValidationOutcome:
     status: ExtractionStatus
+    automatic_validation: AutomaticValidationStatus
     reasons: list[str] = field(default_factory=list)
 
 
@@ -66,5 +73,14 @@ def evaluate_extraction(
             "column layout + code formatting fidelity needs manual confirmation"
         )
 
-    status = ExtractionStatus.NEEDS_REVIEW if reasons else ExtractionStatus.VERIFIED
-    return ValidationOutcome(status=status, reasons=reasons)
+    if reasons:
+        return ValidationOutcome(
+            status=ExtractionStatus.NEEDS_REVIEW,
+            automatic_validation=AutomaticValidationStatus.FAILED,
+            reasons=reasons,
+        )
+    return ValidationOutcome(
+        status=ExtractionStatus.EXTRACTED,
+        automatic_validation=AutomaticValidationStatus.PASSED,
+        reasons=reasons,
+    )

@@ -31,6 +31,10 @@ from dataclasses import dataclass
 
 import pymupdf
 
+from enade.extraction.label_normalization import LabelCorrection, normalize_known_label
+from enade.extraction.spacing import SpacingCorrection, reconstruct_line_text
+from enade.extraction.symbol_fonts import is_symbol_font, substitute_symbol_font_text
+
 #: Only lines at least this wide (points) count as evidence of a column's
 #: left margin - short lines (figure labels, single digits) are noisy signal.
 MIN_COLUMN_LINE_WIDTH = 80.0
@@ -40,6 +44,12 @@ MIN_LINES_PER_COLUMN = 4
 MIN_COLUMN_SEPARATION = 100.0
 #: Bucket width (points) used to group x0 values before counting.
 COLUMN_BUCKET_SIZE = 5.0
+#: A line is classified as belonging to the right column only if its x0 is
+#: within this many points of the right column's own detected margin (or
+#: past it) - see ``extract_page_lines``. Matches ``COLUMN_BUCKET_SIZE``:
+#: just enough to absorb the margin's own rounding, not a general-purpose
+#: fuzziness margin.
+COLUMN_RIGHT_MARGIN_TOLERANCE = 5.0
 
 
 #: Font-name substrings (case-insensitive) that mark a line as monospaced -
@@ -73,6 +83,22 @@ class Line:
     x1: float
     y1: float
     is_monospace: bool = False
+    #: Geometric spacing corrections applied to this line's text (see
+    #: spacing.py) - empty unless a ligature-injected faux space was found
+    #: and merged. Carried on the Line so callers can build an auditable
+    #: transformation log without a separate side-channel.
+    spacing_corrections: tuple[SpacingCorrection, ...] = ()
+    #: Known font-mangled structural labels replaced by their canonical
+    #: form on this line (see label_normalization.py) - same auditability
+    #: purpose as spacing_corrections, kept as a separate list because it is
+    #: a distinct transformation type (PROMPT Phase 1B section 15).
+    label_corrections: tuple[LabelCorrection, ...] = ()
+    #: Known symbol-font character substitutions applied to this line (see
+    #: symbol_fonts.py) - reuses LabelCorrection's shape (original/corrected
+    #: text) but kept in its own field/transformation-log type, since it is
+    #: a mechanically distinct correction (font-glyph identity, not a
+    #: whole-line label lookup).
+    symbol_corrections: tuple[LabelCorrection, ...] = ()
 
     @property
     def bbox(self) -> tuple[float, float, float, float]:
@@ -97,15 +123,50 @@ def _raw_lines(page: pymupdf.Page, page_number: int) -> list[Line]:
                 any(hint in font.lower() for hint in _MONOSPACE_FONT_HINTS) for font in fonts
             )
             x0, y0, x1, y1 = line["bbox"]
+            final_text = text.strip() if not is_monospace else text.lstrip("\f\v")
+            corrections: list[SpacingCorrection] = []
+            if not is_monospace:
+                # Code lines keep their literal dict-mode text (word-geometry
+                # reconstruction is prose-only; see spacing.py) - everything
+                # else is re-derived from glyph geometry, which also happens
+                # to normalize incidental whitespace differences for free.
+                reconstructed, corrections = reconstruct_line_text(
+                    page, page_number, (x0, y0, x1, y1)
+                )
+                if reconstructed:
+                    final_text = reconstructed
+            symbol_corrections: list[LabelCorrection] = []
+            if not is_monospace and any(is_symbol_font(font) for font in fonts):
+                substituted = substitute_symbol_font_text(final_text)
+                if substituted != final_text:
+                    symbol_corrections.append(
+                        LabelCorrection(
+                            page_number=page_number, original=final_text, corrected=substituted
+                        )
+                    )
+                    final_text = substituted
+            label_corrections: list[LabelCorrection] = []
+            if not is_monospace:
+                known_label = normalize_known_label(final_text)
+                if known_label is not None:
+                    label_corrections.append(
+                        LabelCorrection(
+                            page_number=page_number, original=final_text, corrected=known_label
+                        )
+                    )
+                    final_text = known_label
             lines.append(
                 Line(
                     page_number=page_number,
-                    text=text.strip() if not is_monospace else text.lstrip("\f\v"),
+                    text=final_text,
                     x0=x0,
                     y0=y0,
                     x1=x1,
                     y1=y1,
                     is_monospace=is_monospace,
+                    spacing_corrections=tuple(corrections),
+                    label_corrections=tuple(label_corrections),
+                    symbol_corrections=tuple(symbol_corrections),
                 )
             )
     return lines
@@ -148,13 +209,22 @@ def _merge_orphan_markers(lines: list[Line]) -> list[Line]:
                 x1=max(ln.x1, other.x1),
                 y1=max(ln.y1, other.y1),
                 is_monospace=other.is_monospace,
+                spacing_corrections=ln.spacing_corrections + other.spacing_corrections,
+                label_corrections=ln.label_corrections + other.label_corrections,
+                symbol_corrections=ln.symbol_corrections + other.symbol_corrections,
             )
         )
     return merged
 
 
-def _detect_column_split(lines: list[Line]) -> float | None:
-    """Return the x split point if ``lines`` show a genuine two-column layout."""
+def _detect_column_margins(lines: list[Line]) -> tuple[float, float] | None:
+    """Return (left_margin, right_margin) if ``lines`` show a genuine two-column layout.
+
+    ``right_margin`` is the right column's own detected left edge (not a
+    midpoint) - see ``extract_page_lines``, which classifies a line as
+    "right column" by closeness to this actual margin rather than by
+    which side of some arbitrary midpoint it falls on.
+    """
     substantial = [ln for ln in lines if (ln.x1 - ln.x0) >= MIN_COLUMN_LINE_WIDTH]
     if len(substantial) < 2 * MIN_LINES_PER_COLUMN:
         return None
@@ -167,26 +237,46 @@ def _detect_column_split(lines: list[Line]) -> float | None:
     left_margin, right_margin = min(common[0], common[1]), max(common[0], common[1])
     if right_margin - left_margin < MIN_COLUMN_SEPARATION:
         return None
-    return (left_margin + right_margin) / 2
+    return left_margin, right_margin
 
 
 def extract_page_lines(page: pymupdf.Page, page_number: int) -> list[Line]:
     """Extract every physical line on ``page``, in visual reading order.
 
     Single-column pages: sorted by (y0, x0). Two-column pages (detected via
-    :func:`_detect_column_split`): every left-column line (top to bottom),
-    then every right-column line (top to bottom) - see module docstring.
+    :func:`_detect_column_margins`): every left-column line (top to
+    bottom), then every right-column line (top to bottom) - see module
+    docstring.
     """
     lines = _merge_orphan_markers(_raw_lines(page, page_number))
-    split_x = _detect_column_split(lines)
+    margins = _detect_column_margins(lines)
 
-    if split_x is None:
+    if margins is None:
         lines.sort(key=lambda ln: (round(ln.y0, 1), ln.x0))
         return lines
 
-    left = sorted((ln for ln in lines if ln.x0 < split_x), key=lambda ln: (round(ln.y0, 1), ln.x0))
+    _, right_margin = margins
+    # A line is "right column" only if it starts at or past the right
+    # column's own actual left edge (with a small tolerance for rounding
+    # noise) - not merely past the midpoint between the two columns.
+    # PyMuPDF's dict-mode text extraction occasionally splits one
+    # continuous visual line into several separate "line" entries with
+    # unusually wide (but still sub-word-wrap) gaps between them (observed:
+    # a uniform 14.4pt gap splitting "B Escalonamento por taxas
+    # monotonicas" into four pieces on Q9/Q10's shared page); a midpoint
+    # split let the tail fragments ("taxas", "monotonicas") cross into
+    # column 2's line range even though they are still far short of where
+    # column 2 actually starts, corrupting Q10's statement with a
+    # fragment of Q9's own alternative B (Phase 1B audit finding, see
+    # docs/decisions.md). Requiring closeness to the real right-column
+    # margin instead keeps ambiguous mid-page fragments in the left
+    # column, where the evidence actually places them.
+    right_threshold = right_margin - COLUMN_RIGHT_MARGIN_TOLERANCE
+    left = sorted(
+        (ln for ln in lines if ln.x0 < right_threshold), key=lambda ln: (round(ln.y0, 1), ln.x0)
+    )
     right = sorted(
-        (ln for ln in lines if ln.x0 >= split_x), key=lambda ln: (round(ln.y0, 1), ln.x0)
+        (ln for ln in lines if ln.x0 >= right_threshold), key=lambda ln: (round(ln.y0, 1), ln.x0)
     )
     return left + right
 

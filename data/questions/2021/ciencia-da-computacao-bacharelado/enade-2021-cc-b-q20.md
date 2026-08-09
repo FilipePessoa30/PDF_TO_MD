@@ -29,7 +29,9 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: verified
+extraction_status: needs_review
+automatic_validation: passed
+visual_validation: failed
 taxonomy_review_status: pending
 ---
 
@@ -66,7 +68,7 @@ Observe o código abaixo escrito na linguagem C.
       }
 ```
 
-A respeito das funções implementadas, avalie as afirmações a seguir. I.	 O resultado da impressão na linha 24 é: 7 - 7. II.	 A função funcao1, no pior caso, é uma estratégia mais rápida do que a funcao2. III.	 A função funcao2 implementa uma estratégia iterativa na concepção do algoritmo. É correto o que se afirma em
+A respeito das funções implementadas, avalie as afirmações a seguir. I. O resultado da impressão na linha 24 é: 7 - 7. II. A função funcao1, no pior caso, é uma estratégia mais rápida do que a funcao2. III. A função funcao2 implementa uma estratégia iterativa na concepção do algoritmo. É correto o que se afirma em
 
 ## Alternativas
 

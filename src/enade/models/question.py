@@ -27,12 +27,14 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from enade.models.asset import Asset
 from enade.models.enums import (
     AnswerValidationStatus,
+    AutomaticValidationStatus,
     CourseCode,
     DifficultyLevel,
     ExtractionMethod,
     ExtractionStatus,
     QuestionType,
     TaxonomyReviewStatus,
+    VisualValidationStatus,
 )
 from enade.models.misconception import AlternativeDiagnostic
 from enade.models.provenance import AnswerStandardReference, SourceOccurrence
@@ -95,6 +97,13 @@ class Question(BaseModel):
     extraction_method: ExtractionMethod = ExtractionMethod.PENDING
     ocr_confidence: float | None = Field(default=None, ge=0.0, le=1.0)
     extraction_status: ExtractionStatus = ExtractionStatus.PENDING
+    #: Result of the pipeline's own mechanical checks - necessary but not
+    #: sufficient for ``verified`` (see docs/decisions.md, Phase 1B).
+    automatic_validation: AutomaticValidationStatus = AutomaticValidationStatus.PENDING
+    #: Result of an actual human comparison against the rendered PDF page(s).
+    #: Defaults to "not performed" - a pipeline run alone must never claim
+    #: this passed (PROMPT section 12).
+    visual_validation: VisualValidationStatus = VisualValidationStatus.NOT_PERFORMED
     taxonomy_review_status: TaxonomyReviewStatus = TaxonomyReviewStatus.PENDING
 
     # ---------------------------------------------------------------- validators
@@ -178,4 +187,22 @@ class Question(BaseModel):
         ids = [a.id for a in self.assets]
         if len(set(ids)) != len(ids):
             raise ValueError("assets must not repeat an id within a question")
+        return self
+
+    @model_validator(mode="after")
+    def _validate_verified_requires_both_validations(self) -> Question:
+        # Formalizes PROMPT section 13: "verified" means the statement,
+        # alternatives, assets etc. were actually confirmed to match the
+        # official PDF - a claim only a human visual check can support.
+        # Passing every mechanical check (automatic_validation) is
+        # necessary but never sufficient on its own (section 12/14: no
+        # mass-promotion, no `visual_validation=passed` without a real
+        # inspection).
+        if self.extraction_status == ExtractionStatus.VERIFIED:
+            if self.automatic_validation != AutomaticValidationStatus.PASSED:
+                raise ValueError(
+                    "extraction_status='verified' requires automatic_validation='passed'"
+                )
+            if self.visual_validation != VisualValidationStatus.PASSED:
+                raise ValueError("extraction_status='verified' requires visual_validation='passed'")
         return self

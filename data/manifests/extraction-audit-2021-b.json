@@ -14,9 +14,9 @@
     "answer_validation_status": "not_applicable",
     "answer_standard_available": true,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
-    "warning_count": 1,
-    "warnings": "possible ligature/word-break artifact(s) detected: ['questi o', 'discuti r', 'justi f', 'questi o', 'semióti c', 'remeti d', 'semioti z', 'questi o', 'debati d', 'disti n', 'garanti n', 'garanti d', 'educati v', 'garanti r']"
+    "extraction_status": "verified",
+    "warning_count": 0,
+    "warnings": ""
   },
   {
     "id": "enade-2021-cc-b-d02",
@@ -33,9 +33,9 @@
     "answer_validation_status": "not_applicable",
     "answer_standard_available": true,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
-    "warning_count": 1,
-    "warnings": "possible ligature/word-break artifact(s) detected: ['benefi c', 'comprometi d', 'holísti c', 'efeti v', 'investi m', 'políti c', 'parti r']"
+    "extraction_status": "verified",
+    "warning_count": 0,
+    "warnings": ""
   },
   {
     "id": "enade-2021-cc-b-d03",
@@ -52,7 +52,7 @@
     "answer_validation_status": "not_applicable",
     "answer_standard_available": true,
     "extraction_method": "text_layer",
-    "extraction_status": "verified",
+    "extraction_status": "needs_review",
     "warning_count": 0,
     "warnings": ""
   },
@@ -109,9 +109,9 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
-    "warning_count": 1,
-    "warnings": "possible ligature/word-break artifact(s) detected: ['esti m', 'difi c', 'qualifi c', 'parti r', 'demográfi c', 'políti c', 'repeti n']"
+    "extraction_status": "verified",
+    "warning_count": 0,
+    "warnings": ""
   },
   {
     "id": "enade-2021-cc-b-q02",
@@ -128,9 +128,9 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
-    "warning_count": 1,
-    "warnings": "possible ligature/word-break artifact(s) detected: ['estéti c', 'alternati v', 'esteti c', 'conscienti z', 'produti v', 'noti c', 'noti c', 'sinteti z', 'disti n', 'estéti c', 'produti v', 'justi f', 'cati v', 'justi f', 'cati v']"
+    "extraction_status": "verified",
+    "warning_count": 0,
+    "warnings": ""
   },
   {
     "id": "enade-2021-cc-b-q03",
@@ -147,9 +147,9 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
-    "warning_count": 1,
-    "warnings": "possible ligature/word-break artifact(s) detected: ['automoti v', 'parti r']"
+    "extraction_status": "verified",
+    "warning_count": 0,
+    "warnings": ""
   },
   {
     "id": "enade-2021-cc-b-q04",
@@ -166,9 +166,9 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
-    "warning_count": 1,
-    "warnings": "possible ligature/word-break artifact(s) detected: ['aplicati v', 'aplicati v', 'profi s', 'moti v', 'parti r', 'justi f', 'cati v', 'justi f', 'cati v']"
+    "extraction_status": "verified",
+    "warning_count": 0,
+    "warnings": ""
   },
   {
     "id": "enade-2021-cc-b-q05",
@@ -185,9 +185,9 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
-    "warning_count": 1,
-    "warnings": "possible ligature/word-break artifact(s) detected: ['preventi v']"
+    "extraction_status": "verified",
+    "warning_count": 0,
+    "warnings": ""
   },
   {
     "id": "enade-2021-cc-b-q06",
@@ -204,9 +204,9 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
-    "warning_count": 1,
-    "warnings": "possible ligature/word-break artifact(s) detected: ['negati v', 'intensifi c', 'verifi c', 'expectati v', 'expectati v', 'expectati v', 'últi m', 'expectati v', 'lati n', 'expectati v', 'lati n', 'signifi c', 'expectati v', 'lati n', 'expectati v', 'lati n', 'justi f', 'cati v', 'justi f', 'cati v']"
+    "extraction_status": "verified",
+    "warning_count": 0,
+    "warnings": ""
   },
   {
     "id": "enade-2021-cc-b-q07",
@@ -223,9 +223,9 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
-    "warning_count": 1,
-    "warnings": "possible ligature/word-break artifact(s) detected: ['positi v', 'diagnósti c', 'preventi v', 'decodifi c', 'desafi o', 'últi m', 'objeti v', 'signifi c', 'amplifi c', 'autodiagnósti c', 'profi l', 'relati v', 'proati v']"
+    "extraction_status": "verified",
+    "warning_count": 0,
+    "warnings": ""
   },
   {
     "id": "enade-2021-cc-b-q08",
@@ -234,7 +234,7 @@
     "number": 8,
     "section": "formacao-geral-objetiva",
     "start_page": 13,
-    "end_page": 14,
+    "end_page": 13,
     "num_alternatives": 5,
     "has_assets": false,
     "num_assets": 0,
@@ -242,9 +242,9 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
-    "warning_count": 1,
-    "warnings": "possible ligature/word-break artifact(s) detected: ['defi n', 'esti v', 'alternati v', 'desafi o', 'políti c', 'politi c', 'parti r', 'democráti c', 'políti c', 'competi t', 'combati v', 'políti c', 'senti d']"
+    "extraction_status": "verified",
+    "warning_count": 0,
+    "warnings": ""
   },
   {
     "id": "enade-2021-cc-b-q09",
@@ -389,7 +389,7 @@
     "end_page": 25,
     "num_alternatives": 5,
     "has_assets": true,
-    "num_assets": 2,
+    "num_assets": 1,
     "answer": "B",
     "answer_validation_status": "validated",
     "answer_standard_available": false,
@@ -470,7 +470,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "verified",
+    "extraction_status": "needs_review",
     "warning_count": 0,
     "warnings": ""
   },
@@ -617,7 +617,7 @@
     "end_page": 37,
     "num_alternatives": 5,
     "has_assets": true,
-    "num_assets": 2,
+    "num_assets": 1,
     "answer": "B",
     "answer_validation_status": "validated",
     "answer_standard_available": false,

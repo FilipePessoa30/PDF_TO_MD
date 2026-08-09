@@ -22,6 +22,14 @@ from enade.extraction.expected_structure import (
     compare_with_expected as compare_extraction_with_expected,
 )
 from enade.extraction.pipeline import extract_exam
+from enade.extraction.transformation_log import write_transformation_log_json
+from enade.extraction.visual_audit import load_visual_audit
+from enade.gold import (
+    build_gold_manifest,
+    read_gold_manifest,
+    verify_gold_manifest,
+    write_gold_manifest,
+)
 from enade.inventory.expected_corpus import compare_with_expected
 from enade.inventory.filenames import COURSE_LETTER_MAP
 from enade.inventory.git_metadata import GitMetadataError, read_source_repository
@@ -29,7 +37,7 @@ from enade.inventory.manifest import read_manifest_yaml, write_manifest_yaml
 from enade.inventory.pdfmeta import sha256_of_file
 from enade.inventory.scanner import scan_corpus
 from enade.markdown_format import load_question_markdown
-from enade.models.enums import CourseCode
+from enade.models.enums import CourseCode, VisualValidationStatus
 from enade.validation.manifest_checks import check_manifest_matches_filesystem, validate_manifest
 from enade.validation.schema_checks import (
     validate_fixtures_directory,
@@ -47,7 +55,6 @@ DEFAULT_FIXTURES_DIR = PROJECT_ROOT / "tests" / "fixtures"
 DEFAULT_TAXONOMY_PATH = PROJECT_ROOT / "data" / "taxonomy" / "demo-taxonomy.yaml"
 DEFAULT_MISCONCEPTIONS_PATH = PROJECT_ROOT / "data" / "taxonomy" / "demo-misconceptions.yaml"
 DEFAULT_QUESTIONS_DIR = PROJECT_ROOT / "data" / "questions"
-DEFAULT_ASSETS_DIR = PROJECT_ROOT / "data" / "assets" / "questions"
 DEFAULT_AUDIT_DIR = PROJECT_ROOT / "data" / "manifests"
 
 #: CourseCode -> source filename letter (inverse of COURSE_LETTER_MAP).
@@ -259,10 +266,12 @@ def extract(
     questions_dir: Path = typer.Option(
         DEFAULT_QUESTIONS_DIR, help="output directory for Markdown questions"
     ),
-    assets_dir: Path = typer.Option(
-        DEFAULT_ASSETS_DIR, help="output directory for rendered assets"
-    ),
     audit_dir: Path = typer.Option(DEFAULT_AUDIT_DIR, help="output directory for the audit report"),
+    visual_audit_file: Path | None = typer.Option(
+        None,
+        help="JSON file of {question_id: {status, notes}} human visual-audit results "
+        "(default: data/manifests/visual-audit-<year>-<letter>.json if present)",
+    ),
 ) -> None:
     """Extract one exam booklet (prova+gabarito+padrao) into canonical Markdown.
 
@@ -302,6 +311,15 @@ def extract(
     typer.echo(f"Extracting {exam_id} ({course_code.value}) from {prova_path.name} ...")
     typer.echo(f"  corpus commit: {repository.commit_sha[:12]} (ref={repository.ref})")
 
+    resolved_visual_audit_file = visual_audit_file or (
+        DEFAULT_AUDIT_DIR / f"visual-audit-{year}-{letter}.json"
+    )
+    visual_audit = load_visual_audit(resolved_visual_audit_file)
+    if visual_audit:
+        typer.echo(
+            f"  visual audit: {len(visual_audit)} entries loaded from {resolved_visual_audit_file}"
+        )
+
     result = extract_exam(
         prova_path=prova_path,
         gabarito_path=gabarito_path,
@@ -311,7 +329,7 @@ def extract(
         course=course_code,
         exam_id=exam_id,
         questions_output_dir=questions_dir,
-        assets_output_dir=assets_dir,
+        visual_audit=visual_audit,
     )
 
     m = result.metrics
@@ -319,7 +337,10 @@ def extract(
     typer.echo(
         f"Found {m.questions_found} questions ({m.objectives_found} objective, {m.discursives_found} discursive)"
     )
-    typer.echo(f"  verified: {m.verified}   needs_review: {m.needs_review}")
+    typer.echo(
+        f"  verified: {m.verified}   needs_review: {m.needs_review}   "
+        f"extracted (pending visual audit): {m.extracted_pending_visual}"
+    )
     typer.echo(f"  assets rendered: {m.total_assets}   alternatives: {m.total_alternatives}")
     typer.echo(f"  answers linked: {m.answers_linked}/{m.objectives_found}")
     typer.echo(f"  answer standards linked: {m.answer_standards_linked}/{m.discursives_found}")
@@ -335,8 +356,13 @@ def extract(
 
     typer.echo("")
     typer.echo("questions needing review:")
+    questions_by_id = {q.id: q for q in result.questions}
     any_review = False
-    for question_id, warnings in sorted(result.per_question_warnings.items()):
+    for question_id in sorted(questions_by_id):
+        warnings = list(result.per_question_warnings.get(question_id, []))
+        question = questions_by_id[question_id]
+        if question.visual_validation == VisualValidationStatus.FAILED:
+            warnings.append("visual audit failed (see visual-audit file notes)")
         if warnings:
             any_review = True
             typer.echo(f"  {question_id}:")
@@ -366,6 +392,28 @@ def extract(
     typer.echo(f"Audit report: {csv_path}")
     typer.echo(f"Audit report: {json_path}")
 
+    transformation_log_path = audit_dir / f"transformation-log-{year}-{letter}.json"
+    write_transformation_log_json(result.transformation_log, transformation_log_path)
+    typer.echo(
+        f"Transformation log: {transformation_log_path} "
+        f"({len(result.transformation_log)} entr{'y' if len(result.transformation_log) == 1 else 'ies'})"
+    )
+
+
+def _is_git_ignored(path: Path) -> bool:
+    """True if ``path`` would be excluded from `git add` by current .gitignore rules.
+
+    Canonical assets must be trackable (see docs/decisions.md, Phase 1B) -
+    a passing hash/existence check is not enough on its own if the file
+    would silently never make it into a commit.
+    """
+    result = subprocess.run(
+        ["git", "check-ignore", "--quiet", str(path)],
+        cwd=str(PROJECT_ROOT),
+        capture_output=True,
+    )
+    return result.returncode == 0
+
 
 @app.command(name="audit-extraction")
 def audit_extraction_cmd(
@@ -375,11 +423,14 @@ def audit_extraction_cmd(
     corpus_root: Path = typer.Option(
         DEFAULT_CORPUS_ROOT, help="corpus root for PDF hash cross-check"
     ),
-    assets_dir: Path = typer.Option(
-        DEFAULT_ASSETS_DIR, help="base directory question asset paths are relative to"
-    ),
 ) -> None:
-    """Re-validate already-extracted questions: schema + source/asset provenance."""
+    """Re-validate already-extracted questions: schema + source/asset provenance.
+
+    Asset paths are resolved relative to each question's own .md file - the
+    same way any standard Markdown viewer resolves `![...](path)` - not
+    against a separate assets root, so this check also catches a link a
+    human opening the file in an editor would see as broken.
+    """
     md_files = sorted(questions_dir.rglob("*.md"))
     if not md_files:
         typer.echo(f"no question files found under {questions_dir}")
@@ -408,10 +459,12 @@ def audit_extraction_cmd(
                     problems.append(f"sha256 drift for {occurrence.source_path}")
 
             for asset in question.assets:
-                asset_path = assets_dir / asset.path
+                asset_path = path.parent / asset.path
                 if not asset_path.exists():
                     problems.append(f"asset file missing: {asset.path}")
                     continue
+                if _is_git_ignored(asset_path):
+                    problems.append(f"asset is gitignored (must be trackable): {asset.path}")
                 if asset.sha256:
                     actual_sha256 = sha256_of_file(asset_path)
                     if actual_sha256 != asset.sha256:
@@ -429,6 +482,120 @@ def audit_extraction_cmd(
     typer.echo(f"audit-extraction: {len(md_files) - failed}/{len(md_files)} OK")
     if failed:
         raise typer.Exit(code=1)
+
+
+@app.command(name="build-gold")
+def build_gold_cmd(
+    year: int = typer.Option(..., help="exam year, e.g. 2021"),
+    course: str = typer.Option(..., help="course code, e.g. ciencia-da-computacao-bacharelado"),
+    corpus_root: Path = typer.Option(
+        DEFAULT_CORPUS_ROOT, help="path to the cloned geacc/enade corpus"
+    ),
+    questions_dir: Path = typer.Option(
+        DEFAULT_QUESTIONS_DIR, help="directory of already-extracted question .md files"
+    ),
+    gold_dir: Path = typer.Option(DEFAULT_AUDIT_DIR, help="output directory for the gold manifest"),
+) -> None:
+    """Lock the current on-disk Markdown/assets as the gold regression set
+    (PROMPT section 16-18). Deliberate and explicit only - never run as a
+    side effect of ``extract``, ``audit-extraction``, or the test suite.
+    Re-run this only after intentionally accepting a real, reviewed change.
+    """
+    try:
+        course_code = CourseCode(course)
+    except ValueError:
+        typer.echo(f"unknown course {course!r}; expected one of {[c.value for c in CourseCode]}")
+        raise typer.Exit(code=1) from None
+
+    letter = COURSE_TO_LETTER.get(course_code)
+    if letter is None:
+        typer.echo(f"course {course!r} has no known source-filename letter")
+        raise typer.Exit(code=1)
+
+    year_dir = corpus_root / str(year)
+    prova_path = year_dir / f"{letter}1_prova.pdf"
+    gabarito_path = year_dir / f"{letter}2_gabarito.pdf"
+    padrao_path = year_dir / f"{letter}3_padrao.pdf"
+    for p in (prova_path, gabarito_path, padrao_path):
+        if not p.exists():
+            typer.echo(f"expected source file not found: {p}")
+            raise typer.Exit(code=1)
+
+    try:
+        repository = read_source_repository(corpus_root)
+    except GitMetadataError as exc:
+        typer.echo(f"could not read git metadata for {corpus_root}: {exc}")
+        raise typer.Exit(code=1) from exc
+
+    course_dir = questions_dir / str(year) / course_code.value
+    manifest = build_gold_manifest(
+        exam_id=f"enade-{year}-{letter}",
+        exam_year=year,
+        course=course_code.value,
+        corpus_commit=repository.commit_sha,
+        prova_path=prova_path,
+        gabarito_path=gabarito_path,
+        padrao_path=padrao_path,
+        course_dir=course_dir,
+    )
+
+    verified = sum(1 for q in manifest.questions if q.extraction_status == "verified")
+    needs_review = len(manifest.questions) - verified
+    typer.echo(
+        f"Gold manifest: {len(manifest.questions)} questions "
+        f"({verified} verified, {needs_review} needs_review)"
+    )
+    for q in manifest.questions:
+        if q.extraction_status != "verified":
+            typer.echo(f"  - {q.id}: {q.extraction_status}")
+
+    gold_path = gold_dir / f"gold-{year}-{letter}.json"
+    write_gold_manifest(manifest, gold_path)
+    typer.echo(f"Wrote {gold_path}")
+
+
+@app.command(name="verify-gold")
+def verify_gold_cmd(
+    year: int = typer.Option(..., help="exam year, e.g. 2021"),
+    course: str = typer.Option(..., help="course code, e.g. ciencia-da-computacao-bacharelado"),
+    questions_dir: Path = typer.Option(
+        DEFAULT_QUESTIONS_DIR, help="directory of already-extracted question .md files"
+    ),
+    gold_dir: Path = typer.Option(DEFAULT_AUDIT_DIR, help="directory containing the gold manifest"),
+) -> None:
+    """Detect drift between the locked gold manifest and what is currently
+    on disk (PROMPT section 18): changed Markdown, changed/missing asset,
+    missing question, unexpected extra question, hash mismatch. Exits
+    non-zero on any divergence - never silently accepts a changed hash.
+    """
+    try:
+        course_code = CourseCode(course)
+    except ValueError:
+        typer.echo(f"unknown course {course!r}; expected one of {[c.value for c in CourseCode]}")
+        raise typer.Exit(code=1) from None
+
+    letter = COURSE_TO_LETTER.get(course_code)
+    if letter is None:
+        typer.echo(f"course {course!r} has no known source-filename letter")
+        raise typer.Exit(code=1)
+
+    gold_path = gold_dir / f"gold-{year}-{letter}.json"
+    if not gold_path.exists():
+        typer.echo(f"no gold manifest found at {gold_path} (run `enade build-gold` first)")
+        raise typer.Exit(code=1)
+
+    manifest = read_gold_manifest(gold_path)
+    course_dir = questions_dir / str(year) / course_code.value
+    divergences = verify_gold_manifest(manifest, course_dir)
+
+    if not divergences:
+        typer.echo(f"verify-gold: OK ({len(manifest.questions)} questions match {gold_path})")
+        return
+
+    typer.echo(f"verify-gold: {len(divergences)} divergence(s) found against {gold_path}")
+    for d in divergences:
+        typer.echo(f"  [{d.kind}] {d.detail}")
+    raise typer.Exit(code=1)
 
 
 if __name__ == "__main__":

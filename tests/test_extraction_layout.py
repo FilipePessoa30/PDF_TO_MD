@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from enade.extraction.layout import Line, _detect_column_split, _merge_orphan_markers
+from enade.extraction.layout import Line, _detect_column_margins, _merge_orphan_markers
 
 
 def _line(x0: float, y0: float, text: str, x1: float | None = None) -> Line:
@@ -9,33 +9,30 @@ def _line(x0: float, y0: float, text: str, x1: float | None = None) -> Line:
     )
 
 
-def test_detect_column_split_finds_two_column_layout():
+def test_detect_column_margins_finds_two_column_layout():
     lines = []
     for i in range(6):
         lines.append(_line(30, i * 20, f"linha esquerda numero {i} com texto suficiente", x1=280))
         lines.append(_line(290, i * 20, f"linha direita numero {i} com texto suficiente", x1=540))
-    split = _detect_column_split(lines)
-    assert split is not None
-    # split falls between the two columns' left margins (30 and 290) - every
-    # left-column line's x0 (30) is below it, every right-column line's x0
-    # (290) is above it, which is what actually matters for classification.
-    assert 30 < split < 290
-    assert all(ln.x0 < split for ln in lines if ln.x0 == 30)
-    assert all(ln.x0 > split for ln in lines if ln.x0 == 290)
+    margins = _detect_column_margins(lines)
+    assert margins is not None
+    left_margin, right_margin = margins
+    assert left_margin == 30
+    assert right_margin == 290
 
 
-def test_detect_column_split_none_for_single_column_page():
+def test_detect_column_margins_none_for_single_column_page():
     lines = [_line(30, i * 20, f"parágrafo único linha {i}", x1=530) for i in range(6)]
-    assert _detect_column_split(lines) is None
+    assert _detect_column_margins(lines) is None
 
 
-def test_detect_column_split_ignores_short_figure_labels():
+def test_detect_column_margins_ignores_short_figure_labels():
     # A handful of short labels at a different x should not trigger a false
     # column split on an otherwise single-column page.
     lines = [_line(30, i * 20, f"parágrafo linha {i} com bastante texto", x1=530) for i in range(6)]
     lines.append(_line(300, 50, "rótulo"))  # short, width < MIN_COLUMN_LINE_WIDTH
     lines.append(_line(310, 70, "outro"))
-    assert _detect_column_split(lines) is None
+    assert _detect_column_margins(lines) is None
 
 
 def test_merge_orphan_markers_joins_bare_letter_with_nearby_line():

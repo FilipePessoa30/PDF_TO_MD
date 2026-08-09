@@ -4,7 +4,12 @@ from enade.extraction.assembler import ExtractedAlternative, ExtractedQuestion, 
 from enade.extraction.assets import RenderedAsset
 from enade.extraction.boundaries import QuestionKind
 from enade.extraction.validator import evaluate_extraction
-from enade.models.enums import AssetExtractionMethod, AssetType, ExtractionStatus
+from enade.models.enums import (
+    AssetExtractionMethod,
+    AssetType,
+    AutomaticValidationStatus,
+    ExtractionStatus,
+)
 
 _FULL_ALTS = [ExtractedAlternative(letter=letter, text=f"texto {letter}") for letter in "ABCDE"]
 
@@ -24,9 +29,14 @@ def _extracted(**overrides) -> ExtractedQuestion:
     return ExtractedQuestion(**base)
 
 
-def test_clean_objective_question_is_verified():
+def test_clean_objective_question_passes_automatic_validation():
+    """A clean automatic pass alone is "extracted", never "verified" - that
+    additionally requires a real visual comparison against the PDF (PROMPT
+    section 12/13, Phase 1B), applied afterwards in to_question.py.
+    """
     outcome = evaluate_extraction(_extracted(), rendered_assets=[], has_answer=True)
-    assert outcome.status == ExtractionStatus.VERIFIED
+    assert outcome.status == ExtractionStatus.EXTRACTED
+    assert outcome.automatic_validation == AutomaticValidationStatus.PASSED
     assert outcome.reasons == []
 
 
@@ -125,4 +135,5 @@ def test_multipage_code_block_forces_needs_review():
 def test_discursive_question_does_not_require_alternatives():
     extracted = _extracted(kind=QuestionKind.DISCURSIVE, alternatives=[])
     outcome = evaluate_extraction(extracted, rendered_assets=[], has_answer=True)
-    assert outcome.status == ExtractionStatus.VERIFIED
+    assert outcome.status == ExtractionStatus.EXTRACTED
+    assert outcome.automatic_validation == AutomaticValidationStatus.PASSED

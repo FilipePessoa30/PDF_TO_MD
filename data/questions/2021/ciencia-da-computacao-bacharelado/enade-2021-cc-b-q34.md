@@ -24,7 +24,7 @@ assets:
   path: enade-2021-cc-b-q34/figure-01.png
   source_page: 43
   extraction_method: raster_crop
-  sha256: 00d58c7581c3cd2e091dc9021351cc0e6d6f3358fb4df5b09c3ec481b4750362
+  sha256: 55faefa6b059dcaf4b5439c09ccc9c47ee4a23675b94ac804ba39998f8c34826
   alt_text: null
   caption: null
 subjects: []
@@ -38,16 +38,20 @@ alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
 extraction_status: verified
+automatic_validation: passed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 34
 
-O algoritmo de Dijkstra para o problema do caminho mínimo em dígrafos com pesos utiliza uma fila de prioridades de vértices, na qual as prioridades são uma estimativa do custo final. A cada iteração, um vértice é retirado da fila, e os arcos que começam nesse vértice são analisados. Considere o seguinte grafo, no qual deseja-se conhecer o custo de um caminho mínimo para cada vértice, a partir do vértice D. Considere que -1 representa um custo “infinito”, ou seja, nenhum caminho até o vértice foi até o
+O algoritmo de Dijkstra para o problema do caminho mínimo em dígrafos com pesos utiliza uma fila de prioridades de vértices, na qual as prioridades são uma estimativa do custo final. A cada iteração, um vértice é retirado da fila, e os arcos que começam nesse vértice são analisados. Considere o seguinte grafo, no qual deseja-se conhecer o custo de um caminho mínimo para cada vértice, a partir do vértice D. Considere que -1 representa um custo “infinito”, ou seja, nenhum caminho até o vértice foi até o momento descoberto.
 
 ![Figura da questão](enade-2021-cc-b-q34/figure-01.png)
 
 C	8 A	2 B	5 E	9 D	5
+
+Com base nas informações e no grafo apresentados, assinale a alternativa que representa a estimativa de custo após duas iterações do algoritmo.
 
 ## Alternativas
 

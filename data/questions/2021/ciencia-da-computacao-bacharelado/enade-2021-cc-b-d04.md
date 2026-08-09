@@ -47,7 +47,7 @@ assets:
   path: enade-2021-cc-b-d04/figure-01.png
   source_page: 16
   extraction_method: raster_crop
-  sha256: 1b0753b15c538d2bab6a724177d6aac85a2d39178643b15d4d428402e3b06f8a
+  sha256: 9c4c1b2b4c072920e25aa057052e721ee41e568aa45052c8e2b4478ea33fa918
   alt_text: null
   caption: null
 subjects: []
@@ -61,6 +61,8 @@ alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
 extraction_status: verified
+automatic_validation: passed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
@@ -71,3 +73,5 @@ A soma de dois números binários é feita bit a bit, começando da direita (men
 ![Figura da questão](enade-2021-cc-b-d04/figure-01.png)
 
 A	S B	Somador Completo
+
+Com base no somador completo de 1-bit apresentado na figura, descreva sua tabela verdade e o diagrama do seu circuito lógico. (valor: 10,0 pontos)

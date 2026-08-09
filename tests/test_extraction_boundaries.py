@@ -49,6 +49,45 @@ def test_perception_questionnaire_page_is_fully_excluded():
     assert all(ln.page_number != 2 for ln in result.spans[0].lines)
 
 
+def test_incidental_mention_of_perception_questionnaire_is_not_a_perception_page():
+    """Regression test: a Phase 1B faux-space fix correctly reconstructed
+    "questi onario" -> "questionario" on the real 2021 booklet's cover page,
+    which incidentally carries a structure-table row label reading exactly
+    "Questionário de Percepção da Prova" (identical text to the real section
+    heading, just without any of the reused QUESTAO 01..09 markers next to
+    it). That page must not be excluded as if it were the actual
+    questionnaire - it has real question markers of its own that must stay
+    in the academic question bank.
+    """
+    lines = [
+        _line(1, 10, "Questionário de Percepção da Prova"),  # table row label, not a heading
+        _line(1, 30, "5. As respostas do questionário de percepção da prova deverão ser..."),
+        _line(2, 10, "QUESTÃO DISCURSIVA 1"),
+        _line(2, 30, "Enunciado real da discursiva 1."),
+    ]
+    result = detect_question_boundaries(lines)
+    assert result.perception_pages == []
+    assert len(result.spans) == 1
+    assert result.spans[0].kind == QuestionKind.DISCURSIVE
+    # the discursive's own page (2) must never have been excluded
+    assert any(ln.page_number == 2 for ln in result.spans[0].lines)
+
+
+def test_perception_heading_alone_without_reused_markers_is_not_excluded():
+    """A bare heading-shaped line with no co-located QUESTAO N markers on the
+    same page is not enough evidence to exclude the page - see module
+    docstring on why the heading text alone is ambiguous.
+    """
+    lines = [
+        _line(1, 10, "QUESTÃO 1"),
+        _line(1, 30, "Enunciado real da questão 1."),
+        _line(2, 10, "Questionário de Percepção da Prova"),  # heading text, no markers nearby
+        _line(2, 30, "Texto de rodapé qualquer."),
+    ]
+    result = detect_question_boundaries(lines)
+    assert result.perception_pages == []
+
+
 def test_incidental_mention_of_questao_mid_sentence_is_not_a_marker():
     lines = [
         _line(1, 10, "QUESTÃO 1"),

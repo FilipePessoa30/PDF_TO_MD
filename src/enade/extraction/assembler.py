@@ -22,7 +22,9 @@ import pymupdf
 from enade.extraction.boundaries import QuestionKind, QuestionSpan
 from enade.extraction.chrome import is_chrome_line
 from enade.extraction.figures import VisualRegion, detect_visual_regions
+from enade.extraction.label_normalization import LabelCorrection
 from enade.extraction.layout import Line
+from enade.extraction.spacing import SpacingCorrection
 
 _ALTERNATIVE_LINE_RE = re.compile(r"^([A-E])[\t ](.*)$")
 #: A word ending in a common ligature-prone digraph, then a stray space, then
@@ -83,6 +85,18 @@ class ExtractedQuestion:
     alternatives: list[ExtractedAlternative] = field(default_factory=list)
     figure_regions: list[VisualRegion] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
+    #: Every geometry-based faux-space merge that fed into this question's
+    #: final statement/alternative text (see spacing.py) - the raw material
+    #: for the auditable transformation log (PROMPT section 15).
+    spacing_corrections: list[SpacingCorrection] = field(default_factory=list)
+    #: Every known font-mangled label correction (see label_normalization.py)
+    #: that fed into this question's final text - a distinct transformation
+    #: type from spacing_corrections (PROMPT section 15).
+    label_corrections: list[LabelCorrection] = field(default_factory=list)
+    #: Every known symbol-font character substitution (see symbol_fonts.py)
+    #: that fed into this question's final text - a distinct transformation
+    #: type from both spacing_corrections and label_corrections.
+    symbol_corrections: list[LabelCorrection] = field(default_factory=list)
 
     @property
     def plain_statement(self) -> str:
@@ -280,6 +294,9 @@ def _strip_leading_marker(lines: list[Line]) -> list[Line]:
         x1=first.x1,
         y1=first.y1,
         is_monospace=first.is_monospace,
+        spacing_corrections=first.spacing_corrections,
+        label_corrections=first.label_corrections,
+        symbol_corrections=first.symbol_corrections,
     )
     return [stripped_first, *lines[1:]]
 
@@ -317,8 +334,35 @@ def assemble_question(
         y_min, y_max = bounds[0] - y_tolerance, bounds[1] + y_tolerance
         regions.extend(r for r in page_regions if y_min <= r.bbox[1] <= y_max)
 
+    # A figure region can grow (via label absorption, see figures.py) far
+    # enough to overlap the *start* of the alternatives section below the
+    # statement. ``_line_in_region`` already protects an alternative's own
+    # marker line (matches ``_ALTERNATIVE_LINE_RE``), but a multi-line
+    # alternative's continuation lines (e.g. Q22's relational-schema
+    # alternatives, each spanning 2-5 lines) carry no such marker and were
+    # observed being silently swallowed by the DER diagram's region,
+    # dropping most of alternative A's own text (Phase 1B audit finding,
+    # see docs/decisions.md). Alternative content can never legitimately be
+    # "inside" a statement figure, so once the alternatives section is
+    # known to start (found here on the *unfiltered* lines, before any
+    # region exclusion), every line from that point on is exempted from
+    # region filtering entirely.
+    alt_section_start: tuple[int, float] | None = None
+    if span.kind == QuestionKind.OBJECTIVE:
+        preliminary_starts = _find_alternative_starts(content_lines)
+        if preliminary_starts is not None:
+            a_line = content_lines[preliminary_starts["A"]]
+            alt_section_start = _position_key(a_line.page_number, a_line.y0)
+
+    def _in_alternatives_section(ln: Line) -> bool:
+        return alt_section_start is not None and _position_key(ln.page_number, ln.y0) >= (
+            alt_section_start
+        )
+
     text_only_lines = [
-        ln for ln in content_lines if not any(_line_in_region(ln, r) for r in regions)
+        ln
+        for ln in content_lines
+        if _in_alternatives_section(ln) or not any(_line_in_region(ln, r) for r in regions)
     ]
 
     alternatives: list[ExtractedAlternative] = []
@@ -384,6 +428,10 @@ def assemble_question(
             "and were excluded from the statement (unexpected layout - needs review)"
         )
 
+    spacing_corrections = [c for ln in content_lines for c in ln.spacing_corrections]
+    label_corrections = [c for ln in content_lines for c in ln.label_corrections]
+    symbol_corrections = [c for ln in content_lines for c in ln.symbol_corrections]
+
     return ExtractedQuestion(
         kind=span.kind,
         number=span.number,
@@ -393,4 +441,7 @@ def assemble_question(
         alternatives=alternatives,
         figure_regions=statement_regions,
         warnings=warnings,
+        spacing_corrections=spacing_corrections,
+        label_corrections=label_corrections,
+        symbol_corrections=symbol_corrections,
     )

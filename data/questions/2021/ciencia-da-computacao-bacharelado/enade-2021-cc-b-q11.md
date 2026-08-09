@@ -24,7 +24,7 @@ assets:
   path: enade-2021-cc-b-q11/figure-01.png
   source_page: 20
   extraction_method: raster_crop
-  sha256: bd6321d00869a835ad0d454cffb3067fd6db7a3bd9a76d38fdaa469788f103ee
+  sha256: a5e455f0bc40d3a600e8389ca28661cd33561cf4baf821482e32c224fcfb8f9c
   alt_text: null
   caption: null
 subjects: []
@@ -38,18 +38,18 @@ alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
 extraction_status: verified
+automatic_validation: passed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 11
 
-Uma equipe de cientistas da computação de uma determinada empresa de animação foi designada para desenvolver um sistema capaz de varrer a web no intuito de detectar sites que possam estar usando imagens de seus personagens de animação sem o devido consentimento. Portanto, o sistema deverá receber imagens como entrada, classificá-las entre imagens da empresa e imagens não
+Uma equipe de cientistas da computação de uma determinada empresa de animação foi designada para desenvolver um sistema capaz de varrer a web no intuito de detectar sites que possam estar usando imagens de seus personagens de animação sem o devido consentimento. Portanto, o sistema deverá receber imagens como entrada, classificá-las entre imagens da empresa e imagens não produzidas pela empresa. A figura abaixo esboça uma arquitetura de rede neural profunda e o processo de treinamento que os cientistas pretendem usar.
 
 ![Figura da questão](enade-2021-cc-b-q11/figure-01.png)
 
-A figura abaixo esboça uma arquitetura de rede neural profunda e o processo de treinamento que os
-
-no entanto, pode exigir uso de máquinas com maior poder de processamento. III.	 Aumentar o número de unidades de processamento (neurônios) nas camadas pode levar a uma piora na acurácia, além de diminuir o tempo de treinamento da rede. IV.	 Aumentar o número de amostras de treinamento é uma alternativa que pode levar a uma melhora na acurácia, apesar de aumentar o tempo de treinamento da rede. V.	 Fazer uso de redes recorrentes é uma alternativa que pode levar a uma melhora na acurácia, no entanto, pode exigir uso de máquinas com maior poder de processamento. É correto apenas o que se afirma em
+no entanto, pode exigir uso de máquinas com maior poder de processamento. III. Aumentar o número de unidades de processamento (neurônios) nas camadas pode levar a uma piora na acurácia, além de diminuir o tempo de treinamento da rede. IV. Aumentar o número de amostras de treinamento é uma alternativa que pode levar a uma melhora na acurácia, apesar de aumentar o tempo de treinamento da rede. V. Fazer uso de redes recorrentes é uma alternativa que pode levar a uma melhora na acurácia, no entanto, pode exigir uso de máquinas com maior poder de processamento. É correto apenas o que se afirma em
 
 ## Alternativas
 
