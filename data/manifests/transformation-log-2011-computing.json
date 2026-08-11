@@ -1,0 +1,482 @@
+[
+  {
+    "question": "enade-2011-computing-d03",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 18,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'infi'+'nita' -> 'infinita' (gap=0.000pt, p.18)"
+  },
+  {
+    "question": "enade-2011-computing-q04",
+    "type": "label_case_normalization",
+    "source_page": 3,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'PORQUE' -> 'PORQUE' (p.3)"
+  },
+  {
+    "question": "enade-2011-computing-q09",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'afi'+'rma' -> 'afirma' (gap=0.010pt, p.9)"
+  },
+  {
+    "question": "enade-2011-computing-q09",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'afi'+'rmações' -> 'afirmações' (gap=0.000pt, p.9)"
+  },
+  {
+    "question": "enade-2011-computing-q09",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'defi'+'nida' -> 'definida' (gap=0.000pt, p.9)"
+  },
+  {
+    "question": "enade-2011-computing-q09",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'defi'+'nições' -> 'definições' (gap=0.000pt, p.9)"
+  },
+  {
+    "question": "enade-2011-computing-q09",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'verifi'+'cadas,' -> 'verificadas,' (gap=0.000pt, p.9)"
+  },
+  {
+    "question": "enade-2011-computing-q10",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'identifi'+'cados' -> 'identificados' (gap=-0.060pt, p.9)"
+  },
+  {
+    "question": "enade-2011-computing-q11",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 10,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'fi'+'nita,' -> 'finita,' (gap=0.100pt, p.10)"
+  },
+  {
+    "question": "enade-2011-computing-q11",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 10,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'indefi'+'nidamente.' -> 'indefinidamente.' (gap=0.100pt, p.10)"
+  },
+  {
+    "question": "enade-2011-computing-q12",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 10,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'afi'+'rma' -> 'afirma' (gap=0.010pt, p.10)"
+  },
+  {
+    "question": "enade-2011-computing-q12",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 10,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'afi'+'rmações' -> 'afirmações' (gap=-0.060pt, p.10)"
+  },
+  {
+    "question": "enade-2011-computing-q13",
+    "type": "label_case_normalization",
+    "source_page": 10,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'PORQUE' -> 'PORQUE' (p.10)"
+  },
+  {
+    "question": "enade-2011-computing-q13",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 10,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'fi'+'m' -> 'fim' (gap=0.000pt, p.10)"
+  },
+  {
+    "question": "enade-2011-computing-q13",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 10,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'justifi'+'cativa' -> 'justificativa' (gap=0.010pt, p.10)"
+  },
+  {
+    "question": "enade-2011-computing-q13",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 10,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'justifi'+'cativa' -> 'justificativa' (gap=0.010pt, p.10)"
+  },
+  {
+    "question": "enade-2011-computing-q13",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 10,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'verifi'+'car' -> 'verificar' (gap=0.000pt, p.10)"
+  },
+  {
+    "question": "enade-2011-computing-q15",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'Confi'+'guration' -> 'Configuration' (gap=0.010pt, p.11)"
+  },
+  {
+    "question": "enade-2011-computing-q15",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'efi'+'ciente)' -> 'eficiente)' (gap=0.000pt, p.11)"
+  },
+  {
+    "question": "enade-2011-computing-q16",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'confi'+'gurado' -> 'configurado' (gap=0.000pt, p.11)"
+  },
+  {
+    "question": "enade-2011-computing-q16",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'profi'+'ssional' -> 'profissional' (gap=0.000pt, p.11)"
+  },
+  {
+    "question": "enade-2011-computing-q18",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'afi'+'rma' -> 'afirma' (gap=0.000pt, p.13)"
+  },
+  {
+    "question": "enade-2011-computing-q18",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'afi'+'rmações' -> 'afirmações' (gap=0.000pt, p.13)"
+  },
+  {
+    "question": "enade-2011-computing-q19",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'verifi'+'cação' -> 'verificação' (gap=0.000pt, p.13)"
+  },
+  {
+    "question": "enade-2011-computing-q20",
+    "type": "label_case_normalization",
+    "source_page": 13,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'PORQUE' -> 'PORQUE' (p.13)"
+  },
+  {
+    "question": "enade-2011-computing-q20",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'justifi'+'cativa' -> 'justificativa' (gap=0.010pt, p.13)"
+  },
+  {
+    "question": "enade-2011-computing-q20",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'justifi'+'cativa' -> 'justificativa' (gap=0.010pt, p.13)"
+  },
+  {
+    "question": "enade-2011-computing-q21",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'fi'+'cou' -> 'ficou' (gap=0.000pt, p.13)"
+  },
+  {
+    "question": "enade-2011-computing-q21",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'fi'+'cou' -> 'ficou' (gap=0.000pt, p.13)"
+  },
+  {
+    "question": "enade-2011-computing-q21",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'fi'+'cou' -> 'ficou' (gap=0.000pt, p.13)"
+  },
+  {
+    "question": "enade-2011-computing-q21",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'fi'+'la,' -> 'fila,' (gap=0.000pt, p.13)"
+  },
+  {
+    "question": "enade-2011-computing-q21",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'fi'+'la.' -> 'fila.' (gap=0.000pt, p.13)"
+  },
+  {
+    "question": "enade-2011-computing-q22",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 14,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'defi'+'nidas' -> 'definidas' (gap=0.000pt, p.14)"
+  },
+  {
+    "question": "enade-2011-computing-q23",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 14,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'fi'+'gura' -> 'figura' (gap=0.000pt, p.14)"
+  },
+  {
+    "question": "enade-2011-computing-q23",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 14,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'fi'+'nitos' -> 'finitos' (gap=0.000pt, p.14)"
+  },
+  {
+    "question": "enade-2011-computing-q23",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 14,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'prefi'+'xo' -> 'prefixo' (gap=0.010pt, p.14)"
+  },
+  {
+    "question": "enade-2011-computing-q27",
+    "type": "label_case_normalization",
+    "source_page": 16,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'porque' -> 'PORQUE' (p.16)"
+  },
+  {
+    "question": "enade-2011-computing-q33",
+    "type": "label_case_normalization",
+    "source_page": 22,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'PORQUE' -> 'PORQUE' (p.22)"
+  },
+  {
+    "question": "enade-2011-computing-q38",
+    "type": "label_case_normalization",
+    "source_page": 25,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'PORQUE' -> 'PORQUE' (p.25)"
+  },
+  {
+    "question": "enade-2011-computing-q38",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 25,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'ambiguidade,'+'g' -> 'ambiguidade,g' (gap=-38.360pt, p.25)"
+  },
+  {
+    "question": "enade-2011-computing-q38",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 25,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'defi'+'nidos:' -> 'definidos:' (gap=0.020pt, p.25)"
+  },
+  {
+    "question": "enade-2011-computing-q38",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 25,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'dígitos'+'g' -> 'dígitosg' (gap=-21.119pt, p.25)"
+  },
+  {
+    "question": "enade-2011-computing-q38",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 25,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'justifi'+'cativa' -> 'justificativa' (gap=0.010pt, p.25)"
+  },
+  {
+    "question": "enade-2011-computing-q38",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 25,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'justifi'+'cativa' -> 'justificativa' (gap=0.010pt, p.25)"
+  },
+  {
+    "question": "enade-2011-computing-q39",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 25,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'afi'+'rma' -> 'afirma' (gap=0.010pt, p.25)"
+  },
+  {
+    "question": "enade-2011-computing-q39",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 25,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'afi'+'rmativas' -> 'afirmativas' (gap=0.000pt, p.25)"
+  },
+  {
+    "question": "enade-2011-computing-q39",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 25,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'especifi'+'cação' -> 'especificação' (gap=0.010pt, p.25)"
+  },
+  {
+    "question": "enade-2011-computing-q40",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 25,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'algoritmo'+'A*' -> 'algoritmoA*' (gap=0.990pt, p.25)"
+  },
+  {
+    "question": "enade-2011-computing-q40",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 25,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'fi'+'gura' -> 'figura' (gap=0.000pt, p.25)"
+  },
+  {
+    "question": "enade-2011-computing-q41",
+    "type": "label_case_normalization",
+    "source_page": 26,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'PORQUE' -> 'PORQUE' (p.26)"
+  },
+  {
+    "question": "enade-2011-computing-q43",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 27,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'afi'+'rma' -> 'afirma' (gap=0.000pt, p.27)"
+  },
+  {
+    "question": "enade-2011-computing-q43",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 27,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'afi'+'rmações' -> 'afirmações' (gap=0.030pt, p.27)"
+  },
+  {
+    "question": "enade-2011-computing-q43",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 27,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'fi'+'gura,' -> 'figura,' (gap=0.020pt, p.27)"
+  },
+  {
+    "question": "enade-2011-computing-q44",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 28,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'fi'+'gura' -> 'figura' (gap=-0.200pt, p.28)"
+  },
+  {
+    "question": "enade-2011-computing-q44",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 28,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'fi'+'nal' -> 'final' (gap=-0.200pt, p.28)"
+  },
+  {
+    "question": "enade-2011-computing-q44",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 28,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'signifi'+'cativos' -> 'significativos' (gap=-0.200pt, p.28)"
+  },
+  {
+    "question": "enade-2011-computing-q44",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 28,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'signifi'+'cativos' -> 'significativos' (gap=0.010pt, p.28)"
+  },
+  {
+    "question": "enade-2011-computing-q44",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 28,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'signifi'+'cativos.' -> 'significativos.' (gap=-0.200pt, p.28)"
+  },
+  {
+    "question": "enade-2011-computing-q44",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 28,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'signifi'+'cativos.' -> 'significativos.' (gap=-0.200pt, p.28)"
+  },
+  {
+    "question": "enade-2011-computing-q48",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 31,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'estoque’'+'incorpora' -> 'estoque’incorpora' (gap=0.990pt, p.31)"
+  }
+]

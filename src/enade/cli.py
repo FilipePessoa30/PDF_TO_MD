@@ -12,12 +12,15 @@ import importlib.metadata
 import shutil
 import subprocess
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 
 import typer
 
 from enade import __version__
+from enade.extraction.answer_key import parse_answer_key, parse_flat_item_gabarito
 from enade.extraction.audit import build_audit_row, write_audit_csv, write_audit_json
+from enade.extraction.exam_profile import ExamStructureProfile, load_exam_structure_profile
 from enade.extraction.expected_structure import (
     compare_with_expected as compare_extraction_with_expected,
 )
@@ -261,6 +264,113 @@ def validate_schema_cmd(
         raise typer.Exit(code=1)
 
 
+@dataclass(frozen=True)
+class BookletLocation:
+    """Where one booklet's source PDFs live and how its output is named.
+
+    Resolved once, in one place, for every command that needs to locate a
+    booklet - ``extract``, ``build-gold``, ``verify-gold``,
+    ``assess-readiness`` - so the ``course=all-computing`` (unified
+    booklet, PROMPT Phase 2A) dispatch logic exists exactly once rather
+    than being re-derived per command.
+    """
+
+    course_code: CourseCode
+    is_unified: bool
+    prova_path: Path
+    gabarito_path: Path
+    padrao_path: Path
+    exam_id: str
+    file_slug: str
+    structure_profile: ExamStructureProfile | None
+    output_dir_name: str
+
+
+@dataclass(frozen=True)
+class BookletNaming:
+    """The naming half of ``BookletLocation`` - no PDF paths, no filesystem
+    checks beyond reading a unified booklet's own (small) structure profile.
+    Used by commands that only ever touch already-extracted Markdown
+    (``verify-gold``, ``assess-readiness``) and have no reason to require
+    the raw corpus PDFs to be present.
+    """
+
+    course_code: CourseCode
+    is_unified: bool
+    exam_id: str
+    file_slug: str
+    structure_profile: ExamStructureProfile | None
+    output_dir_name: str
+
+
+def _resolve_booklet_naming(year: int, course: str) -> BookletNaming:
+    try:
+        course_code = CourseCode(course)
+    except ValueError:
+        typer.echo(f"unknown course {course!r}; expected one of {[c.value for c in CourseCode]}")
+        raise typer.Exit(code=1) from None
+
+    is_unified = course_code == CourseCode.ALL_COMPUTING
+    if not is_unified and COURSE_TO_LETTER.get(course_code) is None:
+        typer.echo(f"course {course!r} has no known source-filename letter")
+        raise typer.Exit(code=1)
+
+    if is_unified:
+        profile_path = DEFAULT_AUDIT_DIR / f"exam-structure-{year}.yaml"
+        if not profile_path.exists():
+            typer.echo(f"no unified-booklet structure profile found at {profile_path}")
+            raise typer.Exit(code=1)
+        structure_profile = load_exam_structure_profile(profile_path)
+        exam_id = structure_profile.exam_id
+        file_slug = structure_profile.id_shorthand
+    else:
+        structure_profile = None
+        letter = COURSE_TO_LETTER[course_code]
+        exam_id = f"enade-{year}-{letter}"
+        file_slug = letter
+
+    return BookletNaming(
+        course_code=course_code,
+        is_unified=is_unified,
+        exam_id=exam_id,
+        file_slug=file_slug,
+        structure_profile=structure_profile,
+        output_dir_name=course_code.value,
+    )
+
+
+def _resolve_booklet_location(year: int, course: str, corpus_root: Path) -> BookletLocation:
+    """Locate a booklet's source PDFs and naming, or exit(1) with a clear message."""
+    naming = _resolve_booklet_naming(year, course)
+    year_dir = corpus_root / str(year)
+    if naming.is_unified:
+        prova_path = year_dir / "1_prova.pdf"
+        gabarito_path = year_dir / "2_gabarito.pdf"
+        padrao_path = year_dir / "3_padrao.pdf"
+    else:
+        letter = naming.file_slug
+        prova_path = year_dir / f"{letter}1_prova.pdf"
+        gabarito_path = year_dir / f"{letter}2_gabarito.pdf"
+        padrao_path = year_dir / f"{letter}3_padrao.pdf"
+
+    for p in (prova_path, gabarito_path, padrao_path):
+        if not p.exists():
+            typer.echo(f"expected source file not found: {p}")
+            raise typer.Exit(code=1)
+
+    return BookletLocation(
+        course_code=naming.course_code,
+        is_unified=naming.is_unified,
+        prova_path=prova_path,
+        gabarito_path=gabarito_path,
+        padrao_path=padrao_path,
+        exam_id=naming.exam_id,
+        file_slug=naming.file_slug,
+        structure_profile=naming.structure_profile,
+        output_dir_name=naming.output_dir_name,
+    )
+
+
 @app.command()
 def extract(
     year: int = typer.Option(..., help="exam year, e.g. 2021"),
@@ -283,28 +393,20 @@ def extract(
     PROMPT-scoped to a single booklet at a time by design (Phase 1A does not
     batch across the corpus) - locates ``<corpus_root>/<year>/<letter>{1,2,3}_*.pdf``
     using the same course-letter convention as ``enade inventory``.
+
+    ``course=all-computing`` selects a *unified* multi-course booklet
+    instead (PROMPT Phase 2A): source files are looked up without a course
+    letter (``<corpus_root>/<year>/{1,2,3}_*.pdf``, e.g. 2011's single
+    "COMPUTACAO" caderno) and a declarative
+    ``data/manifests/exam-structure-<year>.yaml`` profile drives each
+    question's section/applicable-courses/id - see ``exam_profile.py``.
+    Nothing about the extractor itself branches on year; this dispatch is
+    the one place that decides which shape a given booklet is.
     """
-    try:
-        course_code = CourseCode(course)
-    except ValueError:
-        typer.echo(f"unknown course {course!r}; expected one of {[c.value for c in CourseCode]}")
-        raise typer.Exit(code=1) from None
-
-    letter = COURSE_TO_LETTER.get(course_code)
-    if letter is None:
-        typer.echo(
-            f"course {course!r} has no known source-filename letter (e.g. 'all-computing' is not supported)"
-        )
-        raise typer.Exit(code=1)
-
-    year_dir = corpus_root / str(year)
-    prova_path = year_dir / f"{letter}1_prova.pdf"
-    gabarito_path = year_dir / f"{letter}2_gabarito.pdf"
-    padrao_path = year_dir / f"{letter}3_padrao.pdf"
-    for p in (prova_path, gabarito_path, padrao_path):
-        if not p.exists():
-            typer.echo(f"expected source file not found: {p}")
-            raise typer.Exit(code=1)
+    loc = _resolve_booklet_location(year, course, corpus_root)
+    course_code, is_unified = loc.course_code, loc.is_unified
+    prova_path, gabarito_path, padrao_path = loc.prova_path, loc.gabarito_path, loc.padrao_path
+    exam_id, file_slug, structure_profile = loc.exam_id, loc.file_slug, loc.structure_profile
 
     try:
         repository = read_source_repository(corpus_root)
@@ -312,12 +414,11 @@ def extract(
         typer.echo(f"could not read git metadata for {corpus_root}: {exc}")
         raise typer.Exit(code=1) from exc
 
-    exam_id = f"enade-{year}-{letter}"
     typer.echo(f"Extracting {exam_id} ({course_code.value}) from {prova_path.name} ...")
     typer.echo(f"  corpus commit: {repository.commit_sha[:12]} (ref={repository.ref})")
 
     resolved_visual_audit_file = visual_audit_file or (
-        DEFAULT_AUDIT_DIR / f"visual-audit-{year}-{letter}.json"
+        DEFAULT_AUDIT_DIR / f"visual-audit-{year}-{file_slug}.json"
     )
     visual_audit = load_visual_audit(resolved_visual_audit_file)
     if visual_audit:
@@ -332,11 +433,14 @@ def extract(
         padrao_path=padrao_path,
         corpus_root=corpus_root,
         exam_year=year,
-        course=course_code,
+        course=None if is_unified else course_code,
         exam_id=exam_id,
         questions_output_dir=questions_dir,
         visual_audit=visual_audit,
         table_cells_verified_ids=table_cells_verified_ids,
+        structure_profile=structure_profile,
+        output_dir_name=course_code.value if is_unified else None,
+        answer_key_parser=parse_flat_item_gabarito if is_unified else parse_answer_key,
     )
 
     m = result.metrics
@@ -378,28 +482,35 @@ def extract(
     if not any_review:
         typer.echo("  (none)")
 
-    comparison = compare_extraction_with_expected(result)
-    typer.echo("")
-    if comparison.matches_expected:
-        typer.echo("Structure matches what was previously observed for this booklet.")
-    else:
-        typer.echo("Structure DIVERGES from what was previously observed:")
-        for note in comparison.notes:
-            typer.echo(f"  - {note}")
+    # `expected_structure.py` records what was previously observed for the
+    # single-course 2021 shape (35 obj/5 disc) - not meaningful for a
+    # unified booklet's own, structurally different question count, so this
+    # comparison is skipped there (the structure profile's own zero-warning
+    # cross-check against the PDF already serves the same "matches what we
+    # expected" role for that shape - see exam_profile.verify_declared_profile).
+    if not is_unified:
+        comparison = compare_extraction_with_expected(result)
+        typer.echo("")
+        if comparison.matches_expected:
+            typer.echo("Structure matches what was previously observed for this booklet.")
+        else:
+            typer.echo("Structure DIVERGES from what was previously observed:")
+            for note in comparison.notes:
+                typer.echo(f"  - {note}")
 
     audit_dir.mkdir(parents=True, exist_ok=True)
     rows = [
         build_audit_row(q, result.per_question_warnings.get(q.id, [])) for q in result.questions
     ]
-    csv_path = audit_dir / f"extraction-audit-{year}-{letter}.csv"
-    json_path = audit_dir / f"extraction-audit-{year}-{letter}.json"
+    csv_path = audit_dir / f"extraction-audit-{year}-{file_slug}.csv"
+    json_path = audit_dir / f"extraction-audit-{year}-{file_slug}.json"
     write_audit_csv(rows, csv_path)
     write_audit_json(rows, json_path)
     typer.echo("")
     typer.echo(f"Audit report: {csv_path}")
     typer.echo(f"Audit report: {json_path}")
 
-    transformation_log_path = audit_dir / f"transformation-log-{year}-{letter}.json"
+    transformation_log_path = audit_dir / f"transformation-log-{year}-{file_slug}.json"
     write_transformation_log_json(result.transformation_log, transformation_log_path)
     typer.echo(
         f"Transformation log: {transformation_log_path} "
@@ -519,25 +630,7 @@ def build_gold_cmd(
     side effect of ``extract``, ``audit-extraction``, or the test suite.
     Re-run this only after intentionally accepting a real, reviewed change.
     """
-    try:
-        course_code = CourseCode(course)
-    except ValueError:
-        typer.echo(f"unknown course {course!r}; expected one of {[c.value for c in CourseCode]}")
-        raise typer.Exit(code=1) from None
-
-    letter = COURSE_TO_LETTER.get(course_code)
-    if letter is None:
-        typer.echo(f"course {course!r} has no known source-filename letter")
-        raise typer.Exit(code=1)
-
-    year_dir = corpus_root / str(year)
-    prova_path = year_dir / f"{letter}1_prova.pdf"
-    gabarito_path = year_dir / f"{letter}2_gabarito.pdf"
-    padrao_path = year_dir / f"{letter}3_padrao.pdf"
-    for p in (prova_path, gabarito_path, padrao_path):
-        if not p.exists():
-            typer.echo(f"expected source file not found: {p}")
-            raise typer.Exit(code=1)
+    loc = _resolve_booklet_location(year, course, corpus_root)
 
     try:
         repository = read_source_repository(corpus_root)
@@ -545,15 +638,15 @@ def build_gold_cmd(
         typer.echo(f"could not read git metadata for {corpus_root}: {exc}")
         raise typer.Exit(code=1) from exc
 
-    course_dir = questions_dir / str(year) / course_code.value
+    course_dir = questions_dir / str(year) / loc.output_dir_name
     manifest = build_gold_manifest(
-        exam_id=f"enade-{year}-{letter}",
+        exam_id=loc.exam_id,
         exam_year=year,
-        course=course_code.value,
+        course=loc.course_code.value,
         corpus_commit=repository.commit_sha,
-        prova_path=prova_path,
-        gabarito_path=gabarito_path,
-        padrao_path=padrao_path,
+        prova_path=loc.prova_path,
+        gabarito_path=loc.gabarito_path,
+        padrao_path=loc.padrao_path,
         course_dir=course_dir,
         maturity=maturity,
         structural_blockers=tuple(structural_blocker),
@@ -574,7 +667,7 @@ def build_gold_cmd(
         f"({sum(len(a.assets) for a in manifest.answer_standards)} padrao asset(s))"
     )
 
-    gold_path = gold_dir / f"gold-{year}-{letter}.json"
+    gold_path = gold_dir / f"gold-{year}-{loc.file_slug}.json"
     write_gold_manifest(manifest, gold_path)
     typer.echo(f"Wrote {gold_path}")
 
@@ -593,24 +686,15 @@ def verify_gold_cmd(
     missing question, unexpected extra question, hash mismatch. Exits
     non-zero on any divergence - never silently accepts a changed hash.
     """
-    try:
-        course_code = CourseCode(course)
-    except ValueError:
-        typer.echo(f"unknown course {course!r}; expected one of {[c.value for c in CourseCode]}")
-        raise typer.Exit(code=1) from None
+    naming = _resolve_booklet_naming(year, course)
 
-    letter = COURSE_TO_LETTER.get(course_code)
-    if letter is None:
-        typer.echo(f"course {course!r} has no known source-filename letter")
-        raise typer.Exit(code=1)
-
-    gold_path = gold_dir / f"gold-{year}-{letter}.json"
+    gold_path = gold_dir / f"gold-{year}-{naming.file_slug}.json"
     if not gold_path.exists():
         typer.echo(f"no gold manifest found at {gold_path} (run `enade build-gold` first)")
         raise typer.Exit(code=1)
 
     manifest = read_gold_manifest(gold_path)
-    course_dir = questions_dir / str(year) / course_code.value
+    course_dir = questions_dir / str(year) / naming.output_dir_name
     divergences = verify_gold_manifest(manifest, course_dir)
 
     if not divergences:
@@ -640,35 +724,33 @@ def assess_readiness_cmd(
         DEFAULT_QUESTIONS_DIR, help="directory of already-extracted question .md files"
     ),
     gold_dir: Path = typer.Option(DEFAULT_AUDIT_DIR, help="directory containing the gold manifest"),
+    ready_label: str = typer.Option(
+        "READY_FOR_2011",
+        help="label printed when ready - override for a booklet whose readiness doesn't "
+        "mean 'ready to process 2011' (e.g. 2011 itself: READY_FOR_LEGACY_LAYOUT_TEST)",
+    ),
+    not_ready_label: str = typer.Option("NOT_READY_FOR_2011", help="label printed when not ready"),
 ) -> None:
     """Readiness gate, separate from hash verification (PROMPT Phase 1C
     section 14): considers gold integrity, structural blockers, automatic
     and visual validation, asset integrity, answer linkage, and
-    answer-standard coverage. Prints READY_FOR_2011/NOT_READY_FOR_2011 and
-    every individual blocker - never a bare pass/fail count. Exits non-zero
-    when not ready.
+    answer-standard coverage. Prints READY_FOR_2011/NOT_READY_FOR_2011 (or
+    the ``--ready-label``/``--not-ready-label`` override) and every
+    individual blocker - never a bare pass/fail count. Exits non-zero when
+    not ready.
     """
-    try:
-        course_code = CourseCode(course)
-    except ValueError:
-        typer.echo(f"unknown course {course!r}; expected one of {[c.value for c in CourseCode]}")
-        raise typer.Exit(code=1) from None
+    naming = _resolve_booklet_naming(year, course)
 
-    letter = COURSE_TO_LETTER.get(course_code)
-    if letter is None:
-        typer.echo(f"course {course!r} has no known source-filename letter")
-        raise typer.Exit(code=1)
-
-    gold_path = gold_dir / f"gold-{year}-{letter}.json"
+    gold_path = gold_dir / f"gold-{year}-{naming.file_slug}.json"
     if not gold_path.exists():
         typer.echo(f"no gold manifest found at {gold_path} (run `enade build-gold` first)")
         raise typer.Exit(code=1)
 
     manifest = read_gold_manifest(gold_path)
-    course_dir = questions_dir / str(year) / course_code.value
+    course_dir = questions_dir / str(year) / naming.output_dir_name
     report = assess_readiness(manifest, course_dir)
 
-    typer.echo(f"assess-readiness: {report.classification}")
+    typer.echo(f"assess-readiness: {ready_label if report.ready else not_ready_label}")
     typer.echo(
         f"  {report.verified_count}/{report.total_questions} verified, "
         f"{report.needs_review_count} needs_review, gold maturity={report.gold_maturity}"

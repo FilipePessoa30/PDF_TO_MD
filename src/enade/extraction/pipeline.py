@@ -14,12 +14,13 @@ later phase, not something that falls out accidentally.
 from __future__ import annotations
 
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 
 import pymupdf
 
-from enade.extraction.answer_key import AnswerKeyValueKind, parse_answer_key
+from enade.extraction.answer_key import AnswerKeyParseResult, AnswerKeyValueKind, parse_answer_key
 from enade.extraction.answer_standard import find_answer_standard_images, parse_answer_standard
 from enade.extraction.assembler import assemble_question
 from enade.extraction.assets import (
@@ -30,11 +31,12 @@ from enade.extraction.assets import (
 )
 from enade.extraction.boundaries import QuestionKind, detect_question_boundaries
 from enade.extraction.declared_structure import parse_declared_structure
+from enade.extraction.exam_profile import ExamStructureProfile, verify_declared_profile
 from enade.extraction.figures import compute_decorative_baseline
 from enade.extraction.layout import extract_document_lines
 from enade.extraction.markdown_writer import WriteResult, write_question_markdown
 from enade.extraction.pdf_source import PdfDocument
-from enade.extraction.to_question import COURSE_ID_SHORTHAND, build_question
+from enade.extraction.to_question import COURSE_ID_SHORTHAND, _section_for, build_question
 from enade.extraction.transformation_log import TransformationLogEntry
 from enade.extraction.validator import evaluate_extraction
 from enade.inventory.pdfmeta import sha256_of_file
@@ -88,15 +90,43 @@ def extract_exam(
     padrao_path: Path,
     corpus_root: Path,
     exam_year: int,
-    course: CourseCode,
+    course: CourseCode | None = None,
     exam_id: str,
     questions_output_dir: Path,
     visual_audit: dict[str, VisualValidationStatus] | None = None,
     table_cells_verified_ids: frozenset[str] | None = None,
+    structure_profile: ExamStructureProfile | None = None,
+    output_dir_name: str | None = None,
+    answer_key_parser: Callable[[pymupdf.Document], AnswerKeyParseResult] = parse_answer_key,
 ) -> ExtractionResult:
+    """Extract one booklet (prova+gabarito+padrao) into canonical Markdown.
+
+    Two resolution shapes are supported, chosen by whether
+    ``structure_profile`` is given (PROMPT Phase 2A section 10 - config
+    driven, not an ``if year == 2011`` branch spread through this function):
+
+    - Single-course booklet (2021 and every other per-course year): pass
+      ``course``. Part boundaries come from this PDF's own printed
+      instructions (``declared_structure.parse_declared_structure``), every
+      question's ``applicable_courses`` is simply ``[course]``, and its id
+      shorthand comes from ``COURSE_ID_SHORTHAND``. This is the exact
+      pre-Phase-2A behavior, unchanged.
+    - Unified multi-course booklet (2011): pass ``structure_profile``
+      instead. Each question's section, applicable courses and id
+      shorthand are resolved per question number from the profile (see
+      ``exam_profile.py``); a question number the profile does not cover is
+      recorded as a structural warning and excluded from the output rather
+      than guessed.
+
+    ``output_dir_name`` overrides the output subdirectory name (defaults to
+    ``course.value``); required when ``course`` is not given.
+    """
     start = time.monotonic()
     table_cells_verified_ids = table_cells_verified_ids or frozenset()
     structural_warnings: list[str] = []
+    resolved_output_dir_name = output_dir_name or (course.value if course else None)
+    if resolved_output_dir_name is None:
+        raise ValueError("extract_exam: need either `course` or `output_dir_name`")
     # Assets live in a subdirectory next to their question's own Markdown
     # file (not a separate top-level tree) so that the relative path
     # embedded in `![...](question-id/figure-01.png)` resolves correctly
@@ -105,7 +135,7 @@ def extract_exam(
     # (models/asset.py), which forbids ".." components: a separate assets
     # root would require a "../../.." traversal to reach from the question's
     # directory, which that validator already rejects by design.
-    course_dir = questions_output_dir / str(exam_year) / course.value
+    course_dir = questions_output_dir / str(exam_year) / resolved_output_dir_name
 
     with PdfDocument(prova_path, corpus_root) as prova:
         gabarito_doc = pymupdf.open(str(gabarito_path))
@@ -119,12 +149,17 @@ def extract_exam(
             boundary_result = detect_question_boundaries(lines)
             structural_warnings.extend(boundary_result.warnings)
 
-            declared = parse_declared_structure(prova.raw)
-            structural_warnings.extend(declared.notes)
+            declared_structure_2021 = None
+            if structure_profile is None:
+                declared = parse_declared_structure(prova.raw)
+                structural_warnings.extend(declared.notes)
+                declared_structure_2021 = declared.structure
+            else:
+                structural_warnings.extend(verify_declared_profile(prova.raw))
 
             baseline = compute_decorative_baseline(prova.raw)
 
-            answer_key_result = parse_answer_key(gabarito_doc)
+            answer_key_result = answer_key_parser(gabarito_doc)
             structural_warnings.extend(answer_key_result.warnings)
             answer_standard_result = parse_answer_standard(padrao_doc)
             structural_warnings.extend(answer_standard_result.warnings)
@@ -139,9 +174,26 @@ def extract_exam(
 
             ordered_spans = sorted(boundary_result.spans, key=lambda s: (s.kind.value, s.number))
             for span in ordered_spans:
+                if structure_profile is not None:
+                    section_range = structure_profile.resolve(span.kind, span.number)
+                    if section_range is None:
+                        structural_warnings.append(
+                            f"{span.kind.value} {span.number}: not covered by any section in "
+                            "the structure profile - excluded from output rather than guessed"
+                        )
+                        continue
+                    applicable_courses = section_range.applicable_courses
+                    section = section_range.id
+                    shorthand = structure_profile.id_shorthand
+                else:
+                    assert course is not None
+                    assert declared_structure_2021 is not None
+                    applicable_courses = [course]
+                    section = _section_for(span.kind, span.number, declared_structure_2021)
+                    shorthand = COURSE_ID_SHORTHAND[course]
+
                 extracted = assemble_question(span, prova.raw, baseline)
 
-                shorthand = COURSE_ID_SHORTHAND[course]
                 suffix = "q" if span.kind == QuestionKind.OBJECTIVE else "d"
                 question_id = f"enade-{exam_year}-{shorthand}-{suffix}{span.number:02d}"
 
@@ -284,11 +336,12 @@ def extract_exam(
                 question = build_question(
                     extracted=extracted,
                     exam_year=exam_year,
-                    course=course,
+                    applicable_courses=applicable_courses,
+                    id_shorthand=shorthand,
+                    section=section,
                     exam_id=exam_id,
                     prova_source_path=prova.identity.source_path,
                     prova_sha256=prova.identity.sha256,
-                    structure=declared.structure,
                     answer_key_entry=answer_key_entry,
                     answer_standard_entry=answer_standard_entry,
                     answer_standard_source_path=padrao_source_path

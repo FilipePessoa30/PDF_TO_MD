@@ -60,3 +60,63 @@ def test_merge_orphan_markers_ignores_distant_candidates():
     merged = _merge_orphan_markers(lines)
     # No plausible partner within tolerance - orphan line is kept as-is, not lost.
     assert len(merged) == 2
+
+
+def test_detect_column_margins_splits_at_widest_gap_not_top_two_by_frequency():
+    # A column can have two recurring indentation levels (a paragraph
+    # margin and a more-indented list-item margin) that are each more
+    # frequent than the other column's own single margin. Picking "top 2 by
+    # raw count" would wrongly pair the two same-column buckets together;
+    # the widest-gap split must still find the real left/right boundary
+    # (2011 unified booklet, pages 5/16/21/30 - see layout.py docstring).
+    lines = []
+    for i in range(6):
+        lines.append(_line(295, i * 20, f"corpo da coluna direita {i}", x1=595))
+    for i in range(4):
+        lines.append(_line(315, 200 + i * 20, f"item indentado da direita {i}", x1=595))
+    for i in range(4):
+        lines.append(_line(30, i * 20, f"coluna esquerda mais curta {i}", x1=280))
+    margins = detect_column_margins(lines)
+    assert margins is not None
+    left_margin, right_margin = margins
+    assert left_margin == 30
+    assert right_margin == 295
+
+
+def test_merge_orphan_markers_only_pairs_within_the_same_column():
+    # A right-column orphan marker must never merge with left-column text
+    # just because it happens to be closer in Y alone (2011 unified
+    # booklet, Q10: alternative B's marker merged with an unrelated
+    # left-column fragment 4pt away in Y, instead of its own right-column
+    # partner 7.6pt away - see layout.py docstring for the full story).
+    margins = (30.0, 300.0)
+    lines = [
+        _line(300, 100, "B"),  # right-column orphan marker
+        _line(28, 104, "fragmento da coluna esquerda não relacionado", x1=280),  # closer in Y only
+        _line(300, 108, "155"),  # the real, same-column partner
+    ]
+    merged = _merge_orphan_markers(lines, margins)
+    assert len(merged) == 2
+    right_result = next(ln for ln in merged if ln.x0 >= 300)
+    assert right_result.text.startswith("B\t")
+    assert "155" in right_result.text
+    left_result = next(ln for ln in merged if ln.x0 < 300)
+    assert left_result.text == "fragmento da coluna esquerda não relacionado"
+
+
+def test_detect_column_margins_excludes_chrome_lines_from_evidence():
+    # A page-furniture header (e.g. a running title) repeats at the same
+    # left margin on every page regardless of whether the body below it is
+    # one or two columns - it must not, by itself, manufacture a false
+    # left-column margin out of an otherwise single-column page (2011
+    # unified booklet, page 18 / Discursiva 3 - see layout.py docstring).
+    lines = [
+        _line(28, 10, "2011"),  # chrome: exact year line
+        _line(28, 30, "exame nacional de desempenho dos estudantes"),  # chrome: exact header line
+        _line(
+            28, 460, "desenvolva o algoritmo solicitado a seguir."
+        ),  # single real body line, left
+    ]
+    for i in range(4):
+        lines.append(_line(140, 60 + i * 20, f"parágrafo indentado ao redor da figura {i}", x1=440))
+    assert detect_column_margins(lines) is None

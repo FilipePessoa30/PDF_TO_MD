@@ -54,6 +54,60 @@ _EXACT_CHROME_LINES: frozenset[str] = frozenset(
         "formacao geral",
         "componente específico",
         "componente especifico",
+        # 2011 unified booklet's own running header ("COMPUTACAO" / "2011" /
+        # "EXAME NACIONAL DE DESEMPENHO DOS ESTUDANTES", one triplet per
+        # content page) - "computacao" is already covered by no entry here
+        # since it is also a real word inside question prose, but the bare
+        # standalone year and the header phrase are not. The year line is
+        # exact-matched (not a blanket \d{4} regex) because the booklet
+        # separately embeds real years as in-sentence content (e.g. D2's
+        # illiteracy-rate table has row years 2000-2009) - only ever mid-
+        # sentence, never as a line's entire content, so a bare "2011" line
+        # is unambiguous. The header phrase is additionally listed without
+        # spaces: on some pages (confirmed: page 4) its geometric space
+        # reconstruction fails and it extracts as one glued word - a
+        # distinct literal, not a substring of the spaced form, so both
+        # must be listed (see docs/decisions.md, Phase 2A ADR).
+        "2011",
+        "examenacionaldedesempenhodosestudantes",
+        # The bare running-header course-area word on every 2011 content
+        # page (the header is "COMPUTACAO" / "2011" / "EXAME NACIONAL...",
+        # three separate lines) - same justification and risk profile as
+        # "bacharelado" above (a single common word, but confirmed via
+        # extensive corpus reading to appear only as this page header, never
+        # as freestanding question content on its own line).
+        "computação",
+        "computacao",
+        # The one-time "ATENCAO!" transition notice printed between
+        # Discursiva 5 (last item of Componente Especifico Comum) and
+        # Questao 31 (first item of the course-specific block) - it sits
+        # inside D5's own span (between D5's marker and Q31's, the next one
+        # in document order), so it leaked into D5's statement text before
+        # being listed here. Appears exactly once in the whole booklet, not
+        # per-page, so each line is listed verbatim rather than generalized
+        # into a regex (docs/decisions.md, Phase 2A ADR).
+        "atenção!",
+        "prezado(a) estudante,",
+        "1 - a seguir serão apresentadas questões de múltipla escolha (objetivas) relativas ao componente",
+        "específico dos cursos da área de computação, assim distribuídas:",
+        "cursos",
+        "licenciatura",
+        "engenharia de computação",
+        "sistemas de informação",
+        # Running page headers for each course-specific block (distinct
+        # wording from the transition table's own row labels above: "DA"
+        # not "DE" computacao, uppercase-styled) - same class as "ciência
+        # da computação" already listed for 2021.
+        "engenharia da computação",
+        "número das questões",
+        "31 a 35",
+        "36 a 40",
+        "41 a 45",
+        "46 a 50",
+        "2 - você deverá responder apenas às questões referentes ao curso no qual você está inscrito,",
+        "conforme consta no caderno de respostas.",
+        "3 - observe atentamente os números das questões de múltipla escolha correspondentes ao curso",
+        "no qual você está inscrito para assinalar corretamente no caderno de respostas.",
     }
 )
 

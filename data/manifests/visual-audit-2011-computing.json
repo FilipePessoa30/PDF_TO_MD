@@ -1,0 +1,39 @@
+{
+  "enade-2011-computing-q09": {
+    "status": "passed",
+    "notes": "Compared full statement (equivalence-relation definitions, quotient set, canonical projection) and roman-numeral items I-IV against rendered page 9 (left column). Matches exactly, including inline math notation. No residuals found."
+  },
+  "enade-2011-computing-q11": {
+    "status": "passed",
+    "notes": "Compared full statement (Halting Problem) and all 5 alternatives against rendered page 10 (left column). Matches exactly - purely textual question, no diagram. Confirms the pipeline's own 'figure region fell after the alternatives cutoff' warning for this question is a benign false positive: assets=[] is correct, no real content was excluded, extraction_status=needs_review is conservative but not wrong."
+  },
+  "enade-2011-computing-q13": {
+    "status": "failed",
+    "notes": "REAL DEFECT FOUND. Statement's interval-scheduling pseudocode is genuinely split by a spurious figure-01.png asset inserted mid-algorithm. Inspected the rendered crop directly: it does not show any legitimate figure - it shows a large, wrongly-bounded region spanning unrelated content (Q11's alternatives D/E, all of Q12's full statement+alternatives, and part of Q13's own pseudocode continuation), i.e. a mis-cropped chunk of a completely different part of the page. Root cause not yet isolated to a specific fix (a region-detection bbox computation issue, distinct from the orphan-marker/column bugs already fixed this phase) - left undiagnosed and undocumented as code because a first attempt at a related fix (widening the orphan-marker exclusion in layout.py, tried while investigating a similar false-positive on Q22) was found to regress 2021's already-certified gold corpus and was reverted (see docs/decisions.md, Phase 2A ADR). Recorded here as a known, disclosed content-corruption defect requiring dedicated future investigation, not silently left unmarked. extraction_status should remain needs_review; the spurious asset should not be treated as trustworthy."
+  },
+  "enade-2011-computing-q22": {
+    "status": "failed",
+    "tables_verified": false,
+    "notes": "REAL DEFECT FOUND. Truth-table reconstruction is missing its header row (\"A B C D S\") and the true first data row (\"0 0 0 0 1\") - confirmed against rendered page 14: the real table has a text header plus 16 data rows, but both the structured Markdown table AND its own mandatory visual-fallback crop (table-01.png) start from the second real row (\"0 0 0 1 0\") onward, 15 rows total. Root cause identified: the header's single-character cells (\"A\",\"B\",\"C\",\"D\") are narrow enough to match layout.py's _ORPHAN_MARKER_RE (built for the circled A-E alternative-choice pictograph glyphs, ~17.5-20pt wide) even though they are plain ~7.2pt text glyphs, so they get merged into nonsense fragments (\"A\\tS\", \"C\\t0\", etc.) that then fall outside detect_tables()'s row/column geometry, dropping both the header and the real first row from the detected region entirely (not just from the rendered table - from the region bounding box itself, so even the 'mandatory visual fallback' safety net is incomplete for this specific table). A width-based fix was implemented and verified to solve this case, but was reverted after confirming (via full 2021 byte-diff) that it also changes three already-certified 2021 gold files (Q23, Q34, D4), each of which merges a similarly narrow diagram-label letter through the same code path - PROMPT Phase 2A section 24 forbids that without an explicit, visually-revalidated schema migration, which this was not. Recorded as a known, disclosed structural defect for a future, more targeted fix (e.g. scoping the fix to detect_tables()'s own header-row recovery rather than the shared orphan-marker mechanism). extraction_status should remain needs_review; content_blocks' TableBlock must not be promoted to validated."
+  },
+  "enade-2011-computing-q23": {
+    "status": "failed",
+    "notes": "REAL DEFECT FOUND. Statement and alternative D/E text are missing inline mathematical notation that appears inline in the real PDF (confirmed on rendered page 14): the alphabet symbol \"Σ = {a,b,c}\", the empty-string symbol \"λ\", and (in alternative E) the full regular expression \"(a+b+c)*(ab)*abc(a+b+c)*\" are all absent from the extracted text, leaving grammatically broken sentences (\"...que\" trailing into the figure with no continuation; \"...a linguagem sobre em que...\"; \"...expressao regular .\"). The automaton diagram and the grammar-rules block (figure-01.png/figure-02.png) are both correctly captured as complete, uncropped image assets - this is specifically about small inline math notation that is not being recognized as figure content and is not extracting as text either (a different, apparently font/rendering-based defect from D3's monospace pseudocode arrow glyph, not yet root-caused - most likely these specific symbols are set via a dedicated math/formula sub-font or inline image PyMuPDF's text layer does not expose the way it does the alternative-marker pictograph font). Not attempted this phase given the risk profile already demonstrated by the Q22 investigation and the volume of remaining Phase 2A work; recorded as a disclosed, real content-loss defect requiring its own dedicated investigation. extraction_status should remain needs_review."
+  },
+  "enade-2011-computing-q34": {
+    "status": "passed",
+    "notes": "Compared full statement (Pedagogia de Projetos) and all 5 alternatives against rendered page 23 (top). Matches exactly - purely textual question, no diagram. Confirms the pipeline's own 'figure region fell after the alternatives cutoff' warning for this question is a benign false positive, same class as Q11's: assets=[] is correct, no real content was excluded."
+  },
+  "enade-2011-computing-q35": {
+    "status": "passed",
+    "notes": "Compared full statement, the 5-panel Mafalda comic strip (QUINO citation), and all 5 items (I-V) plus the correlated Vasconcellos text excerpt against rendered page 23 (bottom). Image crop (figure-01.png) is complete - all 5 panels present, not clipped on any edge, citation line included. Text matches exactly. No residuals found."
+  },
+  "enade-2011-computing-q46": {
+    "status": "passed",
+    "notes": "Compared full statement (relational schema description) and all 5 SQL alternatives against rendered page 30 (left column). Matches exactly, including every SQL clause (SELECT/FROM/WHERE/GROUP BY/HAVING/ORDER BY) verbatim. The SQL is set in a regular (non-monospace) font in the source PDF, not a genuine fixed-width code font, so the pipeline correctly did not treat it as a CodeBlock - flowing it into prose loses only the original manual line breaks, not any content: every clause and value is present and unambiguous. assets=[] is correct - the faint gray background shading visible behind each alternative in the source is decorative page styling, not a distinct raster image (confirmed: no asset was rendered, and no content is missing)."
+  },
+  "enade-2011-computing-q47": {
+    "status": "passed",
+    "notes": "Compared full statement (OLAP/data warehouse business scenario) and all 4 roman-numeral items plus 5 alternatives against rendered page 30 (right column). Matches exactly. No residuals found."
+  }
+}

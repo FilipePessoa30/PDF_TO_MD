@@ -22,6 +22,7 @@ from enade.extraction.boundaries import QuestionKind
 
 _ENTRY_MARKER_RE = re.compile(r"(?i)^quest[aã]o\s+(discursiva\s+)?0*(\d+)$")
 _LETTER_RE = re.compile(r"^[A-E]$")
+_BARE_ITEM_RE = re.compile(r"^0*(\d{1,3})$")
 
 
 class AnswerKeyValueKind(StrEnum):
@@ -85,6 +86,60 @@ def parse_answer_key(doc: pymupdf.Document) -> AnswerKeyParseResult:
         if key in seen:
             warnings.append(f"gabarito: duplicate entry for {entry.kind.value} {entry.number}")
         seen.add(key)
+
+    return AnswerKeyParseResult(entries=entries, warnings=warnings)
+
+
+def parse_flat_item_gabarito(doc: pymupdf.Document) -> AnswerKeyParseResult:
+    """Parse a flat ``ITEM`` -> ``GABARITO`` table gabarito.
+
+    Structure confirmed empirically for the 2011 unified booklet gabarito
+    (``2011/2_gabarito.pdf``, a single page): a bare ``<number>`` / ``<value>``
+    sequence with no "QUESTAO" prefix at all - every entry is implicitly
+    objective (the unified booklet's gabarito only ever lists the 50
+    multiple-choice items; discursive answers come from the padrao de
+    resposta, never a machine-checkable letter, so there is nothing for a
+    "DISCURSIVA" marker to disambiguate here). This is a genuinely
+    different document shape from ``parse_answer_key``'s "QUESTAO
+    [DISCURSIVA] N" marker format used by every other year in this corpus
+    (see docs/corpus.md) - a separate function, not a year-specific branch
+    bolted onto the same one.
+
+    Any non-numeric token between pairs (running headers repeated
+    mid-table, observed between items 22 and 23) is simply skipped rather
+    than assumed to be a value - the pairing only ever advances from a
+    token that itself matches the bare-item pattern, so stray text cannot
+    shift the numbering.
+    """
+    warnings: list[str] = []
+    tokens: list[str] = []
+    for page_index in range(doc.page_count):
+        text = doc[page_index].get_text("text")
+        for raw_line in text.splitlines():
+            stripped = raw_line.strip()
+            if stripped:
+                tokens.append(stripped)
+
+    entries: list[AnswerKeyEntry] = []
+    i = 0
+    while i < len(tokens):
+        match = _BARE_ITEM_RE.match(tokens[i])
+        if not match:
+            i += 1
+            continue
+        number = int(match.group(1))
+        if i + 1 >= len(tokens):
+            warnings.append(f"gabarito: item {number} has no following value")
+            break
+        raw_value = tokens[i + 1]
+        entries.append(_classify(QuestionKind.OBJECTIVE, number, raw_value, warnings))
+        i += 2
+
+    seen: set[int] = set()
+    for entry in entries:
+        if entry.number in seen:
+            warnings.append(f"gabarito: duplicate entry for item {entry.number}")
+        seen.add(entry.number)
 
     return AnswerKeyParseResult(entries=entries, warnings=warnings)
 

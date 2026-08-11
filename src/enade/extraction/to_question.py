@@ -184,11 +184,12 @@ def build_question(
     *,
     extracted: ExtractedQuestion,
     exam_year: int,
-    course: CourseCode,
+    applicable_courses: list[CourseCode],
+    id_shorthand: str,
+    section: str,
     exam_id: str,
     prova_source_path: str,
     prova_sha256: str,
-    structure: ExamStructure,
     answer_key_entry: AnswerKeyEntry | None,
     answer_standard_entry: AnswerStandardEntry | None,
     answer_standard_source_path: str | None,
@@ -202,15 +203,24 @@ def build_question(
     validation: ValidationOutcome,
     visual_validation: VisualValidationStatus = VisualValidationStatus.NOT_PERFORMED,
 ) -> Question:
+    """Build the canonical ``Question`` for one already-assembled extraction.
+
+    ``applicable_courses``, ``id_shorthand`` and ``section`` are resolved by
+    the caller, not derived here - a single-course booklet (2021) resolves
+    them from its own fixed ``course``/``ExamStructure`` (see
+    ``declared_structure.py``); a unified multi-course booklet (2011)
+    resolves them per question number from an ``ExamStructureProfile`` (see
+    ``exam_profile.py``). This function stays agnostic to which shape
+    produced them (PROMPT Phase 2A section 10: no ``if year == 2011``
+    branching inside the shared pipeline).
+    """
     assets_by_table = assets_by_table or {}
     answer_standard_assets = answer_standard_assets or []
     kind = extracted.kind
     number = extracted.number
-    shorthand = COURSE_ID_SHORTHAND[course]
     suffix = "q" if kind == QuestionKind.OBJECTIVE else "d"
-    question_id = f"enade-{exam_year}-{shorthand}-{suffix}{number:02d}"
+    question_id = f"enade-{exam_year}-{id_shorthand}-{suffix}{number:02d}"
 
-    section = _section_for(kind, number, structure)
     question_type = (
         QuestionType.MULTIPLE_CHOICE if kind == QuestionKind.OBJECTIVE else QuestionType.DISCURSIVE
     )
@@ -302,7 +312,7 @@ def build_question(
         id=question_id,
         exam_year=exam_year,
         source_occurrences=[source_occurrence],
-        applicable_courses=[course],
+        applicable_courses=applicable_courses,
         section=section,
         question_number=number,
         question_type=question_type,

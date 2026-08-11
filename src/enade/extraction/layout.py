@@ -31,6 +31,7 @@ from dataclasses import dataclass
 
 import pymupdf
 
+from enade.extraction.chrome import is_chrome_line
 from enade.extraction.label_normalization import LabelCorrection, normalize_known_label
 from enade.extraction.spacing import SpacingCorrection, reconstruct_line_text
 from enade.extraction.symbol_fonts import is_symbol_font, substitute_symbol_font_text
@@ -39,7 +40,16 @@ from enade.extraction.symbol_fonts import is_symbol_font, substitute_symbol_font
 #: left margin - short lines (figure labels, single digits) are noisy signal.
 MIN_COLUMN_LINE_WIDTH = 80.0
 #: A left-margin bucket needs at least this many substantial lines to count.
-MIN_LINES_PER_COLUMN = 4
+#: 3, not 4: a genuinely two-column page can still have one thin column
+#: (e.g. a short closing paragraph plus a handful of short alternatives) -
+#: 2011 unified booklet page 11, where Q13's tail + Q14's own body only
+#: ever reach 3 qualifying lines at their shared left margin, causing
+#: column detection to return None entirely and fall back to a naive
+#: (y0, x0) sort that put Q15's marker (right column, y0=67.7) ahead of
+#: Q14's (left column, y0=68.2) since neither is aware of the other's
+#: column. Verified empirically against the full 2021 corpus (byte-
+#: identical output) before lowering this from 4.
+MIN_LINES_PER_COLUMN = 3
 #: Two candidate column margins must be at least this far apart (points).
 MIN_COLUMN_SEPARATION = 100.0
 #: Bucket width (points) used to group x0 values before counting.
@@ -67,6 +77,17 @@ _MONOSPACE_FONT_HINTS = ("courier", "mono", "consolas")
 #: *only* a bare letter A-E, nothing else - is merged into whichever nearby
 #: line on the same page is its most plausible partner, rather than being
 #: left to silently vanish or misalign the alternative sequence.
+#:
+#: NOTE: a width-based filter (excluding plain-glyph-width bare letters,
+#: e.g. a real table's "A B C D" column headers, from qualifying as an
+#: orphan marker) was tried here and reverted - it fixed 2011 Q22's
+#: truth-table header but changed 2021 Q23/Q34/D4's already-certified gold
+#: output (a diagram-label letter there also merges through this same path
+#: at a similarly narrow width), which PROMPT Phase 2A section 24 forbids
+#: without an explicit, visually-revalidated migration. Q22's table is left
+#: as a documented, disclosed needs_review case instead (see the Phase 2A
+#: report) rather than risk the protected 2021 corpus for a fix that turned
+#: out not to generalize as cleanly as it first appeared to.
 _ORPHAN_MARKER_RE = re.compile(r"^[A-E]\t*$")
 #: Max vertical distance (points) for an orphan marker to be paired with a line.
 _ORPHAN_MARKER_MAX_DISTANCE = 20.0
@@ -172,22 +193,55 @@ def _raw_lines(page: pymupdf.Page, page_number: int) -> list[Line]:
     return lines
 
 
-def _merge_orphan_markers(lines: list[Line]) -> list[Line]:
-    """Merge bare-letter marker lines into their nearest same-page partner line."""
+def _line_column(ln: Line, margins: tuple[float, float] | None) -> int:
+    """0 (left/single-column) or 1 (right), by closeness to the right margin.
+
+    Mirrors the classification ``extract_page_lines`` uses for its own
+    left/right split - see its docstring for why "closeness to the actual
+    right-column margin" beats a midpoint split.
+    """
+    if margins is None:
+        return 0
+    _, right_margin = margins
+    return 1 if ln.x0 >= right_margin - COLUMN_RIGHT_MARGIN_TOLERANCE else 0
+
+
+def _is_orphan_marker(ln: Line) -> bool:
+    return bool(_ORPHAN_MARKER_RE.match(ln.text))
+
+
+def _merge_orphan_markers(
+    lines: list[Line], margins: tuple[float, float] | None = None
+) -> list[Line]:
+    """Merge bare-letter marker lines into their nearest same-column partner line.
+
+    Y-distance alone is not sufficient on a two-column page: a marker in
+    one column can sit closer (in Y only) to unrelated text in the *other*
+    column than to its own partner a few points below it (2011 unified
+    booklet, Q10: alternative B's circled-letter marker at y0=344.4 merged
+    with a left-column fragment "definida como" at y0=348.5 - only 4.1pt
+    away - instead of its own denominator "155" at y0=352.0, 7.6pt away,
+    because the old distance check never looked at X at all). Requiring the
+    same column (when one is detected) closes that hole generally, not just
+    for this one page.
+    """
     used: set[int] = set()
     merged: list[Line] = []
     for i, ln in enumerate(lines):
         if i in used:
             continue
-        if not _ORPHAN_MARKER_RE.match(ln.text):
+        if not _is_orphan_marker(ln):
             merged.append(ln)
             continue
+        ln_column = _line_column(ln, margins)
         best_j: int | None = None
         best_distance: float | None = None
         for j, other in enumerate(lines):
             if j == i or j in used or other.page_number != ln.page_number:
                 continue
-            if _ORPHAN_MARKER_RE.match(other.text):
+            if _is_orphan_marker(other):
+                continue
+            if _line_column(other, margins) != ln_column:
                 continue
             distance = abs(other.y0 - ln.y0)
             if distance <= _ORPHAN_MARKER_MAX_DISTANCE and (
@@ -224,19 +278,55 @@ def detect_column_margins(lines: list[Line]) -> tuple[float, float] | None:
     midpoint) - see ``extract_page_lines``, which classifies a line as
     "right column" by closeness to this actual margin rather than by
     which side of some arbitrary midpoint it falls on.
+
+    Candidate margins are split into a left/right cluster at the single
+    largest gap between consecutive sorted x0 buckets - not by taking the
+    two buckets with the highest raw line counts. A column can legitimately
+    have more than one recurring indentation level (e.g. a paragraph margin
+    and a more-indented list-item margin both clearing
+    ``MIN_LINES_PER_COLUMN``); picking "top 2 by frequency" can then select
+    two buckets that both belong to the *same* physical column, which
+    either fails ``MIN_COLUMN_SEPARATION`` outright or - worse - returns a
+    ``right_margin`` that does not match where the right column's own
+    heading/marker lines actually start, silently misclassifying them as
+    left-column content (2011 unified booklet, pages 5/16/21/30: a
+    two-per-page objective layout where this previously left the left
+    question's own body text attributed to the following right-column
+    question - found via ``detect_question_boundaries`` producing
+    suspicious 1-line spans immediately followed by an oversized sibling).
+
+    Chrome lines (running header/footer, "rascunho" ruler, barcode caption)
+    are excluded from the evidence pool entirely, not just from the final
+    line count: every content page repeats the same header at the same
+    left margin regardless of whether the *body* below it is one or two
+    columns, so counting it as column evidence can manufacture a false
+    left-column margin out of page furniture (2011 page 18 / Discursiva 3:
+    the header's 2 substantial-width lines plus a genuinely single-column
+    paragraph's own 2 lines, both at the page's left margin, combined to
+    reach the qualifying threshold and paired against one legitimately
+    *indented* paragraph - wrapping around the recurrence-formula figure -
+    misread as a second column, reordering the two paragraphs).
     """
-    substantial = [ln for ln in lines if (ln.x1 - ln.x0) >= MIN_COLUMN_LINE_WIDTH]
+    substantial = [
+        ln
+        for ln in lines
+        if (ln.x1 - ln.x0) >= MIN_COLUMN_LINE_WIDTH and not is_chrome_line(ln.text)
+    ]
     if len(substantial) < 2 * MIN_LINES_PER_COLUMN:
         return None
 
     buckets = Counter(round(ln.x0 / COLUMN_BUCKET_SIZE) * COLUMN_BUCKET_SIZE for ln in substantial)
-    common = [x for x, count in buckets.most_common() if count >= MIN_LINES_PER_COLUMN]
+    common = sorted(x for x, count in buckets.items() if count >= MIN_LINES_PER_COLUMN)
     if len(common) < 2:
         return None
 
-    left_margin, right_margin = min(common[0], common[1]), max(common[0], common[1])
-    if right_margin - left_margin < MIN_COLUMN_SEPARATION:
+    gaps = [(common[i + 1] - common[i], i) for i in range(len(common) - 1)]
+    widest_gap, split_index = max(gaps)
+    if widest_gap < MIN_COLUMN_SEPARATION:
         return None
+
+    left_margin = common[0]
+    right_margin = common[split_index + 1]
     return left_margin, right_margin
 
 
@@ -248,8 +338,15 @@ def extract_page_lines(page: pymupdf.Page, page_number: int) -> list[Line]:
     bottom), then every right-column line (top to bottom) - see module
     docstring.
     """
-    lines = _merge_orphan_markers(_raw_lines(page, page_number))
-    margins = detect_column_margins(lines)
+    raw = _raw_lines(page, page_number)
+    # Column margins are detected on the *raw* (pre-merge) lines and reused
+    # for the orphan-marker merge below, rather than recomputed after
+    # merging: an orphan marker line is far under MIN_COLUMN_LINE_WIDTH and
+    # never counts as "substantial" evidence either way, so this is the
+    # same geometry either order - but computing it once, first, is what
+    # lets the merge itself be column-aware (see `_merge_orphan_markers`).
+    margins = detect_column_margins(raw)
+    lines = _merge_orphan_markers(raw, margins)
 
     if margins is None:
         lines.sort(key=lambda ln: (round(ln.y0, 1), ln.x0))

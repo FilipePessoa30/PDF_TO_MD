@@ -1,0 +1,57 @@
+# Declarative structure profile for the 2011 unified "COMPUTACAO" booklet
+# (PROMPT Phase 2A section 10 - config-driven, not `if year == 2011`
+# scattered through the extractor).
+#
+# Every range below was confirmed directly against the real PDF text, not
+# assumed from the brief:
+#   - data/raw/geacc-enade/2011/1_prova.pdf page 1's own instruction table
+#     (the exact "Partes / Numero das questoes" table printed for the
+#     student), cross-checked at runtime by
+#     enade.extraction.exam_profile.verify_declared_profile;
+#   - the "ATENCAO!" transition block on page 22 (between Q32 and Q33),
+#     which repeats the same four course/range pairs for the reader;
+#   - the page-header running title on every page (plain "COMPUTACAO" for
+#     the shared blocks, then "LICENCIATURA" / "CIENCIA DA COMPUTACAO" /
+#     "ENGENHARIA DA COMPUTACAO" / "SISTEMAS DE INFORMACAO" once each
+#     course-specific block starts).
+#
+# See docs/decisions.md for the ADR and docs/corpus.md for the fuller
+# narrative (the existing 2011 section there already documented most of
+# this from Phase 0 - this profile is what makes it machine-readable).
+year: 2011
+exam_type: unified
+exam_id: enade-2011-unificado
+id_shorthand: computing
+sections:
+  - id: formacao-geral-objetiva
+    kind: objective
+    range: [1, 8]
+    applicable_courses: [all-computing]
+  - id: formacao-geral-discursiva
+    kind: discursive
+    range: [1, 2]
+    applicable_courses: [all-computing]
+  - id: componente-especifico-comum-objetiva
+    kind: objective
+    range: [9, 30]
+    applicable_courses: [all-computing]
+  - id: componente-especifico-comum-discursiva
+    kind: discursive
+    range: [3, 5]
+    applicable_courses: [all-computing]
+  - id: componente-especifico-objetiva
+    kind: objective
+    range: [31, 35]
+    applicable_courses: [ciencia-da-computacao-licenciatura]
+  - id: componente-especifico-objetiva
+    kind: objective
+    range: [36, 40]
+    applicable_courses: [ciencia-da-computacao-bacharelado]
+  - id: componente-especifico-objetiva
+    kind: objective
+    range: [41, 45]
+    applicable_courses: [engenharia-da-computacao]
+  - id: componente-especifico-objetiva
+    kind: objective
+    range: [46, 50]
+    applicable_courses: [sistemas-de-informacao]
