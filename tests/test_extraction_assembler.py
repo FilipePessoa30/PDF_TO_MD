@@ -7,15 +7,19 @@ from enade.extraction.assembler import (
     _build_statement_segments,
     _find_alternative_starts,
     _line_in_region,
+    _render_code_lines,
     _strip_leading_marker,
+    _strip_line_number_gutter,
     detect_broken_words,
 )
 from enade.extraction.figures import VisualRegion
 from enade.extraction.layout import Line
 
 
-def _line(page: int, y: float, text: str, x: float = 30.0, mono: bool = False) -> Line:
-    return Line(page_number=page, text=text, x0=x, y0=y, x1=x + 200, y1=y + 12, is_monospace=mono)
+def _line(
+    page: int, y: float, text: str, x: float = 30.0, mono: bool = False, width: float = 200.0
+) -> Line:
+    return Line(page_number=page, text=text, x0=x, y0=y, x1=x + width, y1=y + 12, is_monospace=mono)
 
 
 def test_find_alternative_starts_ignores_capital_letter_in_prose():
@@ -96,8 +100,9 @@ def test_build_statement_segments_inserts_figure_at_correct_position():
         _line(1, 100, "Parágrafo depois da figura."),
     ]
     region = VisualRegion(page_number=1, bbox=(0, 40, 500, 80), element_count=1)
-    segments, placed = _build_statement_segments(lines, [region])
+    segments, placed, placed_tables = _build_statement_segments(lines, [region])
     assert placed == [0]
+    assert placed_tables == []
     kinds = [type(s).__name__ for s in segments]
     assert kinds == ["TextSegment", "FigureSegment", "TextSegment"]
     assert segments[0].text == "Parágrafo antes da figura."
@@ -113,7 +118,7 @@ def test_build_statement_segments_preserves_code_block_line_breaks():
         _line(1, 60, "}", mono=True),
         _line(1, 80, "Texto normal depois do código."),
     ]
-    segments, _ = _build_statement_segments(lines, [])
+    segments, _, _ = _build_statement_segments(lines, [])
     code_segments = [s for s in segments if isinstance(s, CodeSegment)]
     assert len(code_segments) == 1
     assert "void f() {" in code_segments[0].text
@@ -148,5 +153,150 @@ def test_strip_leading_marker_no_op_when_no_marker_present():
     assert _strip_leading_marker(lines) == lines
 
 
+# --- Phase 1C: code reconstruction (blank lines, indentation) ----------------
+
+
+def test_render_code_lines_preserves_a_real_blank_line():
+    # Mirrors D5's heapify() listing (page 17): a real blank line sits
+    # between "int e, d, max, aux;" and "e = left(i);" - modal line pitch
+    # here is 15pt, and the gap to the next line is ~30pt (2x), i.e.
+    # exactly one blank line, not a paragraph-style artifact to collapse.
+    lines = [
+        _line(1, 100.0, "void heapify(int *a, int n, int i)", x=290.0, mono=True),
+        _line(1, 115.0, "{", x=290.0, mono=True),
+        _line(1, 130.0, "   int e, d, max, aux;", x=290.0, mono=True),
+        _line(1, 160.0, "   e = left(i);", x=290.0, mono=True),  # +30, not +15
+        _line(1, 175.0, "   d = right(i);", x=290.0, mono=True),
+    ]
+    rendered = _render_code_lines(lines)
+    assert rendered.splitlines() == [
+        "void heapify(int *a, int n, int i)",
+        "{",
+        "   int e, d, max, aux;",
+        "",
+        "   e = left(i);",
+        "   d = right(i);",
+    ]
+
+
+def test_render_code_lines_does_not_invent_blank_lines_for_normal_pitch():
+    lines = [
+        _line(1, 100.0, "int a = 1;", x=290.0, mono=True),
+        _line(1, 115.0, "int b = 2;", x=290.0, mono=True),
+        _line(1, 130.0, "int c = 3;", x=290.0, mono=True),
+    ]
+    rendered = _render_code_lines(lines)
+    assert rendered.splitlines() == ["int a = 1;", "int b = 2;", "int c = 3;"]
+
+
+def test_render_code_lines_reconstructs_relative_indentation():
+    lines = [
+        _line(1, 100.0, "void f() {", x=290.0, mono=True),
+        _line(1, 115.0, "return 1;", x=296.0, mono=True),  # +6pt = 1 char
+        _line(1, 130.0, "}", x=290.0, mono=True),
+    ]
+    rendered = _render_code_lines(lines)
+    assert rendered.splitlines() == ["void f() {", " return 1;", "}"]
+
+
+# --- Phase 1C: region containment respects column separation (D5) ------------
+
+
+def test_line_in_region_ignores_same_y_band_content_in_a_different_column():
+    # A figure region confined to the left column (x in [29, 276]) must not
+    # swallow a code line at the same Y sitting in the right column (x
+    # starting at 291.5) - see docs/decisions.md, "Phase 1C" ADR (D5's
+    # heapify() body was silently dropped this way before the fix).
+    region = VisualRegion(page_number=1, bbox=(29.0, 100.0, 276.4, 462.7), element_count=16)
+    code_line = _line(1, 200.0, "int e, d, max, aux;", x=291.5, mono=True, width=100.0)
+    assert _line_in_region(code_line, region) is False
+
+
+def test_line_in_region_still_true_for_a_genuine_same_column_label():
+    region = VisualRegion(page_number=1, bbox=(29.0, 100.0, 276.4, 350.0), element_count=16)
+    label_line = _line(1, 320.0, "Processo A", x=32.6, width=50.0)
+    assert _line_in_region(label_line, region) is True
+
+
 def test_strip_leading_marker_no_op_on_empty_list():
     assert _strip_leading_marker([]) == []
+
+
+# --- Phase 1C: line-number gutter removal (Q20) -------------------------------
+
+
+def _gutter_line(y: float, number: str, sep: str = "\t") -> Line:
+    text = f"{sep}{number}"
+    return Line(page_number=1, text=text, x0=29.8, y0=y, x1=52.0, y1=y + 20.4, is_monospace=True)
+
+
+def _code_line(y: float, text: str, x: float = 65.8) -> Line:
+    return Line(
+        page_number=1, text=text, x0=x, y0=y, x1=x + len(text) * 7.2, y1=y + 20.4, is_monospace=True
+    )
+
+
+def test_strip_line_number_gutter_removes_standalone_gutter_lines():
+    lines = [
+        _gutter_line(100.0, "1"),
+        _code_line(100.0, "#include <stdio.h>"),
+        _gutter_line(120.4, "2"),
+        _code_line(120.4, "#define TAM 10"),
+        _gutter_line(140.8, "3"),
+        _code_line(140.8, "int f(int x){"),
+    ]
+    stripped = _strip_line_number_gutter(lines)
+    assert [ln.text for ln in stripped] == [
+        "#include <stdio.h>",
+        "#define TAM 10",
+        "int f(int x){",
+    ]
+
+
+def test_strip_line_number_gutter_handles_a_line_merged_with_its_gutter_number():
+    # Mirrors Q20's real row 11: PyMuPDF fused the gutter number into the
+    # same physical Line as the code that follows it - the merged line's
+    # own x0 (29.8, dragged left by the gutter) must not become the new
+    # indentation baseline for the rest of the block (see docs/decisions.md).
+    lines = [
+        _gutter_line(100.0, "1"),
+        _code_line(100.0, "int f(int x){"),
+        _gutter_line(120.4, "2"),
+        _code_line(120.4, "}"),
+        Line(
+            page_number=1,
+            text="\t11 \t int g(int x, int y){",
+            x0=29.8,
+            y0=140.8,
+            x1=250.0,
+            y1=161.2,
+            is_monospace=True,
+        ),
+    ]
+    stripped = _strip_line_number_gutter(lines)
+    assert [ln.text for ln in stripped] == ["int f(int x){", "}", "int g(int x, int y){"]
+    merged_result = stripped[-1]
+    assert merged_result.x0 == 65.8  # reconstructed from the unaffected lines' own baseline
+
+
+def test_strip_line_number_gutter_leaves_a_lone_numeric_line_untouched():
+    # Only one bare-digit line, no corroborating recurrence and no
+    # unaffected non-gutter-shaped lines to establish a baseline from -
+    # left alone rather than guessed away (PROMPT section 8.1).
+    lines = [_gutter_line(100.0, "1")]
+    assert _strip_line_number_gutter(lines) == lines
+
+
+def test_strip_line_number_gutter_no_op_when_nothing_gutter_shaped():
+    lines = [_code_line(100.0, "int x = 1;"), _code_line(120.4, "int y = 2;")]
+    assert _strip_line_number_gutter(lines) == lines
+
+
+def test_render_code_lines_after_gutter_removal_has_correct_indentation():
+    lines = [
+        _code_line(100.0, "int f(int x){", x=65.8),
+        _code_line(120.4, "return x;", x=101.8),
+        _code_line(140.8, "}", x=65.8),
+    ]
+    rendered = _render_code_lines(_strip_line_number_gutter(lines))
+    assert rendered.splitlines() == ["int f(int x){", "      return x;", "}"]

@@ -25,7 +25,7 @@ from dataclasses import dataclass
 import pymupdf
 
 from enade.extraction.chrome import is_chrome_line
-from enade.extraction.layout import Line, extract_page_lines
+from enade.extraction.layout import Line, detect_column_margins, extract_page_lines
 
 Rect = tuple[float, float, float, float]
 
@@ -68,6 +68,20 @@ TEXT_ABSORPTION_X_PADDING = 20.0
 #: what stops an adjacent full-width paragraph from being swallowed by a
 #: nearby diagram.
 MAX_LABEL_LINE_WIDTH = 300.0
+#: A monospace (code/pseudocode) line is individually narrow enough to pass
+#: ``MAX_LABEL_LINE_WIDTH`` but is never a figure label/annotation. On a
+#: two-column page where a diagram sits in the left column and a code
+#: listing sits in the right column at an overlapping Y-range (D5, page 17
+#: - see docs/decisions.md, "Phase 1C" ADR), individual code lines like
+#: "void heapify (int *a, int n, int i)" were being absorbed into the
+#: diagram's region across the column gutter, growing its bbox ~110pt into
+#: the code column (hitting ``MAX_ABSORPTION_GROWTH``) and causing
+#: ``_line_in_region`` (assembler.py) to silently drop most of the
+#: heapify() function body as if it were "inside the figure". Excluding
+#: monospace lines from ``label_candidates`` entirely is the general fix:
+#: code is its own content class (PROMPT Phase 1C section 7.2), never a
+#: diagram annotation, regardless of which column it happens to share a
+#: Y-range with.
 #: Safety cap on label-absorption growth iterations (each pass can only add
 #: lines, so this always terminates well before the cap in practice).
 MAX_ABSORPTION_PASSES = 8
@@ -422,6 +436,32 @@ def _is_paragraph_continuation(index: int, lines: list[Line]) -> bool:
     return (previous.x1 - previous.x0) > MAX_LABEL_LINE_WIDTH
 
 
+def _is_two_column_body_text(line: Line, column_margins: tuple[float, float] | None) -> bool:
+    """True if ``line`` starts flush with a genuine two-column page's own
+    left or right column margin (PROMPT Phase 1C section 7.2).
+
+    ``MAX_LABEL_LINE_WIDTH`` (300pt) is calibrated against single-column
+    body text (~500pt wide); on a real two-column page each column is only
+    ~245pt wide (see docs/decisions.md, "Phase 1C" ADR - D5, page 17), so
+    *every* prose line there - including a paragraph's very first line,
+    which ``_is_paragraph_continuation`` cannot catch since it has no
+    preceding line to compare against - looks "label-width" by that
+    threshold alone and was being silently absorbed into an adjacent
+    figure's region. ``column_margins`` (from
+    ``layout.detect_column_margins``, the same detector that already
+    orders two-column pages correctly) gives a second, independent
+    geometric signal: real column body text recurs at one of exactly two
+    stable left edges, which an isolated figure label never does.
+    """
+    if column_margins is None:
+        return False
+    left_margin, right_margin = column_margins
+    return (
+        abs(line.x0 - left_margin) <= _MARGIN_TOLERANCE
+        or abs(line.x0 - right_margin) <= _MARGIN_TOLERANCE
+    )
+
+
 def detect_visual_regions(
     doc: pymupdf.Document,
     page_number: int,
@@ -452,12 +492,15 @@ def detect_visual_regions(
 
     page_lines = extract_page_lines(page, page_number)
     body_margin_x0 = _dominant_left_margin(page_lines)
+    column_margins = detect_column_margins(page_lines)
     label_candidates = [
         ((ln.x0, ln.y0, ln.x1, ln.y1), ln.text)
         for i, ln in enumerate(page_lines)
         if (ln.x1 - ln.x0) <= MAX_LABEL_LINE_WIDTH
+        and not ln.is_monospace
         and not is_chrome_line(ln.text)
         and not _is_paragraph_continuation(i, page_lines)
+        and not _is_two_column_body_text(ln, column_margins)
     ]
 
     regions = []

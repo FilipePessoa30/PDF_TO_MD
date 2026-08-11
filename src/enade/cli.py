@@ -23,8 +23,12 @@ from enade.extraction.expected_structure import (
 )
 from enade.extraction.pipeline import extract_exam
 from enade.extraction.transformation_log import write_transformation_log_json
-from enade.extraction.visual_audit import load_visual_audit
+from enade.extraction.visual_audit import (
+    load_table_cell_verified_question_ids,
+    load_visual_audit,
+)
 from enade.gold import (
+    GoldMaturity,
     build_gold_manifest,
     read_gold_manifest,
     verify_gold_manifest,
@@ -38,6 +42,7 @@ from enade.inventory.pdfmeta import sha256_of_file
 from enade.inventory.scanner import scan_corpus
 from enade.markdown_format import load_question_markdown
 from enade.models.enums import CourseCode, VisualValidationStatus
+from enade.readiness import assess_readiness
 from enade.validation.manifest_checks import check_manifest_matches_filesystem, validate_manifest
 from enade.validation.schema_checks import (
     validate_fixtures_directory,
@@ -319,6 +324,7 @@ def extract(
         typer.echo(
             f"  visual audit: {len(visual_audit)} entries loaded from {resolved_visual_audit_file}"
         )
+    table_cells_verified_ids = load_table_cell_verified_question_ids(resolved_visual_audit_file)
 
     result = extract_exam(
         prova_path=prova_path,
@@ -330,6 +336,7 @@ def extract(
         exam_id=exam_id,
         questions_output_dir=questions_dir,
         visual_audit=visual_audit,
+        table_cells_verified_ids=table_cells_verified_ids,
     )
 
     m = result.metrics
@@ -495,6 +502,17 @@ def build_gold_cmd(
         DEFAULT_QUESTIONS_DIR, help="directory of already-extracted question .md files"
     ),
     gold_dir: Path = typer.Option(DEFAULT_AUDIT_DIR, help="output directory for the gold manifest"),
+    maturity: GoldMaturity = typer.Option(
+        GoldMaturity.PROVISIONAL,
+        help="corpus maturity to record (PROMPT Phase 1C section 13) - "
+        "'validated' is a deliberate claim, never the default",
+    ),
+    structural_blocker: list[str] = typer.Option(
+        [],
+        "--structural-blocker",
+        help="a still-open structural issue id to record (repeatable); "
+        "omit entirely once none remain",
+    ),
 ) -> None:
     """Lock the current on-disk Markdown/assets as the gold regression set
     (PROMPT section 16-18). Deliberate and explicit only - never run as a
@@ -537,17 +555,24 @@ def build_gold_cmd(
         gabarito_path=gabarito_path,
         padrao_path=padrao_path,
         course_dir=course_dir,
+        maturity=maturity,
+        structural_blockers=tuple(structural_blocker),
     )
 
-    verified = sum(1 for q in manifest.questions if q.extraction_status == "verified")
-    needs_review = len(manifest.questions) - verified
     typer.echo(
         f"Gold manifest: {len(manifest.questions)} questions "
-        f"({verified} verified, {needs_review} needs_review)"
+        f"({manifest.verified_count} verified, {manifest.needs_review_count} needs_review) "
+        f"- maturity={manifest.maturity}"
     )
     for q in manifest.questions:
         if q.extraction_status != "verified":
             typer.echo(f"  - {q.id}: {q.extraction_status}")
+    if manifest.structural_blockers:
+        typer.echo(f"Structural blockers recorded: {list(manifest.structural_blockers)}")
+    typer.echo(
+        f"Answer standards covered: {len(manifest.answer_standards)} "
+        f"({sum(len(a.assets) for a in manifest.answer_standards)} padrao asset(s))"
+    )
 
     gold_path = gold_dir / f"gold-{year}-{letter}.json"
     write_gold_manifest(manifest, gold_path)
@@ -590,12 +615,74 @@ def verify_gold_cmd(
 
     if not divergences:
         typer.echo(f"verify-gold: OK ({len(manifest.questions)} questions match {gold_path})")
+        # PROMPT Phase 1C section 13: this proves absence of drift, never
+        # "every question is verified" - the two are deliberately never
+        # conflated in this output. See `enade assess-readiness` for the
+        # separate, substantive readiness question.
+        typer.echo(
+            f"  maturity={manifest.maturity} "
+            f"verified={manifest.verified_count} needs_review={manifest.needs_review_count} "
+            f"(verify-gold only checks hashes - see `enade assess-readiness` for readiness)"
+        )
         return
 
     typer.echo(f"verify-gold: {len(divergences)} divergence(s) found against {gold_path}")
     for d in divergences:
         typer.echo(f"  [{d.kind}] {d.detail}")
     raise typer.Exit(code=1)
+
+
+@app.command(name="assess-readiness")
+def assess_readiness_cmd(
+    year: int = typer.Option(..., help="exam year, e.g. 2021"),
+    course: str = typer.Option(..., help="course code, e.g. ciencia-da-computacao-bacharelado"),
+    questions_dir: Path = typer.Option(
+        DEFAULT_QUESTIONS_DIR, help="directory of already-extracted question .md files"
+    ),
+    gold_dir: Path = typer.Option(DEFAULT_AUDIT_DIR, help="directory containing the gold manifest"),
+) -> None:
+    """Readiness gate, separate from hash verification (PROMPT Phase 1C
+    section 14): considers gold integrity, structural blockers, automatic
+    and visual validation, asset integrity, answer linkage, and
+    answer-standard coverage. Prints READY_FOR_2011/NOT_READY_FOR_2011 and
+    every individual blocker - never a bare pass/fail count. Exits non-zero
+    when not ready.
+    """
+    try:
+        course_code = CourseCode(course)
+    except ValueError:
+        typer.echo(f"unknown course {course!r}; expected one of {[c.value for c in CourseCode]}")
+        raise typer.Exit(code=1) from None
+
+    letter = COURSE_TO_LETTER.get(course_code)
+    if letter is None:
+        typer.echo(f"course {course!r} has no known source-filename letter")
+        raise typer.Exit(code=1)
+
+    gold_path = gold_dir / f"gold-{year}-{letter}.json"
+    if not gold_path.exists():
+        typer.echo(f"no gold manifest found at {gold_path} (run `enade build-gold` first)")
+        raise typer.Exit(code=1)
+
+    manifest = read_gold_manifest(gold_path)
+    course_dir = questions_dir / str(year) / course_code.value
+    report = assess_readiness(manifest, course_dir)
+
+    typer.echo(f"assess-readiness: {report.classification}")
+    typer.echo(
+        f"  {report.verified_count}/{report.total_questions} verified, "
+        f"{report.needs_review_count} needs_review, gold maturity={report.gold_maturity}"
+    )
+    if report.blockers:
+        typer.echo(f"  {len(report.blockers)} blocker(s):")
+        for b in report.blockers:
+            kind = "structural" if b.structural else "non-structural"
+            typer.echo(f"    - [{b.kind}, {kind}] {b.detail}")
+    else:
+        typer.echo("  no blockers")
+
+    if not report.ready:
+        raise typer.Exit(code=1)
 
 
 if __name__ == "__main__":

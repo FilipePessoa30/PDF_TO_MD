@@ -15,6 +15,7 @@ which is not alternative A).
 from __future__ import annotations
 
 import re
+from collections import Counter
 from dataclasses import dataclass, field
 
 import pymupdf
@@ -25,6 +26,7 @@ from enade.extraction.figures import VisualRegion, detect_visual_regions
 from enade.extraction.label_normalization import LabelCorrection
 from enade.extraction.layout import Line
 from enade.extraction.spacing import SpacingCorrection
+from enade.extraction.tables import DetectedTable, detect_tables
 
 _ALTERNATIVE_LINE_RE = re.compile(r"^([A-E])[\t ](.*)$")
 #: A word ending in a common ligature-prone digraph, then a stray space, then
@@ -39,6 +41,16 @@ PARAGRAPH_GAP_THRESHOLD = 19.0
 #: whether a text line falls "inside" it, to also swallow tightly-adjacent
 #: figure captions/labels.
 REGION_Y_PADDING = 2.0
+#: Same idea, horizontally. Deliberately small (smaller than any observed
+#: inter-column gutter in this corpus, e.g. D5's page-17 gutter is ~15pt
+#: between the left column's x1=276.4 and the right column's x0=291.5) -
+#: a genuine figure label always has real horizontal overlap with the
+#: region's own (already label-absorption-expanded) bbox, since absorption
+#: unions the label's own x-range into it. Without this, a Y-range-only
+#: check swallowed unrelated same-Y-band content from a *different* column
+#: on a two-column page (D5's heapify() code sharing a Y-band with the
+#: left column's tree diagram - see docs/decisions.md, "Phase 1C" ADR).
+REGION_X_PADDING = 5.0
 #: Approximate width (points) of one monospace character, used only to
 #: reconstruct relative indentation for preserved code/pseudocode blocks.
 CODE_CHAR_WIDTH = 6.0
@@ -72,7 +84,12 @@ class FigureSegment:
     region_index: int  # index into ExtractedQuestion.figure_regions
 
 
-StatementSegment = TextSegment | CodeSegment | FigureSegment
+@dataclass
+class TableSegment:
+    table_index: int  # index into ExtractedQuestion.tables
+
+
+StatementSegment = TextSegment | CodeSegment | FigureSegment | TableSegment
 
 
 @dataclass
@@ -84,6 +101,10 @@ class ExtractedQuestion:
     statement_segments: list[StatementSegment]
     alternatives: list[ExtractedAlternative] = field(default_factory=list)
     figure_regions: list[VisualRegion] = field(default_factory=list)
+    #: Geometrically-reconstructed grid tables (see tables.py) - a
+    #: content-shape result, empty for the large majority of questions
+    #: that have no table (PROMPT Phase 1C section 5).
+    tables: list[DetectedTable] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     #: Every geometry-based faux-space merge that fed into this question's
     #: final statement/alternative text (see spacing.py) - the raw material
@@ -120,7 +141,15 @@ def _line_in_region(line: Line, region: VisualRegion) -> bool:
         return False
     if line.page_number != region.page_number:
         return False
-    return (region.bbox[1] - REGION_Y_PADDING) <= line.y0 <= (region.bbox[3] + REGION_Y_PADDING)
+    y_touches = (
+        (region.bbox[1] - REGION_Y_PADDING) <= line.y0 <= (region.bbox[3] + REGION_Y_PADDING)
+    )
+    if not y_touches:
+        return False
+    x_touches = line.x0 <= (region.bbox[2] + REGION_X_PADDING) and line.x1 >= (
+        region.bbox[0] - REGION_X_PADDING
+    )
+    return x_touches
 
 
 def _position_key(page_number: int, y: float) -> tuple[int, float]:
@@ -156,7 +185,7 @@ def _find_alternative_starts(lines: list[Line]) -> dict[str, int] | None:
     return result
 
 
-def _find_region_insertion_index(lines: list[Line], region: VisualRegion) -> int:
+def _find_region_insertion_index(lines: list[Line], region: VisualRegion | DetectedTable) -> int:
     """Where would ``region`` sit if inserted into the already-ordered ``lines``?
 
     ``lines`` is assumed to already be in correct reading order (which, on a
@@ -165,7 +194,9 @@ def _find_region_insertion_index(lines: list[Line], region: VisualRegion) -> int
     placed right before the first line on its own page whose y0 is at or
     past the region's top edge, rather than by re-sorting everyone by y0
     (which would undo the column ordering and interleave text/figures from
-    two different columns line-by-line).
+    two different columns line-by-line). Works identically for a detected
+    table (see tables.py) - both types expose the same ``page_number``/
+    ``bbox`` shape this function actually uses.
     """
     for i, ln in enumerate(lines):
         if ln.page_number < region.page_number:
@@ -177,38 +208,164 @@ def _find_region_insertion_index(lines: list[Line], region: VisualRegion) -> int
     return len(lines)
 
 
-def _build_statement_segments(
-    lines: list[Line], regions: list[VisualRegion]
-) -> tuple[list[StatementSegment], list[int]]:
-    """Merge text lines and figure regions into position-ordered segments.
+#: A monospace line whose *entire* text (after leading/trailing tab/space)
+#: is a bare integer - a standalone printed line-number gutter entry, never
+#: a real C statement (PROMPT Phase 1C section 8.1). Ambiguous on its own
+#: (a lone bare-digit line could in principle be real content), so it is
+#: only trusted once it recurs (see ``_GUTTER_MIN_STANDALONE_COUNT`) - in
+#: this corpus, chrome.py's own bare-1-3-digit page-number rule already
+#: removes most standalone gutter lines upstream, before assembler.py ever
+#: sees them, so this branch mainly guards the case where it doesn't
+#: (a 4+ digit line number, or a future corpus without that chrome rule).
+_GUTTER_ONLY_RE = re.compile(r"^[\t ]*\d+[\t ]*$")
+#: A monospace line whose text *starts* with a bare integer followed by
+#: real whitespace and then further content - a line-number gutter fused
+#: with its own code by PyMuPDF's line grouping (observed: Q20's row 11,
+#: "\t11 \t int funcao2(...)" - see docs/decisions.md, "Phase 1C" ADR).
+#: No real C statement starts with a standalone integer token followed by
+#: whitespace and unrelated code, so this pattern is unambiguous on its
+#: own and needs no recurrence to be trusted - unlike ``_GUTTER_ONLY_RE``,
+#: it is stripped even when it is the only such line in the run (as it was
+#: for Q20, where chrome.py had already removed every *other* gutter line
+#: before this one - the only one PyMuPDF fused with real code - was ever
+#: seen here).
+_GUTTER_PREFIX_RE = re.compile(r"^[\t ]*\d+[\t ]+")
+#: See ``_GUTTER_ONLY_RE`` - a lone bare-digit line is left alone; two or
+#: more recurring ones look like a systematic gutter, not a coincidence.
+_GUTTER_MIN_STANDALONE_COUNT = 2
 
-    Text lines that fall inside a region's bbox are dropped (their content
-    is represented by the figure itself, not duplicated as scrambled inline
-    labels). Consecutive surviving lines are grouped into paragraphs using
-    the vertical-gap heuristic; each region becomes its own segment at the
-    point in the flow where it visually sits. Returns the segments plus the
-    list of region indices that were actually placed (so the caller can
-    tell whether every detected region ended up referenced).
+
+def _strip_line_number_gutter(code_lines: list[Line]) -> list[Line]:
+    """Remove a printed line-number gutter from a run of code ``Line``s.
+
+    Two physical shapes are handled, both purely from geometry/text-shape,
+    never from the specific numbers involved: (1) the common case, where
+    the gutter number is already its own separate ``Line`` (dropped
+    entirely); (2) a gutter number fused by PyMuPDF into the same line as
+    the code that follows it (its numeric prefix is stripped, and the
+    remainder's indentation is reconstructed from the *other*, unaffected
+    lines' own established indent levels - never from the corrupted
+    merged line's own x0, which would otherwise drag every line's
+    reconstructed indentation off by the gutter's own width).
     """
-    insertions_at: dict[int, list[int]] = {}
+    numeric_only_all = frozenset(ln for ln in code_lines if _GUTTER_ONLY_RE.match(ln.text))
+    merged = frozenset(
+        ln for ln in code_lines if ln not in numeric_only_all and _GUTTER_PREFIX_RE.match(ln.text)
+    )
+    numeric_only = (
+        numeric_only_all if len(numeric_only_all) >= _GUTTER_MIN_STANDALONE_COUNT else frozenset()
+    )
+    if not numeric_only and not merged:
+        return code_lines
+
+    unaffected = [ln for ln in code_lines if ln not in numeric_only and ln not in merged]
+    if not unaffected:
+        return code_lines
+    baseline_x0 = min(ln.x0 for ln in unaffected)
+
+    result: list[Line] = []
+    for ln in code_lines:
+        if ln in numeric_only:
+            continue
+        if ln in merged:
+            match = _GUTTER_PREFIX_RE.match(ln.text)
+            assert match is not None
+            remainder = ln.text[match.end() :]
+            stripped = remainder.lstrip(" \t")
+            leading_ws = len(remainder) - len(stripped)
+            result.append(
+                Line(
+                    page_number=ln.page_number,
+                    text=stripped,
+                    x0=baseline_x0 + leading_ws * CODE_CHAR_WIDTH,
+                    y0=ln.y0,
+                    x1=ln.x1,
+                    y1=ln.y1,
+                    is_monospace=ln.is_monospace,
+                )
+            )
+        else:
+            result.append(ln)
+    return result
+
+
+def _render_code_lines(code_lines: list[Line]) -> str:
+    """Render a run of monospace ``Line``s into fenced-code text.
+
+    Indentation is reconstructed from each line's own x0 relative to the
+    run's leftmost line (PROMPT section 7.3 item 5/6). Real blank lines
+    within the listing are also preserved (item 8) - never invented, never
+    collapsed: a genuine blank line's vertical pitch to its neighbours is a
+    multiple of the run's own modal (most common) line pitch, so a
+    pitch of roughly 2x the mode means exactly one blank line sat between
+    the two source lines, 3x means two, and so on. A page's first blank
+    line was observed being silently collapsed for D5's heapify() listing
+    (the blank line between "int e, d, max, aux;" and "e = left(i);" on
+    page 17) before this reconstruction - see docs/decisions.md, "Phase
+    1C" ADR.
+    """
+    base_x0 = min(ln.x0 for ln in code_lines)
+    pitches = [code_lines[i + 1].y0 - code_lines[i].y0 for i in range(len(code_lines) - 1)]
+    modal_pitch = Counter(round(p) for p in pitches).most_common(1)[0][0] if pitches else 0
+
+    rendered: list[str] = []
+    for i, ln in enumerate(code_lines):
+        if i > 0 and modal_pitch > 0:
+            pitch = ln.y0 - code_lines[i - 1].y0
+            blank_lines = round(pitch / modal_pitch) - 1
+            rendered.extend([""] * max(0, blank_lines))
+        indent = max(0, round((ln.x0 - base_x0) / CODE_CHAR_WIDTH))
+        rendered.append(" " * indent + ln.text)
+    return "\n".join(rendered)
+
+
+def _build_statement_segments(
+    lines: list[Line], regions: list[VisualRegion], tables: list[DetectedTable] | None = None
+) -> tuple[list[StatementSegment], list[int], list[int]]:
+    """Merge text lines, figure regions and tables into position-ordered segments.
+
+    Text lines that fall inside a region's bbox, or that were consumed by a
+    detected table (see tables.py), are dropped (their content is
+    represented by the figure/table itself, not duplicated as scrambled
+    inline text). Consecutive surviving lines are grouped into paragraphs
+    using the vertical-gap heuristic; each region/table becomes its own
+    segment at the point in the flow where it visually sits. Returns the
+    segments plus the list of region indices and table indices that were
+    actually placed (so the caller can tell whether every detected
+    region/table ended up referenced).
+    """
+    tables = tables or []
+    table_consumed = frozenset(ln for table in tables for ln in table.consumed_lines)
+
+    insertions_at: dict[int, list[tuple[str, int]]] = {}
     for region_index, region in enumerate(regions):
         idx = _find_region_insertion_index(lines, region)
-        insertions_at.setdefault(idx, []).append(region_index)
+        insertions_at.setdefault(idx, []).append(("figure", region_index))
+    for table_index, table in enumerate(tables):
+        idx = _find_region_insertion_index(lines, table)
+        insertions_at.setdefault(idx, []).append(("table", table_index))
 
     events: list[tuple[int, float, float, str, Line | int]] = []
     for i, ln in enumerate(lines):
-        for region_index in insertions_at.get(i, []):
-            region = regions[region_index]
-            events.append(
-                (region.page_number, region.bbox[1], region.bbox[3], "figure", region_index)
-            )
+        for event_kind, index in insertions_at.get(i, []):
+            if event_kind == "figure":
+                region = regions[index]
+                events.append((region.page_number, region.bbox[1], region.bbox[3], "figure", index))
+            else:
+                table = tables[index]
+                events.append((table.page_number, table.bbox[1], table.bbox[3], "table", index))
         events.append((ln.page_number, ln.y0, ln.y1, "line", ln))
-    for region_index in insertions_at.get(len(lines), []):
-        region = regions[region_index]
-        events.append((region.page_number, region.bbox[1], region.bbox[3], "figure", region_index))
+    for event_kind, index in insertions_at.get(len(lines), []):
+        if event_kind == "figure":
+            region = regions[index]
+            events.append((region.page_number, region.bbox[1], region.bbox[3], "figure", index))
+        else:
+            table = tables[index]
+            events.append((table.page_number, table.bbox[1], table.bbox[3], "table", index))
 
     segments: list[StatementSegment] = []
     placed_regions: list[int] = []
+    placed_tables: list[int] = []
     current_prose: list[str] = []
     current_code: list[Line] = []
     previous_end: tuple[int, float] | None = None
@@ -220,12 +377,8 @@ def _build_statement_segments(
 
     def flush_code() -> None:
         if current_code:
-            base_x0 = min(ln.x0 for ln in current_code)
-            rendered = []
-            for ln in current_code:
-                indent = max(0, round((ln.x0 - base_x0) / CODE_CHAR_WIDTH))
-                rendered.append(" " * indent + ln.text)
-            segments.append(CodeSegment(text="\n".join(rendered)))
+            gutter_stripped = _strip_line_number_gutter(current_code)
+            segments.append(CodeSegment(text=_render_code_lines(gutter_stripped)))
             current_code.clear()
 
     def flush_all() -> None:
@@ -237,6 +390,8 @@ def _build_statement_segments(
             line = payload
             assert isinstance(line, Line)
             if any(_line_in_region(line, regions[i]) for i in range(len(regions))):
+                continue
+            if line in table_consumed:
                 continue
             gap_breaks_run = previous_end is not None and (
                 previous_end[0] != page_number or (y0 - previous_end[1]) >= PARAGRAPH_GAP_THRESHOLD
@@ -250,16 +405,23 @@ def _build_statement_segments(
                     flush_all()
                 current_prose.append(line.text)
             previous_end = (page_number, y1)
-        else:
+        elif kind == "figure":
             event_region_index = payload
             assert isinstance(event_region_index, int)
             flush_all()
             segments.append(FigureSegment(region_index=event_region_index))
             placed_regions.append(event_region_index)
             previous_end = (page_number, y1)
+        else:
+            event_table_index = payload
+            assert isinstance(event_table_index, int)
+            flush_all()
+            segments.append(TableSegment(table_index=event_table_index))
+            placed_tables.append(event_table_index)
+            previous_end = (page_number, y1)
 
     flush_all()
-    return segments, placed_regions
+    return segments, placed_regions, placed_tables
 
 
 def detect_broken_words(text: str) -> list[str]:
@@ -308,9 +470,14 @@ def assemble_question(
 ) -> ExtractedQuestion:
     warnings: list[str] = []
 
-    content_lines = _strip_leading_marker([ln for ln in span.lines if not is_chrome_line(ln.text)])
+    # A coarse, not-yet-final pass: only used to bound the figure-region
+    # search per page and to locate a preliminary alternatives cutoff (see
+    # below) - both tolerant of the small differences the later table-aware
+    # rescue pass (further down) can introduce, so there is no need to
+    # duplicate that rescue logic here too.
+    coarse_lines = [ln for ln in span.lines if not is_chrome_line(ln.text)]
 
-    pages_in_span = sorted({ln.page_number for ln in content_lines}) or [span.start_page]
+    pages_in_span = sorted({ln.page_number for ln in coarse_lines}) or [span.start_page]
 
     # Region detection is per-page, but two different questions can share a
     # page (e.g. Q34 ends and Q35 begins on the same page 43). Without a
@@ -320,7 +487,7 @@ def assemble_question(
     # page (with a small tolerance for a figure sitting just outside its
     # nearest text line).
     page_y_bounds: dict[int, tuple[float, float]] = {}
-    for ln in content_lines:
+    for ln in coarse_lines:
         lo, hi = page_y_bounds.get(ln.page_number, (ln.y0, ln.y1))
         page_y_bounds[ln.page_number] = (min(lo, ln.y0), max(hi, ln.y1))
     y_tolerance = 15.0
@@ -349,9 +516,9 @@ def assemble_question(
     # region filtering entirely.
     alt_section_start: tuple[int, float] | None = None
     if span.kind == QuestionKind.OBJECTIVE:
-        preliminary_starts = _find_alternative_starts(content_lines)
+        preliminary_starts = _find_alternative_starts(coarse_lines)
         if preliminary_starts is not None:
-            a_line = content_lines[preliminary_starts["A"]]
+            a_line = coarse_lines[preliminary_starts["A"]]
             alt_section_start = _position_key(a_line.page_number, a_line.y0)
 
     def _in_alternatives_section(ln: Line) -> bool:
@@ -359,15 +526,42 @@ def assemble_question(
             alt_section_start
         )
 
+    # Table detection (PROMPT Phase 1C section 5) runs on the *raw*,
+    # pre-chrome span lines (minus anything already claimed by a figure
+    # region) - not on the already chrome-filtered ``coarse_lines``. A
+    # genuine table's own short numeric cells (e.g. D3's "1 2 3 4 5 6"
+    # formula-numbering row) are, by *text* alone, indistinguishable from a
+    # bare running page number or a "rascunho" scratch-margin ruler digit
+    # (chrome.py's own evidence-based patterns for those - see
+    # docs/decisions.md, "Phase 1C" ADR); the only thing that actually
+    # tells them apart is that a table cell is part of a real, multi-row,
+    # multi-column geometric grid alongside other substantial content,
+    # which chrome furniture never is. So detection runs first, against
+    # the wider raw candidate set, and any line it consumes is exempted
+    # from chrome filtering below; every bare number that is *not* part of
+    # a detected table (running page numbers, the rascunho ruler, an
+    # isolated stray digit) is filtered exactly as before Phase 1C.
+    raw_candidate_lines = [
+        ln for ln in span.lines if not any(_line_in_region(ln, r) for r in regions)
+    ]
+    detected_tables = detect_tables(raw_candidate_lines)
+    table_consumed_lines = frozenset(ln for t in detected_tables for ln in t.consumed_lines)
+
+    content_lines = _strip_leading_marker(
+        [ln for ln in span.lines if ln in table_consumed_lines or not is_chrome_line(ln.text)]
+    )
+
     text_only_lines = [
         ln
         for ln in content_lines
-        if _in_alternatives_section(ln) or not any(_line_in_region(ln, r) for r in regions)
+        if _in_alternatives_section(ln)
+        or (not any(_line_in_region(ln, r) for r in regions) and ln not in table_consumed_lines)
     ]
 
     alternatives: list[ExtractedAlternative] = []
     statement_lines = content_lines
     statement_regions = regions
+    statement_tables = detected_tables
 
     if span.kind == QuestionKind.OBJECTIVE:
         starts = _find_alternative_starts(text_only_lines)
@@ -385,6 +579,9 @@ def assemble_question(
             statement_regions = [
                 r for r in regions if _position_key(r.page_number, r.bbox[1]) < cutoff_key
             ]
+            statement_tables = [
+                t for t in detected_tables if _position_key(t.page_number, t.bbox[1]) < cutoff_key
+            ]
 
             ordered_letters = ["A", "B", "C", "D", "E"]
             alt_bounds = [starts[letter] for letter in ordered_letters] + [len(text_only_lines)]
@@ -400,12 +597,20 @@ def assemble_question(
                 full_text = f"{first_text} {rest_text}".strip() if rest_text else first_text
                 alternatives.append(ExtractedAlternative(letter=letter, text=full_text))
 
-    segments, placed_region_indices = _build_statement_segments(statement_lines, statement_regions)
+    segments, placed_region_indices, placed_table_indices = _build_statement_segments(
+        statement_lines, statement_regions, statement_tables
+    )
 
     unplaced = set(range(len(statement_regions))) - set(placed_region_indices)
     if unplaced:
         warnings.append(
             f"{len(unplaced)} detected figure region(s) could not be placed in the statement flow"
+        )
+
+    unplaced_tables = set(range(len(statement_tables))) - set(placed_table_indices)
+    if unplaced_tables:
+        warnings.append(
+            f"{len(unplaced_tables)} detected table(s) could not be placed in the statement flow"
         )
 
     plain_text = "\n\n".join(seg.text for seg in segments if isinstance(seg, TextSegment))
@@ -428,6 +633,13 @@ def assemble_question(
             "and were excluded from the statement (unexpected layout - needs review)"
         )
 
+    dropped_tables = [t for t in detected_tables if t not in statement_tables]
+    if dropped_tables:
+        warnings.append(
+            f"{len(dropped_tables)} detected table(s) fell after the alternatives cutoff "
+            "and were excluded from the statement (unexpected layout - needs review)"
+        )
+
     spacing_corrections = [c for ln in content_lines for c in ln.spacing_corrections]
     label_corrections = [c for ln in content_lines for c in ln.label_corrections]
     symbol_corrections = [c for ln in content_lines for c in ln.symbol_corrections]
@@ -440,6 +652,7 @@ def assemble_question(
         statement_segments=segments,
         alternatives=alternatives,
         figure_regions=statement_regions,
+        tables=statement_tables,
         warnings=warnings,
         spacing_corrections=spacing_corrections,
         label_corrections=label_corrections,

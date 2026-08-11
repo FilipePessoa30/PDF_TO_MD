@@ -9,8 +9,9 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from enade.models.asset import Asset
 from enade.models.enums import CourseCode, DocType
 
 SHA256_PATTERN = r"^[0-9a-f]{64}$"
@@ -89,6 +90,17 @@ class AnswerStandardReference(BaseModel):
     This is deliberately a *separate* field from ``official_answer_source``
     (which remains a lightweight pointer usable by objective questions) so
     that existing data is unaffected: this field is optional and additive.
+
+    ``assets`` (Phase 1C, PROMPT section 9) covers visual elements that
+    exist *only* in the answer standard itself - e.g. D4's worked-out
+    circuit diagrams, introduced by "conforme abaixo" - as opposed to a
+    reprint of the question's own figure (which the padrao PDF also
+    contains for some questions, but that content is already captured via
+    the question's own ``Question.assets`` from the prova and must never
+    be duplicated here). Kept in a field of its own, never merged into
+    ``Question.assets``, so a future consumer can enforce "never shown to
+    the student before their attempt" by field alone - see
+    docs/decisions.md, "Phase 1C" ADR.
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -99,6 +111,7 @@ class AnswerStandardReference(BaseModel):
     pdf_sha256: str = Field(..., pattern=SHA256_PATTERN)
     pages: list[int] = Field(..., min_length=1)
     text: str = Field(..., min_length=1, description="verbatim official grading rubric text")
+    assets: list[Asset] = Field(default_factory=list)
 
     @field_validator("pages")
     @classmethod
@@ -106,3 +119,10 @@ class AnswerStandardReference(BaseModel):
         if any(p < 1 for p in v):
             raise ValueError("page numbers must be >= 1")
         return v
+
+    @model_validator(mode="after")
+    def _validate_asset_ids_unique(self) -> AnswerStandardReference:
+        ids = [a.id for a in self.assets]
+        if len(set(ids)) != len(ids):
+            raise ValueError("answer_standard.assets must not repeat an id")
+        return self

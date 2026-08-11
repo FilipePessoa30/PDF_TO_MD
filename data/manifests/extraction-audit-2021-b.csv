@@ -1,9 +1,9 @@
 id,exam_year,kind,number,section,start_page,end_page,num_alternatives,has_assets,num_assets,answer,answer_validation_status,answer_standard_available,extraction_method,extraction_status,warning_count,warnings
 enade-2021-cc-b-d01,2021,discursive,1,formacao-geral-discursiva,2,2,0,False,0,,not_applicable,True,text_layer,verified,0,
 enade-2021-cc-b-d02,2021,discursive,2,formacao-geral-discursiva,4,4,0,False,0,,not_applicable,True,text_layer,verified,0,
-enade-2021-cc-b-d03,2021,discursive,3,componente-especifico-discursiva,14,15,0,False,0,,not_applicable,True,text_layer,needs_review,0,
+enade-2021-cc-b-d03,2021,discursive,3,componente-especifico-discursiva,14,15,0,True,1,,not_applicable,True,text_layer,verified,0,
 enade-2021-cc-b-d04,2021,discursive,4,componente-especifico-discursiva,16,16,0,True,1,,not_applicable,True,text_layer,verified,0,
-enade-2021-cc-b-d05,2021,discursive,5,componente-especifico-discursiva,17,18,0,True,1,,not_applicable,True,text_layer,needs_review,1,statement contains a code/pseudocode block spanning multiple pages - column layout + code formatting fidelity needs manual confirmation
+enade-2021-cc-b-d05,2021,discursive,5,componente-especifico-discursiva,17,18,0,True,1,,not_applicable,True,text_layer,verified,0,
 enade-2021-cc-b-q01,2021,multiple_choice,1,formacao-geral-objetiva,5,5,5,False,0,E,validated,False,text_layer,verified,0,
 enade-2021-cc-b-q02,2021,multiple_choice,2,formacao-geral-objetiva,6,7,5,True,1,C,validated,False,text_layer,verified,0,
 enade-2021-cc-b-q03,2021,multiple_choice,3,formacao-geral-objetiva,8,8,5,True,1,B,validated,False,text_layer,verified,0,
@@ -23,7 +23,7 @@ enade-2021-cc-b-q16,2021,multiple_choice,16,componente-especifico-objetiva,25,25
 enade-2021-cc-b-q17,2021,multiple_choice,17,componente-especifico-objetiva,26,27,5,True,1,C,validated,False,text_layer,verified,0,
 enade-2021-cc-b-q18,2021,multiple_choice,18,componente-especifico-objetiva,27,27,5,False,0,E,validated,False,text_layer,verified,0,
 enade-2021-cc-b-q19,2021,multiple_choice,19,componente-especifico-objetiva,28,28,5,False,0,D,validated,False,text_layer,verified,0,
-enade-2021-cc-b-q20,2021,multiple_choice,20,componente-especifico-objetiva,29,29,5,False,0,A,validated,False,text_layer,needs_review,0,
+enade-2021-cc-b-q20,2021,multiple_choice,20,componente-especifico-objetiva,29,29,5,False,0,A,validated,False,text_layer,verified,0,
 enade-2021-cc-b-q21,2021,multiple_choice,21,componente-especifico-objetiva,30,30,5,True,1,E,validated,False,text_layer,verified,0,
 enade-2021-cc-b-q22,2021,multiple_choice,22,componente-especifico-objetiva,31,31,5,True,1,A,validated,False,text_layer,verified,0,
 enade-2021-cc-b-q23,2021,multiple_choice,23,componente-especifico-objetiva,32,32,5,True,1,C,validated,False,text_layer,verified,0,

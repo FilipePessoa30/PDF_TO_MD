@@ -11,17 +11,32 @@ from dataclasses import dataclass
 
 from enade.extraction.answer_key import AnswerKeyEntry, AnswerKeyValueKind
 from enade.extraction.answer_standard import AnswerStandardEntry
-from enade.extraction.assembler import CodeSegment, ExtractedQuestion, FigureSegment, TextSegment
+from enade.extraction.assembler import (
+    CodeSegment,
+    ExtractedQuestion,
+    FigureSegment,
+    TableSegment,
+    TextSegment,
+)
 from enade.extraction.assets import RenderedAsset
 from enade.extraction.boundaries import QuestionKind
+from enade.extraction.tables import render_table_markdown
 from enade.extraction.validator import ValidationOutcome
 from enade.models.asset import Asset
+from enade.models.content_block import (
+    AssetBlock,
+    CodeBlock,
+    ContentBlock,
+    ParagraphBlock,
+    TableBlock,
+)
 from enade.models.enums import (
     AnswerValidationStatus,
     CourseCode,
     ExtractionMethod,
     ExtractionStatus,
     QuestionType,
+    TableValidationStatus,
     VisualValidationStatus,
 )
 from enade.models.provenance import AnswerStandardReference, SourceOccurrence
@@ -66,7 +81,9 @@ def _section_for(kind: QuestionKind, number: int, structure: ExamStructure) -> s
 
 
 def render_statement_markdown(
-    extracted: ExtractedQuestion, assets_by_region: dict[int, RenderedAsset]
+    extracted: ExtractedQuestion,
+    assets_by_region: dict[int, RenderedAsset],
+    assets_by_table: dict[int, RenderedAsset] | None = None,
 ) -> str:
     """Render statement segments to Markdown, resolving figure placeholders.
 
@@ -77,7 +94,15 @@ def render_statement_markdown(
     altering the extracted text; the one exception already applied
     elsewhere - hyphen/line-break reconstruction - was deliberately *not*
     implemented, see docs/decisions.md).
+
+    A table segment renders as a GFM Markdown table *plus* its mandatory
+    visual-fallback crop, immediately after it (PROMPT Phase 1C section
+    5.2: D3-class content must never leave the reader with only a
+    structured guess and no way to check it against the original) - both
+    travel together in the same rendered chunk so no later reordering can
+    separate a table from its own fallback image.
     """
+    assets_by_table = assets_by_table or {}
     parts: list[str] = []
     for segment in extracted.statement_segments:
         if isinstance(segment, TextSegment):
@@ -88,7 +113,71 @@ def render_statement_markdown(
             asset = assets_by_region.get(segment.region_index)
             if asset is not None:
                 parts.append(f"![Figura da questão]({asset.relative_path})")
+        elif isinstance(segment, TableSegment):
+            table = extracted.tables[segment.table_index]
+            chunk = render_table_markdown(table)
+            asset = assets_by_table.get(segment.table_index)
+            if asset is not None:
+                chunk += f"\n\n![Tabela (fallback visual fiel)]({asset.relative_path})"
+            parts.append(chunk)
     return "\n\n".join(parts)
+
+
+def _build_content_blocks(
+    extracted: ExtractedQuestion,
+    assets_by_region: dict[int, RenderedAsset],
+    assets_by_table: dict[int, RenderedAsset],
+    *,
+    table_cells_verified: bool = False,
+) -> list[ContentBlock] | None:
+    """Project ``statement_segments`` into ``Question.content_blocks``.
+
+    Populated only for a question whose segments actually include a table
+    or a code block (see docs/decisions.md, "Phase 1C" ADR 12) - a
+    content-shape rule, not a per-question one: every other question keeps
+    ``content_blocks=None`` and is unaffected.
+
+    ``table_cells_verified`` defaults to False - automated geometric
+    extraction never claims cell-by-cell visual confirmation by itself.
+    Only a real, disclosed visual audit
+    (``visual_audit.load_table_cell_verified_question_ids``, PROMPT section
+    16) can promote a table's ``validation_status`` to ``verified``.
+    """
+    has_table_or_code = any(
+        isinstance(seg, TableSegment | CodeSegment) for seg in extracted.statement_segments
+    )
+    if not has_table_or_code:
+        return None
+
+    table_status = (
+        TableValidationStatus.VERIFIED
+        if table_cells_verified
+        else TableValidationStatus.NEEDS_REVIEW
+    )
+
+    blocks: list[ContentBlock] = []
+    for segment in extracted.statement_segments:
+        if isinstance(segment, TextSegment):
+            blocks.append(ParagraphBlock(text=segment.text))
+        elif isinstance(segment, CodeSegment):
+            blocks.append(CodeBlock(text=segment.text))
+        elif isinstance(segment, FigureSegment):
+            asset = assets_by_region.get(segment.region_index)
+            if asset is not None:
+                blocks.append(AssetBlock(asset_id=asset.asset_id))
+        elif isinstance(segment, TableSegment):
+            table = extracted.tables[segment.table_index]
+            blocks.append(
+                TableBlock(
+                    headers=table.headers,
+                    rows=table.rows,
+                    validation_status=table_status,
+                )
+            )
+            asset = assets_by_table.get(segment.table_index)
+            if asset is not None:
+                blocks.append(AssetBlock(asset_id=asset.asset_id))
+    return blocks or None
 
 
 def build_question(
@@ -107,9 +196,14 @@ def build_question(
     gabarito_source_path: str,
     rendered_assets: list[RenderedAsset],
     assets_by_region: dict[int, RenderedAsset],
+    assets_by_table: dict[int, RenderedAsset] | None = None,
+    table_cells_verified: bool = False,
+    answer_standard_assets: list[RenderedAsset] | None = None,
     validation: ValidationOutcome,
     visual_validation: VisualValidationStatus = VisualValidationStatus.NOT_PERFORMED,
 ) -> Question:
+    assets_by_table = assets_by_table or {}
+    answer_standard_assets = answer_standard_assets or []
     kind = extracted.kind
     number = extracted.number
     shorthand = COURSE_ID_SHORTHAND[course]
@@ -121,7 +215,10 @@ def build_question(
         QuestionType.MULTIPLE_CHOICE if kind == QuestionKind.OBJECTIVE else QuestionType.DISCURSIVE
     )
 
-    statement = render_statement_markdown(extracted, assets_by_region)
+    statement = render_statement_markdown(extracted, assets_by_region, assets_by_table)
+    content_blocks = _build_content_blocks(
+        extracted, assets_by_region, assets_by_table, table_cells_verified=table_cells_verified
+    )
     alternatives = [Alternative(letter=a.letter, text=a.text) for a in extracted.alternatives]
 
     correct_answer: str | None = None
@@ -152,6 +249,17 @@ def build_question(
                 pdf_sha256=answer_standard_sha256,
                 pages=answer_standard_entry.pages,
                 text=answer_standard_entry.text,
+                assets=[
+                    Asset(
+                        id=asset.asset_id,
+                        type=asset.asset_type,
+                        path=asset.relative_path,
+                        source_page=asset.source_page,
+                        extraction_method=asset.extraction_method,
+                        sha256=asset.sha256,
+                    )
+                    for asset in answer_standard_assets
+                ],
             )
 
     assets = [
@@ -199,6 +307,7 @@ def build_question(
         question_number=number,
         question_type=question_type,
         statement=statement,
+        content_blocks=content_blocks,
         alternatives=alternatives,
         correct_answer=correct_answer,
         official_answer_source=official_answer_source,

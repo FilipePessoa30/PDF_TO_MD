@@ -72,7 +72,19 @@ def normalize_for_chrome_check(text: str) -> str:
 
 
 def is_chrome_line(text: str) -> bool:
-    """True if ``text`` is administrative page furniture, not question content."""
+    """True if ``text`` is administrative page furniture, not question content.
+
+    Deliberately text-only, with no geometric awareness (contrast
+    assembler.py's table-rescue pass, which restores a bare-number line
+    that chrome-filtering would otherwise strip whenever it is actually
+    part of a detected table's grid - e.g. D3's formula-numbering row - see
+    docs/decisions.md, "Phase 1C" ADR): a bare short number, a "rascunho"
+    ruler digit and a genuine table header cell are geometrically
+    distinguishable (is it part of a real multi-row/column grid alongside
+    other substantial content, or an isolated stray digit?) but not
+    text-distinguishable, so that distinction belongs where the geometry
+    already lives, not here.
+    """
     normalized = normalize_for_chrome_check(text)
     if not normalized:
         return True

@@ -12,13 +12,26 @@ regardless of any visual check; a question with none is only ever
 ``extracted`` (automatic-clean, visual pending) until that separate,
 evidence-based visual confirmation happens - this function never "forces"
 verified to make a count look better.
+
+Phase 1B added a blanket "code + multi-page statement needs manual
+confirmation" reason here, because the two-column/code layout
+reconstruction it distrusted was, at the time, genuinely broken (D5 - see
+docs/decisions.md). That reason could never be satisfied: it fired on the
+mere *shape* "has code and spans >1 page" regardless of correctness, so a
+question matching that shape could never reach ``automatic_validation=
+passed`` and therefore never ``verified``, even after Phase 1C fixed and
+tested the underlying reconstruction (PROMPT section 22 explicitly expects
+D5 to be promotable once fixed). Removed rather than special-cased per
+question id: per-question fidelity is enforced the same way as every other
+question in this corpus - a real, disclosed ``visual_validation`` entry,
+not a permanent structural distrust rule.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from enade.extraction.assembler import CodeSegment, ExtractedQuestion
+from enade.extraction.assembler import ExtractedQuestion
 from enade.extraction.assets import RenderedAsset
 from enade.extraction.boundaries import QuestionKind
 from enade.models.enums import AutomaticValidationStatus, ExtractionStatus
@@ -52,9 +65,11 @@ def evaluate_extraction(
             if not alt.text.strip():
                 reasons.append(f"alternative {alt.letter} has empty text")
 
-    if len(rendered_assets) != len(extracted.figure_regions):
+    expected_asset_count = len(extracted.figure_regions) + len(extracted.tables)
+    if len(rendered_assets) != expected_asset_count:
         reasons.append(
-            f"detected {len(extracted.figure_regions)} figure region(s) but only "
+            f"detected {len(extracted.figure_regions)} figure region(s) and "
+            f"{len(extracted.tables)} table(s) but only "
             f"{len(rendered_assets)} were rendered to assets"
         )
     for asset in rendered_assets:
@@ -65,13 +80,6 @@ def evaluate_extraction(
 
     if not has_answer:
         reasons.append("no corresponding answer-key/answer-standard entry found")
-
-    has_code = any(isinstance(seg, CodeSegment) for seg in extracted.statement_segments)
-    if has_code and extracted.start_page != extracted.end_page:
-        reasons.append(
-            "statement contains a code/pseudocode block spanning multiple pages - "
-            "column layout + code formatting fidelity needs manual confirmation"
-        )
 
     if reasons:
         return ValidationOutcome(

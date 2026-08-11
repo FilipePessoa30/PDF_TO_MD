@@ -57,8 +57,15 @@
     },
     "AnswerStandardReference": {
       "additionalProperties": false,
-      "description": "The official grading rubric (\"padrao de resposta\") for a discursive question.\n\nAdded in Phase 1A after encountering the real 2021 corpus: the answer\nstandard PDF (e.g. ``2021/b3_padrao.pdf``) contains the actual grading\ncriteria text for each discursive question, distinct from both the\nquestion's own source (the \"prova\") and an objective question's\n``correct_answer`` (which comes from the \"gabarito\"). See\ndocs/decisions.md, ADR \"answer_standard for discursive questions\", for\nthe full PROBLEMA/EXEMPLO/LIMITACAO/ALTERACAO/TESTE rationale.\n\nThis is deliberately a *separate* field from ``official_answer_source``\n(which remains a lightweight pointer usable by objective questions) so\nthat existing data is unaffected: this field is optional and additive.",
+      "description": "The official grading rubric (\"padrao de resposta\") for a discursive question.\n\nAdded in Phase 1A after encountering the real 2021 corpus: the answer\nstandard PDF (e.g. ``2021/b3_padrao.pdf``) contains the actual grading\ncriteria text for each discursive question, distinct from both the\nquestion's own source (the \"prova\") and an objective question's\n``correct_answer`` (which comes from the \"gabarito\"). See\ndocs/decisions.md, ADR \"answer_standard for discursive questions\", for\nthe full PROBLEMA/EXEMPLO/LIMITACAO/ALTERACAO/TESTE rationale.\n\nThis is deliberately a *separate* field from ``official_answer_source``\n(which remains a lightweight pointer usable by objective questions) so\nthat existing data is unaffected: this field is optional and additive.\n\n``assets`` (Phase 1C, PROMPT section 9) covers visual elements that\nexist *only* in the answer standard itself - e.g. D4's worked-out\ncircuit diagrams, introduced by \"conforme abaixo\" - as opposed to a\nreprint of the question's own figure (which the padrao PDF also\ncontains for some questions, but that content is already captured via\nthe question's own ``Question.assets`` from the prova and must never\nbe duplicated here). Kept in a field of its own, never merged into\n``Question.assets``, so a future consumer can enforce \"never shown to\nthe student before their attempt\" by field alone - see\ndocs/decisions.md, \"Phase 1C\" ADR.",
       "properties": {
+        "assets": {
+          "items": {
+            "$ref": "#/$defs/Asset"
+          },
+          "title": "Assets",
+          "type": "array"
+        },
         "pages": {
           "items": {
             "type": "integer"
@@ -177,6 +184,28 @@
       "title": "Asset",
       "type": "object"
     },
+    "AssetBlock": {
+      "additionalProperties": false,
+      "description": "A pointer, by id, into ``Question.assets`` - never a copy of the\nasset's own fields, so there is exactly one place an asset's\npath/hash/page can drift out of sync.",
+      "properties": {
+        "asset_id": {
+          "minLength": 1,
+          "title": "Asset Id",
+          "type": "string"
+        },
+        "type": {
+          "const": "asset",
+          "default": "asset",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "asset_id"
+      ],
+      "title": "AssetBlock",
+      "type": "object"
+    },
     "AssetExtractionMethod": {
       "enum": [
         "manual",
@@ -210,6 +239,40 @@
       ],
       "title": "AutomaticValidationStatus",
       "type": "string"
+    },
+    "CodeBlock": {
+      "additionalProperties": false,
+      "properties": {
+        "language": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Language"
+        },
+        "text": {
+          "description": "verbatim, newline-joined; never reformatted",
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "type": {
+          "const": "code",
+          "default": "code",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text"
+      ],
+      "title": "CodeBlock",
+      "type": "object"
     },
     "CourseCode": {
       "description": "Computing-area undergraduate courses/modalities present in the corpus.\n\n``ALL_COMPUTING`` is a deliberate alias meaning \"applies to every\ncomputing course in the given exam booklet\" (e.g. Formacao Geral and\nComponente Especifico Comum in the unified 2011 booklet). It exists so\na question does not need to enumerate every concrete course by hand.\nSee docs/decisions.md (ADR on applicable_courses) for the constraint\nthat ``ALL_COMPUTING`` may not be combined with other explicit codes.",
@@ -253,6 +316,27 @@
       ],
       "title": "ExtractionStatus",
       "type": "string"
+    },
+    "ParagraphBlock": {
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "type": {
+          "const": "paragraph",
+          "default": "paragraph",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text"
+      ],
+      "title": "ParagraphBlock",
+      "type": "object"
     },
     "QuestionType": {
       "enum": [
@@ -311,6 +395,54 @@
       ],
       "title": "SourceOccurrence",
       "type": "object"
+    },
+    "TableBlock": {
+      "additionalProperties": false,
+      "description": "A table transcribed cell-by-cell from glyph geometry (never from the\nlogical/mathematical meaning of its contents - PROMPT section 5.3: \"Não\nuse o significado lógico das fórmulas para preencher células\").\n\n``validation_status`` records whether every cell was confirmed against\nthe rendered PDF (see docs/decisions.md ADR 12): a table that has not\npassed that check must never be presented as if it were reliable - see\n``Question._validate_content_blocks`` in question.py, which requires an\naccompanying visual-fallback asset whenever a `TableBlock` is not\n`verified`.",
+      "properties": {
+        "headers": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Headers",
+          "type": "array"
+        },
+        "rows": {
+          "items": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "minItems": 1,
+          "title": "Rows",
+          "type": "array"
+        },
+        "type": {
+          "const": "table",
+          "default": "table",
+          "title": "Type",
+          "type": "string"
+        },
+        "validation_status": {
+          "$ref": "#/$defs/TableValidationStatus",
+          "default": "needs_review"
+        }
+      },
+      "required": [
+        "rows"
+      ],
+      "title": "TableBlock",
+      "type": "object"
+    },
+    "TableValidationStatus": {
+      "description": "Whether a structured ``TableBlock`` was confirmed cell-by-cell\nagainst the source PDF (PROMPT Phase 1C section 5.4/21). A table whose\ngeometry could not be validated must never be presented as if it were\na reliable transcription - see ``ContentBlock`` (content_block.py).",
+      "enum": [
+        "verified",
+        "needs_review"
+      ],
+      "title": "TableValidationStatus",
+      "type": "string"
     },
     "TaxonomyReviewStatus": {
       "enum": [
@@ -396,6 +528,43 @@
       },
       "title": "Concepts",
       "type": "array"
+    },
+    "content_blocks": {
+      "anyOf": [
+        {
+          "items": {
+            "discriminator": {
+              "mapping": {
+                "asset": "#/$defs/AssetBlock",
+                "code": "#/$defs/CodeBlock",
+                "paragraph": "#/$defs/ParagraphBlock",
+                "table": "#/$defs/TableBlock"
+              },
+              "propertyName": "type"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/ParagraphBlock"
+              },
+              {
+                "$ref": "#/$defs/CodeBlock"
+              },
+              {
+                "$ref": "#/$defs/TableBlock"
+              },
+              {
+                "$ref": "#/$defs/AssetBlock"
+              }
+            ]
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Content Blocks"
     },
     "correct_answer": {
       "anyOf": [

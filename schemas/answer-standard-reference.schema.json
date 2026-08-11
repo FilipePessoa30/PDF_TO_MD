@@ -1,7 +1,112 @@
 {
+  "$defs": {
+    "Asset": {
+      "additionalProperties": false,
+      "properties": {
+        "alt_text": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Alt Text"
+        },
+        "caption": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Caption"
+        },
+        "extraction_method": {
+          "$ref": "#/$defs/AssetExtractionMethod",
+          "default": "pending"
+        },
+        "id": {
+          "description": "slug unique within the owning question, e.g. 'figure-01'",
+          "title": "Id",
+          "type": "string"
+        },
+        "path": {
+          "description": "portable path, relative to the owning question's own .md file",
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sha256"
+        },
+        "source_page": {
+          "minimum": 1,
+          "title": "Source Page",
+          "type": "integer"
+        },
+        "type": {
+          "$ref": "#/$defs/AssetType"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "path",
+        "source_page"
+      ],
+      "title": "Asset",
+      "type": "object"
+    },
+    "AssetExtractionMethod": {
+      "enum": [
+        "manual",
+        "raster_crop",
+        "vector_export",
+        "ocr",
+        "unknown",
+        "pending"
+      ],
+      "title": "AssetExtractionMethod",
+      "type": "string"
+    },
+    "AssetType": {
+      "enum": [
+        "image",
+        "diagram",
+        "graph",
+        "table",
+        "equation",
+        "page_crop"
+      ],
+      "title": "AssetType",
+      "type": "string"
+    }
+  },
   "additionalProperties": false,
-  "description": "The official grading rubric (\"padrao de resposta\") for a discursive question.\n\nAdded in Phase 1A after encountering the real 2021 corpus: the answer\nstandard PDF (e.g. ``2021/b3_padrao.pdf``) contains the actual grading\ncriteria text for each discursive question, distinct from both the\nquestion's own source (the \"prova\") and an objective question's\n``correct_answer`` (which comes from the \"gabarito\"). See\ndocs/decisions.md, ADR \"answer_standard for discursive questions\", for\nthe full PROBLEMA/EXEMPLO/LIMITACAO/ALTERACAO/TESTE rationale.\n\nThis is deliberately a *separate* field from ``official_answer_source``\n(which remains a lightweight pointer usable by objective questions) so\nthat existing data is unaffected: this field is optional and additive.",
+  "description": "The official grading rubric (\"padrao de resposta\") for a discursive question.\n\nAdded in Phase 1A after encountering the real 2021 corpus: the answer\nstandard PDF (e.g. ``2021/b3_padrao.pdf``) contains the actual grading\ncriteria text for each discursive question, distinct from both the\nquestion's own source (the \"prova\") and an objective question's\n``correct_answer`` (which comes from the \"gabarito\"). See\ndocs/decisions.md, ADR \"answer_standard for discursive questions\", for\nthe full PROBLEMA/EXEMPLO/LIMITACAO/ALTERACAO/TESTE rationale.\n\nThis is deliberately a *separate* field from ``official_answer_source``\n(which remains a lightweight pointer usable by objective questions) so\nthat existing data is unaffected: this field is optional and additive.\n\n``assets`` (Phase 1C, PROMPT section 9) covers visual elements that\nexist *only* in the answer standard itself - e.g. D4's worked-out\ncircuit diagrams, introduced by \"conforme abaixo\" - as opposed to a\nreprint of the question's own figure (which the padrao PDF also\ncontains for some questions, but that content is already captured via\nthe question's own ``Question.assets`` from the prova and must never\nbe duplicated here). Kept in a field of its own, never merged into\n``Question.assets``, so a future consumer can enforce \"never shown to\nthe student before their attempt\" by field alone - see\ndocs/decisions.md, \"Phase 1C\" ADR.",
   "properties": {
+    "assets": {
+      "items": {
+        "$ref": "#/$defs/Asset"
+      },
+      "title": "Assets",
+      "type": "array"
+    },
     "pages": {
       "items": {
         "type": "integer"

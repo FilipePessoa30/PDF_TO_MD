@@ -217,7 +217,7 @@ def _merge_orphan_markers(lines: list[Line]) -> list[Line]:
     return merged
 
 
-def _detect_column_margins(lines: list[Line]) -> tuple[float, float] | None:
+def detect_column_margins(lines: list[Line]) -> tuple[float, float] | None:
     """Return (left_margin, right_margin) if ``lines`` show a genuine two-column layout.
 
     ``right_margin`` is the right column's own detected left edge (not a
@@ -244,12 +244,12 @@ def extract_page_lines(page: pymupdf.Page, page_number: int) -> list[Line]:
     """Extract every physical line on ``page``, in visual reading order.
 
     Single-column pages: sorted by (y0, x0). Two-column pages (detected via
-    :func:`_detect_column_margins`): every left-column line (top to
+    :func:`detect_column_margins`): every left-column line (top to
     bottom), then every right-column line (top to bottom) - see module
     docstring.
     """
     lines = _merge_orphan_markers(_raw_lines(page, page_number))
-    margins = _detect_column_margins(lines)
+    margins = detect_column_margins(lines)
 
     if margins is None:
         lines.sort(key=lambda ln: (round(ln.y0, 1), ln.x0))

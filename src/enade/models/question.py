@@ -25,6 +25,7 @@ import re
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from enade.models.asset import Asset
+from enade.models.content_block import AssetBlock, ContentBlock, TableBlock
 from enade.models.enums import (
     AnswerValidationStatus,
     AutomaticValidationStatus,
@@ -33,6 +34,7 @@ from enade.models.enums import (
     ExtractionMethod,
     ExtractionStatus,
     QuestionType,
+    TableValidationStatus,
     TaxonomyReviewStatus,
     VisualValidationStatus,
 )
@@ -42,6 +44,14 @@ from enade.models.provenance import AnswerStandardReference, SourceOccurrence
 QUESTION_ID_PATTERN = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 SECTION_PATTERN = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 ALTERNATIVE_LETTER_PATTERN = re.compile(r"^[A-E]$")
+
+#: Semantic version of the *shape* of this contract (not the pipeline that
+#: produces data satisfying it, see ``enade.__version__``/`pipeline_version`
+#: in gold.py) - bumped deliberately whenever a field is added, removed, or
+#: changes meaning. Phase 1C added `content_blocks` and
+#: `AnswerStandardReference.assets`, both additive/backward-compatible
+#: (MINOR bump) - see docs/decisions.md, "Phase 1C" ADR 12/15.
+DATA_CONTRACT_VERSION = "1.1.0"
 
 
 class Alternative(BaseModel):
@@ -67,6 +77,15 @@ class Question(BaseModel):
 
     # --- content --------------------------------------------------------
     statement: str = Field(..., min_length=1)
+    #: Ordered, mixed-content representation of the statement body -
+    #: paragraph/code/table/asset blocks in reading order (see
+    #: content_block.py and docs/decisions.md ADR 12). Optional and
+    #: additive: ``None`` for any question whose body is adequately
+    #: represented by ``statement`` + inline asset references alone (the
+    #: large majority of this corpus); populated only when a question's
+    #: real content mixes prose with a table and/or a code listing whose
+    #: position in the reading order matters (e.g. D3, D5).
+    content_blocks: list[ContentBlock] | None = None
     alternatives: list[Alternative] = Field(default_factory=list)
     correct_answer: str | None = Field(default=None, pattern=r"^[A-E]$")
     official_answer_source: str | None = Field(
@@ -187,6 +206,32 @@ class Question(BaseModel):
         ids = [a.id for a in self.assets]
         if len(set(ids)) != len(ids):
             raise ValueError("assets must not repeat an id within a question")
+        return self
+
+    @model_validator(mode="after")
+    def _validate_content_blocks(self) -> Question:
+        if self.content_blocks is None:
+            return self
+        asset_ids = {a.id for a in self.assets}
+        has_visual_fallback = any(isinstance(b, AssetBlock) for b in self.content_blocks)
+        for block in self.content_blocks:
+            if isinstance(block, AssetBlock) and block.asset_id not in asset_ids:
+                raise ValueError(
+                    f"content_blocks references undeclared asset id {block.asset_id!r}"
+                )
+            if (
+                isinstance(block, TableBlock)
+                and block.validation_status != TableValidationStatus.VERIFIED
+                and not has_visual_fallback
+            ):
+                # PROMPT section 5.2: a table that was not confirmed
+                # cell-by-cell must never be presented without a visual
+                # fallback the reader can fall back on - this is not
+                # optional, regardless of which question it is.
+                raise ValueError(
+                    "content_blocks has a non-verified TableBlock but no AssetBlock "
+                    "visual fallback - an unvalidated table must never stand alone"
+                )
         return self
 
     @model_validator(mode="after")

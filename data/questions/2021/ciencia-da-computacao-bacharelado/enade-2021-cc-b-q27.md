@@ -14,6 +14,7 @@ applicable_courses:
 section: componente-especifico-objetiva
 question_number: 27
 question_type: multiple_choice
+content_blocks: null
 correct_answer: D
 official_answer_source: 2021/b2_gabarito.pdf
 answer_validation_status: validated
@@ -48,6 +49,8 @@ taxonomy_review_status: pending
 A figura a seguir mostra o histograma de uma amostra composta de 20 000 servidores. O eixo x apresenta a quantidade de requisições simultâneas desses servidores. Por exemplo, o valor 168 indica que há 1 850 servidores com capacidade de atender 168 requisições simultâneas. 2000
 
 ![Figura da questão](enade-2021-cc-b-q27/figure-01.png)
+
+1800 1600 1400 1200 Frequência 1000
 
 É possível afirmar que ao conectarmo-nos a um servidor dessa amostra, ao acaso, há aproximadamente
 

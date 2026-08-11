@@ -14,6 +14,46 @@ applicable_courses:
 section: componente-especifico-objetiva
 question_number: 33
 question_type: multiple_choice
+content_blocks:
+- type: paragraph
+  text: A linguagem PROLOG pertence ao paradigma da programação lógica, no qual a
+    lógica proposicional e algorítmica pode ser expressa na forma de descritores de
+    fatos e regras de produção de respostas. No contexto da árvore genealógica de
+    uma família, analise a seguinte base de fatos descrita em linguagem Prolog.
+- type: code
+  text: 'paide(ana,francisco).
+
+    paide(maria,francisco).
+
+    paide(luiz,francisco).
+
+    maede(jose,maria).
+
+    maede(angelica,ana).
+
+    paide(luiza,luiz).
+
+    paide(joaquim,luiz).
+
+    homem(francisco).
+
+    homem(jose).
+
+    homem(luiz).
+
+    homem(joaquim).
+
+    mulher(ana).
+
+    mulher(maria).
+
+    mulher(angelica).
+
+    mulher(luiza)'
+  language: null
+- type: paragraph
+  text: Qual regra lógica de produção está corretamente escrita para verificar uma
+    das situações lógicas em que duas pessoas são irmãs?
 correct_answer: null
 official_answer_source: 2021/b2_gabarito.pdf
 answer_validation_status: annulled

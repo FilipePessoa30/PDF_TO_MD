@@ -14,6 +14,7 @@ applicable_courses:
 section: formacao-geral-discursiva
 question_number: 2
 question_type: discursive
+content_blocks: null
 correct_answer: null
 official_answer_source: null
 answer_validation_status: not_applicable
@@ -37,6 +38,7 @@ answer_standard:
      Plano de ação a fim de oferecer serviços específicos a grupos menos favorecidos,
     como ido- sos ou população de rua.  Concepção de artefatos urbanos para melhorar
     a mobilidade urbana ou para permitir a pas- sagem de fauna. Etc.'
+  assets: []
 assets: []
 subjects: []
 topics: []

@@ -25,6 +25,7 @@ from pathlib import Path
 import pymupdf
 
 from enade.extraction.figures import VisualRegion
+from enade.extraction.tables import DetectedTable
 from enade.models.enums import AssetExtractionMethod, AssetType
 
 #: Padding (points) added around a region's bbox (vertically) before
@@ -55,6 +56,46 @@ class RenderedAsset:
     extraction_method: AssetExtractionMethod = AssetExtractionMethod.RASTER_CROP
 
 
+def _render_bbox(
+    doc: pymupdf.Document,
+    page_number: int,
+    bbox: tuple[float, float, float, float],
+    output_path: Path,
+    relative_path: str,
+    asset_id: str,
+    asset_type: AssetType,
+) -> RenderedAsset:
+    page = doc[page_number - 1]
+    content_x0 = page.rect.x0 + PAGE_CONTENT_MARGIN
+    content_x1 = page.rect.x1 - PAGE_CONTENT_MARGIN
+    clip = pymupdf.Rect(
+        min(bbox[0], content_x0),
+        bbox[1] - RENDER_PADDING,
+        max(bbox[2], content_x1),
+        bbox[3] + RENDER_PADDING,
+    )
+    clip = clip & page.rect  # clamp to the physical page
+
+    matrix = pymupdf.Matrix(RENDER_ZOOM, RENDER_ZOOM)
+    pixmap = page.get_pixmap(matrix=matrix, clip=clip)
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    pixmap.save(str(output_path))
+
+    sha256 = hashlib.sha256(output_path.read_bytes()).hexdigest()
+
+    return RenderedAsset(
+        asset_id=asset_id,
+        asset_type=asset_type,
+        relative_path=relative_path,
+        absolute_path=output_path,
+        source_page=page_number,
+        sha256=sha256,
+        width_px=pixmap.width,
+        height_px=pixmap.height,
+    )
+
+
 def render_region(
     doc: pymupdf.Document,
     region: VisualRegion,
@@ -71,33 +112,45 @@ def render_region(
     filesystem location and the former must stay project-relative and
     OS-independent (see docs/data-contract.md, "Assets").
     """
-    page = doc[region.page_number - 1]
-    content_x0 = page.rect.x0 + PAGE_CONTENT_MARGIN
-    content_x1 = page.rect.x1 - PAGE_CONTENT_MARGIN
-    clip = pymupdf.Rect(
-        min(region.bbox[0], content_x0),
-        region.bbox[1] - RENDER_PADDING,
-        max(region.bbox[2], content_x1),
-        region.bbox[3] + RENDER_PADDING,
-    )
-    clip = clip & page.rect  # clamp to the physical page
-
-    matrix = pymupdf.Matrix(RENDER_ZOOM, RENDER_ZOOM)
-    pixmap = page.get_pixmap(matrix=matrix, clip=clip)
-
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    pixmap.save(str(output_path))
-
-    sha256 = hashlib.sha256(output_path.read_bytes()).hexdigest()
     asset_type = AssetType.IMAGE if region.has_raster_image else AssetType.DIAGRAM
+    return _render_bbox(
+        doc, region.page_number, region.bbox, output_path, relative_path, asset_id, asset_type
+    )
 
-    return RenderedAsset(
-        asset_id=asset_id,
-        asset_type=asset_type,
-        relative_path=relative_path,
-        absolute_path=output_path,
-        source_page=region.page_number,
-        sha256=sha256,
-        width_px=pixmap.width,
-        height_px=pixmap.height,
+
+def render_table_region(
+    doc: pymupdf.Document,
+    table: DetectedTable,
+    output_path: Path,
+    relative_path: str,
+    asset_id: str,
+) -> RenderedAsset:
+    """Render a detected table's bbox to a PNG crop - the mandatory visual
+    fallback for structured table content (PROMPT Phase 1C section 5.2):
+    this is rendered unconditionally whenever a table is detected,
+    regardless of whether its structured (Markdown) reconstruction is
+    later confirmed cell-by-cell.
+    """
+    return _render_bbox(
+        doc, table.page_number, table.bbox, output_path, relative_path, asset_id, AssetType.TABLE
+    )
+
+
+def render_answer_standard_asset(
+    doc: pymupdf.Document,
+    page_number: int,
+    bbox: tuple[float, float, float, float],
+    output_path: Path,
+    relative_path: str,
+    asset_id: str,
+) -> RenderedAsset:
+    """Render one image embedded in the official answer standard (padrao de
+    resposta) PDF - e.g. D4's worked-out circuit diagrams (PROMPT Phase 1C
+    section 9). ``doc`` here is the padrao document, never the prova - see
+    ``answer_standard.find_answer_standard_images``, which already scopes
+    ``bbox`` to the rubric's own text region so this never re-captures a
+    reprint of the question's own figure.
+    """
+    return _render_bbox(
+        doc, page_number, bbox, output_path, relative_path, asset_id, AssetType.DIAGRAM
     )

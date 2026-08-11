@@ -11,8 +11,11 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from pydantic import TypeAdapter
+
 from enade.inventory.manifest import SourceManifest
 from enade.models.asset import Asset
+from enade.models.content_block import ContentBlock
 from enade.models.material import Material
 from enade.models.misconception import AlternativeDiagnostic, MisconceptionDefinition
 from enade.models.provenance import AnswerStandardReference
@@ -33,11 +36,25 @@ MODELS = {
     "source-manifest.schema.json": SourceManifest,
 }
 
+#: Discriminated unions aren't BaseModel subclasses, so they need
+#: TypeAdapter rather than model_json_schema() (see docs/decisions.md ADR 12).
+TYPE_ADAPTER_MODELS = {
+    "content-block.schema.json": ContentBlock,
+}
+
 
 def main() -> int:
     SCHEMAS_DIR.mkdir(parents=True, exist_ok=True)
     for filename, model in MODELS.items():
         schema = model.model_json_schema()
+        out_path = SCHEMAS_DIR / filename
+        out_path.write_text(
+            json.dumps(schema, indent=2, ensure_ascii=False, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        print(f"wrote {out_path.relative_to(PROJECT_ROOT)}")
+    for filename, type_ in TYPE_ADAPTER_MODELS.items():
+        schema = TypeAdapter(type_).json_schema()
         out_path = SCHEMAS_DIR / filename
         out_path.write_text(
             json.dumps(schema, indent=2, ensure_ascii=False, sort_keys=True) + "\n",

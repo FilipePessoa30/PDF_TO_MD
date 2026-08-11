@@ -6,6 +6,7 @@ import pytest
 from pydantic import ValidationError
 
 from enade.markdown_format import load_question_markdown
+from enade.models.content_block import AssetBlock, CodeBlock, ParagraphBlock, TableBlock
 from enade.models.enums import CourseCode
 from enade.models.provenance import AnswerStandardReference, SourceOccurrence
 from enade.models.question import Alternative, Question
@@ -214,3 +215,165 @@ def test_answer_standard_is_never_folded_into_the_rendered_statement():
     rendered = render_question_markdown(q)
     body = rendered.split("---", 2)[2]
     assert "ESTE TEXTO DE GABARITO" not in body
+
+
+# --- Phase 1C: answer_standard.assets (see docs/decisions.md, "Phase 1C" ADR) -
+
+
+def test_answer_standard_can_carry_its_own_assets():
+    ref = AnswerStandardReference(
+        source_path="2021/b3_padrao.pdf",
+        pdf_sha256="b" * 64,
+        pages=[5, 6],
+        text="O respondente deve descrever a tabela verdade e desenhar o diagrama.",
+        assets=[
+            {
+                "id": "padrao-01",
+                "type": "diagram",
+                "path": "fixture-d04/answer-standard/padrao-01.png",
+                "source_page": 5,
+            }
+        ],
+    )
+    assert len(ref.assets) == 1
+    assert ref.assets[0].id == "padrao-01"
+
+
+def test_answer_standard_assets_default_to_empty_and_backward_compatible():
+    ref = AnswerStandardReference(
+        source_path="2021/b3_padrao.pdf", pdf_sha256="b" * 64, pages=[3], text="texto"
+    )
+    assert ref.assets == []
+
+
+def test_answer_standard_assets_reject_duplicate_ids():
+    with pytest.raises(ValidationError, match="repeat an id"):
+        AnswerStandardReference(
+            source_path="2021/b3_padrao.pdf",
+            pdf_sha256="b" * 64,
+            pages=[5],
+            text="texto",
+            assets=[
+                {"id": "padrao-01", "type": "diagram", "path": "a.png", "source_page": 5},
+                {"id": "padrao-01", "type": "diagram", "path": "b.png", "source_page": 5},
+            ],
+        )
+
+
+def test_answer_standard_assets_are_never_mixed_with_question_assets():
+    q = _question(
+        question_type="discursive",
+        alternatives=[],
+        assets=[{"id": "figure-01", "type": "diagram", "path": "figure-01.png", "source_page": 16}],
+        answer_standard=AnswerStandardReference(
+            source_path="2021/b3_padrao.pdf",
+            pdf_sha256="b" * 64,
+            pages=[5],
+            text="texto",
+            assets=[
+                {
+                    "id": "figure-01",  # same id, different namespace - must not collide
+                    "type": "diagram",
+                    "path": "answer-standard/padrao-01.png",
+                    "source_page": 5,
+                }
+            ],
+        ),
+    )
+    assert len(q.assets) == 1
+    assert len(q.answer_standard.assets) == 1
+    assert q.assets[0].path != q.answer_standard.assets[0].path
+
+
+# --- Phase 1C: content_blocks (see docs/decisions.md, "Phase 1C" ADR 12) -----
+
+
+def test_content_blocks_defaults_to_none_and_is_backward_compatible():
+    q = _question()
+    assert q.content_blocks is None
+
+
+def test_content_blocks_preserves_paragraph_table_code_asset_order():
+    q = _question(
+        question_type="discursive",
+        alternatives=[],
+        assets=[
+            {
+                "id": "table-crop-01",
+                "type": "table",
+                "path": "table-crop-01.png",
+                "source_page": 14,
+            }
+        ],
+        content_blocks=[
+            ParagraphBlock(text="Considere a tabela a seguir."),
+            TableBlock(
+                headers=["p", "q"],
+                rows=[["V", "F"], ["F", "V"]],
+                validation_status="verified",
+            ),
+            ParagraphBlock(text="E o trecho de código a seguir:"),
+            CodeBlock(text="funcao f(x)\n    retorne x\nfim funcao"),
+            AssetBlock(asset_id="table-crop-01"),
+        ],
+    )
+    assert [b.type for b in q.content_blocks] == [
+        "paragraph",
+        "table",
+        "paragraph",
+        "code",
+        "asset",
+    ]
+
+
+def test_content_blocks_asset_block_must_reference_declared_asset():
+    with pytest.raises(ValidationError, match="undeclared asset id"):
+        _question(
+            content_blocks=[AssetBlock(asset_id="does-not-exist")],
+        )
+
+
+def test_content_blocks_unverified_table_requires_visual_fallback_asset_block():
+    with pytest.raises(ValidationError, match="no AssetBlock"):
+        _question(
+            content_blocks=[
+                TableBlock(rows=[["V", "F"]], validation_status="needs_review"),
+            ],
+        )
+
+
+def test_content_blocks_unverified_table_is_valid_with_visual_fallback_asset_block():
+    q = _question(
+        assets=[{"id": "crop-01", "type": "table", "path": "crop-01.png", "source_page": 14}],
+        content_blocks=[
+            TableBlock(rows=[["V", "F"]], validation_status="needs_review"),
+            AssetBlock(asset_id="crop-01"),
+        ],
+    )
+    assert q.content_blocks[0].validation_status.value == "needs_review"
+
+
+def test_content_blocks_verified_table_does_not_require_visual_fallback_asset_block():
+    q = _question(
+        content_blocks=[
+            TableBlock(rows=[["V", "F"]], validation_status="verified"),
+        ],
+    )
+    assert q.content_blocks[0].validation_status.value == "verified"
+
+
+def test_content_blocks_round_trips_through_rendered_markdown():
+    from enade.markdown_format import parse_question_markdown, render_question_markdown
+
+    q = _question(
+        assets=[{"id": "crop-01", "type": "table", "path": "crop-01.png", "source_page": 14}],
+        content_blocks=[
+            ParagraphBlock(text="Antes da tabela."),
+            TableBlock(rows=[["V", "F"]], validation_status="needs_review"),
+            AssetBlock(asset_id="crop-01"),
+        ],
+    )
+    rendered = render_question_markdown(q)
+    data = parse_question_markdown(rendered)
+    round_tripped = Question.model_validate(data)
+    assert round_tripped.content_blocks == q.content_blocks

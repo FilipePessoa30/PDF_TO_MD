@@ -134,6 +134,17 @@ class AssetExtractionMethod(StrEnum):
     PENDING = "pending"
 
 
+class TableValidationStatus(StrEnum):
+    """Whether a structured ``TableBlock`` was confirmed cell-by-cell
+    against the source PDF (PROMPT Phase 1C section 5.4/21). A table whose
+    geometry could not be validated must never be presented as if it were
+    a reliable transcription - see ``ContentBlock`` (content_block.py).
+    """
+
+    VERIFIED = "verified"
+    NEEDS_REVIEW = "needs_review"
+
+
 class MaterialType(StrEnum):
     ARTICLE = "article"
     VIDEO = "video"

@@ -15,6 +15,7 @@ applicable_courses:
 section: componente-especifico-objetiva
 question_number: 17
 question_type: multiple_choice
+content_blocks: null
 correct_answer: C
 official_answer_source: 2021/b2_gabarito.pdf
 answer_validation_status: validated
@@ -52,9 +53,11 @@ Durante parte do tempo, um processo está ocupado realizando computações inter
 
 A entra na região crítica A deixa a região crítica
 
+Processo A
+
 B tenta entrar B entra na B deixa a
 
-B bloqueado
+Processo B B bloqueado
 
 São Paulo: Pearson Education do Brasil, p. 83, 2016 (adaptado).
 

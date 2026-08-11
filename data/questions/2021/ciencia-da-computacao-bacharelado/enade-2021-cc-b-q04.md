@@ -14,6 +14,7 @@ applicable_courses:
 section: formacao-geral-objetiva
 question_number: 4
 question_type: multiple_choice
+content_blocks: null
 correct_answer: B
 official_answer_source: 2021/b2_gabarito.pdf
 answer_validation_status: validated

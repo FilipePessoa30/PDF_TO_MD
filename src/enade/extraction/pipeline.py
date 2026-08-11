@@ -20,9 +20,14 @@ from pathlib import Path
 import pymupdf
 
 from enade.extraction.answer_key import AnswerKeyValueKind, parse_answer_key
-from enade.extraction.answer_standard import parse_answer_standard
+from enade.extraction.answer_standard import find_answer_standard_images, parse_answer_standard
 from enade.extraction.assembler import assemble_question
-from enade.extraction.assets import RenderedAsset, render_region
+from enade.extraction.assets import (
+    RenderedAsset,
+    render_answer_standard_asset,
+    render_region,
+    render_table_region,
+)
 from enade.extraction.boundaries import QuestionKind, detect_question_boundaries
 from enade.extraction.declared_structure import parse_declared_structure
 from enade.extraction.figures import compute_decorative_baseline
@@ -49,6 +54,10 @@ class ExtractionMetrics:
     #: which is reserved for a concrete, mechanically-detected problem.
     extracted_pending_visual: int = 0
     total_assets: int = 0
+    #: Assets belonging to the official answer standard itself (PROMPT
+    #: Phase 1C section 9) - tracked separately from `total_assets`
+    #: (question assets), never conflated (see docs/decisions.md).
+    total_answer_standard_assets: int = 0
     total_alternatives: int = 0
     answers_linked: int = 0
     answer_standards_linked: int = 0
@@ -83,8 +92,10 @@ def extract_exam(
     exam_id: str,
     questions_output_dir: Path,
     visual_audit: dict[str, VisualValidationStatus] | None = None,
+    table_cells_verified_ids: frozenset[str] | None = None,
 ) -> ExtractionResult:
     start = time.monotonic()
+    table_cells_verified_ids = table_cells_verified_ids or frozenset()
     structural_warnings: list[str] = []
     # Assets live in a subdirectory next to their question's own Markdown
     # file (not a separate top-level tree) so that the relative path
@@ -180,6 +191,21 @@ def extract_exam(
                     rendered_assets.append(rendered)
                     assets_by_region[index] = rendered
 
+                # Mandatory visual fallback for every detected table
+                # (PROMPT Phase 1C section 5.2) - rendered unconditionally,
+                # never gated on whether the structured reconstruction
+                # looks trustworthy.
+                assets_by_table: dict[int, RenderedAsset] = {}
+                for index, table in enumerate(extracted.tables):
+                    asset_id = f"table-{index + 1:02d}"
+                    relative_path = f"{question_id}/{asset_id}.png"
+                    absolute_path = course_dir / question_id / f"{asset_id}.png"
+                    rendered = render_table_region(
+                        prova.raw, table, absolute_path, relative_path, asset_id
+                    )
+                    rendered_assets.append(rendered)
+                    assets_by_table[index] = rendered
+
                 # A rerun can detect fewer/different regions than a
                 # previous run (e.g. a region-detection fix now correctly
                 # merges what used to be two separate crops) - any asset
@@ -189,14 +215,17 @@ def extract_exam(
                 # run actually rendered) drifts out of sync with what is
                 # really on disk: a stale file present but referenced by no
                 # question (PROMPT section 10's asset-integrity check).
+                # Only files are considered here - the sibling
+                # "answer-standard/" subdirectory (Phase 1C section 9) has
+                # its own, separate cleanup pass below, since it is a
+                # different asset namespace entirely, never mixed with
+                # question assets.
                 asset_dir = course_dir / question_id
                 if asset_dir.is_dir():
                     expected_names = {f"{asset.asset_id}.png" for asset in rendered_assets}
                     for existing in asset_dir.iterdir():
-                        if existing.name not in expected_names:
+                        if existing.is_file() and existing.name not in expected_names:
                             existing.unlink()
-                    if not any(asset_dir.iterdir()):
-                        asset_dir.rmdir()
 
                 answer_key_entry = answer_key_result.lookup(span.kind, span.number)
                 answer_standard_entry = (
@@ -209,6 +238,43 @@ def extract_exam(
                     if span.kind == QuestionKind.OBJECTIVE
                     else answer_standard_entry is not None
                 )
+
+                # Answer-standard-only assets (PROMPT Phase 1C section 9) -
+                # e.g. D4's worked-out circuit diagrams - live in their own
+                # subdirectory, never mixed with the question's own assets
+                # (see docs/decisions.md, "Phase 1C" ADR).
+                answer_standard_assets: list[RenderedAsset] = []
+                if answer_standard_entry is not None:
+                    for asset_index, (page_number, bbox) in enumerate(
+                        find_answer_standard_images(padrao_doc, answer_standard_entry)
+                    ):
+                        asset_id = f"padrao-{asset_index + 1:02d}"
+                        relative_path = f"{question_id}/answer-standard/{asset_id}.png"
+                        absolute_path = (
+                            course_dir / question_id / "answer-standard" / f"{asset_id}.png"
+                        )
+                        answer_standard_assets.append(
+                            render_answer_standard_asset(
+                                padrao_doc,
+                                page_number,
+                                bbox,
+                                absolute_path,
+                                relative_path,
+                                asset_id,
+                            )
+                        )
+
+                answer_standard_asset_dir = course_dir / question_id / "answer-standard"
+                if answer_standard_asset_dir.is_dir():
+                    expected_names = {f"{a.asset_id}.png" for a in answer_standard_assets}
+                    for existing in answer_standard_asset_dir.iterdir():
+                        if existing.name not in expected_names:
+                            existing.unlink()
+                    if not any(answer_standard_asset_dir.iterdir()):
+                        answer_standard_asset_dir.rmdir()
+
+                if asset_dir.is_dir() and not any(asset_dir.iterdir()):
+                    asset_dir.rmdir()
 
                 validation = evaluate_extraction(extracted, rendered_assets, has_answer=has_answer)
                 question_visual_validation = (visual_audit or {}).get(
@@ -234,6 +300,9 @@ def extract_exam(
                     gabarito_source_path=gabarito_source_path,
                     rendered_assets=rendered_assets,
                     assets_by_region=assets_by_region,
+                    assets_by_table=assets_by_table,
+                    table_cells_verified=question_id in table_cells_verified_ids,
+                    answer_standard_assets=answer_standard_assets,
                     validation=validation,
                     visual_validation=question_visual_validation,
                 )
@@ -241,6 +310,7 @@ def extract_exam(
                 questions.append(question)
                 per_question_warnings[question.id] = validation.reasons
                 metrics.total_assets += len(rendered_assets)
+                metrics.total_answer_standard_assets += len(answer_standard_assets)
                 metrics.total_alternatives += len(question.alternatives)
                 metrics.question_warning_count += len(validation.reasons)
                 if question.extraction_status == ExtractionStatus.VERIFIED:

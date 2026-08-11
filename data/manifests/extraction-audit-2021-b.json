@@ -46,13 +46,13 @@
     "start_page": 14,
     "end_page": 15,
     "num_alternatives": 0,
-    "has_assets": false,
-    "num_assets": 0,
+    "has_assets": true,
+    "num_assets": 1,
     "answer": "",
     "answer_validation_status": "not_applicable",
     "answer_standard_available": true,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -90,9 +90,9 @@
     "answer_validation_status": "not_applicable",
     "answer_standard_available": true,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
-    "warning_count": 1,
-    "warnings": "statement contains a code/pseudocode block spanning multiple pages - column layout + code formatting fidelity needs manual confirmation"
+    "extraction_status": "verified",
+    "warning_count": 0,
+    "warnings": ""
   },
   {
     "id": "enade-2021-cc-b-q01",
@@ -470,7 +470,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },

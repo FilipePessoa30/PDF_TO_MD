@@ -119,7 +119,15 @@ def test_empty_statement_forces_needs_review():
     assert any("empty statement" in r for r in outcome.reasons)
 
 
-def test_multipage_code_block_forces_needs_review():
+def test_multipage_code_block_does_not_by_itself_force_needs_review():
+    """A code block spanning multiple pages is not, by itself, a mechanical
+    defect (see docs/decisions.md, "Phase 1C" ADR): Phase 1B's blanket
+    distrust rule here was a permanent, unsatisfiable block on ever
+    reaching ``verified`` for any such question, superseded once Phase 1C
+    fixed and tested the underlying two-column/code reconstruction (D5).
+    Per-question fidelity is now enforced via the real, disclosed
+    ``visual_validation`` audit, not a structural shape check here.
+    """
     from enade.extraction.assembler import CodeSegment
 
     extracted = _extracted(
@@ -128,8 +136,9 @@ def test_multipage_code_block_forces_needs_review():
         statement_segments=[TextSegment(text="intro"), CodeSegment(text="void f() {}")],
     )
     outcome = evaluate_extraction(extracted, rendered_assets=[], has_answer=True)
-    assert outcome.status == ExtractionStatus.NEEDS_REVIEW
-    assert any("code" in r for r in outcome.reasons)
+    assert outcome.status == ExtractionStatus.EXTRACTED
+    assert outcome.automatic_validation == AutomaticValidationStatus.PASSED
+    assert outcome.reasons == []
 
 
 def test_discursive_question_does_not_require_alternatives():

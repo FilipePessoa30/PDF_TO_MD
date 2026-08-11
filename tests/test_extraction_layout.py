@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from enade.extraction.layout import Line, _detect_column_margins, _merge_orphan_markers
+from enade.extraction.layout import Line, _merge_orphan_markers, detect_column_margins
 
 
 def _line(x0: float, y0: float, text: str, x1: float | None = None) -> Line:
@@ -14,7 +14,7 @@ def test_detect_column_margins_finds_two_column_layout():
     for i in range(6):
         lines.append(_line(30, i * 20, f"linha esquerda numero {i} com texto suficiente", x1=280))
         lines.append(_line(290, i * 20, f"linha direita numero {i} com texto suficiente", x1=540))
-    margins = _detect_column_margins(lines)
+    margins = detect_column_margins(lines)
     assert margins is not None
     left_margin, right_margin = margins
     assert left_margin == 30
@@ -23,7 +23,7 @@ def test_detect_column_margins_finds_two_column_layout():
 
 def test_detect_column_margins_none_for_single_column_page():
     lines = [_line(30, i * 20, f"parágrafo único linha {i}", x1=530) for i in range(6)]
-    assert _detect_column_margins(lines) is None
+    assert detect_column_margins(lines) is None
 
 
 def test_detect_column_margins_ignores_short_figure_labels():
@@ -32,7 +32,7 @@ def test_detect_column_margins_ignores_short_figure_labels():
     lines = [_line(30, i * 20, f"parágrafo linha {i} com bastante texto", x1=530) for i in range(6)]
     lines.append(_line(300, 50, "rótulo"))  # short, width < MIN_COLUMN_LINE_WIDTH
     lines.append(_line(310, 70, "outro"))
-    assert _detect_column_margins(lines) is None
+    assert detect_column_margins(lines) is None
 
 
 def test_merge_orphan_markers_joins_bare_letter_with_nearby_line():

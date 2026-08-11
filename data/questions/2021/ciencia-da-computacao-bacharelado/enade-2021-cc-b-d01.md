@@ -14,6 +14,7 @@ applicable_courses:
 section: formacao-geral-discursiva
 question_number: 1
 question_type: discursive
+content_blocks: null
 correct_answer: null
 official_answer_source: null
 answer_validation_status: not_applicable
@@ -32,6 +33,7 @@ answer_standard:
     a espaços culturais, como museus e galerias, voltados para a formação de público/plateia;
     debates em espaços públicos a respeito da liberdade artística, etc. (Valor: 10,0
     pontos)'
+  assets: []
 assets: []
 subjects: []
 topics: []

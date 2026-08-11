@@ -6,6 +6,7 @@ from enade.extraction.figures import (
     _expand_with_labels,
     _is_marker_at_margin,
     _is_paragraph_continuation,
+    _is_two_column_body_text,
     _merge_by_vertical_proximity,
     _rects_touch,
 )
@@ -183,3 +184,27 @@ def test_expand_with_labels_still_excludes_real_alternative_at_margin():
     labels = [((50, 100, 95, 115), "A\t Texto da alternativa A")]
     grown = _expand_with_labels(bbox, labels, body_margin_x0=50.0)
     assert grown == bbox  # unchanged - real marker, still excluded
+
+
+# --- Phase 1C: two-column body text protection (D5) ---------------------------
+
+
+def test_is_two_column_body_text_true_at_either_column_margin():
+    margins = (33.8, 291.5)
+    left_line = _line(1, 100.0, "Um heap binário é um arranjo...", x=33.8, width=240.0)
+    right_line = _line(1, 100.0, "void heapify (int *a, int n, int i)", x=291.5, width=244.9)
+    assert _is_two_column_body_text(left_line, margins) is True
+    assert _is_two_column_body_text(right_line, margins) is True
+
+
+def test_is_two_column_body_text_false_when_no_two_column_layout_detected():
+    # e.g. a single-column page (column_margins is None) - never protected,
+    # so an isolated short label there can still be absorbed normally.
+    line = _line(1, 100.0, "Processo A", x=32.6, width=44.0)
+    assert _is_two_column_body_text(line, None) is False
+
+
+def test_is_two_column_body_text_false_for_a_line_not_at_either_margin():
+    margins = (33.8, 291.5)
+    diagram_label = _line(1, 100.0, "12", x=160.1, width=10.6)
+    assert _is_two_column_body_text(diagram_label, margins) is False

@@ -14,6 +14,7 @@ applicable_courses:
 section: componente-especifico-discursiva
 question_number: 4
 question_type: discursive
+content_blocks: null
 correct_answer: null
 official_answer_source: null
 answer_validation_status: not_applicable
@@ -41,6 +42,39 @@ answer_standard:
 
 
     Exemplos de resposta possíveis para ‘Cout’:'
+  assets:
+  - id: padrao-01
+    type: diagram
+    path: enade-2021-cc-b-d04/answer-standard/padrao-01.png
+    source_page: 5
+    extraction_method: raster_crop
+    sha256: 38b8eec545a826e0d18f07790d40e7be92d631e055ec534e579e071312414383
+    alt_text: null
+    caption: null
+  - id: padrao-02
+    type: diagram
+    path: enade-2021-cc-b-d04/answer-standard/padrao-02.png
+    source_page: 5
+    extraction_method: raster_crop
+    sha256: f5e2a42493bee59c0a1c04d6a3aeba5dad2aaedc072c2b9ce82e247024baf152
+    alt_text: null
+    caption: null
+  - id: padrao-03
+    type: diagram
+    path: enade-2021-cc-b-d04/answer-standard/padrao-03.png
+    source_page: 6
+    extraction_method: raster_crop
+    sha256: 4e3416284330269cfce726362e539837ea414dd52e7f15368dfba6c3e1eb2ca1
+    alt_text: null
+    caption: null
+  - id: padrao-04
+    type: diagram
+    path: enade-2021-cc-b-d04/answer-standard/padrao-04.png
+    source_page: 6
+    extraction_method: raster_crop
+    sha256: 2744dac26f9039e943264a50d78de39025a3bb80a775df5b5063cc72f864c193
+    alt_text: null
+    caption: null
 assets:
 - id: figure-01
   type: diagram

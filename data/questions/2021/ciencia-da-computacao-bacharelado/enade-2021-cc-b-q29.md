@@ -14,6 +14,7 @@ applicable_courses:
 section: componente-especifico-objetiva
 question_number: 29
 question_type: multiple_choice
+content_blocks: null
 correct_answer: null
 official_answer_source: 2021/b2_gabarito.pdf
 answer_validation_status: annulled
