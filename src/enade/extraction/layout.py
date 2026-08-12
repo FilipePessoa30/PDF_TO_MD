@@ -248,6 +248,27 @@ def _merge_orphan_markers(
     because the old distance check never looked at X at all). Requiring the
     same column (when one is detected) closes that hole generally, not just
     for this one page.
+
+    NOTE (PROMPT Phase 2C): a second pass was tried here to also recover
+    Q10's own stacked two-line fractions (each alternative's answer, e.g.
+    "61/73", is set as a numerator line above the marker and a denominator
+    line below - never one line with a slash - so the numerator was left
+    behind as an orphan bare-number line for chrome.py's own
+    running-page-number heuristic to strip). It searched, once a marker's
+    primary partner was itself bare-digit, for a second bare-digit line on
+    the opposite side within the same distance/column - and was rejected
+    after full 2021 regression testing found a real false positive: 2021
+    Q34's own Dijkstra-graph node-label listing ("C 8 A 2 B 5 E 9 D 5" -
+    five independent single-letter-node + single-digit-value pairs, densely
+    packed) has several bare-digit values sitting within the same distance
+    threshold of an unrelated *neighboring* marker's own value, which the
+    second pass wrongly spliced into spurious fractions ("B 5/1", "D 9/5")
+    while silently dropping node E's own pair entirely. Unlike Q22's
+    truth-table header (ADR 21) this was not narrowed to a safe general
+    discriminator in the time available; Q10 is left as a disclosed,
+    unresolved defect (see docs/decisions.md, Phase 2C ADR) rather than
+    risk the already-certified 2021 corpus for a fix that does not
+    generalize safely.
     """
     used: set[int] = set()
     merged: list[Line] = []

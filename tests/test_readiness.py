@@ -253,3 +253,80 @@ def test_fully_covered_visual_audit_does_not_block_readiness(ready_course_dir, t
     assert report.ready is True
     assert report.visual_audit_coverage is not None
     assert report.visual_audit_coverage.fully_covered is True
+
+
+def test_blocker_ledger_path_omitted_skips_the_ledger_check(ready_course_dir, tmp_path):
+    manifest = _build(ready_course_dir, tmp_path)
+    report = assess_readiness(manifest, ready_course_dir)
+    assert report.ready is True
+    assert not any(b.kind.startswith("blocker_ledger") for b in report.blockers)
+
+
+def test_open_blocker_in_ledger_blocks_readiness(ready_course_dir, tmp_path):
+    manifest = _build(ready_course_dir, tmp_path)
+    ledger_path = tmp_path / "blocker-ledger.yaml"
+    ledger_path.write_text(
+        "baseline_count: 1\n"
+        "blockers:\n"
+        "  - id: some-open-blocker\n"
+        "    question_id: enade-2021-cc-b-q01\n"
+        "    category: test\n"
+        "    description: a still-open defect\n"
+        "    cause: test cause\n"
+        "    status: open\n",
+        encoding="utf-8",
+    )
+    report = assess_readiness(manifest, ready_course_dir, blocker_ledger_path=ledger_path)
+    assert report.ready is False
+    assert any(b.kind == "blocker_ledger_open" for b in report.blockers)
+
+
+def test_resolved_blocker_in_ledger_does_not_block_readiness(ready_course_dir, tmp_path):
+    manifest = _build(ready_course_dir, tmp_path)
+    ledger_path = tmp_path / "blocker-ledger.yaml"
+    ledger_path.write_text(
+        "baseline_count: 1\n"
+        "blockers:\n"
+        "  - id: some-resolved-blocker\n"
+        "    question_id: enade-2021-cc-b-q01\n"
+        "    category: test\n"
+        "    description: a resolved defect\n"
+        "    cause: test cause\n"
+        "    status: resolved\n"
+        "    evidence: some evidence\n"
+        "    regression_tests: [tests/test_x.py]\n",
+        encoding="utf-8",
+    )
+    report = assess_readiness(manifest, ready_course_dir, blocker_ledger_path=ledger_path)
+    assert report.ready is True
+    assert not any(b.kind.startswith("blocker_ledger") for b in report.blockers)
+
+
+def test_invalid_ledger_blocks_readiness_with_its_own_kind(ready_course_dir, tmp_path):
+    manifest = _build(ready_course_dir, tmp_path)
+    ledger_path = tmp_path / "blocker-ledger.yaml"
+    ledger_path.write_text(
+        "baseline_count: 1\n"
+        "blockers:\n"
+        "  - id: superseded-without-target\n"
+        "    question_id: enade-2021-cc-b-q01\n"
+        "    category: test\n"
+        "    description: a superseded defect missing its own successor reference\n"
+        "    cause: test cause\n"
+        "    status: superseded\n",
+        encoding="utf-8",
+    )
+    report = assess_readiness(manifest, ready_course_dir, blocker_ledger_path=ledger_path)
+    assert report.ready is False
+    assert any(
+        b.kind == "blocker_ledger_invalid:missing_supersedes_reference" for b in report.blockers
+    )
+
+
+def test_missing_ledger_file_is_treated_as_an_empty_ledger(ready_course_dir, tmp_path):
+    manifest = _build(ready_course_dir, tmp_path)
+    report = assess_readiness(
+        manifest, ready_course_dir, blocker_ledger_path=tmp_path / "does-not-exist.yaml"
+    )
+    assert report.ready is True
+    assert not any(b.kind.startswith("blocker_ledger") for b in report.blockers)

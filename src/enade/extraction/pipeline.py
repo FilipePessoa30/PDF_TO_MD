@@ -36,6 +36,7 @@ from enade.extraction.figures import compute_decorative_baseline
 from enade.extraction.layout import extract_document_lines
 from enade.extraction.layout_overrides import LayoutOverrideSet
 from enade.extraction.markdown_writer import WriteResult, write_question_markdown
+from enade.extraction.ownership import compute_question_regions
 from enade.extraction.pdf_source import PdfDocument
 from enade.extraction.to_question import COURSE_ID_SHORTHAND, _section_for, build_question
 from enade.extraction.transformation_log import TransformationLogEntry
@@ -177,6 +178,12 @@ def extract_exam(
             )
 
             ordered_spans = sorted(boundary_result.spans, key=lambda s: (s.kind.value, s.number))
+            # Computed once, from every span's own lines (PROMPT Phase 2C
+            # section 6-11) - this is what lets assemble_question clip a
+            # region's growth to its own owning question, never a
+            # neighbor's, regardless of which span happens to be assembled
+            # first (see ownership.py).
+            question_regions_by_page = compute_question_regions(boundary_result.spans)
             for span in ordered_spans:
                 if structure_profile is not None:
                     section_range = structure_profile.resolve(span.kind, span.number)
@@ -202,6 +209,7 @@ def extract_exam(
                     baseline,
                     overrides=layout_overrides,
                     pdf_sha256=prova.identity.sha256,
+                    question_regions_by_page=question_regions_by_page,
                 )
 
                 suffix = "q" if span.kind == QuestionKind.OBJECTIVE else "d"

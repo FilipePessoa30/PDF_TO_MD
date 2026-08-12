@@ -752,7 +752,13 @@ def assess_readiness_cmd(
     manifest = read_gold_manifest(gold_path)
     course_dir = questions_dir / str(year) / naming.output_dir_name
     visual_audit_path = DEFAULT_AUDIT_DIR / f"visual-audit-{year}-{naming.file_slug}.json"
-    report = assess_readiness(manifest, course_dir, visual_audit_path=visual_audit_path)
+    blocker_ledger_path = DEFAULT_AUDIT_DIR / f"blocker-ledger-{year}.yaml"
+    report = assess_readiness(
+        manifest,
+        course_dir,
+        visual_audit_path=visual_audit_path,
+        blocker_ledger_path=blocker_ledger_path if blocker_ledger_path.exists() else None,
+    )
 
     typer.echo(f"assess-readiness: {ready_label if report.ready else not_ready_label}")
     typer.echo(

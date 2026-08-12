@@ -63,6 +63,10 @@ def test_missing_file_returns_empty_set(tmp_path: Path):
 
 
 def test_load_layout_overrides_reads_the_real_yaml():
+    # Q13's own suppress_visual_region entry was removed in Phase 2C,
+    # superseded by the ownership model (ownership.py) - see
+    # docs/decisions.md, Phase 2C ADR, and the NOTE left in its place in
+    # layout-overrides.yaml.
     path = Path("data/manifests/layout-overrides.yaml")
     overrides = load_layout_overrides(path)
     assert len(overrides.overrides) >= 2
@@ -70,10 +74,10 @@ def test_load_layout_overrides_reads_the_real_yaml():
     assert q22.page == 14
     assert q22.rule == "exclude_from_orphan_marker_merge"
     assert q22.status == "reviewed"
-    q13 = next(o for o in overrides.overrides if o.question_id == "enade-2011-computing-q13")
-    assert q13.page == 10
-    assert q13.rule == "suppress_visual_region"
-    assert q13.status == "reviewed"
+    assert not any(
+        o.question_id == "enade-2011-computing-q13" and o.rule == "suppress_visual_region"
+        for o in overrides.overrides
+    )
 
 
 def _region_override(**overrides) -> LayoutOverride:

@@ -24,33 +24,17 @@ overrides:
       instead.
     evidence: docs/phase-2b-report.md, Section G
     status: reviewed
-  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
-    page: 10
-    bbox: [0.0, 250.0, 300.0, 650.0]
-    rule: suppress_visual_region
-    question_id: enade-2011-computing-q13
-    reason: >-
-      detect_visual_regions grows a candidate region seeded by several tiny
-      raster images (each ~8-13pt wide, at y0 404-549 - almost certainly
-      inline math/logic symbols such as arrows or epsilon in Questao 12's
-      grammar productions, not a real figure) via its own iterative
-      label-absorption pass (figures.py's _expand_with_labels) until the
-      resulting bbox (28,294)-(287,609) spans from inside Questao 11's own
-      alternatives D/E, through the whole of Questao 12, into Questao 13's
-      own interval-scheduling pseudocode - splitting that pseudocode's code
-      block in two around a spurious "figure". Direct visual inspection
-      (Phase 2A/2B visual audit) confirmed no legitimate figure exists in
-      this region for any of Q11/Q12/Q13. This chain-absorption mechanism
-      is the same one three separate compounding bugs were already found
-      and fixed in during Phase 1C (2021, Discursiva 5's own region); a
-      fourth general tightening was not attempted here given the
-      regression risk already demonstrated twice during the Q22
-      investigation (see ADR 21) and the two-year corpus this logic must
-      stay correct for. Suppressed by region (not fixed at the source) so
-      Q11/Q12/Q13 all render as complete, uninterrupted text with no
-      figure asset.
-    evidence: docs/phase-2b-report.md, Section H
-    status: reviewed
+  # NOTE (Phase 2C): the Q13 suppress_visual_region override that lived here
+  # (bbox [0,250,300,650]) is superseded by the ownership model
+  # (ownership.py + figures.py's owner-aware detect_visual_regions): the
+  # tiny raster images that used to seed a region spanning Q11-Q12-Q13 are
+  # now assigned to their true owner (Questao 12) before any merge/growth,
+  # and growth is hard-clipped to Questao 12's own claimed territory - it
+  # can no longer reach Q11's alternatives or Q13's pseudocode regardless
+  # of label proximity. Removing the override (rather than leaving it
+  # alongside the new mechanism) let Questao 12 recover its own formula
+  # content, previously suppressed along with the spurious region. See
+  # docs/decisions.md, Phase 2C ADR (ownership model).
   - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
     page: 14
     bbox: [540.0, 125.0, 560.0, 148.0]

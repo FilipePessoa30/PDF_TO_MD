@@ -33,7 +33,15 @@ assets:
   path: enade-2011-computing-q14/figure-02.png
   source_page: 11
   extraction_method: raster_crop
-  sha256: 7d07d36f60dd277cefb1dfd7d89522399a20d8c12e459a97b640d4fc39a27520
+  sha256: 4ca3f54e6e21726bdd8186c9b0e9cc5a4c00e6c38ed21735b4d10352e8f0c534
+  alt_text: null
+  caption: null
+- id: figure-03
+  type: image
+  path: enade-2011-computing-q14/figure-03.png
+  source_page: 11
+  extraction_method: raster_crop
+  sha256: b76a468491c83156111c966d95b8efbc443f5f58fdd29e2171631e20f73c468a
   alt_text: null
   caption: null
 subjects: []
@@ -59,6 +67,8 @@ Observe o diagrama de Venn a seguir.
 ![Figura da questão](enade-2011-computing-q14/figure-01.png)
 
 A função representada em azul no diagrama também
+
+![Figura da questão](enade-2011-computing-q14/figure-03.png)
 
 ![Figura da questão](enade-2011-computing-q14/figure-02.png)
 

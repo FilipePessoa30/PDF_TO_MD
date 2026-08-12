@@ -19,6 +19,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from enade.extraction.blocker_ledger import load_blocker_ledger, validate_ledger
 from enade.extraction.visual_audit import VisualAuditCoverage, assess_visual_audit_coverage
 from enade.gold import GoldDivergence, GoldManifest, verify_gold_manifest
 from enade.markdown_format import load_questions_directory
@@ -57,7 +58,10 @@ class ReadinessReport:
 
 
 def assess_readiness(
-    manifest: GoldManifest, course_dir: Path, visual_audit_path: Path | None = None
+    manifest: GoldManifest,
+    course_dir: Path,
+    visual_audit_path: Path | None = None,
+    blocker_ledger_path: Path | None = None,
 ) -> ReadinessReport:
     """Compute a :class:`ReadinessReport` for the questions under
     ``course_dir`` against the locked ``manifest``.
@@ -76,6 +80,15 @@ def assess_readiness(
     entirely through per-question ``visual_validation`` already baked into
     each Question at extraction time) is not retroactively required to
     keep a separate audit-file coverage record it never needed.
+
+    ``blocker_ledger_path`` (PROMPT Phase 2C section 3/25), when given,
+    makes the canonical blocker ledger (see blocker_ledger.py) a readiness
+    input in its own right: the ledger's own internal consistency gate
+    (``validate_ledger``) must pass, and every ``open`` blocker it records
+    is surfaced here too - so a blocker cannot be marked resolved in the
+    ledger while readiness still fails for an unrelated reason (an
+    inconsistent, drifted ledger), nor can a blocker the ledger still
+    calls ``open`` be silently absent from a NOT_READY report.
 
     On "non-structural" exceptions: this corpus currently has none (every
     question that was ever `needs_review` - D3, D5, Q20 - was resolved
@@ -181,6 +194,21 @@ def assess_readiness(
                                 detail=f"{question_id}: asset {asset.id}",
                             )
                         )
+
+    if blocker_ledger_path is not None:
+        ledger = load_blocker_ledger(blocker_ledger_path)
+        for issue in validate_ledger(ledger):
+            blockers.append(
+                ReadinessBlocker(kind=f"blocker_ledger_invalid:{issue.kind}", detail=issue.detail)
+            )
+        for blocker in ledger.blockers:
+            if blocker.is_open:
+                blockers.append(
+                    ReadinessBlocker(
+                        kind="blocker_ledger_open",
+                        detail=f"{blocker.id} ({blocker.question_id}): {blocker.description}",
+                    )
+                )
 
     return ReadinessReport(
         ready=not blockers,

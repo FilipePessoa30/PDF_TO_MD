@@ -881,3 +881,162 @@ heuristics). Documented in full in
 had fallen into before this audit (see that entry's "CORRECTION" note).
 
 **TESTE DE REGRESSAO**: not applicable - no code changed for this entry.
+
+## Phase 2C
+
+### 29. Spatial ownership model for figure regions (`ownership.py`)
+
+**PROBLEMA**: ADR 28's Classe B (cross-question crop contamination: Q24's
+own roman-numeral items I-IV, plus Q26's own card image, ending up inside
+Q25's own `figure-01.png`; Q38's own missing LR-automaton states ending up
+inside Q40's own crop) and much of Classe A (Q9/Q10/Q12/Q14/D3's own
+missing paragraphs/alternatives) shared one underlying cause never before
+addressed directly: `detect_visual_regions` (figures.py) had no concept of
+*whose* content a candidate region actually was before growing or
+rendering it - any region within Y/X tolerance of a question's own lines
+was accepted, and growth via `_expand_with_labels` had no hard boundary
+tied to a specific owner, only the generic `MAX_ABSORPTION_GROWTH` cap
+(110pt - large enough to reach a genuinely different, several-questions-away
+block of content).
+
+**INVESTIGACAO**: opening the offending crops directly (not just comparing
+rendered Markdown to the PDF) showed the "lost" text in Classe A/B's cases
+was never actually lost from extraction - it was present, legible, and
+complete, just captured inside the wrong region, attached to the wrong
+question, or excluded from a question's own statement as if it were figure
+content. This reframed both classes as one architectural gap (no spatial
+ownership), not two separate content-extraction failures, and one
+principled fix could address most of both at once.
+
+**DECISAO**: a new module, `ownership.py`, computes one `QuestionRegion`
+per (question span, page) - the tight bbox of that question's own
+non-chrome lines on that page, derived only from `QuestionSpan.lines`
+(never guessed from a neighbor's boundary). `detect_visual_regions` gained
+an optional `question_regions` parameter (page-scoped); when given, every
+raw candidate (drawing/image) and every label candidate is assigned an
+owner *before* any merging (`find_owner`, containment first, then nearest
+region in the same column - a point can never resolve to a different
+column's question just because its own Y-range happens to be numerically
+closer). Merging and label-absorption run independently per owner group,
+and every region's final bbox is hard-clipped to `owner.clip(bbox,
+margin=20pt)` - a fixed, small margin, not the old 110pt growth cap - so a
+region can no longer reach into a neighboring question's own territory no
+matter how close/absorbable its labels look. `pipeline.py` computes the
+full-document ownership map once (`compute_question_regions(boundary_result.spans)`)
+and threads it through `assemble_question` -> `detect_visual_regions` for
+every span. A `detect_contamination` gate (geometry-only, not OCR of the
+rendered PNG) is available to check a final asset's bbox against every
+other question's own claimed region on the same page.
+
+A second, related change: small embedded raster images
+(`SMALL_IMAGE_MAX_WIDTH`=250pt, `SMALL_IMAGE_MAX_HEIGHT`=40pt - this
+corpus's own inline math notation is 15-31pt tall, its smallest genuine
+diagram ~250pt tall) are classified *before* merging and routed through a
+separate, much tighter merge (`SMALL_IMAGE_Y_MERGE_TOLERANCE`=16pt vs.
+the general pipeline's 18pt cluster tolerance plus 90pt label-absorption
+padding) and **never** participate in label absorption at all - a
+formula's own sub-parts (numerator/bar/denominator, a multi-line stacked
+relation) merge into one small asset without pulling in the surrounding
+prose paragraph, closing the other half of Classe A.
+
+**RESULTADO** (re-verified by direct visual inspection of the regenerated
+Markdown/assets, not assumed from the mechanism alone):
+- Q24: its own roman-numeral items I-IV are now complete, correct text in
+  its own statement (previously fragments; the full text was trapped
+  inside Q25's own crop).
+- Q25: no longer carries any figure reference (it never had a real figure).
+- Q26: now has its own, correctly-scoped `figure-01.png` (the 5-card
+  image) - previously entirely absent from Q26 (it existed, mis-owned, in
+  Q25's own crop).
+- Q40: `figure-01.png` is now scoped to only its own maze-grid figure - no
+  longer contains Q38's own grammar-automaton content.
+- Q38: significantly improved (its own previously entirely-missing e1
+  automaton states, and the "PORQUE" assertion block, are now present as
+  its own image assets, `figure-01.png` through `figure-05.png`) but not
+  fully resolved - some of its own text (the hexadecimal-ambiguity
+  paragraph, and the grammar-production block's own scrambling) remains a
+  separate, unexplained residual (see Section F below).
+- Q9: dramatically improved - property (iii), the quotient-set paragraph,
+  and analysis items I/II/III/IV are now present (previously fragments or
+  entirely missing); one small residual remains (the canonical-projection
+  formula, "A funcao" with nothing after it).
+- Q12: dramatically improved - the intro sentence (with symbol names), the
+  full grammar productions, and items I-III are now present, all inside
+  one correctly-owned, legible visual-fallback image; a residual remains
+  (item IV's own text is neither in the image nor in the surviving prose).
+- D3 (question statement): the Fibonacci recurrence formula
+  (`f_n = f_{n-1} + f_{n-2}`) is now a clean, correctly-cropped, legible
+  visual-fallback asset - fully resolved.
+- Q20, Q43: also newly fixed as a side effect (their own previously-lost
+  lead-in/closing sentences are now present) - the ownership clip
+  apparently now stops growth before it reaches as far as these
+  sentences, though the exact boundary geometry was not traced further
+  given time constraints.
+- Q10, Q14, Q44, Q45, Q48, Q23's own residual: **not** resolved by this
+  change (see their own ADRs/notes below and the visual-audit entries) -
+  their own defect geometry sits entirely within one question's own
+  already-generous territory, so ownership clipping alone does not reach
+  them.
+
+**TESTE DE REGRESSAO**: all 368 tests pass (14 new, in `tests/test_ownership.py`,
+covering `compute_question_regions`, `find_owner` containment/nearest-
+column-fallback/empty-input, `QuestionRegion.clip` growth-limiting and
+no-op-when-already-inside, and `detect_contamination` real/none/
+below-threshold). Full 2011 regen re-inspected question-by-question (see
+above). Full 2021 regen for all three locally-available courses: `git
+status` shows zero diff for `ciencia-da-computacao-bacharelado` (the
+tracked 2021 gold baseline) - byte-identical; `verify-gold` confirms
+40/40 hashes match, `maturity=validated` unchanged. The Q13
+`suppress_visual_region` override (ADR 22) was removed as redundant
+(superseded by ownership) - `enade-2011-computing-q11/-q12/-q13` were all
+re-verified directly (Q11/Q13 unchanged and still correct; Q12
+significantly recovered) after its removal.
+
+### 30. Stacked two-line fraction reconstruction (Q10): tried and rejected
+
+**PROBLEMA**: Q10's own 5 alternatives are each a stacked two-line
+fraction (e.g. "61" above the marker's own baseline, "73" below - never
+one line with a slash). The existing marker-merge already attaches the
+denominator (closer in Y, in every observed case) to the marker; the
+numerator is left as an orphan bare-digit line, which chrome.py's
+text-only running-page-number heuristic then strips before the
+alternative-building stage ever sees it (chrome.py's own docstring already
+flags this exact class of ambiguity as needing geometry it does not have).
+
+**INVESTIGACAO/DECISAO**: a second pass was added to `_merge_orphan_markers`
+(layout.py): once a marker's primary partner is itself found to be
+bare-digit (i.e. this really is a fraction, not a generic marker+text
+merge), search the *opposite* side of the marker's own baseline, same
+column, same distance threshold, for another bare-digit line - the
+numerator - and merge both into "marker\tnumerator/denominator". This
+correctly reconstructed all 5 of Q10's own fractions
+("A. 61/73" ... "E. 67/112", byte-for-byte matching the source).
+
+**REJEITADO** after full 2021 regression testing found a real false
+positive: 2021's own Q34 (Dijkstra shortest-path algorithm) has a graph
+node-label listing rendered the same way this corpus renders any bare
+single-letter + adjacent short text (`orphan_marker` shape) - five
+independent single-letter-node + single-digit-value pairs set close
+together ("C 8", "A 2", "B 5", "E 9", "D 5"). The second pass's own
+opposite-side search found each pair's *neighbor's* own bare-digit value
+within the same distance/column threshold and spliced unrelated pairs
+into spurious fractions ("B 5/1", "D 9/5"), silently dropping node E's
+own pair. Tightening the precondition (e.g. requiring the numerator and
+denominator to share a near-identical X-center, the way a real fraction's
+two halves are horizontally centered on the same fraction bar) was not
+attempted and verified safe in the time remaining - unlike Q22's
+orphan-marker case (ADR 21), where a Level-3, hash-and-bbox-locked
+override was viable, this defect's shape (a marker-merge behavior, not a
+region/asset) has no existing override rule kind, and building one for a
+single, narrow case was judged a worse trade than reverting.
+
+**RESULTADO**: reverted in full (`_merge_orphan_markers` restored to its
+pre-Phase-2C behavior, `_BARE_NUMBER_RE` removed). Q10 remains a
+disclosed, unresolved defect (`status: failed` in
+visual-audit-2011-computing.json) - a real, narrow, well-understood
+residual rather than a false claim of resolution.
+
+**TESTE DE REGRESSAO**: full 2021 regen after the revert: zero diff for
+`ciencia-da-computacao-bacharelado` (`git status` clean, `verify-gold`
+40/40); `enade-2021-cc-b-q34.md` confirmed restored to its exact prior,
+certified text.

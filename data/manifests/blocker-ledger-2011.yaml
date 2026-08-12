@@ -1,0 +1,537 @@
+# Canonical blocker ledger for the 2011 unified booklet (PROMPT Phase 2C
+# section 3). baseline_count records the Phase 2B readiness gate's own
+# printed total (32) as a historical fact, not a target - see
+# src/enade/extraction/blocker_ledger.py.
+baseline_count: 32
+blockers:
+  # --- Structural blocker groups (13 baseline entries) -----------------
+  - id: q09-math-notation-loss
+    question_id: enade-2011-computing-q09
+    category: math-notation
+    source_pages: [9]
+    description: >-
+      Property (iii), the quotient-set paragraph, and analysis items I-IV
+      were missing or reduced to bare fragments.
+    cause: >-
+      Small embedded raster-image formulas chain-absorbed into a region
+      with no concept of ownership, excluding the surrounding real prose
+      as if it were figure content (PROMPT Phase 2C section 6-11/13-18).
+    status: open
+    resolution: >-
+      PARTIALLY IMPROVED (Phase 2C, ownership model + small-formula
+      handling): property (iii), the quotient-set paragraph+formula, and
+      items I/II/IV are now present. Residual: the canonical-projection
+      sentence still ends at "A funcao" with nothing after it.
+    evidence: data/manifests/visual-audit-2011-computing.json#enade-2011-computing-q09
+    affected_assets:
+      - enade-2011-computing-q09/figure-01.png
+      - enade-2011-computing-q09/figure-02.png
+      - enade-2011-computing-q09/figure-03.png
+      - enade-2011-computing-q09/figure-04.png
+    regression_tests: [tests/test_ownership.py]
+    visual_validation: failed
+  - id: q10-fraction-numerators-lost
+    question_id: enade-2011-computing-q10
+    category: math-notation
+    source_pages: [9]
+    description: >-
+      All 5 alternatives are stacked two-line fractions; every numerator
+      is missing, alternatives render as bare denominators only.
+    cause: >-
+      Each alternative's fraction is real TEXT (a numerator line above the
+      marker, a denominator line below - PyMuPDF never emits a slash
+      glyph). The denominator merges with the marker via the existing
+      orphan-marker pass; the numerator is left as a standalone bare-digit
+      line, which chrome.py's text-only running-page-number heuristic then
+      strips before it reaches alternative-building.
+    status: open
+    resolution: >-
+      A general fix (second merge pass, opposite-side bare-digit search)
+      was implemented and correctly reconstructed all 5 fractions, but was
+      REJECTED after full 2021 regression testing found a real false
+      positive (2021 Q34's Dijkstra graph node-label listing - see
+      docs/decisions.md, Phase 2C ADR 30) and fully reverted. Remains
+      unresolved.
+    evidence: docs/decisions.md#phase-2c-adr-30
+    affected_assets: []
+    regression_tests: [tests/test_extraction_layout.py]
+    visual_validation: failed
+  - id: q12-grammar-block-missing
+    question_id: enade-2011-computing-q12
+    category: math-notation
+    source_pages: [10]
+    description: >-
+      Intro sentence's symbol names, the full BNF grammar, and analysis
+      items were missing or fragmentary.
+    cause: >-
+      Same chain-absorption mechanism as Q09, compounded by a since-removed
+      Level-3 override (ADR 22) that suppressed the whole spurious region
+      (and, with it, this real content) to protect Q11/Q13.
+    status: open
+    resolution: >-
+      DRAMATICALLY IMPROVED (Phase 2C): removing the now-redundant Q13
+      override and relying on ownership+formula-tight-merge recovered the
+      complete intro sentence, full grammar, and items I-III as one
+      correctly-scoped visual-fallback image. Residual: item IV's own
+      opening text is neither in the image nor in the surviving prose.
+    evidence: data/manifests/visual-audit-2011-computing.json#enade-2011-computing-q12
+    affected_assets:
+      - enade-2011-computing-q12/figure-01.png
+    regression_tests: [tests/test_ownership.py, tests/test_layout_overrides.py]
+    visual_validation: failed
+  - id: q14-alternatives-empty
+    question_id: enade-2011-computing-q14
+    category: math-notation
+    source_pages: [11]
+    description: All 5 alternatives render as empty ("A. ." ... "E. .").
+    cause: >-
+      Each alternative's own boolean-algebra formula is a small embedded
+      raster image; the alternative-building path is text-only (marker
+      regex) and has no mechanism to attach an inline image to a specific
+      alternative's own text.
+    status: open
+    resolution: >-
+      PARTIALLY IMPROVED (Phase 2C): the formulas are now confirmed
+      present, complete, legible, and correctly owned (figure-02.png shows
+      all 5), but not yet placed inline per-alternative ("no local
+      correto" not yet satisfied, PROMPT Phase 2C section 16). Extending
+      ExtractedAlternative to carry an optional formula-asset reference
+      was scoped but not implemented this phase.
+    evidence: data/manifests/visual-audit-2011-computing.json#enade-2011-computing-q14
+    affected_assets:
+      - enade-2011-computing-q14/figure-02.png
+    regression_tests: [tests/test_ownership.py]
+    visual_validation: failed
+  - id: q20-missing-second-assertion
+    question_id: enade-2011-computing-q20
+    category: figure-region-absorption
+    source_pages: [13]
+    description: >-
+      The PORQUE connector, second assertion, and closing instruction were
+      missing after the first assertion.
+    cause: Label-absorption region growth reaching past the intended figure.
+    status: resolved
+    resolution: >-
+      RESOLVED (Phase 2C), side effect of the ownership model's hard
+      growth clipping. All text now present; figure-01.png shows the
+      complete, correct handshake-lemma formula.
+    evidence: data/manifests/visual-audit-2011-computing.json#enade-2011-computing-q20
+    affected_assets:
+      - enade-2011-computing-q20/figure-01.png
+    regression_tests: [tests/test_ownership.py]
+    visual_validation: passed
+  - id: q23-inline-symbols-residual
+    question_id: enade-2011-computing-q23
+    category: math-notation
+    source_pages: [14]
+    description: >-
+      Three inline symbols (Sigma={a,b,c}, Sigma*, lambda) are not
+      individually preserved as inline Markdown or as their own asset.
+    cause: >-
+      Small inline symbol images excluded from region candidates (Level-3
+      overrides, ADR 23) to stop them re-anchoring the automaton diagram's
+      region into the statement text - the symbols themselves were never
+      separately preserved.
+    status: open
+    resolution: Unchanged this phase - not attempted, out of scope given time.
+    evidence: data/manifests/visual-audit-2011-computing.json#enade-2011-computing-q23
+    affected_assets: []
+    regression_tests: [tests/test_layout_overrides.py]
+    visual_validation: failed
+  - id: q24-q25-q26-cross-question-figure-contamination
+    question_id: enade-2011-computing-q24
+    category: cross-question-contamination
+    source_pages: [15]
+    description: >-
+      Q25's own figure-01.png contained Q24's items I-IV, Q25's own
+      alternatives, the Q26 header, and Q26's own card image, all in one
+      mis-owned crop.
+    cause: >-
+      No spatial ownership: a region's growth had no concept of which
+      question it belonged to, only a generic distance/absorption cap.
+    status: resolved
+    resolution: >-
+      RESOLVED (Phase 2C) by the spatial ownership model (ownership.py):
+      Q24's items I-IV now render complete and correct; Q25 has no figure
+      (correctly, it has none in the source); Q26 has its own, correctly
+      scoped card image.
+    evidence: docs/decisions.md#phase-2c-adr-29
+    affected_assets:
+      - enade-2011-computing-q26/figure-01.png
+    regression_tests: [tests/test_ownership.py]
+    visual_validation: passed
+  - id: q27-pseudocode-not-code-block
+    question_id: enade-2011-computing-q27
+    category: formatting
+    source_pages: [16]
+    description: >-
+      7-line numbered pseudocode renders as one continuous inline
+      sentence rather than a fenced code block.
+    cause: >-
+      Pseudocode is set in a regular, non-monospace font in the source;
+      is_monospace detection keys off font-name hints and does not
+      classify it as code.
+    status: open
+    resolution: >-
+      Unchanged this phase - matches the already-accepted Q46/D4
+      precedent (content preserved, formatting lost, not itself
+      misleading).
+    evidence: data/manifests/visual-audit-2011-computing.json#enade-2011-computing-q27
+    affected_assets: []
+    regression_tests: []
+    visual_validation: failed
+  - id: q38-q40-cross-question-figure-contamination
+    question_id: enade-2011-computing-q38
+    category: cross-question-contamination
+    source_pages: [25]
+    description: >-
+      Q40's own figure-01.png contained Q38's missing LR-automaton states,
+      PORQUE/assertion block, and alternatives A-D.
+    cause: Same as q24-q25-q26-cross-question-figure-contamination.
+    status: superseded
+    superseded_by: q38-remaining-content-defects
+    resolution: >-
+      The cross-question contamination itself is RESOLVED (Phase 2C,
+      ownership model): Q40's figure-01.png now shows only its own maze
+      grid. Q38's own remaining, separate content defects (not a
+      contamination issue) are tracked under the successor blocker below.
+    evidence: docs/decisions.md#phase-2c-adr-29
+    affected_assets:
+      - enade-2011-computing-q40/figure-01.png
+    regression_tests: [tests/test_ownership.py]
+    visual_validation: passed
+  - id: q43-q44-q45-q48-lead-in-sentence-loss
+    question_id: enade-2011-computing-q43
+    category: figure-region-absorption
+    source_pages: [27, 28, 29, 31]
+    description: >-
+      A lead-in sentence sitting close above/below a figure gets pulled
+      into the figure's own growing region, in four questions.
+    cause: Label-absorption region growth reaching past the intended figure.
+    status: superseded
+    superseded_by: q44-q45-q48-remaining-content-loss
+    resolution: >-
+      Q43's own case is RESOLVED (Phase 2C, ownership model's hard growth
+      clipping) - its opening sentence is now present. Q44/Q45/Q48 are NOT
+      resolved by the same mechanism (their own defect geometry sits
+      entirely within one question's own already-generous territory, so
+      ownership clipping alone does not reach them) - tracked under the
+      successor blocker below.
+    evidence: data/manifests/visual-audit-2011-computing.json#enade-2011-computing-q43
+    affected_assets:
+      - enade-2011-computing-q43/figure-01.png
+    regression_tests: [tests/test_ownership.py]
+    visual_validation: passed
+  - id: d03-arrow-glyph-corruption
+    question_id: enade-2011-computing-d03
+    category: glyph-substitution
+    source_pages: [2]  # 3_padrao.pdf page 2 (answer standard)
+    description: >-
+      Every assignment-arrow glyph in the answer standard's pseudocode is
+      corrupted to "A with ring above" (Å).
+    cause: >-
+      Font/codepoint mapping gap in symbol-font handling for this glyph in
+      the padrao PDF's own font - not covered by symbol_fonts.py's
+      existing substitution table.
+    status: open
+    resolution: Not investigated this phase (answer-standard extraction path).
+    evidence: data/manifests/visual-audit-2011-computing.json#enade-2011-computing-d03
+    affected_assets: []
+    regression_tests: []
+    visual_validation: failed
+  - id: d03-fibonacci-formula-missing
+    question_id: enade-2011-computing-d03
+    category: math-notation
+    source_pages: [18]
+    description: >-
+      The Fibonacci recurrence-relation formula was missing entirely from
+      the question statement.
+    cause: Small embedded raster-image formula, previously unhandled.
+    status: resolved_by_visual_fallback
+    resolution: >-
+      RESOLVED (Phase 2C, small-formula-image handling): now a clean,
+      correctly-cropped, legible visual-fallback asset
+      ("f_n = f_{n-1} + f_{n-2}"), positioned correctly in the statement.
+    evidence: data/manifests/visual-audit-2011-computing.json#enade-2011-computing-d03
+    affected_assets:
+      - enade-2011-computing-d03/figure-01.png
+    regression_tests: [tests/test_ownership.py]
+    visual_validation: passed
+  - id: d05-answer-standard-bit-width-tables-missing
+    question_id: enade-2011-computing-d05
+    category: table-extraction
+    source_pages: [4, 5]  # 3_padrao.pdf pages 4-5 (answer standard)
+    description: >-
+      All 3 bit-width breakdown tables are missing entirely from the
+      extracted answer-standard text.
+    cause: >-
+      The answer_standard field is populated via a plain text-extraction
+      path, not the full table-detection pipeline used for question
+      statements - not yet investigated further.
+    status: open
+    resolution: Not investigated this phase (answer-standard extraction path).
+    evidence: data/manifests/visual-audit-2011-computing.json#enade-2011-computing-d05
+    affected_assets: []
+    regression_tests: []
+    visual_validation: failed
+
+  # --- Successor blockers created this phase (more granular than the
+  # superseded groups above) ---------------------------------------------
+  - id: q38-remaining-content-defects
+    question_id: enade-2011-computing-q38
+    category: math-notation
+    source_pages: [25]
+    description: >-
+      The hexadecimal-ambiguity paragraph is still missing (with stray
+      out-of-place "g" characters in the surviving sentence); the BNF
+      grammar block's own productions remain scrambled inline with figure
+      references; the PORQUE/assertion text is visible only as another
+      figure's crop padding, not reliably present as Q38's own statement
+      text.
+    cause: >-
+      Not fully root-caused this phase - distinct from, and not resolved
+      by, the cross-question contamination fix (q38-q40 pair). The "g"
+      character artifact in particular was not investigated further.
+    status: open
+    resolution: >-
+      SIGNIFICANTLY IMPROVED but not resolved (Phase 2C): Q38 now has 5 of
+      its own, correctly-owned figure assets showing most of its
+      previously-missing content, but is still not fully answerable from
+      its own rendered Markdown alone.
+    evidence: data/manifests/visual-audit-2011-computing.json#enade-2011-computing-q38
+    affected_assets:
+      - enade-2011-computing-q38/figure-01.png
+      - enade-2011-computing-q38/figure-02.png
+      - enade-2011-computing-q38/figure-03.png
+      - enade-2011-computing-q38/figure-04.png
+      - enade-2011-computing-q38/figure-05.png
+    regression_tests: [tests/test_ownership.py]
+    visual_validation: failed
+  - id: q44-q45-q48-remaining-content-loss
+    question_id: enade-2011-computing-q44
+    category: figure-region-absorption
+    source_pages: [28, 29, 31]
+    description: >-
+      Q44: 3 paragraphs and 2 math equations still missing after the
+      figure. Q45: opening sentence and analysis items II-V still missing.
+      Q48: the connecting sentence before the alternatives is still
+      missing.
+    cause: >-
+      Same label-absorption mechanism as the original blocker, but the
+      defect geometry sits entirely within each question's own already-
+      generous territory, so ownership clipping alone does not reach it.
+    status: open
+    resolution: Not resolved this phase - disclosed, unattempted given time.
+    evidence: data/manifests/visual-audit-2011-computing.json
+    affected_assets: []
+    regression_tests: []
+    visual_validation: failed
+
+  # --- Per-question "not verified" entries (19 baseline entries) -------
+  # One entry per question the Phase 2B readiness gate counted as
+  # question_not_verified. Where the question's own defect is already
+  # tracked above by a category blocker, this entry cross-references it
+  # rather than duplicating the description.
+  - id: q09-not-verified
+    question_id: enade-2011-computing-q09
+    category: readiness-status
+    source_pages: [9]
+    description: extraction_status was not "verified" (see q09-math-notation-loss).
+    cause: See q09-math-notation-loss.
+    status: open
+    resolution: Still needs_review - q09-math-notation-loss remains open.
+    evidence: data/manifests/extraction-audit-2011-computing.json
+    regression_tests: []
+  - id: q10-not-verified
+    question_id: enade-2011-computing-q10
+    category: readiness-status
+    source_pages: [9]
+    description: extraction_status was not "verified" (see q10-fraction-numerators-lost).
+    cause: See q10-fraction-numerators-lost.
+    status: open
+    resolution: Still needs_review - q10-fraction-numerators-lost remains open.
+    evidence: data/manifests/extraction-audit-2011-computing.json
+    regression_tests: []
+  - id: q12-not-verified
+    question_id: enade-2011-computing-q12
+    category: readiness-status
+    source_pages: [10]
+    description: extraction_status was not "verified" (see q12-grammar-block-missing).
+    cause: See q12-grammar-block-missing.
+    status: open
+    resolution: Still needs_review - q12-grammar-block-missing remains open.
+    evidence: data/manifests/extraction-audit-2011-computing.json
+    regression_tests: []
+  - id: q14-not-verified
+    question_id: enade-2011-computing-q14
+    category: readiness-status
+    source_pages: [11]
+    description: extraction_status was not "verified" (see q14-alternatives-empty).
+    cause: See q14-alternatives-empty.
+    status: open
+    resolution: Still needs_review - q14-alternatives-empty remains open.
+    evidence: data/manifests/extraction-audit-2011-computing.json
+    regression_tests: []
+  - id: q20-not-verified
+    question_id: enade-2011-computing-q20
+    category: readiness-status
+    source_pages: [13]
+    description: extraction_status was not "verified" (see q20-missing-second-assertion).
+    cause: See q20-missing-second-assertion.
+    status: resolved
+    resolution: RESOLVED - extraction_status is now "verified" (confirmed via extraction-audit-2011-computing.json).
+    evidence: data/manifests/extraction-audit-2011-computing.json
+    regression_tests: [tests/test_ownership.py]
+  - id: q23-not-verified
+    question_id: enade-2011-computing-q23
+    category: readiness-status
+    source_pages: [14]
+    description: extraction_status was not "verified" (see q23-inline-symbols-residual).
+    cause: See q23-inline-symbols-residual.
+    status: open
+    resolution: Still needs_review - q23-inline-symbols-residual remains open.
+    evidence: data/manifests/extraction-audit-2011-computing.json
+    regression_tests: []
+  - id: q24-not-verified
+    question_id: enade-2011-computing-q24
+    category: readiness-status
+    source_pages: [15]
+    description: extraction_status was not "verified" (see q24-q25-q26-cross-question-figure-contamination).
+    cause: See q24-q25-q26-cross-question-figure-contamination.
+    status: resolved
+    resolution: RESOLVED - extraction_status is now "verified".
+    evidence: data/manifests/extraction-audit-2011-computing.json
+    regression_tests: [tests/test_ownership.py]
+  - id: q25-not-verified
+    question_id: enade-2011-computing-q25
+    category: readiness-status
+    source_pages: [15]
+    description: extraction_status was not "verified" (see q24-q25-q26-cross-question-figure-contamination).
+    cause: See q24-q25-q26-cross-question-figure-contamination.
+    status: resolved
+    resolution: RESOLVED - extraction_status is now "verified".
+    evidence: data/manifests/extraction-audit-2011-computing.json
+    regression_tests: [tests/test_ownership.py]
+  - id: q26-not-verified
+    question_id: enade-2011-computing-q26
+    category: readiness-status
+    source_pages: [15]
+    description: extraction_status was not "verified" (see q24-q25-q26-cross-question-figure-contamination).
+    cause: See q24-q25-q26-cross-question-figure-contamination.
+    status: resolved
+    resolution: RESOLVED - extraction_status is now "verified".
+    evidence: data/manifests/extraction-audit-2011-computing.json
+    regression_tests: [tests/test_ownership.py]
+  - id: q27-not-verified
+    question_id: enade-2011-computing-q27
+    category: readiness-status
+    source_pages: [16]
+    description: extraction_status was not "verified" (see q27-pseudocode-not-code-block).
+    cause: See q27-pseudocode-not-code-block.
+    status: open
+    resolution: Still needs_review - q27-pseudocode-not-code-block remains open.
+    evidence: data/manifests/extraction-audit-2011-computing.json
+    regression_tests: []
+  - id: q34-not-verified
+    question_id: enade-2011-computing-q34
+    category: readiness-status
+    source_pages: [23]
+    description: >-
+      extraction_status is not "verified" due to a pre-existing, benign
+      structural warning ("1 figure region(s) fell after the alternatives
+      cutoff") - visually confirmed a false positive since Phase 2A/2B
+      (assets=[] is correct, no content excluded).
+    cause: >-
+      Conservative-by-design: the pipeline never auto-promotes a question
+      with any structural warning, even a disclosed false positive.
+    status: open
+    resolution: >-
+      Deliberately left open - this is a disclosed, accepted conservatism,
+      not a defect to fix. See visual-audit entry for Q34.
+    evidence: data/manifests/visual-audit-2011-computing.json#enade-2011-computing-q34
+    regression_tests: []
+  - id: q38-not-verified
+    question_id: enade-2011-computing-q38
+    category: readiness-status
+    source_pages: [25]
+    description: extraction_status was not "verified" (see q38-remaining-content-defects).
+    cause: See q38-remaining-content-defects.
+    status: open
+    resolution: Still needs_review - q38-remaining-content-defects remains open.
+    evidence: data/manifests/extraction-audit-2011-computing.json
+    regression_tests: []
+  - id: q40-not-verified
+    question_id: enade-2011-computing-q40
+    category: readiness-status
+    source_pages: [25]
+    description: extraction_status was not "verified" (see q38-q40-cross-question-figure-contamination).
+    cause: See q38-q40-cross-question-figure-contamination.
+    status: resolved
+    resolution: RESOLVED - extraction_status is now "verified".
+    evidence: data/manifests/extraction-audit-2011-computing.json
+    regression_tests: [tests/test_ownership.py]
+  - id: q43-not-verified
+    question_id: enade-2011-computing-q43
+    category: readiness-status
+    source_pages: [27]
+    description: extraction_status was not "verified" (see q43-q44-q45-q48-lead-in-sentence-loss).
+    cause: See q43-q44-q45-q48-lead-in-sentence-loss.
+    status: resolved
+    resolution: RESOLVED - extraction_status is now "verified".
+    evidence: data/manifests/extraction-audit-2011-computing.json
+    regression_tests: [tests/test_ownership.py]
+  - id: q44-not-verified
+    question_id: enade-2011-computing-q44
+    category: readiness-status
+    source_pages: [28]
+    description: extraction_status was not "verified" (see q44-q45-q48-remaining-content-loss).
+    cause: See q44-q45-q48-remaining-content-loss.
+    status: open
+    resolution: Still needs_review - q44-q45-q48-remaining-content-loss remains open.
+    evidence: data/manifests/extraction-audit-2011-computing.json
+    regression_tests: []
+  - id: q45-not-verified
+    question_id: enade-2011-computing-q45
+    category: readiness-status
+    source_pages: [29]
+    description: extraction_status was not "verified" (see q44-q45-q48-remaining-content-loss).
+    cause: See q44-q45-q48-remaining-content-loss.
+    status: open
+    resolution: Still needs_review - q44-q45-q48-remaining-content-loss remains open.
+    evidence: data/manifests/extraction-audit-2011-computing.json
+    regression_tests: []
+  - id: q48-not-verified
+    question_id: enade-2011-computing-q48
+    category: readiness-status
+    source_pages: [31]
+    description: extraction_status was not "verified" (see q44-q45-q48-remaining-content-loss).
+    cause: See q44-q45-q48-remaining-content-loss.
+    status: open
+    resolution: Still needs_review - q44-q45-q48-remaining-content-loss remains open.
+    evidence: data/manifests/extraction-audit-2011-computing.json
+    regression_tests: []
+  - id: d03-not-verified
+    question_id: enade-2011-computing-d03
+    category: readiness-status
+    source_pages: [18]
+    description: >-
+      extraction_status was not "verified" (question statement now fixed,
+      but answer standard's own d03-arrow-glyph-corruption remains open).
+    cause: See d03-arrow-glyph-corruption.
+    status: open
+    resolution: >-
+      Still needs_review - the question statement itself is now correct
+      (d03-fibonacci-formula-missing resolved) but the answer standard's
+      own defect keeps the question as a whole needs_review.
+    evidence: data/manifests/extraction-audit-2011-computing.json
+    regression_tests: [tests/test_ownership.py]
+  - id: d05-not-verified
+    question_id: enade-2011-computing-d05
+    category: readiness-status
+    source_pages: [20]
+    description: extraction_status was not "verified" (see d05-answer-standard-bit-width-tables-missing).
+    cause: See d05-answer-standard-bit-width-tables-missing.
+    status: open
+    resolution: Still needs_review - d05-answer-standard-bit-width-tables-missing remains open.
+    evidence: data/manifests/extraction-audit-2011-computing.json
+    regression_tests: []

@@ -35,7 +35,15 @@ answer_standard:
     complexidade exponencial. A versão iterativa tem complexidade linear o que a torna
     mais vantajosa em termos de eficiência, mas exige mais atenção na implementação.'
   assets: []
-assets: []
+assets:
+- id: figure-01
+  type: image
+  path: enade-2011-computing-d03/figure-01.png
+  source_page: 18
+  extraction_method: raster_crop
+  sha256: acc9ec93cf7ecbc515bd5c51eaba75cfe83188a9a63326ab9044ad97f614b294
+  alt_text: null
+  caption: null
 subjects: []
 topics: []
 concepts: []
@@ -55,5 +63,7 @@ taxonomy_review_status: pending
 # Questão 3
 
 Os números de Fibonacci correspondem à uma sequência infinita na qual os dois primeiros termos são 0 e 1. Cada termo da sequência, à exceção dos dois primeiros, é igual à soma dos dois anteriores, conforme a relação de recorrência abaixo.
+
+![Figura da questão](enade-2011-computing-d03/figure-01.png)
 
 Desenvolva dois algoritmos, um iterativo e outro recursivo, que, dado um número natural n > 0, retorna o n-ésimo termo da sequência de Fibonacci. Apresente as vantagens e desvantagens de cada algoritmo. (valor: 10,0 pontos)

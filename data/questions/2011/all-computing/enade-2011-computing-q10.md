@@ -19,15 +19,7 @@ correct_answer: E
 official_answer_source: 2011/2_gabarito.pdf
 answer_validation_status: validated
 answer_standard: null
-assets:
-- id: figure-01
-  type: image
-  path: enade-2011-computing-q10/figure-01.png
-  source_page: 9
-  extraction_method: raster_crop
-  sha256: 023e44af5fb21e02a5cee0bb43625575f3119085f3d25d57965796d811749cf1
-  alt_text: null
-  caption: null
+assets: []
 subjects: []
 topics: []
 concepts: []
@@ -46,11 +38,7 @@ taxonomy_review_status: pending
 
 # Questão 10
 
-Em determinado período letivo, cada estudante de um curso universitário tem aulas com um de três professores, esses identificados pelas letras X, Y e Z. As quantidades de estudantes (homens e mulheres) que têm aulas com cada professor é apresentada na tabela de contingência abaixo. Professor X Professor Y Professor Z Estudantes
-
-![Figura da questão](enade-2011-computing-q10/figure-01.png)
-
-A partir do grupo de estudantes desse curso universitário,
+Em determinado período letivo, cada estudante de um curso universitário tem aulas com um de três professores, esses identificados pelas letras X, Y e Z. As quantidades de estudantes (homens e mulheres) que têm aulas com cada professor é apresentada na tabela de contingência abaixo. Professor X Professor Y Professor Z Estudantes homens Estudantes mulheres A partir do grupo de estudantes desse curso universitário, escolhe-se um estudante ao acaso. Qual é a probabilidade de que esse estudante seja mulher, dado que ele tem aulas apenas com o professor X?
 
 ## Alternativas
 

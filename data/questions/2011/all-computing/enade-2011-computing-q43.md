@@ -25,7 +25,7 @@ assets:
   path: enade-2011-computing-q43/figure-01.png
   source_page: 27
   extraction_method: raster_crop
-  sha256: 2a7e4a2cf75bd6d34840fd3f5254305353b187b431564caeb9957fc680b3cda0
+  sha256: c1ad73328ed858ef4f8e62fc72001dfb658d78fc33bcd480592ae70ba6ddd45a
   alt_text: null
   caption: null
 subjects: []
@@ -38,13 +38,15 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 43
+
+O razor é uma arquitetura para desempenho better-than-worst-case que usa um registrador especializado, mostrado na figura, que mede e avalia os erros.
 
 ![Figura da questão](enade-2011-computing-q43/figure-01.png)
 

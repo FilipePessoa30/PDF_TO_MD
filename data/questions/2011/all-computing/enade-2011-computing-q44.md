@@ -28,6 +28,14 @@ assets:
   sha256: 0380fcf352b6024533cfbe83ed70baa168c60131acada22e3684720cc8e77c33
   alt_text: null
   caption: null
+- id: figure-02
+  type: image
+  path: enade-2011-computing-q44/figure-02.png
+  source_page: 28
+  extraction_method: raster_crop
+  sha256: e5f00da72ab556fe7b8eb5d36d7e5746ba6548a4bf9df3ce584d49fe2c67c3f7
+  alt_text: null
+  caption: null
 subjects: []
 topics: []
 concepts: []
@@ -49,6 +57,8 @@ taxonomy_review_status: pending
 ![Figura da questão](enade-2011-computing-q44/figure-01.png)
 
 A utilização dos somadores completos em cascata no projeto de Unidades Lógicas Aritméticas pode comprometer o seu
+
+![Figura da questão](enade-2011-computing-q44/figure-02.png)
 
 Suponha que o somador de 8 bits tem predição de vai-um baseada na duplicação da soma dos 4 bits mais significativos e que 7 ns é o tempo de atraso de propagação por nível de porta AND, OR e XOR. Desconsiderando os inversores, o aumento do número de portas e a redução do tempo de propagação podem ser expressos, em porcentagem, como aumento de
 

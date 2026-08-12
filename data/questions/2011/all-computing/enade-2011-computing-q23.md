@@ -47,7 +47,7 @@ alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
 extraction_status: needs_review
-automatic_validation: passed
+automatic_validation: failed
 visual_validation: failed
 taxonomy_review_status: pending
 ---

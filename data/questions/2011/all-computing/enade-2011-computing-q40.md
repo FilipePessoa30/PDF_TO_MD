@@ -25,7 +25,7 @@ assets:
   path: enade-2011-computing-q40/figure-01.png
   source_page: 25
   extraction_method: raster_crop
-  sha256: 71f2a3fa2c8b690b0edfa59b891a22db409cd20172eefa32ced7eeba7925c9fc
+  sha256: 9592aedb6421a2e113885969e7bf717de1c4b12b5b20f24db07b156a98ebcaae
   alt_text: null
   caption: null
 subjects: []
@@ -38,17 +38,19 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 40
 
-Considere que a figura abaixo corresponde ao cenário de um jogo de computador. Esse cenário é dividido em 24 quadrados e a movimentação de um personagem entre
+Considere que a figura abaixo corresponde ao cenário de um jogo de computador. Esse cenário é dividido em 24 quadrados e a movimentação de um personagem entre cada quadrado tem custo 1, sendo permitida apenas na horizontal ou na vertical. Os quadrados marcados em preto correspondem a regiões para as quais os personagens não podem se mover.
 
 ![Figura da questão](enade-2011-computing-q40/figure-01.png)
+
+Nesse cenário, o algoritmoA* vai ser usado para determinar o caminho de custo mínimo pelo qual um personagem deve se mover desde o quadrado verde até o quadrado vermelho. Considere que, no A*, o custo f(x) = g(x) + h(x) de determinado nó x é computado somando-se o custo real g(x) ao custo da função heurística h(x) e que a função heurística utilizada é a distância de Manhattan (soma das distâncias horizontal e vertical de x até o objetivo). Desse modo, o custo f(x) do quadrado verde é igual a
 
 ## Alternativas
 

@@ -26,6 +26,7 @@ from enade.extraction.figures import VisualRegion, detect_visual_regions
 from enade.extraction.label_normalization import LabelCorrection
 from enade.extraction.layout import Line
 from enade.extraction.layout_overrides import LayoutOverrideSet
+from enade.extraction.ownership import QuestionRegion
 from enade.extraction.spacing import SpacingCorrection
 from enade.extraction.tables import DetectedTable, detect_tables
 
@@ -470,6 +471,7 @@ def assemble_question(
     decorative_baseline: frozenset[tuple[int, int, int, int]],
     overrides: LayoutOverrideSet | None = None,
     pdf_sha256: str = "",
+    question_regions_by_page: dict[int, list[QuestionRegion]] | None = None,
 ) -> ExtractedQuestion:
     warnings: list[str] = []
 
@@ -518,7 +520,12 @@ def assemble_question(
     regions: list[VisualRegion] = []
     for page_number in pages_in_span:
         page_regions = detect_visual_regions(
-            doc, page_number, decorative_baseline, overrides=overrides, pdf_sha256=pdf_sha256
+            doc,
+            page_number,
+            decorative_baseline,
+            overrides=overrides,
+            pdf_sha256=pdf_sha256,
+            question_regions=(question_regions_by_page or {}).get(page_number),
         )
         bounds = page_y_bounds.get(page_number)
         x_bounds = page_x_bounds.get(page_number)

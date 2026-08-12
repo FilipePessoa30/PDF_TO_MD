@@ -27,6 +27,7 @@ import pymupdf
 from enade.extraction.chrome import is_chrome_line
 from enade.extraction.layout import Line, detect_column_margins, extract_page_lines
 from enade.extraction.layout_overrides import LayoutOverrideSet
+from enade.extraction.ownership import QuestionRegion, find_owner
 
 Rect = tuple[float, float, float, float]
 
@@ -97,6 +98,38 @@ MAX_ABSORPTION_PASSES = 8
 #: ~90-140pt of growth beyond their vector-only bbox to include row/axis
 #: labels sitting apart from the diagram body).
 MAX_ABSORPTION_GROWTH = 110.0
+#: A small embedded raster image at or under these dimensions (points) is
+#: treated as an *inline formula/symbol fragment* (PROMPT Phase 2C section
+#: 13-18), never a diagram: this corpus's own inline math notation (fraction
+#: numerators/denominators, set-builder symbols, grammar-production
+#: metavariables, boolean-algebra terms) is set as small embedded raster
+#: images distinct from the body font - typically 15-31pt tall, well under
+#: any real figure/diagram found in this corpus (the smallest genuine
+#: diagram, Q6's own infographic, is already ~250pt tall). Classifying by
+#: size *before* any merging - not by outcome after the fact - is what lets
+#: these be routed through a separate, much more conservative merge/expand
+#: path (see ``_SMALL_IMAGE_Y_MERGE_TOLERANCE``) instead of the general
+#: figure pipeline's generous label-absorption, which was observed
+#: swallowing whole paragraphs of surrounding prose around them (2011
+#: unified booklet, Questao 9/Questao 10 - see docs/decisions.md, Phase 2C
+#: ADR).
+SMALL_IMAGE_MAX_WIDTH = 250.0
+SMALL_IMAGE_MAX_HEIGHT = 40.0
+#: Vertical gap (points) within which two small-image candidates merge into
+#: one formula - deliberately much tighter than DEFAULT_Y_MERGE_TOLERANCE:
+#: a single formula's own sub-parts (e.g. a fraction's numerator/bar/
+#: denominator, or a multi-line stacked relation) sit 3-16pt apart in this
+#: corpus's evidence, while two genuinely different, adjacent formulas
+#: (e.g. two different alternatives' own answer choices) are always 20pt+
+#: apart - see docs/decisions.md, Phase 2C ADR.
+SMALL_IMAGE_Y_MERGE_TOLERANCE = 16.0
+#: A merged formula cluster below this size (points, either dimension) is
+#: still kept - unlike MIN_REGION_WIDTH/MIN_REGION_HEIGHT, which exist to
+#: reject decorative noise (e.g. a bold-text underline), a single-glyph
+#: inline symbol (e.g. one Sigma or lambda character) can genuinely be this
+#: small and is real content, not noise.
+MIN_FORMULA_WIDTH = 4.0
+MIN_FORMULA_HEIGHT = 4.0
 #: A line matching this is an alternative marker (A-E) - absorbing one into
 #: a figure region would corrupt alternative-boundary detection downstream,
 #: so these are never absorbed regardless of distance.
@@ -463,6 +496,25 @@ def _is_two_column_body_text(line: Line, column_margins: tuple[float, float] | N
     )
 
 
+def _is_small_formula_candidate(rect: Rect, is_image: bool) -> bool:
+    if not is_image:
+        return False
+    width = rect[2] - rect[0]
+    height = rect[3] - rect[1]
+    return width <= SMALL_IMAGE_MAX_WIDTH and height <= SMALL_IMAGE_MAX_HEIGHT
+
+
+def _rect_center(rect: Rect) -> tuple[float, float]:
+    return ((rect[0] + rect[2]) / 2, (rect[1] + rect[3]) / 2)
+
+
+def _owner_of(rect: Rect, page_regions: list[QuestionRegion] | None) -> QuestionRegion | None:
+    if not page_regions:
+        return None
+    x, y = _rect_center(rect)
+    return find_owner(page_regions, x, y)
+
+
 def detect_visual_regions(
     doc: pymupdf.Document,
     page_number: int,
@@ -471,6 +523,7 @@ def detect_visual_regions(
     y_merge_tolerance: float = DEFAULT_Y_MERGE_TOLERANCE,
     overrides: LayoutOverrideSet | None = None,
     pdf_sha256: str = "",
+    question_regions: list[QuestionRegion] | None = None,
 ) -> list[VisualRegion]:
     """Detect non-decorative visual content regions on one (1-indexed) page.
 
@@ -478,6 +531,26 @@ def detect_visual_regions(
     any region already determined, by direct visual inspection, to be a
     false positive of the label-absorption chain-growth this function
     relies on (see ``layout_overrides.py`` and docs/decisions.md).
+
+    ``question_regions`` (PROMPT Phase 2C section 6-11), when given, is
+    every question's own claimed territory on *this* page (see
+    ``ownership.py``). When present, every candidate and label is assigned
+    an owner *before* any merging or growth: merging/absorption only ever
+    happens within one owner's own candidate set, and every region's final
+    bbox is hard-clipped to its owner's own territory - a region can no
+    longer grow into a neighboring question's own content no matter how
+    close its labels sit, closing the cross-question contamination class
+    documented for Questao 24/25/26 and Questao 38/40 (docs/decisions.md).
+    When ``question_regions`` is omitted/empty, behavior is unchanged from
+    before this parameter existed (single shared candidate pool, page-wide
+    label absorption) - existing callers are unaffected.
+
+    Small embedded raster images (``SMALL_IMAGE_MAX_WIDTH``/``_HEIGHT`` -
+    this corpus's own inline math notation, not diagrams) are additionally
+    routed through a separate, much tighter merge and *never* participate
+    in label absorption at all, so a formula's own sub-parts merge into one
+    small asset without pulling in surrounding prose (PROMPT Phase 2C
+    section 13-18; see docs/decisions.md, Phase 2C ADR).
     """
     page = doc[page_number - 1]
     candidates: list[tuple[Rect, bool]] = []
@@ -526,23 +599,76 @@ def detect_visual_regions(
         )
     ]
 
-    regions = []
-    for bbox, count, has_image in _merge_by_vertical_proximity(candidates, y_merge_tolerance):
-        width = bbox[2] - bbox[0]
-        height = bbox[3] - bbox[1]
-        if width < MIN_REGION_WIDTH or height < MIN_REGION_HEIGHT:
-            continue
-        expanded_bbox = _expand_with_labels(bbox, label_candidates, body_margin_x0)
-        if overrides is not None and overrides.suppresses_region(
-            pdf_sha256, page_number, expanded_bbox
-        ):
-            continue
-        regions.append(
-            VisualRegion(
-                page_number=page_number,
-                bbox=expanded_bbox,
-                element_count=count,
-                has_raster_image=has_image,
+    small_candidates = [c for c in candidates if _is_small_formula_candidate(*c)]
+    large_candidates = [c for c in candidates if not _is_small_formula_candidate(*c)]
+
+    # Partition each pool by owner (None when question_regions is not
+    # given, or a candidate's center falls outside every known region -
+    # both fall back to the single, page-wide "no owner" group, i.e. the
+    # pre-ownership behavior).
+    def _group_by_owner(
+        pool: list[tuple[Rect, bool]],
+    ) -> dict[QuestionRegion | None, list[tuple[Rect, bool]]]:
+        groups: dict[QuestionRegion | None, list[tuple[Rect, bool]]] = {}
+        for rect, is_image in pool:
+            owner = _owner_of(rect, question_regions)
+            groups.setdefault(owner, []).append((rect, is_image))
+        return groups
+
+    def _labels_for_owner(owner: QuestionRegion | None) -> list[tuple[Rect, str]]:
+        if question_regions is None:
+            return label_candidates
+        return [
+            (rect, text)
+            for rect, text in label_candidates
+            if _owner_of(rect, question_regions) is owner
+        ]
+
+    regions: list[VisualRegion] = []
+
+    for owner, group in _group_by_owner(large_candidates).items():
+        owner_labels = _labels_for_owner(owner)
+        for bbox, count, has_image in _merge_by_vertical_proximity(group, y_merge_tolerance):
+            width = bbox[2] - bbox[0]
+            height = bbox[3] - bbox[1]
+            if width < MIN_REGION_WIDTH or height < MIN_REGION_HEIGHT:
+                continue
+            expanded_bbox = _expand_with_labels(bbox, owner_labels, body_margin_x0)
+            if owner is not None:
+                expanded_bbox = owner.clip(expanded_bbox)
+            if overrides is not None and overrides.suppresses_region(
+                pdf_sha256, page_number, expanded_bbox
+            ):
+                continue
+            regions.append(
+                VisualRegion(
+                    page_number=page_number,
+                    bbox=expanded_bbox,
+                    element_count=count,
+                    has_raster_image=has_image,
+                )
             )
-        )
+
+    for owner, group in _group_by_owner(small_candidates).items():
+        for bbox, count, has_image in _merge_by_vertical_proximity(
+            group, SMALL_IMAGE_Y_MERGE_TOLERANCE
+        ):
+            width = bbox[2] - bbox[0]
+            height = bbox[3] - bbox[1]
+            if width < MIN_FORMULA_WIDTH or height < MIN_FORMULA_HEIGHT:
+                continue
+            final_bbox = owner.clip(bbox) if owner is not None else bbox
+            if overrides is not None and overrides.suppresses_region(
+                pdf_sha256, page_number, final_bbox
+            ):
+                continue
+            regions.append(
+                VisualRegion(
+                    page_number=page_number,
+                    bbox=final_bbox,
+                    element_count=count,
+                    has_raster_image=has_image,
+                )
+            )
+
     return _deduplicate_overlapping_regions(_merge_overlapping_regions(regions))

@@ -19,7 +19,15 @@ correct_answer: B
 official_answer_source: 2011/2_gabarito.pdf
 answer_validation_status: validated
 answer_standard: null
-assets: []
+assets:
+- id: figure-01
+  type: image
+  path: enade-2011-computing-q12/figure-01.png
+  source_page: 10
+  extraction_method: raster_crop
+  sha256: b6896a6c3fd4bc4dcb55e68f6a9667dbea8d69130e36de6361ecaa44cc97989d
+  alt_text: null
+  caption: null
 subjects: []
 topics: []
 concepts: []
@@ -38,9 +46,11 @@ taxonomy_review_status: pending
 
 # Questão 12
 
-Considere a gramática a seguir, em que , e são símbolos não terminais, e são terminais e é a cadeia vazia.
+![Figura da questão](enade-2011-computing-q12/figure-01.png)
 
-A respeito dessa gramática, analise as afirmações a seguir. I. Nas cadeias geradas por essa gramática, o último símbolo é . II. O número de zeros consecutivos nas cadeias geradas pela gramática é, no máximo, dois. III. O número de uns em cada cadeia gerada pela gramática é maior que o número de zeros. IV. Nas cadeias geradas por essa gramática, todos os uns estão à esquerda de todos os zeros. É correto apenas o que se afirma em
+A respeito dessa gramática, analise as afirmações a seguir.
+
+uns estão à esquerda de todos os zeros. É correto apenas o que se afirma em
 
 ## Alternativas
 

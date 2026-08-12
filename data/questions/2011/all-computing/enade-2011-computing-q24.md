@@ -19,15 +19,7 @@ correct_answer: C
 official_answer_source: 2011/2_gabarito.pdf
 answer_validation_status: validated
 answer_standard: null
-assets:
-- id: figure-01
-  type: image
-  path: enade-2011-computing-q24/figure-01.png
-  source_page: 15
-  extraction_method: raster_crop
-  sha256: 88a3dd1ce0c01ed5157fd1c5253e39751b2916662a59e11c67506e59f088e78a
-  alt_text: null
-  caption: null
+assets: []
 subjects: []
 topics: []
 concepts: []
@@ -38,27 +30,15 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 24
 
-As filas de prioridades (heaps) são estruturas de dados importantes no projeto de algoritmos. Em especial, heaps podem ser utilizados na recuperação de informação em grandes bases de dados constituídos por textos. Basicamente, para se exibir o resultado de uma consulta, os documentos recuperados são ordenados de acordo com a relevância presumida para o usuário. Uma consulta pode recuperar milhões de documentos que certamente não serão todos examinados. Na verdade, o usuário examina os primeiros m documentos dos n recuperados, em que m é da ordem de algumas dezenas. Considerando as características dos heaps e sua aplicação no problema descrito acima, avalie as seguintes afirmações.
-
-![Figura da questão](enade-2011-computing-q24/figure-01.png)
-
-I.
-
-construção é O(n log n).
-
-na posição 2i+1.
-
-tamanho n é O(m log n).
-
-computacional O(1). Está correto apenas o que se afirma em
+As filas de prioridades (heaps) são estruturas de dados importantes no projeto de algoritmos. Em especial, heaps podem ser utilizados na recuperação de informação em grandes bases de dados constituídos por textos. Basicamente, para se exibir o resultado de uma consulta, os documentos recuperados são ordenados de acordo com a relevância presumida para o usuário. Uma consulta pode recuperar milhões de documentos que certamente não serão todos examinados. Na verdade, o usuário examina os primeiros m documentos dos n recuperados, em que m é da ordem de algumas dezenas. Considerando as características dos heaps e sua aplicação no problema descrito acima, avalie as seguintes afirmações. I. Uma vez que o heap é implementado como uma árvore binária de pesquisa essencialmente completa, o custo computacional para sua construção é O(n log n). II. A implementação de heaps utilizando-se vetores é eficiente em tempo de execução e em espaço de armazenamento, pois o pai de um elemento armazenado na posição i se encontra armazenado na posição 2i+1. III. O custo computacional para se recuperar de forma ordenada os m documentos mais relevantes armazenados em um heap de tamanho n é O(m log n). IV. Determinar o documento com maior valor de relevância armazenado em um heap tem custo computacional O(1). Está correto apenas o que se afirma em
 
 ## Alternativas
 

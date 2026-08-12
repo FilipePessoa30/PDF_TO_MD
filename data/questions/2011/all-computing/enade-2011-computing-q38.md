@@ -25,7 +25,7 @@ assets:
   path: enade-2011-computing-q38/figure-01.png
   source_page: 25
   extraction_method: raster_crop
-  sha256: 71f2a3fa2c8b690b0edfa59b891a22db409cd20172eefa32ced7eeba7925c9fc
+  sha256: 9592aedb6421a2e113885969e7bf717de1c4b12b5b20f24db07b156a98ebcaae
   alt_text: null
   caption: null
 - id: figure-02
@@ -33,7 +33,31 @@ assets:
   path: enade-2011-computing-q38/figure-02.png
   source_page: 25
   extraction_method: raster_crop
-  sha256: d8beb97f2f3e5a9a9c089b98d19a0a0af828c46bd509bbac3cd9bf8558b1a9cb
+  sha256: a34be5ea14530f3f186c0d0bed7fff9ffd9d59767466f35cfde8da5a6b73ce27
+  alt_text: null
+  caption: null
+- id: figure-03
+  type: image
+  path: enade-2011-computing-q38/figure-03.png
+  source_page: 25
+  extraction_method: raster_crop
+  sha256: be0c4d5dfca8ad0b7bc9ff3282167135da4d1c7c2fce00286e36413f653f07c2
+  alt_text: null
+  caption: null
+- id: figure-04
+  type: image
+  path: enade-2011-computing-q38/figure-04.png
+  source_page: 25
+  extraction_method: raster_crop
+  sha256: e5085bb283adf968c55d6b0a88b5236ca3ac03c2977e146617efa11507273307
+  alt_text: null
+  caption: null
+- id: figure-05
+  type: image
+  path: enade-2011-computing-q38/figure-05.png
+  source_page: 25
+  extraction_method: raster_crop
+  sha256: 3bab171071e49663d43c4442bc3b40eb271f2fda391e15f51e2966fc9844605a
   alt_text: null
   caption: null
 subjects: []
@@ -54,13 +78,23 @@ taxonomy_review_status: pending
 
 # Questão 38
 
-É comum que linguagens de programação permitam a descrição textual de constantes em hexadecimal, além de descrições na base dez. O compilador para uma linguagem que suporte constantes inteiras em hexadecimal precisa diferenciar inteiros em base dez dos
+É comum que linguagens de programação permitam a descrição textual de constantes em hexadecimal, além de descrições na base dez. O compilador para uma linguagem que suporte constantes inteiras em hexadecimal precisa diferenciar inteiros em base dez dos números hexadecimais que não usam os dígitosg de g a . Por exemplo, a sequência de caracteres pode ser interpretada como doze em base dez ou como dezoito em hexadecimal. Uma maneira de resolver esse problema é exigindo que as constantes em hexadecimal terminem com o caracter “ ”. Assim, não há ambiguidade,g por g
+
+![Figura da questão](enade-2011-computing-q38/figure-03.png)
+
+A gramática a seguir descreve números inteiros, possivelmente com o símbolo “ ” após os dígitos. Os não
 
 ![Figura da questão](enade-2011-computing-q38/figure-02.png)
 
-A gramática a seguir descreve números inteiros,
+M → E M → N E → N N
 
-M → N E → N N N → Nd N → d Durante a construção de um autômato LR para essa gramática, os seguintes estados são definidos: e0: M´ → ·M M → ·E M → ·N E → ·N
+![Figura da questão](enade-2011-computing-q38/figure-04.png)
+
+N → d Durante a construção de um autômato LR para essa gramática, os seguintes estados são definidos: e0: M´ → ·M M → ·E M → ·N E → ·N N
+
+![Figura da questão](enade-2011-computing-q38/figure-05.png)
+
+N → ·d e1(e0, N): M → N ·
 
 ![Figura da questão](enade-2011-computing-q38/figure-01.png)
 
