@@ -19,15 +19,7 @@ correct_answer: C
 official_answer_source: 2011/2_gabarito.pdf
 answer_validation_status: validated
 answer_standard: null
-assets:
-- id: figure-01
-  type: image
-  path: enade-2011-computing-q42/figure-01.png
-  source_page: 26
-  extraction_method: raster_crop
-  sha256: 3f50dae78b425c5ec593759034aca9984bd3e18fb6903d28d7da57cb95758fdd
-  alt_text: null
-  caption: null
+assets: []
 subjects: []
 topics: []
 concepts: []
@@ -38,19 +30,15 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: extracted
+extraction_status: verified
 automatic_validation: passed
-visual_validation: not_performed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 42
 
-Sabendo que a principal tarefa de um sistema será de classificação em domínios complexos, um gerente de projetos precisa decidir como vai incorporar essa capa- cidade em um sistema computacional a fim de torná-lo
-
-![Figura da questão](enade-2011-computing-q42/figure-01.png)
-
-inteligente. Existem diversas técnicas de inteligência computacional / artificial que possibilitam isso. Nesse contexto, a técnica de inteligência artificial mais indicada para o gerente é
+Sabendo que a principal tarefa de um sistema será de classificação em domínios complexos, um gerente de projetos precisa decidir como vai incorporar essa capa- cidade em um sistema computacional a fim de torná-lo inteligente. Existem diversas técnicas de inteligência computacional / artificial que possibilitam isso. Nesse contexto, a técnica de inteligência artificial mais indicada para o gerente é
 
 ## Alternativas
 

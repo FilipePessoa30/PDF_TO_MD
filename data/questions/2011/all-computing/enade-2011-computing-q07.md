@@ -19,15 +19,7 @@ correct_answer: B
 official_answer_source: 2011/2_gabarito.pdf
 answer_validation_status: validated
 answer_standard: null
-assets:
-- id: figure-01
-  type: image
-  path: enade-2011-computing-q07/figure-01.png
-  source_page: 5
-  extraction_method: raster_crop
-  sha256: 1ef58cf0b3c33c313de2616da0f81f94d715f25b97624aa3e6b1ab92d6372aaa
-  alt_text: null
-  caption: null
+assets: []
 subjects: []
 topics: []
 concepts: []
@@ -38,19 +30,15 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: extracted
+extraction_status: verified
 automatic_validation: passed
-visual_validation: not_performed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 7
 
-A definição de desenvolvimento sustentável mais usualmente utilizada é a que procura atender às
-
-![Figura da questão](enade-2011-computing-q07/figure-01.png)
-
-necessidades atuais sem comprometer a capacidade das gerações futuras. O mundo assiste a um questionamento crescente de paradigmas estabelecidos na economia e também na cultura política. A crise ambiental no planeta, quando traduzida na mudança climática, é uma ameaça real ao pleno desenvolvimento das potencialidades dos países. O Brasil está em uma posição privilegiada para enfrentar os enormes desafios que se acumulam. Abriga elementos fundamentais para o desenvolvimento: parte significativa da biodiversidade e da água doce existentes no planeta; grande extensão de terras cultiváveis; diversidade étnica e cultural e rica variedade de reservas naturais. O campo do desenvolvimento sustentável pode ser conceitualmente dividido em três componentes: sustentabilidade ambiental, sustentabilidade econômica e sustentabilidade sociopolítica. Nesse contexto, o desenvolvimento sustentável pressupõe
+A definição de desenvolvimento sustentável mais usualmente utilizada é a que procura atender às necessidades atuais sem comprometer a capacidade das gerações futuras. O mundo assiste a um questionamento crescente de paradigmas estabelecidos na economia e também na cultura política. A crise ambiental no planeta, quando traduzida na mudança climática, é uma ameaça real ao pleno desenvolvimento das potencialidades dos países. O Brasil está em uma posição privilegiada para enfrentar os enormes desafios que se acumulam. Abriga elementos fundamentais para o desenvolvimento: parte significativa da biodiversidade e da água doce existentes no planeta; grande extensão de terras cultiváveis; diversidade étnica e cultural e rica variedade de reservas naturais. O campo do desenvolvimento sustentável pode ser conceitualmente dividido em três componentes: sustentabilidade ambiental, sustentabilidade econômica e sustentabilidade sociopolítica. Nesse contexto, o desenvolvimento sustentável pressupõe
 
 ## Alternativas
 

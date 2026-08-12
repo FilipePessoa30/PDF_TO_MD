@@ -300,3 +300,45 @@ def test_render_code_lines_after_gutter_removal_has_correct_indentation():
     ]
     rendered = _render_code_lines(_strip_line_number_gutter(lines))
     assert rendered.splitlines() == ["int f(int x){", "      return x;", "}"]
+
+
+# --- Phase 2B: region-attachment X-tolerance must not bridge a real column gap
+
+
+def test_assemble_question_does_not_attach_a_region_across_a_narrow_column_gap():
+    # A region hugging the right edge of the LEFT column (x1=142) must not
+    # attach to a question whose own text lives in the RIGHT column
+    # starting at x0=155 - only a 13pt gap, narrower than the assembler's
+    # old 15pt x_tolerance but wider than its current 5pt (2011 unified
+    # booklet, Q6/Q7 sharing page 5 - see docs/decisions.md, Phase 2B
+    # ADR 27). Uses a real synthetic PDF so detect_visual_regions finds a
+    # genuine drawing-based candidate, not a hand-built VisualRegion.
+    import pymupdf
+
+    from enade.extraction.assembler import assemble_question
+    from enade.extraction.boundaries import QuestionKind, QuestionSpan
+    from enade.extraction.figures import compute_decorative_baseline
+
+    doc = pymupdf.open()
+    page = doc.new_page()
+    # A filled rectangle aligned with the left column (x 30-142) - the
+    # "figure" that must stay attached only to a left-column question.
+    page.draw_rect(pymupdf.Rect(30, 100, 142, 250), color=(0, 0, 0), fill=(0, 0, 0))
+
+    right_lines = [
+        Line(
+            page_number=1,
+            text="Enunciado da questao na coluna direita.",
+            x0=155,
+            y0=100,
+            x1=300,
+            y1=112,
+        ),
+        Line(page_number=1, text="Continuacao do enunciado.", x0=155, y0=115, x1=300, y1=127),
+    ]
+    span = QuestionSpan(
+        kind=QuestionKind.OBJECTIVE, number=7, lines=tuple(right_lines), start_page=1, end_page=1
+    )
+    baseline = compute_decorative_baseline(doc)
+    result = assemble_question(span, doc, baseline)
+    assert result.figure_regions == []

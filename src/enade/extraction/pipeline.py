@@ -34,6 +34,7 @@ from enade.extraction.declared_structure import parse_declared_structure
 from enade.extraction.exam_profile import ExamStructureProfile, verify_declared_profile
 from enade.extraction.figures import compute_decorative_baseline
 from enade.extraction.layout import extract_document_lines
+from enade.extraction.layout_overrides import LayoutOverrideSet
 from enade.extraction.markdown_writer import WriteResult, write_question_markdown
 from enade.extraction.pdf_source import PdfDocument
 from enade.extraction.to_question import COURSE_ID_SHORTHAND, _section_for, build_question
@@ -98,6 +99,7 @@ def extract_exam(
     structure_profile: ExamStructureProfile | None = None,
     output_dir_name: str | None = None,
     answer_key_parser: Callable[[pymupdf.Document], AnswerKeyParseResult] = parse_answer_key,
+    layout_overrides: LayoutOverrideSet | None = None,
 ) -> ExtractionResult:
     """Extract one booklet (prova+gabarito+padrao) into canonical Markdown.
 
@@ -145,7 +147,9 @@ def extract_exam(
             gabarito_source_path = gabarito_path.relative_to(corpus_root).as_posix()
             padrao_source_path = padrao_path.relative_to(corpus_root).as_posix()
 
-            lines = extract_document_lines(prova.raw)
+            lines = extract_document_lines(
+                prova.raw, overrides=layout_overrides, pdf_sha256=prova.identity.sha256
+            )
             boundary_result = detect_question_boundaries(lines)
             structural_warnings.extend(boundary_result.warnings)
 
@@ -192,7 +196,13 @@ def extract_exam(
                     section = _section_for(span.kind, span.number, declared_structure_2021)
                     shorthand = COURSE_ID_SHORTHAND[course]
 
-                extracted = assemble_question(span, prova.raw, baseline)
+                extracted = assemble_question(
+                    span,
+                    prova.raw,
+                    baseline,
+                    overrides=layout_overrides,
+                    pdf_sha256=prova.identity.sha256,
+                )
 
                 suffix = "q" if span.kind == QuestionKind.OBJECTIVE else "d"
                 question_id = f"enade-{exam_year}-{shorthand}-{suffix}{span.number:02d}"

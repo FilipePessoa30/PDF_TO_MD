@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from enade.extraction.figures import (
     MAX_ABSORPTION_GROWTH,
+    TEXT_ABSORPTION_PADDING,
     _dominant_left_margin,
     _expand_with_labels,
     _is_marker_at_margin,
@@ -83,6 +84,32 @@ def test_expand_with_labels_growth_is_capped():
     grown = _expand_with_labels(bbox, [far_label])
     assert grown[0] >= bbox[0] - MAX_ABSORPTION_GROWTH
     assert grown[0] > far_label[0][0]  # did not reach all the way to the far label
+
+
+def test_expand_with_labels_two_independent_candidates_each_bridge_on_their_own():
+    # 2011 unified booklet, Questao 6 (page 5): a chart's true bbox ended at
+    # y=366.3, but TWO separate wrapped alternative-continuation lines
+    # (A's and B's own second lines) each sat within TEXT_ABSORPTION_PADDING
+    # of that edge independently - removing only one from the candidate
+    # pool left the other still able to bridge the same gap on its own,
+    # since each candidate is tested against the *current* bbox rather than
+    # in some fixed order (see docs/decisions.md, Phase 2B ADR 26). This
+    # models that: blocking candidate A alone still lets B grow the bbox.
+    bbox = (28.5, 119.7, 284.7, 366.3)
+    gap = TEXT_ABSORPTION_PADDING - 1  # just inside the absorption padding
+    candidate_a = ((45.5, 366.3 + gap, 256.7, 366.3 + gap + 13.4), "garantir um emprego estavel")
+    candidate_b = ((45.5, 366.3 + gap, 263.9, 366.3 + gap + 13.4), "que aumenta o nivel")
+
+    grown_with_only_a = _expand_with_labels(bbox, [candidate_a])
+    assert grown_with_only_a[3] > bbox[3]  # A alone bridges the gap
+
+    grown_with_only_b = _expand_with_labels(bbox, [candidate_b])
+    assert grown_with_only_b[3] > bbox[3]  # B alone still bridges the gap, even without A
+
+    grown_with_neither = _expand_with_labels(bbox, [])
+    assert (
+        grown_with_neither == bbox
+    )  # with both candidates excluded, bbox stays at its true extent
 
 
 def test_is_paragraph_continuation_true_for_aligned_wrapped_tail():

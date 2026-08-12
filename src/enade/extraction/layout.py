@@ -33,6 +33,7 @@ import pymupdf
 
 from enade.extraction.chrome import is_chrome_line
 from enade.extraction.label_normalization import LabelCorrection, normalize_known_label
+from enade.extraction.layout_overrides import LayoutOverrideSet
 from enade.extraction.spacing import SpacingCorrection, reconstruct_line_text
 from enade.extraction.symbol_fonts import is_symbol_font, substitute_symbol_font_text
 
@@ -206,12 +207,35 @@ def _line_column(ln: Line, margins: tuple[float, float] | None) -> int:
     return 1 if ln.x0 >= right_margin - COLUMN_RIGHT_MARGIN_TOLERANCE else 0
 
 
-def _is_orphan_marker(ln: Line) -> bool:
-    return bool(_ORPHAN_MARKER_RE.match(ln.text))
+#: Two different *general* (Level 1, PROMPT Phase 2B section 6) geometric
+#: heuristics were tried here to exempt a genuine table-header cell (2011
+#: unified booklet, Q22's "A B C D S" truth-table header) from
+#: orphan-marker treatment, and both were rejected after full 2021 byte-diff
+#: regression testing found real false positives: a bare-glyph-width check
+#: also excluded the one genuine circled-marker case's near-neighbors, and
+#: a "3+ short cells share this y0" row heuristic also matched three
+#: independent binary-tree node labels (2021 Q23's own figure: "R", "L",
+#: "A" happen to sit at the same y0 by diagram-layout coincidence, not
+#: because they form a table row). Neither discriminator turned out to be
+#: safe in general, so this case is instead handled by a narrow,
+#: hash-and-bbox-locked override (see ``layout_overrides.py`` and
+#: docs/decisions.md, Phase 2B ADR) applied only for the one PDF/page it
+#: was written for - not a change to this general mechanism's own behavior.
+def _is_orphan_marker(
+    ln: Line, overrides: LayoutOverrideSet | None, pdf_sha256: str, page_number: int
+) -> bool:
+    if not _ORPHAN_MARKER_RE.match(ln.text):
+        return False
+    return overrides is None or not overrides.excludes_from_orphan_marker(
+        pdf_sha256, page_number, ln.bbox
+    )
 
 
 def _merge_orphan_markers(
-    lines: list[Line], margins: tuple[float, float] | None = None
+    lines: list[Line],
+    margins: tuple[float, float] | None = None,
+    overrides: LayoutOverrideSet | None = None,
+    pdf_sha256: str = "",
 ) -> list[Line]:
     """Merge bare-letter marker lines into their nearest same-column partner line.
 
@@ -230,7 +254,7 @@ def _merge_orphan_markers(
     for i, ln in enumerate(lines):
         if i in used:
             continue
-        if not _is_orphan_marker(ln):
+        if not _is_orphan_marker(ln, overrides, pdf_sha256, ln.page_number):
             merged.append(ln)
             continue
         ln_column = _line_column(ln, margins)
@@ -239,7 +263,7 @@ def _merge_orphan_markers(
         for j, other in enumerate(lines):
             if j == i or j in used or other.page_number != ln.page_number:
                 continue
-            if _is_orphan_marker(other):
+            if _is_orphan_marker(other, overrides, pdf_sha256, other.page_number):
                 continue
             if _line_column(other, margins) != ln_column:
                 continue
@@ -306,6 +330,20 @@ def detect_column_margins(lines: list[Line]) -> tuple[float, float] | None:
     reach the qualifying threshold and paired against one legitimately
     *indented* paragraph - wrapping around the recurrence-formula figure -
     misread as a second column, reordering the two paragraphs).
+
+    Finally, the two candidate buckets must have *overlapping* Y-ranges
+    before being accepted as genuine parallel columns. Real two-column
+    content (e.g. Q9 left / Q10 right, both starting near the same y0) runs
+    side by side, so their Y-ranges always share some span. A single-column
+    page that merely contains an indented block - a centered quote, a poem,
+    a highlighted excerpt - sits entirely *before* or entirely *after* the
+    body-margin text in Y, never beside it. Without this check, such a
+    block is misread as a second "column" and the whole block gets sorted
+    to the end of the page's own line sequence, after even the footer
+    chrome (2011 unified booklet, Questao 1's indented poem on page 2, and
+    Discursiva 4's indented epigraph on page 19 - both zero-overlap blocks
+    entirely above their page's body paragraph, both reordered to the very
+    end of the page before this check existed).
     """
     substantial = [
         ln
@@ -327,18 +365,51 @@ def detect_column_margins(lines: list[Line]) -> tuple[float, float] | None:
 
     left_margin = common[0]
     right_margin = common[split_index + 1]
+
+    left_buckets = set(common[: split_index + 1])
+    right_buckets = set(common[split_index + 1 :])
+    left_lines = [
+        ln
+        for ln in substantial
+        if round(ln.x0 / COLUMN_BUCKET_SIZE) * COLUMN_BUCKET_SIZE in left_buckets
+    ]
+    right_lines = [
+        ln
+        for ln in substantial
+        if round(ln.x0 / COLUMN_BUCKET_SIZE) * COLUMN_BUCKET_SIZE in right_buckets
+    ]
+    left_y_top = min(ln.y0 for ln in left_lines)
+    left_y_bottom = max(ln.y1 for ln in left_lines)
+    right_y_top = min(ln.y0 for ln in right_lines)
+    right_y_bottom = max(ln.y1 for ln in right_lines)
+    if min(left_y_bottom, right_y_bottom) <= max(left_y_top, right_y_top):
+        return None
+
     return left_margin, right_margin
 
 
-def extract_page_lines(page: pymupdf.Page, page_number: int) -> list[Line]:
+def extract_page_lines(
+    page: pymupdf.Page,
+    page_number: int,
+    overrides: LayoutOverrideSet | None = None,
+    pdf_sha256: str = "",
+) -> list[Line]:
     """Extract every physical line on ``page``, in visual reading order.
 
     Single-column pages: sorted by (y0, x0). Two-column pages (detected via
     :func:`detect_column_margins`): every left-column line (top to
     bottom), then every right-column line (top to bottom) - see module
     docstring.
+
+    ``overrides``/``pdf_sha256`` (PROMPT Phase 2B section 6, Level 3) apply
+    to the orphan-marker merge below, and can also force naive single-
+    column ordering for the whole page - see ``layout_overrides.py``.
     """
     raw = _raw_lines(page, page_number)
+    if overrides is not None and overrides.forces_single_column(pdf_sha256, page_number):
+        lines = _merge_orphan_markers(raw, None, overrides, pdf_sha256)
+        lines.sort(key=lambda ln: (round(ln.y0, 1), ln.x0))
+        return lines
     # Column margins are detected on the *raw* (pre-merge) lines and reused
     # for the orphan-marker merge below, rather than recomputed after
     # merging: an orphan marker line is far under MIN_COLUMN_LINE_WIDTH and
@@ -346,7 +417,7 @@ def extract_page_lines(page: pymupdf.Page, page_number: int) -> list[Line]:
     # same geometry either order - but computing it once, first, is what
     # lets the merge itself be column-aware (see `_merge_orphan_markers`).
     margins = detect_column_margins(raw)
-    lines = _merge_orphan_markers(raw, margins)
+    lines = _merge_orphan_markers(raw, margins, overrides, pdf_sha256)
 
     if margins is None:
         lines.sort(key=lambda ln: (round(ln.y0, 1), ln.x0))
@@ -378,10 +449,18 @@ def extract_page_lines(page: pymupdf.Page, page_number: int) -> list[Line]:
     return left + right
 
 
-def extract_document_lines(doc: pymupdf.Document) -> list[Line]:
+def extract_document_lines(
+    doc: pymupdf.Document,
+    overrides: LayoutOverrideSet | None = None,
+    pdf_sha256: str = "",
+) -> list[Line]:
     """Extract position-sorted lines for every page, in page order."""
     all_lines: list[Line] = []
     for index in range(doc.page_count):
         page = doc[index]
-        all_lines.extend(extract_page_lines(page, page_number=index + 1))
+        all_lines.extend(
+            extract_page_lines(
+                page, page_number=index + 1, overrides=overrides, pdf_sha256=pdf_sha256
+            )
+        )
     return all_lines

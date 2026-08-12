@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -214,3 +215,41 @@ def test_report_carries_gold_maturity_through(ready_course_dir, tmp_path):
     manifest = _build(ready_course_dir, tmp_path, maturity=GoldMaturity.VALIDATED)
     report = assess_readiness(manifest, ready_course_dir)
     assert report.gold_maturity == "validated"
+
+
+def test_visual_audit_path_omitted_skips_the_coverage_check(ready_course_dir, tmp_path):
+    manifest = _build(ready_course_dir, tmp_path)
+    report = assess_readiness(manifest, ready_course_dir)
+    assert report.visual_audit_coverage is None
+    assert not any(b.kind == "visual_audit_incomplete" for b in report.blockers)
+
+
+def test_incomplete_visual_audit_blocks_readiness(ready_course_dir, tmp_path):
+    manifest = _build(ready_course_dir, tmp_path)
+    audit_path = tmp_path / "visual-audit.json"
+    audit_path.write_text(
+        json.dumps({"enade-2021-cc-b-q01": {"status": "passed"}}), encoding="utf-8"
+    )
+    report = assess_readiness(manifest, ready_course_dir, visual_audit_path=audit_path)
+    assert report.ready is False
+    assert report.visual_audit_coverage is not None
+    assert report.visual_audit_coverage.fully_covered is False
+    assert any(b.kind == "visual_audit_incomplete" for b in report.blockers)
+
+
+def test_fully_covered_visual_audit_does_not_block_readiness(ready_course_dir, tmp_path):
+    manifest = _build(ready_course_dir, tmp_path)
+    audit_path = tmp_path / "visual-audit.json"
+    audit_path.write_text(
+        json.dumps(
+            {
+                "enade-2021-cc-b-q01": {"status": "passed"},
+                "enade-2021-cc-b-d01": {"status": "passed"},
+            }
+        ),
+        encoding="utf-8",
+    )
+    report = assess_readiness(manifest, ready_course_dir, visual_audit_path=audit_path)
+    assert report.ready is True
+    assert report.visual_audit_coverage is not None
+    assert report.visual_audit_coverage.fully_covered is True

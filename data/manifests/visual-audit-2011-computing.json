@@ -1,24 +1,136 @@
 {
-  "enade-2011-computing-q09": {
+  "enade-2011-computing-q01": {
     "status": "passed",
-    "notes": "Compared full statement (equivalence-relation definitions, quotient set, canonical projection) and roman-numeral items I-IV against rendered page 9 (left column). Matches exactly, including inline math notation. No residuals found."
+    "notes": "RESOLVED IN PHASE 2B. Previously Q1's own statement (a 14-line indented poem, page 2) was entirely missing, sorted to the very end of the page's line sequence after Q2's own alternatives, because detect_column_margins misread the poem's indentation as a genuine second column (see docs/decisions.md, ADR 24/25). Fixed via a general Y-range-overlap requirement in detect_column_margins (layout.py): a real two-column layout's two columns always share some Y-range, while this indented block's Y-range never overlapped the body paragraph's. Re-inspected the rendered statement directly against page 2: the full poem ('Retrato de uma princesa desconhecida... Solitaria exilada sem destino', ANDRESEN citation) is now present in its correct position, followed by 'No poema, a autora sugere que' and all 5 alternatives. No residuals found."
+  },
+  "enade-2011-computing-q02": {
+    "status": "passed",
+    "notes": "RESOLVED IN PHASE 2B (side effect of the Q1 fix above - see ADR 24/25). Previously Q1's own orphaned poem text was appended after Q2's alternatives. Re-inspected: Q2's statement and all 5 alternatives now end cleanly with no trailing orphaned content from Q1."
+  },
+  "enade-2011-computing-q03": {
+    "status": "passed",
+    "notes": "Compared full statement (cibercultura/LEVY citation) and all 5 alternatives against rendered page 3 (left column). Matches exactly - purely textual question, no diagram. No residuals found."
+  },
+  "enade-2011-computing-q04": {
+    "status": "passed",
+    "notes": "Compared full statement (asserção/PORQUE about educação e cidadania) and all 5 alternatives against rendered page 3 (right column). Matches exactly. No residuals found."
+  },
+  "enade-2011-computing-q05": {
+    "status": "passed",
+    "notes": "Compared full statement (desmatamento na Amazonia Legal) and all 5 alternatives against rendered page 4. figure-01.png (deforestation map) re-opened directly: complete, correctly bounded, caption included, no clipping. No residuals found."
+  },
+  "enade-2011-computing-q06": {
+    "status": "passed",
+    "notes": "RESOLVED IN PHASE 2B. Previously Q6's own statement was truncated mid-sentence ('usada no titulo do', missing 'infografico diz respeito') and its own caption ('Disponivel em: <http://ead.uepb.edu.br/noticias,82>...') was missing entirely. Root cause: the page-5 infographic (a vector chart) has a true extent ending around y=352 ('Fontes: Manager Assessoria em Recursos Humanos e IBGE'), but figures.py's _expand_with_labels iteratively chain-absorbed nearby short-width lines - the caption (16pt below), then Q6's own two-line statement tail, then (independently, close enough within TEXT_ABSORPTION_PADDING=90pt to bridge directly from the chart's own edge) alternative A's and B's own wrapped continuation lines - growing the region's bbox all the way to y=476.3 (exactly the true extent 366.3 + MAX_ABSORPTION_GROWTH's 110pt cap), deep into Q6's own alternative block. Fixed via 5 protect_from_label_absorption Level-3 overrides (data/manifests/layout-overrides.yaml) covering the caption, the two statement-tail lines, and the two alternative-continuation bridge lines that independently re-triggered the chain (see docs/decisions.md, Phase 2B ADR - Section K). Re-inspected: statement is now complete including the caption; figure-01.png crop now shows only the true infographic (28.5,119.7)-(284.7,366.3), not the alternatives block. No residuals found."
+  },
+  "enade-2011-computing-q07": {
+    "status": "passed",
+    "notes": "RESOLVED IN PHASE 2B (side effect of the Q6 fix plus a companion general fix). Previously Q7 (page 5, right column) had a spurious figure-01.png reference inserted mid-sentence ('...procura atender as [FIGURE] necessidades atuais...') even though Q7 has no real figure at all - it was Q6's own over-grown infographic region (see Q6's note) cross-attaching into Q7's column because assembler.py's region-attachment X-overlap tolerance (15pt) was wider than this corpus's real column gaps (~9-12pt). Reduced x_tolerance to 5pt (assembler.py) - a general fix, verified with zero 2021 regression (see docs/decisions.md). Re-inspected: Q7's statement now reads as one continuous, uninterrupted paragraph with no figure reference; no figure-01.png asset exists for Q7. No residuals found."
+  },
+  "enade-2011-computing-q08": {
+    "status": "passed",
+    "notes": "Compared full statement (Owen Jones/Chavs excerpt) and all 4 roman-numeral items plus 5 alternatives against rendered page 6. Matches exactly - purely textual question. No residuals found."
+  },
+  "enade-2011-computing-q09": {
+    "status": "failed",
+    "notes": "CORRECTION IN PHASE 2B: this question was marked 'passed' in the Phase 2A sample audit ('Matches exactly, including inline math notation. No residuals found.') but that claim was never actually true - re-inspecting the current, unchanged (byte-identical to git baseline; not touched by any Phase 2B fix) rendered Markdown against page 9 found severe content loss the original note missed entirely. This is exactly the failure mode the exhaustive, non-sampling re-audit exists to catch. REAL DEFECT: property (iii) ('se a~a' e a'~a'', entao a~a''.') is missing; the entire quotient-set paragraph ('Uma classe de equivalencia... O conjunto quociente de A... A/~ = {a-bar : a in A}.') is missing; the canonical-projection sentence survives only as the fragment 'A funcao' (the rest, including the pi:A->A/~ definition, is gone); the four analysis items are reduced to two bare fragments ('A relacao de equivalencia ~ no conjunto A' and 'E correto apenas o que se afirma em', the latter actually the closing line misattached as if it were item text) - items II, III (which contains stacked math relations = / ≡(mod n) / ≥) and IV are entirely absent. Root cause is the same math-notation/label-absorption class documented for Q10/Q12/Q14/Q38/D3 below: this page's content mixes LaTeX-style set-builder and modular-arithmetic notation (rendered as small embedded glyphs, not extractable text) with ordinary prose, and large stretches of the surrounding real prose text are being excluded as if they were figure-region content. Not fixed this phase given the scope of remaining work (see docs/phase-2b-report.md); recorded here accurately rather than left under a false 'passed' label. extraction_status should be needs_review, not verified."
+  },
+  "enade-2011-computing-q10": {
+    "status": "failed",
+    "notes": "REAL DEFECT FOUND (page 9, right column). The closing question sentence is truncated ('A partir do grupo de estudantes desse curso universitario,' - missing 'escolhe-se um estudante ao acaso. Qual e a probabilidade de que esse estudante seja mulher, dado que ele tem aulas apenas com o professor X?' entirely). All 5 alternatives are stacked LaTeX-style fractions in the source (A=61/73, B=61/155, C=67/155, D=22/112, E=67/112); the rendered Markdown shows only 'A. 73  B. 155  C. 155  D. 112  E. 112' - every numerator is missing and B/C, D/E collapse to duplicate-looking denominators, making the alternatives unanswerable as rendered. Same math-notation/inline-fraction defect class as Q9/Q12/Q14/Q38/D3. Not fixed this phase; needs a dedicated stacked-fraction extraction or visual-fallback strategy, out of scope for the remaining time in this phase. extraction_status should be needs_review."
   },
   "enade-2011-computing-q11": {
     "status": "passed",
     "notes": "Compared full statement (Halting Problem) and all 5 alternatives against rendered page 10 (left column). Matches exactly - purely textual question, no diagram. Confirms the pipeline's own 'figure region fell after the alternatives cutoff' warning for this question is a benign false positive: assets=[] is correct, no real content was excluded, extraction_status=needs_review is conservative but not wrong."
   },
-  "enade-2011-computing-q13": {
+  "enade-2011-computing-q12": {
     "status": "failed",
-    "notes": "REAL DEFECT FOUND. Statement's interval-scheduling pseudocode is genuinely split by a spurious figure-01.png asset inserted mid-algorithm. Inspected the rendered crop directly: it does not show any legitimate figure - it shows a large, wrongly-bounded region spanning unrelated content (Q11's alternatives D/E, all of Q12's full statement+alternatives, and part of Q13's own pseudocode continuation), i.e. a mis-cropped chunk of a completely different part of the page. Root cause not yet isolated to a specific fix (a region-detection bbox computation issue, distinct from the orphan-marker/column bugs already fixed this phase) - left undiagnosed and undocumented as code because a first attempt at a related fix (widening the orphan-marker exclusion in layout.py, tried while investigating a similar false-positive on Q22) was found to regress 2021's already-certified gold corpus and was reverted (see docs/decisions.md, Phase 2A ADR). Recorded here as a known, disclosed content-corruption defect requiring dedicated future investigation, not silently left unmarked. extraction_status should remain needs_review; the spurious asset should not be treated as trustworthy."
+    "notes": "REAL DEFECT FOUND (page 10, right column). The intro sentence has visible gaps where non-terminal/terminal symbol names should be ('em que , e sao simbolos nao terminais, e sao terminais e e a cadeia vazia' - should name specific symbols, e.g. S/A/B, 0/1, and the empty-string symbol lambda). The actual BNF grammar productions themselves (a multi-line block, analogous to Q38's grammar) are missing entirely - no code block, no figure, nothing between the intro sentence and 'A respeito dessa gramatica, analise as afirmacoes a seguir.' Same math-notation/inline-symbol defect class as Q9/Q10/Q14/Q38/D3 (the symbols and grammar block are set via small embedded glyphs distinct from body text, not extractable, and the label-absorption mechanism also drops adjacent real prose). Not fixed this phase; extraction_status should be needs_review."
+  },
+  "enade-2011-computing-q13": {
+    "status": "passed",
+    "notes": "RESOLVED IN PHASE 2B (previously a confirmed structural failure - see git history for the prior note). Root cause identified: detect_visual_regions (figures.py) seeded a candidate region from several tiny raster images on page 10 (each ~8-13pt wide, y0 404-549 - almost certainly inline math/logic symbols in Questao 12's grammar productions, not a real figure), then its own iterative label-absorption pass grew that region until it spanned (28,294)-(287,609): from inside Questao 11's own alternatives D/E, through the whole of Questao 12, into Questao 13's own pseudocode - splitting the pseudocode's code block in two around a spurious 'figure'. This chain-absorption mechanism is the same one three separate compounding bugs were already found and fixed in during Phase 1C (2021, Discursiva 5); a fourth general tightening was not attempted given the regression risk already demonstrated twice during the Q22 investigation (see ADR 21). Fixed via a hash-and-bbox-locked Level-3 region-suppression override (data/manifests/layout-overrides.yaml, rule=suppress_visual_region - see docs/decisions.md, Phase 2B ADR 22). Re-inspected the rendered Markdown directly: Q13's pseudocode is now one continuous, uninterrupted code block matching the source exactly, assets=[] (correct - no legitimate figure exists here). Per PROMPT Phase 2B section 8, Q13 is promoted to verified."
+  },
+  "enade-2011-computing-q14": {
+    "status": "failed",
+    "notes": "REAL DEFECT (confirmed, not yet fixed). Page 11 left column: after 'Observe o diagrama de Venn a seguir.' and the correctly-captured Venn diagram (figure-01.png), the trailing sentence 'A funcao representada em azul no diagrama tambem' is present but its continuation 'poderia ser expressa pela funcao logica f(x,y,z) =' is missing (a second figure-02.png is emitted in its place, presumably capturing the inline f(x,y,z)= math expression as an uncaptioned image). All 5 alternatives are then rendered as empty ('A. .', 'B. .', ... 'E. .') - each alternative's own boolean-algebra formula (e.g. '(x+z)y + x*ybar*zbar') is a small embedded math glyph sequence that produced zero extractable text. Same math-notation defect class as Q9/Q10/Q12/Q38/D3, at its most severe (total loss of every alternative's actual content, not just a partial fragment). Not fixed this phase (pre-existing, confirmed already in the Phase 2A audit); extraction_status should be needs_review, not passed/verified."
+  },
+  "enade-2011-computing-q15": {
+    "status": "passed",
+    "notes": "RESOLVED IN PHASE 2B (side effect of the Q7/x_tolerance fix - see Q7's note and docs/decisions.md). Previously Q15 (page 11, right column, a pure-text traceroute-protocol question with no figure of its own) wrongly displayed Q14's own Venn diagram, because that region's Y-range overlapped Q15's column purely by coincidence and the prior 15pt X-overlap tolerance in assembler.py bridged the column gap. With x_tolerance reduced to 5pt, Q15 now correctly renders assets=[] and Q14 keeps its own diagram exclusively. Re-inspected page 11 directly: Q15 has no legitimate figure in the source at all. No residuals found."
+  },
+  "enade-2011-computing-q16": {
+    "status": "passed",
+    "notes": "Compared full statement (network protocol sequencing) and all 5 alternatives against rendered page 11 (right column, below Q15). Purely textual, no figure - matches exactly. This question was the original motivating case for assembler.py's X-overlap region-attachment check (Q14's diagram was previously also wrongly reaching Q16); confirmed still correct after the x_tolerance reduction to 5pt. No residuals found."
+  },
+  "enade-2011-computing-q17": {
+    "status": "passed",
+    "notes": "Compared full statement, the mintermo/maxtermo table, the 4-variable logic circuit, and all 5 alternatives (sigma-m/pi-M notation, which uses ordinary Unicode summation/product glyphs and rendered correctly as text) against rendered page 12. Both figure-01.png (circuit) and figure-02.png (table) re-opened directly: both complete and correctly bounded. MINOR COSMETIC NOTE (not a content-loss defect): the one-line caption 'Analise o circuito de quatro variaveis a seguir.' between the two figures is not present as its own Markdown text line - it is visible (duplicated) inside both image crops due to RENDER_PADDING/PAGE_CONTENT_MARGIN's intentional width/height padding (assets.py). All content is faithfully visible to a reader; nothing is lost or misrepresented. No further action taken."
+  },
+  "enade-2011-computing-q18": {
+    "status": "passed",
+    "notes": "Compared full statement (compiled-program portability scenario) and all 4 roman-numeral items plus 5 alternatives against rendered page 13 (left column). Matches exactly - purely textual question. No residuals found."
+  },
+  "enade-2011-computing-q19": {
+    "status": "passed",
+    "notes": "Compared full statement (software testing levels) and all 5 alternatives against rendered page 13. Matches exactly - purely textual question. No residuals found."
+  },
+  "enade-2011-computing-q20": {
+    "status": "failed",
+    "notes": "REAL DEFECT FOUND (page 13). This is an asserção/PORQUE question: the first assertion ('Em G, a quantidade de vertices com grau impar e impar.') is present, but the 'PORQUE' connector, the second assertion, and the closing instruction ('Acerca dessas assercoes, assinale a opcao correta.') are all missing - the Markdown jumps directly from the first assertion straight into the alternatives. A figure-01.png is present at that gap; the missing text is almost certainly swallowed into that region the same way Q6's statement tail was (see Q6's note) - not yet confirmed root-caused to the same specific bridge lines. Not fixed this phase; extraction_status should be needs_review."
+  },
+  "enade-2011-computing-q21": {
+    "status": "passed",
+    "notes": "Compared full statement (DNA sequence stack/queue scenario, with the two intermediate sequences quoted in full) and all 5 alternatives against rendered page 13. Matches exactly - purely textual question. No residuals found."
   },
   "enade-2011-computing-q22": {
-    "status": "failed",
-    "tables_verified": false,
-    "notes": "REAL DEFECT FOUND. Truth-table reconstruction is missing its header row (\"A B C D S\") and the true first data row (\"0 0 0 0 1\") - confirmed against rendered page 14: the real table has a text header plus 16 data rows, but both the structured Markdown table AND its own mandatory visual-fallback crop (table-01.png) start from the second real row (\"0 0 0 1 0\") onward, 15 rows total. Root cause identified: the header's single-character cells (\"A\",\"B\",\"C\",\"D\") are narrow enough to match layout.py's _ORPHAN_MARKER_RE (built for the circled A-E alternative-choice pictograph glyphs, ~17.5-20pt wide) even though they are plain ~7.2pt text glyphs, so they get merged into nonsense fragments (\"A\\tS\", \"C\\t0\", etc.) that then fall outside detect_tables()'s row/column geometry, dropping both the header and the real first row from the detected region entirely (not just from the rendered table - from the region bounding box itself, so even the 'mandatory visual fallback' safety net is incomplete for this specific table). A width-based fix was implemented and verified to solve this case, but was reverted after confirming (via full 2021 byte-diff) that it also changes three already-certified 2021 gold files (Q23, Q34, D4), each of which merges a similarly narrow diagram-label letter through the same code path - PROMPT Phase 2A section 24 forbids that without an explicit, visually-revalidated schema migration, which this was not. Recorded as a known, disclosed structural defect for a future, more targeted fix (e.g. scoping the fix to detect_tables()'s own header-row recovery rather than the shared orphan-marker mechanism). extraction_status should remain needs_review; content_blocks' TableBlock must not be promoted to validated."
+    "status": "passed",
+    "tables_verified": true,
+    "notes": "RESOLVED IN PHASE 2B (previously a confirmed structural failure in Phase 2A). Root cause: the truth-table header's single-character cells (\"A\",\"B\",\"C\",\"D\") were narrow enough to match layout.py's _ORPHAN_MARKER_RE, merging into nonsense fragments that fell outside detect_tables()'s row/column geometry, dropping the header and first data row even from the mandatory visual-fallback crop. Two general fixes were tried and rejected after full 2021 regression testing found real false positives (Q23/Q34/D4). Fixed via a hash-and-bbox-locked Level-3 override (see docs/decisions.md, ADR 21). Re-inspected the rendered crop directly against source page 14: header row \"A B C D S\" plus all 16 data rows present, complete, matching cell-by-cell. Promoted to verified."
   },
   "enade-2011-computing-q23": {
     "status": "failed",
-    "notes": "REAL DEFECT FOUND. Statement and alternative D/E text are missing inline mathematical notation that appears inline in the real PDF (confirmed on rendered page 14): the alphabet symbol \"Σ = {a,b,c}\", the empty-string symbol \"λ\", and (in alternative E) the full regular expression \"(a+b+c)*(ab)*abc(a+b+c)*\" are all absent from the extracted text, leaving grammatically broken sentences (\"...que\" trailing into the figure with no continuation; \"...a linguagem sobre em que...\"; \"...expressao regular .\"). The automaton diagram and the grammar-rules block (figure-01.png/figure-02.png) are both correctly captured as complete, uncropped image assets - this is specifically about small inline math notation that is not being recognized as figure content and is not extracting as text either (a different, apparently font/rendering-based defect from D3's monospace pseudocode arrow glyph, not yet root-caused - most likely these specific symbols are set via a dedicated math/formula sub-font or inline image PyMuPDF's text layer does not expose the way it does the alternative-marker pictograph font). Not attempted this phase given the risk profile already demonstrated by the Q22 investigation and the volume of remaining Phase 2A work; recorded as a disclosed, real content-loss defect requiring its own dedicated investigation. extraction_status should remain needs_review."
+    "notes": "PARTIALLY RESOLVED IN PHASE 2B (previously a confirmed structural failure with a fully broken/truncated statement). Root cause: the alphabet/epsilon symbols ('Sigma={a,b,c}', 'Sigma*', 'lambda') are small inline raster images, not font glyphs; mid-sentence text fragments trailing each symbol were eligible for label absorption (no column-margin match), and the three tiny symbol images independently chain-merged into the automaton diagram's region, re-anchoring its top edge into the statement text. Fixed via three protect_from_label_absorption plus three exclude_from_region_candidates Level-3 overrides (see docs/decisions.md, ADR 23). Re-inspected: statement is now a single, grammatically complete sentence with two cleanly-scoped diagram assets. RESIDUAL, DISCLOSED LIMITATION (not fixed): the three symbols themselves are not individually preserved as inline Markdown or as their own asset - the statement reads with the symbol simply absent between the surviving words. Alternative D/E have the same residual (Sigma, and the full regular expression, are similarly small inline images). extraction_status should remain needs_review."
+  },
+  "enade-2011-computing-q24": {
+    "status": "failed",
+    "notes": "REAL DEFECT FOUND, ROOT CAUSE NOW IDENTIFIED (page 15, left column). Q24's own roman-numeral items I-IV render as bare fragments ('I.', 'construcao e O(n log n).', 'na posicao 2i+1.', 'tamanho n e O(m log n).', 'computacional O(1).') with almost all of each item's real sentence missing. Investigating Q25's own spurious figure-01.png (see Q25's note) revealed the FULL, correct text of all four items is not actually lost from extraction - it is physically present, captured whole and legible, inside that giant mis-cropped image, which spans from Q24's own items I-IV (left column) across to Q25's alternatives and the 'QUESTAO 26' header (right column) and even into Q26's own card image. This is the same page-content-width-render + chain-absorption defect class documented for Q6 (now fixed) and Q40 (below), here compounded across three consecutive questions rather than two. The correct fix would restore this text to Q24's own statement and shrink/relocate the image so it stops being attached to Q25 at all; not attempted this phase given the number of other confirmed defects and remaining time (see docs/phase-2b-report.md). extraction_status should be needs_review."
+  },
+  "enade-2011-computing-q25": {
+    "status": "failed",
+    "notes": "REAL DEFECT FOUND (page 15, right column). Q25 has no legitimate figure in the source at all (pure text: Design Patterns citation, 4 roman-numeral items, 5 alternatives) but a figure-01.png is attached right before '## Alternativas'. Opening the asset directly shows it is not a small artifact but a giant mis-cropped region spanning Q24's own items I-IV (left column, full correct text - see Q24's note), Q25's own alternatives list, the 'QUESTAO 26' section header, and Q26's own 5-card poker image (right column) - i.e. one crop improperly straddling three consecutive questions across both a page-content-width render and a long label-absorption chain (likely seeded by Q26's own card images and grown upward through the roman-numeral markers I/II/III/IV, structurally similar to how alternative-marker lines behave, then widened to full content width the same way Q6's crop was before its fix). Not fixed this phase; extraction_status should be needs_review, and the figure reference itself is actively misleading (implies Q25 has a diagram it does not have)."
+  },
+  "enade-2011-computing-q26": {
+    "status": "failed",
+    "notes": "REAL DEFECT FOUND (page 15, right column). The source page shows a real image (5 playing cards: K-hearts, K-clubs, K-spades, 10-hearts, 10-clubs, illustrating the 'full house' example referenced in the statement's own text - 'como visto na figura') but Q26's rendered Markdown has no figure reference and no asset directory at all - the card image is completely absent from Q26's own output. As established in Q25's note, this image is not lost from extraction; it is present, but wrongly bundled into Q25's own giant spurious figure-01.png instead of appearing as Q26's own asset. Statement text and all 5 alternatives are otherwise complete and correct. Not fixed this phase; extraction_status should be needs_review given the missing referenced figure."
+  },
+  "enade-2011-computing-q27": {
+    "status": "failed",
+    "notes": "MINOR DEFECT (content preserved, formatting lost). Page 16, left column: the 7-line numbered pseudocode ('1. for [i = 0 to n - 1] { ... 7. }') is rendered as one continuous inline sentence rather than a fenced code block with original line breaks/indentation - every line's own text is present and in the correct order, so no information is lost, but the visual/structural distinction between code and prose is gone. Likely the same root cause as Q46's SQL alternatives (Phase 2A finding): this pseudocode is set in a regular, non-monospace font in the source, so layout.py's is_monospace detection (which keys off font-name hints) does not classify it as code. Not fixed this phase (matches the already-accepted Q46 precedent); extraction_status can remain extracted, not a hard failure, but flagged here for completeness since 'nao faca apenas amostragem' applies to minor findings too."
+  },
+  "enade-2011-computing-q28": {
+    "status": "passed",
+    "notes": "Compared full statement (algorithm design paradigms) and all 4 roman-numeral items plus 5 alternatives against rendered page 16 (right column). Matches exactly - purely textual question. No residuals found."
+  },
+  "enade-2011-computing-q29": {
+    "status": "passed",
+    "notes": "Compared full statement (multitasking OS/threads scenario) and all 4 roman-numeral items plus 5 alternatives against rendered page 17. Matches exactly - purely textual question. No residuals found."
+  },
+  "enade-2011-computing-q30": {
+    "status": "passed",
+    "notes": "Compared full statement (binary search tree key sequences) and all 4 roman-numeral sequences plus 5 alternatives against rendered page 17. Matches exactly - purely textual question. No residuals found."
+  },
+  "enade-2011-computing-q31": {
+    "status": "passed",
+    "notes": "Compared full statement (curriculo/Sociologia da Educacao) and all 4 roman-numeral items plus 5 alternatives against rendered page 21 (Licenciatura course-transition page, left column). Matches exactly - purely textual question. No residuals found."
+  },
+  "enade-2011-computing-q32": {
+    "status": "passed",
+    "notes": "Compared full statement (LIBANEO citation, docencia) and all 4 roman-numeral items plus 5 alternatives against rendered page 21 (right column). Matches exactly. No residuals found."
+  },
+  "enade-2011-computing-q33": {
+    "status": "passed",
+    "notes": "Compared full statement (asserção/PORQUE, populacao brasileira) and all 5 alternatives against rendered page 22. figure-01.png (4-panel population pyramid chart, 2010/2020/2030/2040) re-opened directly: all four panels present, header and caption included, no clipping. No residuals found."
   },
   "enade-2011-computing-q34": {
     "status": "passed",
@@ -28,12 +140,84 @@
     "status": "passed",
     "notes": "Compared full statement, the 5-panel Mafalda comic strip (QUINO citation), and all 5 items (I-V) plus the correlated Vasconcellos text excerpt against rendered page 23 (bottom). Image crop (figure-01.png) is complete - all 5 panels present, not clipped on any edge, citation line included. Text matches exactly. No residuals found."
   },
+  "enade-2011-computing-q36": {
+    "status": "passed",
+    "notes": "Compared full statement (P vs NP) and all 4 roman-numeral items plus 5 alternatives against rendered page 24 (left column). Matches exactly - purely textual question. No residuals found."
+  },
+  "enade-2011-computing-q37": {
+    "status": "passed",
+    "notes": "Compared full statement (dynamic scoping, de MELO/da SILVA citation) and all 3 roman-numeral items plus 5 alternatives against rendered page 24 (right column). Matches exactly - purely textual question. No residuals found."
+  },
+  "enade-2011-computing-q38": {
+    "status": "failed",
+    "notes": "SEVERE REAL DEFECT FOUND, ROOT CAUSE NOW IDENTIFIED (page 25, left column). Multiple large losses: (1) the paragraph explaining hexadecimal-vs-decimal digit ambiguity and the 'x' suffix convention is entirely missing after 'dos'; (2) the BNF grammar block itself is scrambled - source shows 5 productions (M->E, M->N, E->Nx, N->Nd, N->d) but the Markdown shows 4 garbled ones with a phantom extra 'N' and a dropped 'x'; (3) the e0/e1 LR-automaton item-set definitions are missing almost entirely, and 'A respeito dessa gramatica, analise as seguintes' runs directly (missing paragraph break) into 'asserções' and then straight into 'A gramatica descrita e do tipo LR(0).' with no separation. Investigating Q40's own spurious figure-01.png (see Q40's note) found that the missing e1 item-set states (e1(e0,N): M->N., M->N.x, M->N.d) plus the 'A respeito dessa gramatica...PORQUE...' assertion block ARE physically present in the corpus - captured whole and legible - but wrongly attached to Q40 instead of Q38, the same page-content-width-render + chain-absorption defect class as Q24/Q25/Q26 and the (fixed) Q6 case. The hexadecimal-ambiguity paragraph and the grammar-block scrambling are a separate, still-unexplained loss not accounted for by the Q40 crop. Not fixed this phase given the number of other confirmed defects and remaining time; extraction_status should be needs_review - this is the single most severely damaged question found in the audit."
+  },
+  "enade-2011-computing-q39": {
+    "status": "passed",
+    "notes": "Compared full statement (Tipo de Dados Abstrato/TDA) and all 4 roman-numeral items plus 5 alternatives against rendered page 25 (right column, top). Matches exactly - purely textual question. No residuals found."
+  },
+  "enade-2011-computing-q40": {
+    "status": "failed",
+    "notes": "REAL DEFECT FOUND (page 25, right column). Q40's own statement and 24-square grid figure (green/black/red marked cells) are both correctly present and complete. However, opening figure-01.png directly shows it is a giant mis-cropped region that ALSO contains, on its own left half, Q38's missing e1 LR-automaton item-set states plus its 'A respeito dessa gramatica...PORQUE...' assertion block and alternatives A-D (see Q38's note) - content that belongs entirely to Q38, two questions earlier on the previous page, not to Q40. Q40's own content is not damaged by this, but the asset is misleading (implies Q40's own figure includes unrelated grammar-theory content) and confirms the systemic page-content-width-render + chain-absorption defect class documented across Q6/Q24/Q25/Q26/Q38. Not fixed this phase; extraction_status should be needs_review given the asset's cross-question contamination even though Q40's own answerability is unaffected."
+  },
+  "enade-2011-computing-q41": {
+    "status": "passed",
+    "notes": "Compared full statement (frequency-domain filter) and asserção/PORQUE plus 5 alternatives against rendered page 26 (left column). figure-01.png (white-circle / filtro / blurred-circle diagram) re-opened directly: complete and correctly bounded; a small amount of Q42's own neighboring right-column text is also visible in the crop (page-content-width padding, same benign cosmetic pattern as Q17), but Q42's own text is independently complete in its own Markdown (see Q42's entry) so nothing is lost. No residuals found."
+  },
+  "enade-2011-computing-q42": {
+    "status": "passed",
+    "notes": "Compared full statement (AI technique for classification) and all 5 alternatives against rendered page 26 (right column). Matches exactly - purely textual question. No residuals found."
+  },
+  "enade-2011-computing-q43": {
+    "status": "failed",
+    "notes": "REAL DEFECT FOUND (page 27). The opening sentence 'O razor e uma arquitetura para desempenho better-than-worst-case que usa um registrador especializado, mostrado na figura, que mede e avalia os erros.' is missing entirely - the Markdown starts directly with the figure-01.png reference (the razor register diagram), then continues correctly from 'O registrador do sistema mantem o valor chaveado...' onward. Likely the same label-absorption pattern as Q6/Q43/Q45 (a lead-in sentence sitting close above a figure gets pulled into the figure's own growing region). Not fixed this phase; extraction_status should be needs_review."
+  },
+  "enade-2011-computing-q44": {
+    "status": "failed",
+    "notes": "SEVERE REAL DEFECT FOUND (page 28). After 'pode comprometer o seu' the Markdown jumps directly to 'Suponha que o somador de 8 bits tem predicao...', silently dropping: the rest of the opening paragraph ('desempenho, uma vez que o sinal de vai-um final deve propagar... Um esquema bem simples de predicao de vai-um para um somador de 8 bits e apresentado na figura a seguir.'); the entire second paragraph ('Os 4 bits mais significativos sao somados de forma redundante... o multiplexador pode entregar o resultado mais rapidamente.'); and both math-equation blocks ('S = A xor B xor VemUm e VaiUm = A.B + VemUm.A + VemUm.B' and 'S = Sel-bar.I0 + Sel.I1'). The 8-bit adder circuit figure (figure-01.png) itself is present and appears complete. This is the largest contiguous text loss found in the audit (three paragraphs and two equations). Not fixed this phase; extraction_status should be needs_review."
+  },
+  "enade-2011-computing-q45": {
+    "status": "failed",
+    "notes": "SEVERE REAL DEFECT FOUND (page 29). The opening sentence 'Os amplificadores operacionais, como ilustra a figura a seguir, sao componentes uteis em diversas aplicacoes.' is missing (Markdown starts directly with the op-amp circuit figure-01.png). After the figure, 'Considerando que o amplificador operacional do circuito e ideal, avalie as seguintes afirmativas.' is also missing, and only item I ('A corrente i1 e idealmente nula.') of five survives - items II-V ('A corrente i2 e idealmente nula.', 'O circuito exemplifica um seguidor de tensao.', 'A diferenca de potencial entre o ponto v1 e o ponto terra do circuito e idealmente nula.', 'A diferenca de potencial entre o ponto v2 e o ponto terra do circuito e de +3,6 V.') are all missing, even though all 5 are referenced by the alternatives (I, II e III / etc.). Same label-absorption defect class as Q6/Q43/Q48, here losing an unusually large share of the question's own analytical content. Not fixed this phase; extraction_status should be needs_review."
+  },
   "enade-2011-computing-q46": {
     "status": "passed",
-    "notes": "Compared full statement (relational schema description) and all 5 SQL alternatives against rendered page 30 (left column). Matches exactly, including every SQL clause (SELECT/FROM/WHERE/GROUP BY/HAVING/ORDER BY) verbatim. The SQL is set in a regular (non-monospace) font in the source PDF, not a genuine fixed-width code font, so the pipeline correctly did not treat it as a CodeBlock - flowing it into prose loses only the original manual line breaks, not any content: every clause and value is present and unambiguous. assets=[] is correct - the faint gray background shading visible behind each alternative in the source is decorative page styling, not a distinct raster image (confirmed: no asset was rendered, and no content is missing)."
+    "notes": "Compared full statement (relational schema description) and all 5 SQL alternatives against rendered page 30 (left column). Matches exactly, including every SQL clause (SELECT/FROM/WHERE/GROUP BY/HAVING/ORDER BY) verbatim. The SQL is set in a regular (non-monospace) font in the source PDF, not a genuine fixed-width code font, so the pipeline correctly did not treat it as a CodeBlock - flowing it into prose loses only the original manual line breaks, not any content. assets=[] is correct."
   },
   "enade-2011-computing-q47": {
     "status": "passed",
     "notes": "Compared full statement (OLAP/data warehouse business scenario) and all 4 roman-numeral items plus 5 alternatives against rendered page 30 (right column). Matches exactly. No residuals found."
+  },
+  "enade-2011-computing-q48": {
+    "status": "failed",
+    "notes": "MINOR DEFECT FOUND (page 31, left column). The connecting sentence 'Da analise do diagrama, conclui-se que' (which leads into the alternatives) is missing - the Markdown jumps directly from the figure-01.png (UML use-case diagram) to '## Alternativas'. The diagram itself and all 5 alternatives are complete and correct; this is a narrower instance of the same label-absorption class as Q6/Q43/Q45 (a short lead-in line sitting close below a figure). Not fixed this phase; extraction_status should be needs_review."
+  },
+  "enade-2011-computing-q49": {
+    "status": "passed",
+    "notes": "Compared full statement (Teoria Geral de Sistemas) and all 5 alternatives against rendered page 31 (left column, below Q48). Matches exactly - purely textual question. No residuals found."
+  },
+  "enade-2011-computing-q50": {
+    "status": "passed",
+    "notes": "Compared full statement (CMMI/SCAMPI maturity level scenario) and all 5 alternatives against rendered page 31 (right column). Matches exactly - purely textual question. No residuals found."
+  },
+  "enade-2011-computing-d01": {
+    "status": "passed",
+    "notes": "Compared full statement (EaD/Educacao a Distancia context + prompt) against rendered page 7 - matches exactly, purely textual. ANSWER STANDARD (padrao, page 1 of 3_padrao.pdf) also compared in full (all 10 numbered EaD advantages): matches exactly, verbatim. No residuals found in either the question or its answer standard."
+  },
+  "enade-2011-computing-d02": {
+    "status": "passed",
+    "notes": "Compared full statement (SIS 2010/analfabetismo context, including the full year/percentage table 2000-2009) and prompt against rendered page 8. The table is a genuine two-column page layout (prose left, data table right) rendered inline as flowing text with all 10 year/percentage pairs present and in the correct order - not a structured Markdown table, but no data lost. ANSWER STANDARD (padrao, page 1 of 3_padrao.pdf) also compared in full (all 3 bullet-point grading criteria, each a full paragraph): matches exactly, verbatim (bullets rendered as inline '•' markers). No residuals found in either."
+  },
+  "enade-2011-computing-d03": {
+    "status": "failed",
+    "notes": "REAL DEFECT FOUND in the question statement (page 18): after 'conforme a relacao de recorrencia abaixo.' the Markdown jumps directly to 'Desenvolva dois algoritmos...' - the Fibonacci recurrence-relation formula (a stacked math expression, e.g. F(n) = F(n-1) + F(n-2) with base cases) is missing entirely. Same math-notation defect class as Q9/Q10/Q12/Q14/Q38. SEPARATE, ADDITIONAL REAL DEFECT FOUND in the ANSWER STANDARD (padrao, page 2 of 3_padrao.pdf): every assignment-arrow glyph ('<-') in both the iterative and recursive pseudocode is corrupted to the character 'A with ring above' (Å) instead - e.g. source 'prevFib <- 0' renders as 'prevFib A-ring 0', throughout both algorithm listings (a glyph-substitution bug, most likely a font/codepoint mapping gap in the pipeline's symbol-font handling for this specific arrow glyph in the padrao PDF's font, distinct from - but analogous to - the existing symbol_fonts.py substitution mechanism, which does not cover this glyph). The pseudocode is also flattened into two continuous paragraphs rather than kept as a formatted code block (minor, same class as Q27/D4 - not itself misleading, but compounds the arrow-glyph corruption's readability impact). Neither defect fixed this phase; extraction_status should be needs_review for both the question and its answer standard."
+  },
+  "enade-2011-computing-d04": {
+    "status": "passed",
+    "notes": "RESOLVED IN PHASE 2B. Previously D4's own opening epigraph ('Listas ordenadas implementadas com vetores sao estruturas...', a 7-line centered block quote, page 19) was missing from its true position at the top of the statement and instead appeared appended after 'Observacao: Qualquer notacao...' at the very end - the same defect shape as Q1's poem (ADR 24), independently discovered on a different page and confirmed to share the exact same root cause (a non-Y-overlapping indented block misread as a column). Fixed by the same general Y-range-overlap fix as Q1 (see ADR 25) - no override needed. Re-inspected: the epigraph now correctly opens the statement, followed by 'Considerando essas informacoes...' through to the 'Observacao' line, in the true source order. ANSWER STANDARD (padrao, page 3 of 3_padrao.pdf) also compared in full (parts a/b, the CriaABP pseudocode with its indentation markers, and both 'Qualquer notacao...' grading-flexibility notes): all text content present and correct, including every pipe-indentation marker and comment; MINOR FORMATTING NOTE (not a content-loss defect): the pseudocode is flattened into continuous paragraphs rather than kept as a formatted code block, same class as Q27 - every line's own text is intact and in the correct order. No content lost in either the question or its answer standard."
+  },
+  "enade-2011-computing-d05": {
+    "status": "failed",
+    "notes": "Question statement (page 20) compared in full: matches exactly, purely textual, no figure or table in the source - passed. REAL DEFECT FOUND in the ANSWER STANDARD (padrao, pages 4-5 of 3_padrao.pdf): all three small bit-width breakdown tables are missing entirely from the extracted text. Source shows, after each mapping scheme's own intro sentence, a compact table naming the address fields and their bit widths - direct mapping: 'Rotulo Linha Palavra / 13 17 2'; fully associative: 'Rotulo Palavra / 30 2'; set-associative: 'Rotulo Conjunto Palavra / 15 15 2' - none of the three numeric rows survive; the Markdown jumps straight from each table's own header line to the following explanatory paragraph. These bit-width numbers are core, gradeable content (the exact field sizes a correct answer must derive), not decorative. Root cause not yet investigated (the answer_standard field is populated via a plain text-extraction path, not the full table-detection pipeline used for question statements, so these compact numeric tables may simply fall outside what that path looks for). Not fixed this phase; extraction_status should be needs_review for the answer standard specifically (the question statement itself is correct)."
   }
 }

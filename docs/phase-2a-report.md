@@ -127,7 +127,7 @@ Todos os 5 textos/páginas/hashes do padrão foram extraídos e vinculados (5/5 
 
 ## L. Auditoria Visual
 
-**Não é 55/55.** 8 questões foram individualmente inspecionadas visualmente (via leitura direta das páginas do PDF real e comparação com o Markdown/asset renderizado):
+**Não é 55/55.** 9 questões foram individualmente inspecionadas visualmente (via leitura direta das páginas do PDF real e comparação com o Markdown/asset renderizado) — 6 `passed` + 3 `failed` = 9, +46 `not_performed` = 55 (CORRIGIDO NA FASE 2B: o resumo original desta seção somava erroneamente 8+46=54; o dado machine-readable em `visual-audit-2011-computing.json` sempre esteve correto — 9 entradas, nenhuma faltando, nenhuma duplicada — só a prosa deste relatório contava errado. A Fase 2B adicionou `assess_visual_audit_coverage()` como gate reutilizável e testado para que esse tipo de erro de contagem manual nunca mais precise ser confiado à leitura humana):
 
 | Questão | Status | Achado |
 |---|---|---|

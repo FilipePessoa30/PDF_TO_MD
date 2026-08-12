@@ -1,0 +1,1746 @@
+[
+  {
+    "question": "enade-2021-si-d01",
+    "type": "label_case_normalization",
+    "source_page": 2,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'Capítulo i' -> 'Capítulo I' (p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'Coleti'+'vos' -> 'Coletivos' (gap=0.012pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'Consti'+'tuição' -> 'Constituição' (gap=-0.090pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'Consti'+'tuição' -> 'Constituição' (gap=0.000pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'Guatt'+'ari' -> 'Guattari' (gap=-0.084pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'In'+':' -> 'In:' (gap=0.000pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'artí'+'sti' -> 'artísti' (gap=0.000pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'artí'+'sti' -> 'artísti' (gap=0.000pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'artí'+'sti' -> 'artísti' (gap=0.012pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'artísti'+'ca' -> 'artística' (gap=0.000pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'artísti'+'ca' -> 'artística' (gap=0.000pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'artísti'+'ca,' -> 'artística,' (gap=0.000pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'ati'+'vidade' -> 'atividade' (gap=0.012pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'ati'+'vidades' -> 'atividades' (gap=0.060pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'ati'+'vidades,' -> 'atividades,' (gap=0.060pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'cientí'+'fi' -> 'científi' (gap=0.012pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'científi'+'ca' -> 'científica' (gap=0.012pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'debati'+'dos.' -> 'debatidos.' (gap=0.060pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'discuti'+'r' -> 'discutir' (gap=0.012pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'disti'+'nção' -> 'distinção' (gap=0.012pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'educati'+'vas' -> 'educativas' (gap=0.012pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'garanti'+'da' -> 'garantida' (gap=0.000pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'garanti'+'ndo-se' -> 'garantindo-se' (gap=0.000pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'garanti'+'r' -> 'garantir' (gap=0.000pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'htt'+'ps://www.senado.leg.br/ati' -> 'https://www.senado.leg.br/ati' (gap=-0.090pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'https://www.senado.leg.br/ati'+'vidade/const/con1988/con1988_15.12.2016/art_5_.asp.' -> 'https://www.senado.leg.br/atividade/const/con1988/con1988_15.12.2016/art_5_.asp.' (gap=-0.081pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'justi'+'fi' -> 'justifi' (gap=0.000pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'justifi'+'car' -> 'justificar' (gap=0.012pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'liberdade'+'.' -> 'liberdade.' (gap=0.000pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'questi'+'ona' -> 'questiona' (gap=0.060pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'questi'+'ona,' -> 'questiona,' (gap=0.000pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'questi'+'onada.' -> 'questionada.' (gap=0.000pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'remeti'+'dos.' -> 'remetidos.' (gap=0.060pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'semioti'+'zação' -> 'semiotização' (gap=0.060pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'semióti'+'cas' -> 'semióticas' (gap=0.060pt, p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "label_case_normalization",
+    "source_page": 2,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'tEXtO i' -> 'TEXTO I' (p.2)"
+  },
+  {
+    "question": "enade-2021-si-d01",
+    "type": "label_case_normalization",
+    "source_page": 2,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'tEXtO ii' -> 'TEXTO II' (p.2)"
+  },
+  {
+    "question": "enade-2021-si-d02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 4,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'Educati'+'on' -> 'Education' (gap=0.009pt, p.4)"
+  },
+  {
+    "question": "enade-2021-si-d02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 4,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'Proceedings'+',' -> 'Proceedings,' (gap=-0.007pt, p.4)"
+  },
+  {
+    "question": "enade-2021-si-d02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 4,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'Projetos'+',' -> 'Projetos,' (gap=-0.010pt, p.4)"
+  },
+  {
+    "question": "enade-2021-si-d02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 4,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'al'+'.' -> 'al.' (gap=0.009pt, p.4)"
+  },
+  {
+    "question": "enade-2021-si-d02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 4,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'al'+'.' -> 'al.' (gap=0.009pt, p.4)"
+  },
+  {
+    "question": "enade-2021-si-d02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 4,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'benefi'+'ciando' -> 'beneficiando' (gap=0.180pt, p.4)"
+  },
+  {
+    "question": "enade-2021-si-d02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 4,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'comprometi'+'da' -> 'comprometida' (gap=0.000pt, p.4)"
+  },
+  {
+    "question": "enade-2021-si-d02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 4,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'efeti'+'va' -> 'efetiva' (gap=0.120pt, p.4)"
+  },
+  {
+    "question": "enade-2021-si-d02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 4,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'efi'+'cientes,' -> 'eficientes,' (gap=0.180pt, p.4)"
+  },
+  {
+    "question": "enade-2021-si-d02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 4,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'holísti'+'ca' -> 'holística' (gap=0.132pt, p.4)"
+  },
+  {
+    "question": "enade-2021-si-d02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 4,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'investi'+'mentos' -> 'investimentos' (gap=0.180pt, p.4)"
+  },
+  {
+    "question": "enade-2021-si-d02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 4,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'parti'+'r' -> 'partir' (gap=-0.012pt, p.4)"
+  },
+  {
+    "question": "enade-2021-si-d02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 4,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'políti'+'cas' -> 'políticas' (gap=0.036pt, p.4)"
+  },
+  {
+    "question": "enade-2021-si-d02",
+    "type": "label_case_normalization",
+    "source_page": 4,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'tEXtO i' -> 'TEXTO I' (p.4)"
+  },
+  {
+    "question": "enade-2021-si-d02",
+    "type": "label_case_normalization",
+    "source_page": 4,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'tEXtO ii' -> 'TEXTO II' (p.4)"
+  },
+  {
+    "question": "enade-2021-si-d02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 4,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'urbana'+'.' -> 'urbana.' (gap=0.027pt, p.4)"
+  },
+  {
+    "question": "enade-2021-si-d02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 4,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'uti'+'liza' -> 'utiliza' (gap=0.012pt, p.4)"
+  },
+  {
+    "question": "enade-2021-si-q01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 5,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'afi'+'rmar' -> 'afirmar' (gap=0.012pt, p.5)"
+  },
+  {
+    "question": "enade-2021-si-q01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 5,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'ati'+'ngissem' -> 'atingissem' (gap=0.060pt, p.5)"
+  },
+  {
+    "question": "enade-2021-si-q01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 5,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'confl'+'itos' -> 'conflitos' (gap=0.012pt, p.5)"
+  },
+  {
+    "question": "enade-2021-si-q01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 5,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'demográfi'+'co' -> 'demográfico' (gap=0.012pt, p.5)"
+  },
+  {
+    "question": "enade-2021-si-q01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 5,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'difi'+'culdade' -> 'dificuldade' (gap=0.060pt, p.5)"
+  },
+  {
+    "question": "enade-2021-si-q01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 5,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'efi'+'cácia' -> 'eficácia' (gap=0.012pt, p.5)"
+  },
+  {
+    "question": "enade-2021-si-q01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 5,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'esti'+'mati' -> 'estimati' (gap=0.060pt, p.5)"
+  },
+  {
+    "question": "enade-2021-si-q01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 5,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'estimati'+'va' -> 'estimativa' (gap=0.060pt, p.5)"
+  },
+  {
+    "question": "enade-2021-si-q01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 5,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'parti'+'r' -> 'partir' (gap=-0.012pt, p.5)"
+  },
+  {
+    "question": "enade-2021-si-q01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 5,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'políti'+'cas' -> 'políticas' (gap=0.036pt, p.5)"
+  },
+  {
+    "question": "enade-2021-si-q01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 5,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'qualifi'+'cação' -> 'qualificação' (gap=0.060pt, p.5)"
+  },
+  {
+    "question": "enade-2021-si-q01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 5,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'repeti'+'ndo-se' -> 'repetindo-se' (gap=0.012pt, p.5)"
+  },
+  {
+    "question": "enade-2021-si-q02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 6,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'htt'+'ps://www.facebook.com/embrapa/photos/a.609357055926350/733391400189581/?type=1&theater.' -> 'https://www.facebook.com/embrapa/photos/a.609357055926350/733391400189581/?type=1&theater.' (gap=0.000pt, p.6)"
+  },
+  {
+    "question": "enade-2021-si-q02",
+    "type": "label_case_normalization",
+    "source_page": 6,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'tEXtO i' -> 'TEXTO I' (p.6)"
+  },
+  {
+    "question": "enade-2021-si-q02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 7,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'-a-vida-uti'+'l-das-hortalicas.' -> '-a-vida-util-das-hortalicas.' (gap=0.009pt, p.7)"
+  },
+  {
+    "question": "enade-2021-si-q02",
+    "type": "label_case_normalization",
+    "source_page": 7,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'PORQUE' -> 'PORQUE' (p.7)"
+  },
+  {
+    "question": "enade-2021-si-q02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 7,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'alimentí'+'cios' -> 'alimentícios' (gap=0.012pt, p.7)"
+  },
+  {
+    "question": "enade-2021-si-q02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 7,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'alternati'+'vas' -> 'alternativas' (gap=0.000pt, p.7)"
+  },
+  {
+    "question": "enade-2021-si-q02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 7,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'conscienti'+'zar' -> 'conscientizar' (gap=0.012pt, p.7)"
+  },
+  {
+    "question": "enade-2021-si-q02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 7,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'disti'+'nti' -> 'distinti' (gap=0.000pt, p.7)"
+  },
+  {
+    "question": "enade-2021-si-q02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 7,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'distinti'+'vos' -> 'distintivos' (gap=0.012pt, p.7)"
+  },
+  {
+    "question": "enade-2021-si-q02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 7,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'esteti'+'camente' -> 'esteticamente' (gap=0.000pt, p.7)"
+  },
+  {
+    "question": "enade-2021-si-q02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 7,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'estéti'+'co' -> 'estético' (gap=0.000pt, p.7)"
+  },
+  {
+    "question": "enade-2021-si-q02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 7,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'estéti'+'cos' -> 'estéticos' (gap=0.000pt, p.7)"
+  },
+  {
+    "question": "enade-2021-si-q02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 7,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'htt'+'ps://www.embrapa.br/busca-de-noti' -> 'https://www.embrapa.br/busca-de-noti' (gap=0.000pt, p.7)"
+  },
+  {
+    "question": "enade-2021-si-q02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 7,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'https://www.embrapa.br/busca-de-noti'+'cias/-/noti' -> 'https://www.embrapa.br/busca-de-noticias/-/noti' (gap=0.018pt, p.7)"
+  },
+  {
+    "question": "enade-2021-si-q02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 7,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'https://www.embrapa.br/busca-de-noticias/-/noti'+'cia/29626389/manuseio-correto-preserva-a-qualidade-e' -> 'https://www.embrapa.br/busca-de-noticias/-/noticia/29626389/manuseio-correto-preserva-a-qualidade-e' (gap=0.018pt, p.7)"
+  },
+  {
+    "question": "enade-2021-si-q02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 7,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'justi'+'fi' -> 'justifi' (gap=0.000pt, p.7)"
+  },
+  {
+    "question": "enade-2021-si-q02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 7,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'justi'+'fi' -> 'justifi' (gap=0.000pt, p.7)"
+  },
+  {
+    "question": "enade-2021-si-q02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 7,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'justifi'+'cati' -> 'justificati' (gap=0.012pt, p.7)"
+  },
+  {
+    "question": "enade-2021-si-q02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 7,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'justifi'+'cati' -> 'justificati' (gap=0.012pt, p.7)"
+  },
+  {
+    "question": "enade-2021-si-q02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 7,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'justificati'+'va' -> 'justificativa' (gap=0.000pt, p.7)"
+  },
+  {
+    "question": "enade-2021-si-q02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 7,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'justificati'+'va' -> 'justificativa' (gap=0.000pt, p.7)"
+  },
+  {
+    "question": "enade-2021-si-q02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 7,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'produti'+'va' -> 'produtiva' (gap=0.060pt, p.7)"
+  },
+  {
+    "question": "enade-2021-si-q02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 7,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'produti'+'va,' -> 'produtiva,' (gap=0.024pt, p.7)"
+  },
+  {
+    "question": "enade-2021-si-q02",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 7,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'sinteti'+'za' -> 'sintetiza' (gap=0.012pt, p.7)"
+  },
+  {
+    "question": "enade-2021-si-q02",
+    "type": "label_case_normalization",
+    "source_page": 7,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'tEXtO ii' -> 'TEXTO II' (p.7)"
+  },
+  {
+    "question": "enade-2021-si-q03",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 8,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'(adaptado)'+'.' -> '(adaptado).' (gap=0.043pt, p.8)"
+  },
+  {
+    "question": "enade-2021-si-q03",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 8,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'Cultura'+'.' -> 'Cultura.' (gap=-0.236pt, p.8)"
+  },
+  {
+    "question": "enade-2021-si-q03",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 8,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'afi'+'rma' -> 'afirma' (gap=0.012pt, p.8)"
+  },
+  {
+    "question": "enade-2021-si-q03",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 8,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'afi'+'rmações' -> 'afirmações' (gap=0.012pt, p.8)"
+  },
+  {
+    "question": "enade-2021-si-q03",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 8,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'alternati'+'va' -> 'alternativa' (gap=0.012pt, p.8)"
+  },
+  {
+    "question": "enade-2021-si-q03",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 8,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'alternati'+'vas' -> 'alternativas' (gap=0.012pt, p.8)"
+  },
+  {
+    "question": "enade-2021-si-q03",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 8,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'ati'+'vidade' -> 'atividade' (gap=0.012pt, p.8)"
+  },
+  {
+    "question": "enade-2021-si-q03",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 8,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'automoti'+'vos.' -> 'automotivos.' (gap=0.000pt, p.8)"
+  },
+  {
+    "question": "enade-2021-si-q03",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 8,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'benefí'+'cios' -> 'benefícios' (gap=0.012pt, p.8)"
+  },
+  {
+    "question": "enade-2021-si-q03",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 8,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'conscienti'+'zação' -> 'conscientização' (gap=-0.000pt, p.8)"
+  },
+  {
+    "question": "enade-2021-si-q03",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 8,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'efi'+'caz' -> 'eficaz' (gap=0.012pt, p.8)"
+  },
+  {
+    "question": "enade-2021-si-q03",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 8,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'fí'+'sica.' -> 'física.' (gap=0.012pt, p.8)"
+  },
+  {
+    "question": "enade-2021-si-q03",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 8,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'htt'+'p://dopedal.blogspot.com/2012/05/charge-do-silverio-voz-da-serra.html.' -> 'http://dopedal.blogspot.com/2012/05/charge-do-silverio-voz-da-serra.html.' (gap=-0.180pt, p.8)"
+  },
+  {
+    "question": "enade-2021-si-q03",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 8,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'incenti'+'vam' -> 'incentivam' (gap=0.012pt, p.8)"
+  },
+  {
+    "question": "enade-2021-si-q03",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 8,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'investi'+'mentos' -> 'investimentos' (gap=0.012pt, p.8)"
+  },
+  {
+    "question": "enade-2021-si-q03",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 8,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'parti'+'r' -> 'partir' (gap=0.012pt, p.8)"
+  },
+  {
+    "question": "enade-2021-si-q03",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 8,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'políti'+'cas' -> 'políticas' (gap=0.024pt, p.8)"
+  },
+  {
+    "question": "enade-2021-si-q03",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 8,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'práti'+'ca' -> 'prática' (gap=0.000pt, p.8)"
+  },
+  {
+    "question": "enade-2021-si-q03",
+    "type": "label_case_normalization",
+    "source_page": 8,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'tEXtO i' -> 'TEXTO I' (p.8)"
+  },
+  {
+    "question": "enade-2021-si-q03",
+    "type": "label_case_normalization",
+    "source_page": 8,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'tEXtO ii' -> 'TEXTO II' (p.8)"
+  },
+  {
+    "question": "enade-2021-si-q04",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'Economy'+',' -> 'Economy,' (gap=0.000pt, p.9)"
+  },
+  {
+    "question": "enade-2021-si-q04",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'Economy'+',' -> 'Economy,' (gap=0.005pt, p.9)"
+  },
+  {
+    "question": "enade-2021-si-q04",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'Economy'+'.' -> 'Economy.' (gap=0.000pt, p.9)"
+  },
+  {
+    "question": "enade-2021-si-q04",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'Garanti'+'a' -> 'Garantia' (gap=0.000pt, p.9)"
+  },
+  {
+    "question": "enade-2021-si-q04",
+    "type": "label_case_normalization",
+    "source_page": 9,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'PORQUE' -> 'PORQUE' (p.9)"
+  },
+  {
+    "question": "enade-2021-si-q04",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'afi'+'rmaram' -> 'afirmaram' (gap=0.012pt, p.9)"
+  },
+  {
+    "question": "enade-2021-si-q04",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'aplicati'+'vos' -> 'aplicativos' (gap=-0.000pt, p.9)"
+  },
+  {
+    "question": "enade-2021-si-q04",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'aplicati'+'vos,' -> 'aplicativos,' (gap=0.012pt, p.9)"
+  },
+  {
+    "question": "enade-2021-si-q04",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'ati'+'vidade' -> 'atividade' (gap=0.012pt, p.9)"
+  },
+  {
+    "question": "enade-2021-si-q04",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'benefí'+'cios' -> 'benefícios' (gap=0.012pt, p.9)"
+  },
+  {
+    "question": "enade-2021-si-q04",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'empregatí'+'cio,' -> 'empregatício,' (gap=0.000pt, p.9)"
+  },
+  {
+    "question": "enade-2021-si-q04",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'empregatí'+'cio.' -> 'empregatício.' (gap=0.000pt, p.9)"
+  },
+  {
+    "question": "enade-2021-si-q04",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'fi'+'cam' -> 'ficam' (gap=0.012pt, p.9)"
+  },
+  {
+    "question": "enade-2021-si-q04",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'htt'+'ps://exame.abril.com.br/carreira/quais-sao-as-consequencia-do-trabalho-informal-no-pais/.' -> 'https://exame.abril.com.br/carreira/quais-sao-as-consequencia-do-trabalho-informal-no-pais/.' (gap=0.000pt, p.9)"
+  },
+  {
+    "question": "enade-2021-si-q04",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'justi'+'fi' -> 'justifi' (gap=0.000pt, p.9)"
+  },
+  {
+    "question": "enade-2021-si-q04",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'justi'+'fi' -> 'justifi' (gap=0.000pt, p.9)"
+  },
+  {
+    "question": "enade-2021-si-q04",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'justifi'+'cati' -> 'justificati' (gap=0.012pt, p.9)"
+  },
+  {
+    "question": "enade-2021-si-q04",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'justifi'+'cati' -> 'justificati' (gap=0.012pt, p.9)"
+  },
+  {
+    "question": "enade-2021-si-q04",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'justificati'+'va' -> 'justificativa' (gap=0.000pt, p.9)"
+  },
+  {
+    "question": "enade-2021-si-q04",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'justificati'+'va' -> 'justificativa' (gap=0.000pt, p.9)"
+  },
+  {
+    "question": "enade-2021-si-q04",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'moti'+'vos,' -> 'motivos,' (gap=0.012pt, p.9)"
+  },
+  {
+    "question": "enade-2021-si-q04",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'parti'+'r' -> 'partir' (gap=-0.012pt, p.9)"
+  },
+  {
+    "question": "enade-2021-si-q04",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'profi'+'ssionais' -> 'profissionais' (gap=0.012pt, p.9)"
+  },
+  {
+    "question": "enade-2021-si-q04",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 9,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'ti'+'po' -> 'tipo' (gap=0.000pt, p.9)"
+  },
+  {
+    "question": "enade-2021-si-q05",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 10,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'htt'+'ps://www.cvv.org.br/blog/o-suicidio-do-povo-indigena/.' -> 'https://www.cvv.org.br/blog/o-suicidio-do-povo-indigena/.' (gap=0.054pt, p.10)"
+  },
+  {
+    "question": "enade-2021-si-q05",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 10,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'nati'+'vas),' -> 'nativas),' (gap=0.000pt, p.10)"
+  },
+  {
+    "question": "enade-2021-si-q05",
+    "type": "label_case_normalization",
+    "source_page": 10,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'tEXtO i' -> 'TEXTO I' (p.10)"
+  },
+  {
+    "question": "enade-2021-si-q05",
+    "type": "label_case_normalization",
+    "source_page": 10,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'tEXtO ii' -> 'TEXTO II' (p.10)"
+  },
+  {
+    "question": "enade-2021-si-q05",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 10,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'uti'+'lizado' -> 'utilizado' (gap=0.012pt, p.10)"
+  },
+  {
+    "question": "enade-2021-si-q05",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'Tocanti'+'ns' -> 'Tocantins' (gap=0.000pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q05",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'afi'+'rma' -> 'afirma' (gap=0.012pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q05",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'afi'+'rmações' -> 'afirmações' (gap=0.012pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q05",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'preventi'+'vas' -> 'preventivas' (gap=-0.000pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q06",
+    "type": "label_case_normalization",
+    "source_page": 11,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'PORQUE' -> 'PORQUE' (p.11)"
+  },
+  {
+    "question": "enade-2021-si-q06",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'expectati'+'va' -> 'expectativa' (gap=0.000pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q06",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'expectati'+'va' -> 'expectativa' (gap=0.000pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q06",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'expectati'+'va' -> 'expectativa' (gap=0.000pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q06",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'expectati'+'va' -> 'expectativa' (gap=0.000pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q06",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'expectati'+'va' -> 'expectativa' (gap=0.012pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q06",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'expectati'+'va' -> 'expectativa' (gap=0.012pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q06",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'expectati'+'va' -> 'expectativa' (gap=0.012pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q06",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'intensifi'+'cando' -> 'intensificando' (gap=0.012pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q06",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'justi'+'fi' -> 'justifi' (gap=0.000pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q06",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'justi'+'fi' -> 'justifi' (gap=0.012pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q06",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'justifi'+'cati' -> 'justificati' (gap=0.012pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q06",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'justifi'+'cati' -> 'justificati' (gap=0.012pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q06",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'justificati'+'va' -> 'justificativa' (gap=0.000pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q06",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'justificati'+'va' -> 'justificativa' (gap=0.012pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q06",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'lati'+'na,' -> 'latina,' (gap=0.012pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q06",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'lati'+'no-americana' -> 'latino-americana' (gap=0.012pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q06",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'lati'+'no-americanos' -> 'latino-americanos' (gap=0.012pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q06",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'lati'+'nos' -> 'latinos' (gap=0.000pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q06",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'negati'+'vos' -> 'negativos' (gap=0.012pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q06",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'signifi'+'cati' -> 'significati' (gap=0.024pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q06",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'significati'+'vo,' -> 'significativo,' (gap=0.000pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q06",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'verifi'+'cou' -> 'verificou' (gap=0.000pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q06",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 11,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'últi'+'mos' -> 'últimos' (gap=0.012pt, p.11)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 12,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'Center'+',' -> 'Center,' (gap=-0.012pt, p.12)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 12,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'Esti'+'ma-se' -> 'Estima-se' (gap=0.000pt, p.12)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 12,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'Project'+',' -> 'Project,' (gap=0.012pt, p.12)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 12,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'afi'+'rma' -> 'afirma' (gap=0.012pt, p.12)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 12,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'afi'+'rma' -> 'afirma' (gap=0.012pt, p.12)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 12,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'afi'+'rmações' -> 'afirmações' (gap=0.012pt, p.12)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 12,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'amplifi'+'cando' -> 'amplificando' (gap=0.024pt, p.12)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 12,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'autodiagnósti'+'co' -> 'autodiagnóstico' (gap=-0.300pt, p.12)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 12,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'decodifi'+'cada' -> 'decodificada' (gap=0.024pt, p.12)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 12,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'desafi'+'o' -> 'desafio' (gap=0.012pt, p.12)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 12,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'diagnósti'+'cos' -> 'diagnósticos' (gap=0.000pt, p.12)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 12,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'htt'+'ps://agencia.fi' -> 'https://agencia.fi' (gap=-0.270pt, p.12)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 12,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'https://agencia.fi'+'ocruz.br/conteudos-sobre-saude-na-web-alteram-relacao-medico-paciente.' -> 'https://agencia.fiocruz.br/conteudos-sobre-saude-na-web-alteram-relacao-medico-paciente.' (gap=-0.261pt, p.12)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 12,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'mídia'+':' -> 'mídia:' (gap=-0.020pt, p.12)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 12,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'objeti'+'vo' -> 'objetivo' (gap=0.012pt, p.12)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 12,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'positi'+'va' -> 'positiva' (gap=0.024pt, p.12)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 12,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'preventi'+'vos' -> 'preventivos' (gap=0.000pt, p.12)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 12,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'proati'+'vo' -> 'proativo' (gap=0.000pt, p.12)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 12,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'profi'+'laxias.' -> 'profilaxias.' (gap=0.012pt, p.12)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 12,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'refl'+'exos' -> 'reflexos' (gap=0.012pt, p.12)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 12,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'relati'+'vas' -> 'relativas' (gap=0.000pt, p.12)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 12,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'signifi'+'cati' -> 'significati' (gap=0.024pt, p.12)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 12,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'significati'+'vo' -> 'significativo' (gap=-0.000pt, p.12)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "label_case_normalization",
+    "source_page": 12,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'tEXtO i' -> 'TEXTO I' (p.12)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "label_case_normalization",
+    "source_page": 12,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'tEXtO ii' -> 'TEXTO II' (p.12)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 12,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'uti'+'lizam' -> 'utilizam' (gap=0.012pt, p.12)"
+  },
+  {
+    "question": "enade-2021-si-q07",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 12,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'últi'+'ma' -> 'última' (gap=0.000pt, p.12)"
+  },
+  {
+    "question": "enade-2021-si-q08",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'Gett'+'ysburg,' -> 'Gettysburg,' (gap=0.000pt, p.13)"
+  },
+  {
+    "question": "enade-2021-si-q08",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'afi'+'rma' -> 'afirma' (gap=0.012pt, p.13)"
+  },
+  {
+    "question": "enade-2021-si-q08",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'afi'+'rmações' -> 'afirmações' (gap=0.012pt, p.13)"
+  },
+  {
+    "question": "enade-2021-si-q08",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'alternati'+'va,' -> 'alternativa,' (gap=0.000pt, p.13)"
+  },
+  {
+    "question": "enade-2021-si-q08",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'combati'+'vidade' -> 'combatividade' (gap=0.012pt, p.13)"
+  },
+  {
+    "question": "enade-2021-si-q08",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'competi'+'ti' -> 'competiti' (gap=0.000pt, p.13)"
+  },
+  {
+    "question": "enade-2021-si-q08",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'competiti'+'vidade' -> 'competitividade' (gap=0.000pt, p.13)"
+  },
+  {
+    "question": "enade-2021-si-q08",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'defi'+'nição' -> 'definição' (gap=0.012pt, p.13)"
+  },
+  {
+    "question": "enade-2021-si-q08",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'democráti'+'co,' -> 'democrático,' (gap=0.000pt, p.13)"
+  },
+  {
+    "question": "enade-2021-si-q08",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'desafi'+'o' -> 'desafio' (gap=0.012pt, p.13)"
+  },
+  {
+    "question": "enade-2021-si-q08",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'esti'+'ver' -> 'estiver' (gap=0.012pt, p.13)"
+  },
+  {
+    "question": "enade-2021-si-q08",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'htt'+'ps://g1.globo.com/politi' -> 'https://g1.globo.com/politi' (gap=-0.126pt, p.13)"
+  },
+  {
+    "question": "enade-2021-si-q08",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'https://g1.globo.com/politi'+'ca/blog/matheus-leitao/post/2020/02/25/democracia-consensual-contra-a-ti' -> 'https://g1.globo.com/politica/blog/matheus-leitao/post/2020/02/25/democracia-consensual-contra-a-ti' (gap=-0.135pt, p.13)"
+  },
+  {
+    "question": "enade-2021-si-q08",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'https://g1.globo.com/politica/blog/matheus-leitao/post/2020/02/25/democracia-consensual-contra-a-ti'+'rania-da-maioria.ghtml.' -> 'https://g1.globo.com/politica/blog/matheus-leitao/post/2020/02/25/democracia-consensual-contra-a-tirania-da-maioria.ghtml.' (gap=-0.135pt, p.13)"
+  },
+  {
+    "question": "enade-2021-si-q08",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'parti'+'r' -> 'partir' (gap=-0.012pt, p.13)"
+  },
+  {
+    "question": "enade-2021-si-q08",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'políti'+'ca' -> 'política' (gap=0.012pt, p.13)"
+  },
+  {
+    "question": "enade-2021-si-q08",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'políti'+'cas' -> 'políticas' (gap=0.012pt, p.13)"
+  },
+  {
+    "question": "enade-2021-si-q08",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'políti'+'cas' -> 'políticas' (gap=0.024pt, p.13)"
+  },
+  {
+    "question": "enade-2021-si-q08",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'senti'+'do' -> 'sentido' (gap=-0.000pt, p.13)"
+  },
+  {
+    "question": "enade-2021-si-q08",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 13,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'ti'+'ver' -> 'tiver' (gap=0.012pt, p.13)"
+  },
+  {
+    "question": "enade-2021-si-q12",
+    "type": "label_case_normalization",
+    "source_page": 19,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'PORQUE' -> 'PORQUE' (p.19)"
+  },
+  {
+    "question": "enade-2021-si-q19",
+    "type": "label_case_normalization",
+    "source_page": 23,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'PORQUE' -> 'PORQUE' (p.23)"
+  },
+  {
+    "question": "enade-2021-si-q32",
+    "type": "label_case_normalization",
+    "source_page": 35,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'PORQUE' -> 'PORQUE' (p.35)"
+  }
+]

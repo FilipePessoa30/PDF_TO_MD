@@ -19,15 +19,7 @@ correct_answer: D
 official_answer_source: 2011/2_gabarito.pdf
 answer_validation_status: validated
 answer_standard: null
-assets:
-- id: figure-01
-  type: image
-  path: enade-2011-computing-q39/figure-01.png
-  source_page: 25
-  extraction_method: raster_crop
-  sha256: d8beb97f2f3e5a9a9c089b98d19a0a0af828c46bd509bbac3cd9bf8558b1a9cb
-  alt_text: null
-  caption: null
+assets: []
 subjects: []
 topics: []
 concepts: []
@@ -38,19 +30,15 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: extracted
+extraction_status: verified
 automatic_validation: passed
-visual_validation: not_performed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 39
 
-O conceito de Tipo de Dados Abstrato (TDA) é popular em linguagens de programação. Nesse contexto, analise as afirmativas a seguir. I. A especificação de um TDA é composta das
-
-![Figura da questão](enade-2011-computing-q39/figure-01.png)
-
-operações aplicáveis a ele, da sua representação interna, e das implementações das operações. II. Dois mecanismos utilizáveis na implementação de um TDA em programas orientados a objetos são a composição e a herança. III. Se S é um subtipo de outro T, então entidades do tipo S em um programa podem ser substituídas por entidades do tipo T, sem alterar a corretude desse programa. IV. O encapsulamento em linguagens de programação orientadas a objetos é um efeito positivo do uso de TDA. É correto apenas o que se afirma em
+O conceito de Tipo de Dados Abstrato (TDA) é popular em linguagens de programação. Nesse contexto, analise as afirmativas a seguir. I. A especificação de um TDA é composta das operações aplicáveis a ele, da sua representação interna, e das implementações das operações. II. Dois mecanismos utilizáveis na implementação de um TDA em programas orientados a objetos são a composição e a herança. III. Se S é um subtipo de outro T, então entidades do tipo S em um programa podem ser substituídas por entidades do tipo T, sem alterar a corretude desse programa. IV. O encapsulamento em linguagens de programação orientadas a objetos é um efeito positivo do uso de TDA. É correto apenas o que se afirma em
 
 ## Alternativas
 

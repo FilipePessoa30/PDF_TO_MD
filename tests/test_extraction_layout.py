@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from enade.extraction.layout import Line, _merge_orphan_markers, detect_column_margins
+from enade.extraction.layout_overrides import LayoutOverride, LayoutOverrideSet
 
 
 def _line(x0: float, y0: float, text: str, x1: float | None = None) -> Line:
@@ -120,3 +121,128 @@ def test_detect_column_margins_excludes_chrome_lines_from_evidence():
     for i in range(4):
         lines.append(_line(140, 60 + i * 20, f"parágrafo indentado ao redor da figura {i}", x1=440))
     assert detect_column_margins(lines) is None
+
+
+def test_merge_orphan_markers_respects_a_matching_override():
+    # A table-header cell that would otherwise merge as an orphan marker
+    # stays a standalone line when a hash-and-bbox-locked override covers
+    # it (PROMPT Phase 2B section 6, Level 3 - see layout_overrides.py).
+    lines = [
+        _line(112.0, 119.8, "A", x1=119.5),
+        _line(300.0, 500.0, "conteúdo qualquer que poderia virar parceiro", x1=550),
+    ]
+    override_set = LayoutOverrideSet(
+        overrides=[
+            LayoutOverride(
+                pdf_sha256="deadbeef" * 8,
+                page=1,
+                bbox=(100.0, 115.0, 215.0, 138.0),
+                rule="exclude_from_orphan_marker_merge",
+                question_id="enade-2011-computing-q22",
+                reason="test",
+                evidence="test",
+                status="reviewed",
+            )
+        ]
+    )
+    merged = _merge_orphan_markers(
+        lines, margins=None, overrides=override_set, pdf_sha256="deadbeef" * 8
+    )
+    assert len(merged) == 2
+    assert any(ln.text == "A" for ln in merged)  # never merged - stayed standalone
+
+
+def test_merge_orphan_markers_ignores_override_for_a_different_pdf_hash():
+    lines = [_line(112.0, 119.8, "A", x1=119.5), _line(113.0, 121.0, "B rótulo qualquer", x1=250)]
+    override_set = LayoutOverrideSet(
+        overrides=[
+            LayoutOverride(
+                pdf_sha256="deadbeef" * 8,
+                page=1,
+                bbox=(100.0, 115.0, 215.0, 138.0),
+                rule="exclude_from_orphan_marker_merge",
+                question_id="enade-2011-computing-q22",
+                reason="test",
+                evidence="test",
+                status="reviewed",
+            )
+        ]
+    )
+    # Same bbox/page, but a different pdf_sha256 than the override declares -
+    # normal orphan-marker behavior applies (the merge happens as usual).
+    merged = _merge_orphan_markers(
+        lines, margins=None, overrides=override_set, pdf_sha256="cafebabe" * 8
+    )
+    assert len(merged) == 1
+    assert merged[0].text.startswith("A\t")
+
+
+def test_detect_column_margins_rejects_non_overlapping_y_ranges():
+    # An indented epigraph/poem block that sits entirely *before* the body
+    # paragraph in Y (never running in parallel with it) must not be read
+    # as a genuine second column, even though it clears every other
+    # geometric threshold (2011 unified booklet, Questao 1's poem on page
+    # 2 and Discursiva 4's epigraph on page 19 - see layout.py docstring
+    # and docs/decisions.md, Phase 2B ADR 25).
+    lines = []
+    for i in range(4):
+        lines.append(_line(140, i * 18, f"linha indentada do epigrafe {i}", x1=440))
+    for i in range(6):
+        lines.append(_line(28, 300 + i * 18, f"paragrafo do corpo principal {i}", x1=500))
+    assert detect_column_margins(lines) is None
+
+
+def test_detect_column_margins_accepts_overlapping_y_ranges():
+    # Sanity check for the same discriminator's other side: genuine
+    # side-by-side columns, whose Y-ranges overlap throughout, must still
+    # be detected.
+    lines = []
+    for i in range(6):
+        lines.append(_line(30, i * 20, f"coluna esquerda numero {i} com texto suficiente", x1=280))
+        lines.append(_line(295, i * 20, f"coluna direita numero {i} com texto suficiente", x1=595))
+    margins = detect_column_margins(lines)
+    assert margins is not None
+    assert margins == (30, 295)
+
+
+def test_extract_page_lines_force_single_column_keeps_natural_order(tmp_path):
+    # A minimal synthetic PDF with an indented "poem" block (3+ lines at a
+    # consistent offset, enough to normally trigger column detection)
+    # nested between two ordinary body-margin lines - the exact shape of
+    # 2011 Q1's own defect (see layout_overrides.py docstring).
+    import pymupdf
+
+    from enade.extraction.layout import extract_page_lines
+    from enade.extraction.layout_overrides import LayoutOverride, LayoutOverrideSet
+
+    doc = pymupdf.open()
+    page = doc.new_page()
+    page.insert_text((28, 68), "QUESTAO 1", fontsize=11)
+    page.insert_text((173, 100), "Linha de poema um bem comprida para largura", fontsize=11)
+    page.insert_text((173, 115), "Linha de poema dois bem comprida para largura", fontsize=11)
+    page.insert_text((173, 130), "Linha de poema tres bem comprida para largura", fontsize=11)
+    page.insert_text((28, 300), "No poema a autora sugere que isso aqui termine", fontsize=11)
+
+    override_set = LayoutOverrideSet(
+        overrides=[
+            LayoutOverride(
+                pdf_sha256="deadbeef" * 8,
+                page=1,
+                bbox=(0.0, 0.0, 0.0, 0.0),
+                rule="force_single_column_page",
+                question_id="enade-2011-computing-q01",
+                reason="test",
+                evidence="test",
+                status="reviewed",
+            )
+        ]
+    )
+    lines = extract_page_lines(page, 1, overrides=override_set, pdf_sha256="deadbeef" * 8)
+    texts = [ln.text for ln in lines]
+    assert texts == [
+        "QUESTAO 1",
+        "Linha de poema um bem comprida para largura",
+        "Linha de poema dois bem comprida para largura",
+        "Linha de poema tres bem comprida para largura",
+        "No poema a autora sugere que isso aqui termine",
+    ]

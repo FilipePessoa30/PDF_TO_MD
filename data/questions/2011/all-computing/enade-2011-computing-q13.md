@@ -26,13 +26,8 @@ content_blocks:
     A, começa vazio.
 - type: code
   text: "enquanto R não estiver vazio,\n    seja x o intervalo de R com menor tempo\n\
-    de término, e que não tenha interseção com"
-  language: null
-- type: asset
-  asset_id: figure-01
-- type: code
-  text: "algum intervalo em A\n    retire x de R e adicione ao conjunto A\nretorne\
-    \ A"
+    de término, e que não tenha interseção com\nalgum intervalo em A\n    retire x\
+    \ de R e adicione ao conjunto A\nretorne A"
   language: null
 - type: paragraph
   text: A respeito desse algoritmo, analise as seguintes asserções. Para checar se
@@ -46,15 +41,7 @@ correct_answer: null
 official_answer_source: 2011/2_gabarito.pdf
 answer_validation_status: annulled
 answer_standard: null
-assets:
-- id: figure-01
-  type: image
-  path: enade-2011-computing-q13/figure-01.png
-  source_page: 10
-  extraction_method: raster_crop
-  sha256: b6afdd8635e65feaf7d562fbea4ffab95b6f3e29c5c806d95330490ea9c54874
-  alt_text: null
-  caption: null
+assets: []
 subjects: []
 topics: []
 concepts: []
@@ -65,9 +52,9 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
@@ -79,11 +66,6 @@ O problema do escalonamento de intervalos tem como entrada um conjunto de interv
 enquanto R não estiver vazio,
     seja x o intervalo de R com menor tempo
 de término, e que não tenha interseção com
-```
-
-![Figura da questão](enade-2011-computing-q13/figure-01.png)
-
-```
 algum intervalo em A
     retire x de R e adicione ao conjunto A
 retorne A

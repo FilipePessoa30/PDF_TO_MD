@@ -1,0 +1,49 @@
+---
+id: enade-2021-cc-l-q01
+exam_year: 2021
+source_occurrences:
+- exam_id: enade-2021-l
+  pdf_sha256: 9537deb2d2d7f7e00eacd526a06b887e932fedf4b5e7abf9be6501138d561b72
+  source_path: 2021/l1_prova.pdf
+  pages:
+  - 5
+  question_number: 1
+  section: formacao-geral-objetiva
+applicable_courses:
+- ciencia-da-computacao-licenciatura
+section: formacao-geral-objetiva
+question_number: 1
+question_type: multiple_choice
+content_blocks: null
+correct_answer: E
+official_answer_source: 2021/l2_gabarito.pdf
+answer_validation_status: validated
+answer_standard: null
+assets: []
+subjects: []
+topics: []
+concepts: []
+keywords: []
+competencies: []
+prerequisites: []
+difficulty: null
+alternative_diagnostics: {}
+extraction_method: text_layer
+ocr_confidence: null
+extraction_status: extracted
+automatic_validation: passed
+visual_validation: not_performed
+taxonomy_review_status: pending
+---
+
+# Questão 1
+
+A chance de uma criança de baixa renda ter um futuro melhor que a realidade em que nasceu está, em maior ou menor grau, relacionada à escolaridade e ao nível de renda de seus pais. Nos países ricos, o "elevador social" anda mais rápido. Nos emergentes, mais devagar. No Brasil, ainda mais lentamente. O país ocupa a segunda pior posição em um estudo sobre mobilidade social feito pela Organização para a Cooperação e Desenvolvimento Econômico (OCDE), em 2018, com dados de 30 países. Segundo os resultados, seriam necessárias nove gerações para que os descendentes de um brasileiro entre os 10% mais pobres atingissem o nível médio de rendimento do país. A estimativa é a mesma para a África do Sul e só perde para a Colômbia, onde o período de ascensão levaria 11 gerações. Mais de 1/3 daqueles que nascem entre os 20% mais pobres no Brasil permanece na base da pirâmide, enquanto apenas 7% consegue chegar aos 20% mais ricos. Filhos de pais na base da pirâmide têm dificuldade de acesso à saúde e maior probabilidade de frequentar uma escola com ensino de baixa qualidade. A educação precária, em geral, limita as opções para esses jovens no mercado de trabalho. Sobram-lhes empregos de baixa remuneração, em que a possibilidade de crescimento salarial para quem tem pouca qualificação é pequena – e a chance de perpetuação do ciclo de pobreza, grande. LEMOS, V. Brasil é o segundo pior em mobilidade social em ranking de 30 países. BBC News Brasil, 15 jun. 2018 (adaptado). A partir das informações apresentadas, é correto afirmar que
+
+## Alternativas
+
+A. o fator ambiental e o fator demográfico afetam a mobilidade social observada, sendo ela menor nos países que apresentam as maiores taxas de natalidade.
+B. a baixa organização social dos economicamente menos favorecidos determina a baixa mobilidade social da base para o topo da pirâmide.
+C. a mobilidade social é caracterizada por um fator ancestral que se revela ao longo das gerações, sendo um limitador da eficácia de políticas públicas de redução das desigualdades sociais.
+D. a análise de mobilidade social permite a observação de um ciclo vicioso, que se caracteriza por uma subida nas camadas sociais seguida de uma queda, repetindo-se esse ciclo de modo sucessivo.
+E. a ascensão social depende de fatores viabilizadores que estão fora do alcance das camadas pobres, o que ocasiona conflitos sociais em busca do acesso a tais fatores.

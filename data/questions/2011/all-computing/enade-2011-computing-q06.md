@@ -25,7 +25,7 @@ assets:
   path: enade-2011-computing-q06/figure-01.png
   source_page: 5
   extraction_method: raster_crop
-  sha256: 1ef58cf0b3c33c313de2616da0f81f94d715f25b97624aa3e6b1ab92d6372aaa
+  sha256: 2b221a3aeb90d6b15a386a996b9a1e8efa1b13be2bf143845943d2487ca73783
   alt_text: null
   caption: null
 subjects: []
@@ -38,9 +38,9 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: extracted
+extraction_status: verified
 automatic_validation: passed
-visual_validation: not_performed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
@@ -50,7 +50,7 @@ A educação é o Xis da questão
 
 ![Figura da questão](enade-2011-computing-q06/figure-01.png)
 
-A expressão “o Xis da questão” usada no título do
+Disponível em: <http://ead.uepb.edu.br/noticias,82>. Acesso em: 24 ago. 2011. A expressão “o Xis da questão” usada no título do infográfico diz respeito
 
 ## Alternativas
 

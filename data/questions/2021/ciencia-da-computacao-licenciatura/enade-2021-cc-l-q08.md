@@ -1,0 +1,49 @@
+---
+id: enade-2021-cc-l-q08
+exam_year: 2021
+source_occurrences:
+- exam_id: enade-2021-l
+  pdf_sha256: 9537deb2d2d7f7e00eacd526a06b887e932fedf4b5e7abf9be6501138d561b72
+  source_path: 2021/l1_prova.pdf
+  pages:
+  - 13
+  question_number: 8
+  section: formacao-geral-objetiva
+applicable_courses:
+- ciencia-da-computacao-licenciatura
+section: formacao-geral-objetiva
+question_number: 8
+question_type: multiple_choice
+content_blocks: null
+correct_answer: D
+official_answer_source: 2021/l2_gabarito.pdf
+answer_validation_status: validated
+answer_standard: null
+assets: []
+subjects: []
+topics: []
+concepts: []
+keywords: []
+competencies: []
+prerequisites: []
+difficulty: null
+alternative_diagnostics: {}
+extraction_method: text_layer
+ocr_confidence: null
+extraction_status: extracted
+automatic_validation: passed
+visual_validation: not_performed
+taxonomy_review_status: pending
+---
+
+# Questão 8
+
+Que é democracia? Em seu famoso discurso em Gettysburg, Abraham Lincoln disse que “a democracia é o governo do povo, feito para o povo e pelo povo, e responsável perante o povo”. O crédito desta definição é, na verdade, de Daniel Webster, que a elaborou 33 anos antes de Lincoln em outro discurso. Nesta ideia de “governo pelo povo e para o povo” surge uma questão essencial: e quando o povo estiver em desacordo? E quando o povo tiver preferências divergentes? O politólogo Arend Lijphart ressalta que há duas respostas principais: a resposta da “democracia majoritária” e a resposta da “democracia consensual”. Na democracia majoritária, a resposta é simples e direta: deve-se governar para a maioria do povo. A resposta alternativa, no modelo da democracia consensual é: deve-se governar para o máximo possível de pessoas. A virtude da democracia consensual é buscar consensos mais amplos no que é interesse de todos; o desafio da democracia consensual pressupõe lideranças políticas mais maduras, tanto no governo quanto na oposição. Democratas genuínos têm aversão à ideia do totalitarismo e combatem os delírios daqueles que desejam poder sem limites. Disponível em: https://g1.globo.com/politica/blog/matheus-leitao/post/2020/02/25/democracia-consensual-contra-a-tirania-da-maioria.ghtml. Acesso em: 2 maio 2020 (adaptado). A partir dos argumentos expostos no texto, avalie as afirmações a seguir. I. O bem comum, a ser estabelecido por um governo democrático, nem sempre está associado às opiniões da maioria do povo. II. A democracia consensual é caracterizada pelo consenso a ser alcançado entre situação e oposição, nas decisões governamentais. III. Circunstâncias políticas de polarização, marcadas pela alta competitividade e combatividade entre posições divergentes, caracterizam um modelo de democracia majoritária. IV. Democracia consensual pressupõe que a situação política no poder considere em suas decisões as necessidades das minorias, no sentido de governar para todo o povo. É correto apenas o que se afirma em
+
+## Alternativas
+
+A. I e II.
+B. I e IV.
+C. II e III.
+D. I, III e IV.
+E. II, III e IV.

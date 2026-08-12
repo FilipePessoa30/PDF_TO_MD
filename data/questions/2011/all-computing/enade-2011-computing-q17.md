@@ -46,9 +46,9 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: extracted
+extraction_status: verified
 automatic_validation: passed
-visual_validation: not_performed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 

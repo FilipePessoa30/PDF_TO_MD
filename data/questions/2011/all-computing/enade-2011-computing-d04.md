@@ -58,12 +58,12 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: extracted
+extraction_status: verified
 automatic_validation: passed
-visual_validation: not_performed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 4
 
-Considerando essas informações, escreva um algoritmo recursivo que construa uma árvore binária de pesquisa completa, implementada por estruturas auto-referenciadas ou apontadores, a partir de um vetor ordenado, v, de n inteiros, em que n = 2m - 1, m > 0. O algoritmo deve construir a árvore em tempo linear, sem precisar fazer qualquer comparação entre os elementos do vetor, uma vez que este já está ordenado. Para isso, a) descreva a estrutura de dados utilizada para a implementação da árvore (valor = 2,0 pontos) b) escreva o algoritmo para a construção da árvore. A chamada principal à função recursiva deve passar, como parâmetros, o vetor, índice do primeiro e último elementos, retornando a referência ou apontador para a raiz da árvore criada (valor: 8,0 pontos). Observação: Qualquer notação em português estruturado, de forma imperativa ou orientada a objetos deve ser considerada, assim como em uma linguagem de alto nível, como o Pascal, C e Java. Listas ordenadas implementadas com vetores são estruturas de dados adequadas para a busca binária, mas possuem o inconveniente de exigirem custo computacional de ordem linear para a inserção de novos elementos. Se as operações de inserção ou remoção de elementos forem frequentes, uma alternativa é transformar a lista em uma árvore binária de pesquisa balanceada, que permitirá a execução dessas operações com custo logarítmico.
+Listas ordenadas implementadas com vetores são estruturas de dados adequadas para a busca binária, mas possuem o inconveniente de exigirem custo computacional de ordem linear para a inserção de novos elementos. Se as operações de inserção ou remoção de elementos forem frequentes, uma alternativa é transformar a lista em uma árvore binária de pesquisa balanceada, que permitirá a execução dessas operações com custo logarítmico. Considerando essas informações, escreva um algoritmo recursivo que construa uma árvore binária de pesquisa completa, implementada por estruturas auto-referenciadas ou apontadores, a partir de um vetor ordenado, v, de n inteiros, em que n = 2m - 1, m > 0. O algoritmo deve construir a árvore em tempo linear, sem precisar fazer qualquer comparação entre os elementos do vetor, uma vez que este já está ordenado. Para isso, a) descreva a estrutura de dados utilizada para a implementação da árvore (valor = 2,0 pontos) b) escreva o algoritmo para a construção da árvore. A chamada principal à função recursiva deve passar, como parâmetros, o vetor, índice do primeiro e último elementos, retornando a referência ou apontador para a raiz da árvore criada (valor: 8,0 pontos). Observação: Qualquer notação em português estruturado, de forma imperativa ou orientada a objetos deve ser considerada, assim como em uma linguagem de alto nível, como o Pascal, C e Java.

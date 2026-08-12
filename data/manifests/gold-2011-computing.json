@@ -9,155 +9,133 @@
   "pipeline_version": "0.1.0",
   "data_contract_version": "1.1.0",
   "maturity": "provisional",
-  "verified_count": 4,
-  "needs_review_count": 51,
+  "verified_count": 36,
+  "needs_review_count": 19,
   "unresolved_question_ids": [
-    "enade-2011-computing-d01",
-    "enade-2011-computing-d02",
     "enade-2011-computing-d03",
-    "enade-2011-computing-d04",
     "enade-2011-computing-d05",
-    "enade-2011-computing-q01",
-    "enade-2011-computing-q02",
-    "enade-2011-computing-q03",
-    "enade-2011-computing-q04",
-    "enade-2011-computing-q05",
-    "enade-2011-computing-q06",
-    "enade-2011-computing-q07",
-    "enade-2011-computing-q08",
+    "enade-2011-computing-q09",
     "enade-2011-computing-q10",
-    "enade-2011-computing-q11",
     "enade-2011-computing-q12",
-    "enade-2011-computing-q13",
     "enade-2011-computing-q14",
-    "enade-2011-computing-q15",
-    "enade-2011-computing-q16",
-    "enade-2011-computing-q17",
-    "enade-2011-computing-q18",
-    "enade-2011-computing-q19",
     "enade-2011-computing-q20",
-    "enade-2011-computing-q21",
-    "enade-2011-computing-q22",
     "enade-2011-computing-q23",
     "enade-2011-computing-q24",
     "enade-2011-computing-q25",
     "enade-2011-computing-q26",
     "enade-2011-computing-q27",
-    "enade-2011-computing-q28",
-    "enade-2011-computing-q29",
-    "enade-2011-computing-q30",
-    "enade-2011-computing-q31",
-    "enade-2011-computing-q32",
-    "enade-2011-computing-q33",
     "enade-2011-computing-q34",
-    "enade-2011-computing-q36",
-    "enade-2011-computing-q37",
     "enade-2011-computing-q38",
-    "enade-2011-computing-q39",
     "enade-2011-computing-q40",
-    "enade-2011-computing-q41",
-    "enade-2011-computing-q42",
     "enade-2011-computing-q43",
     "enade-2011-computing-q44",
     "enade-2011-computing-q45",
-    "enade-2011-computing-q48",
-    "enade-2011-computing-q49",
-    "enade-2011-computing-q50"
+    "enade-2011-computing-q48"
   ],
   "structural_blockers": [
-    "enade-2011-computing-q13:spurious-figure-region-corrupting-code-block",
-    "enade-2011-computing-q22:table-header-and-first-row-missing-from-structure-and-fallback",
-    "enade-2011-computing-q23:missing-inline-math-notation"
+    "d03-arrow-glyph-corruption",
+    "d03-fibonacci-formula-missing",
+    "d05-answer-standard-bit-width-tables-missing",
+    "q09-math-notation-loss",
+    "q10-fraction-numerators-lost",
+    "q12-grammar-block-missing",
+    "q14-alternatives-empty",
+    "q20-missing-second-assertion",
+    "q23-inline-symbols-residual",
+    "q24-q25-q26-cross-question-figure-contamination",
+    "q27-pseudocode-not-code-block",
+    "q38-q40-cross-question-figure-contamination",
+    "q43-q44-q45-q48-lead-in-sentence-loss"
   ],
   "questions": [
     {
       "id": "enade-2011-computing-d01",
       "markdown_path": "enade-2011-computing-d01.md",
-      "markdown_sha256": "d873b86812c93aa7c903b8026741225df6d3aaccf10ffaaa7df8c4bd3b83bb3f",
-      "extraction_status": "extracted",
+      "markdown_sha256": "aff588882865c5b58b6719ebcbec0d1c4db3be411e12d4adf885aa84b9d9345c",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "passed",
       "assets": []
     },
     {
       "id": "enade-2011-computing-d02",
       "markdown_path": "enade-2011-computing-d02.md",
-      "markdown_sha256": "b15a17c927be9aaec2d73e33a3d5df5a410b77d89597d1fd8e98ef822eb0a12d",
-      "extraction_status": "extracted",
+      "markdown_sha256": "537041e1e541328d8d3116f623ba0d140d9712c4ac4c2701142b5853e6a7b10b",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "passed",
       "assets": []
     },
     {
       "id": "enade-2011-computing-d03",
       "markdown_path": "enade-2011-computing-d03.md",
-      "markdown_sha256": "29d525ac54fd1c3cda5dfe3f2ca924e271a8407aabc38737ea0a9d9911536a7a",
-      "extraction_status": "extracted",
+      "markdown_sha256": "567435fdc414d88100176e85e1bd2e591cfe53d72b654968abfb7e19124d1b18",
+      "extraction_status": "needs_review",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "failed",
       "assets": []
     },
     {
       "id": "enade-2011-computing-d04",
       "markdown_path": "enade-2011-computing-d04.md",
-      "markdown_sha256": "4fe8ea994586dab4c1539cc9daaaf10ddbe3b0fa1cad32156c3d4b0e7056020c",
-      "extraction_status": "extracted",
+      "markdown_sha256": "23587d21c9ab27e5f5379b94d0bce96cd47802d60dcb4d60d72c41cb89d22d07",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "passed",
       "assets": []
     },
     {
       "id": "enade-2011-computing-d05",
       "markdown_path": "enade-2011-computing-d05.md",
-      "markdown_sha256": "2505329e49c479bdd902d9624f8588749251293bb410c32ba702c4a792387e70",
-      "extraction_status": "extracted",
+      "markdown_sha256": "5967d9bee6dac0709b7fac0ec3763b013d2c859f03f1272aba3738bd61567285",
+      "extraction_status": "needs_review",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "failed",
       "assets": []
     },
     {
       "id": "enade-2011-computing-q01",
       "markdown_path": "enade-2011-computing-q01.md",
-      "markdown_sha256": "d1b512ee1667e1c264246934907445d739302110153263db1317e5f33414a1a5",
-      "extraction_status": "extracted",
+      "markdown_sha256": "3f393c7967444f4e700c5d7bc9ae43528f33cb16ba5594a991042198733d03ae",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "passed",
       "assets": []
     },
     {
       "id": "enade-2011-computing-q02",
       "markdown_path": "enade-2011-computing-q02.md",
-      "markdown_sha256": "73b2de26a3efabb1185adc5b6e0237e863826ca00870402c1dc33c835c3b5300",
-      "extraction_status": "extracted",
+      "markdown_sha256": "9bc6ca134bda2b78a78ef9c5df03da4c5241a47f1cb7a82ccaae21f7bc013d94",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "passed",
       "assets": []
     },
     {
       "id": "enade-2011-computing-q03",
       "markdown_path": "enade-2011-computing-q03.md",
-      "markdown_sha256": "bf8517423a8a427e3cec8c51a28aaf24dc18f0430486a855cf95539adff61dae",
-      "extraction_status": "extracted",
+      "markdown_sha256": "157117dfe7574f2e3d9f6d2dbe41bb0f298c31c9786ec9fb871c021fb55f5a23",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "passed",
       "assets": []
     },
     {
       "id": "enade-2011-computing-q04",
       "markdown_path": "enade-2011-computing-q04.md",
-      "markdown_sha256": "4e6a01514629e93a95b3895ac232929a98ebd2536af7c8f0ebc24849dd677d17",
-      "extraction_status": "extracted",
+      "markdown_sha256": "d86fb3ff66f0c4b1f64a37d3f1587943e36b757e2dbeaafb45002c884d201ce1",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "passed",
       "assets": []
     },
     {
       "id": "enade-2011-computing-q05",
       "markdown_path": "enade-2011-computing-q05.md",
-      "markdown_sha256": "520f5c8520f8736e8f23d92180dfb06a119a58edeb856154badc31ec395e1ec0",
-      "extraction_status": "extracted",
+      "markdown_sha256": "c7379fb54cac6f55e37dfa63972b85350802ea7b10824a2d60b505c3f87d3271",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "passed",
       "assets": [
         {
           "id": "figure-01",
@@ -169,49 +147,43 @@
     {
       "id": "enade-2011-computing-q06",
       "markdown_path": "enade-2011-computing-q06.md",
-      "markdown_sha256": "6b377957f0836f7d203ec2bff92da35af3fe743bfe57157df1ab07d5566e7a79",
-      "extraction_status": "extracted",
+      "markdown_sha256": "91a0bec860c190c188d01a75f3a4b5de0d4dddd813f23d38b35658ec5510034a",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "passed",
       "assets": [
         {
           "id": "figure-01",
           "path": "enade-2011-computing-q06/figure-01.png",
-          "sha256": "1ef58cf0b3c33c313de2616da0f81f94d715f25b97624aa3e6b1ab92d6372aaa"
+          "sha256": "2b221a3aeb90d6b15a386a996b9a1e8efa1b13be2bf143845943d2487ca73783"
         }
       ]
     },
     {
       "id": "enade-2011-computing-q07",
       "markdown_path": "enade-2011-computing-q07.md",
-      "markdown_sha256": "a3f7b2540e7a1a09db4952e308a93277f979ce33e82e7cf6975916472333753b",
-      "extraction_status": "extracted",
+      "markdown_sha256": "5c009427e0b607d12ded144f112140fce32661083d91da7d014aabd3de21e335",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
-      "assets": [
-        {
-          "id": "figure-01",
-          "path": "enade-2011-computing-q07/figure-01.png",
-          "sha256": "1ef58cf0b3c33c313de2616da0f81f94d715f25b97624aa3e6b1ab92d6372aaa"
-        }
-      ]
+      "visual_validation": "passed",
+      "assets": []
     },
     {
       "id": "enade-2011-computing-q08",
       "markdown_path": "enade-2011-computing-q08.md",
-      "markdown_sha256": "1afdda945051c7f26c079e93a26c34e64dc599a1adb56c60db80ff3c5dcd0831",
-      "extraction_status": "extracted",
+      "markdown_sha256": "29fa476f67816ecc2e3b290dc1ddb71310e6b76c3346a48052af1df944f6c820",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "passed",
       "assets": []
     },
     {
       "id": "enade-2011-computing-q09",
       "markdown_path": "enade-2011-computing-q09.md",
-      "markdown_sha256": "dbd1e6aafb530ac6890db4ff8fed543af39edd54400570458d67bf920d867336",
-      "extraction_status": "verified",
+      "markdown_sha256": "56a3c9fce40f3cf1e637c63570d3ebcf5a9ea392586a049f4f3fe33bb030e65b",
+      "extraction_status": "needs_review",
       "automatic_validation": "passed",
-      "visual_validation": "passed",
+      "visual_validation": "failed",
       "assets": [
         {
           "id": "figure-01",
@@ -223,10 +195,10 @@
     {
       "id": "enade-2011-computing-q10",
       "markdown_path": "enade-2011-computing-q10.md",
-      "markdown_sha256": "06f14233ed43122ba3e05fe17c4148636151040372fdf7ff89356bf468080c5d",
-      "extraction_status": "extracted",
+      "markdown_sha256": "b7d39ab9c8a4d3b7087a82e63727800ec1dab89e442fa45f4e9992801b54bdcd",
+      "extraction_status": "needs_review",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "failed",
       "assets": [
         {
           "id": "figure-01",
@@ -238,43 +210,37 @@
     {
       "id": "enade-2011-computing-q11",
       "markdown_path": "enade-2011-computing-q11.md",
-      "markdown_sha256": "29f8afecd7feddbc45c102f108a0a630ea52b35620d609a615f27b69ccce3a9f",
-      "extraction_status": "needs_review",
-      "automatic_validation": "failed",
+      "markdown_sha256": "3c8a984a655cfbbd1bbdb2767a8a5730aba1db48664353f6922b12a06cf0d19c",
+      "extraction_status": "verified",
+      "automatic_validation": "passed",
       "visual_validation": "passed",
       "assets": []
     },
     {
       "id": "enade-2011-computing-q12",
       "markdown_path": "enade-2011-computing-q12.md",
-      "markdown_sha256": "adcbba1433ae55f955c3235fcce15733d535dbad18f791c8cebd0b70c41592d4",
-      "extraction_status": "extracted",
+      "markdown_sha256": "b7c2932f574308da09948ec941d1b93babb09138ca45f0cd45d2112ca021271d",
+      "extraction_status": "needs_review",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "failed",
       "assets": []
     },
     {
       "id": "enade-2011-computing-q13",
       "markdown_path": "enade-2011-computing-q13.md",
-      "markdown_sha256": "f0b6e5c00335b06b3c989bced6ba3da83ba485cebac66399be9945edcd2d240f",
-      "extraction_status": "needs_review",
+      "markdown_sha256": "ca788433aa076b7fb3002372521a588b57bd89a4e017f8b031bde7c3dc012222",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "failed",
-      "assets": [
-        {
-          "id": "figure-01",
-          "path": "enade-2011-computing-q13/figure-01.png",
-          "sha256": "b6afdd8635e65feaf7d562fbea4ffab95b6f3e29c5c806d95330490ea9c54874"
-        }
-      ]
+      "visual_validation": "passed",
+      "assets": []
     },
     {
       "id": "enade-2011-computing-q14",
       "markdown_path": "enade-2011-computing-q14.md",
-      "markdown_sha256": "7b902c3b6557d9abdc53a48166b50de9fed53a1fd23aaca7a5c60f9bc40ffbb3",
-      "extraction_status": "extracted",
+      "markdown_sha256": "3a299104e5c67b9272728a19ac741b4810ddaaf0bb89b3c3ee26083e01dda8e9",
+      "extraction_status": "needs_review",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "failed",
       "assets": [
         {
           "id": "figure-01",
@@ -291,40 +257,28 @@
     {
       "id": "enade-2011-computing-q15",
       "markdown_path": "enade-2011-computing-q15.md",
-      "markdown_sha256": "c8ad145292ba823ba61bb8f3a729eac8ba048cbeb3dc477ce27c16a745f8e342",
-      "extraction_status": "extracted",
+      "markdown_sha256": "93c8fdd38f2391b8193f154ab623df49f97e4bf3e0dbf03375bd3dc4035ca013",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
-      "assets": [
-        {
-          "id": "figure-01",
-          "path": "enade-2011-computing-q15/figure-01.png",
-          "sha256": "13cb54f0634f4cf696c565ced1904814f1fb80963ed263db292d52ea795d69c4"
-        }
-      ]
+      "visual_validation": "passed",
+      "assets": []
     },
     {
       "id": "enade-2011-computing-q16",
       "markdown_path": "enade-2011-computing-q16.md",
-      "markdown_sha256": "4f8131ad2c8fb4ec8860fb34463efaaf782d976b832921b6ddb1261841198595",
-      "extraction_status": "extracted",
+      "markdown_sha256": "238706055f5fcf1e6cbc0a14e971957478138265dde907a589343aa4d55873a6",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
-      "assets": [
-        {
-          "id": "figure-01",
-          "path": "enade-2011-computing-q16/figure-01.png",
-          "sha256": "7d07d36f60dd277cefb1dfd7d89522399a20d8c12e459a97b640d4fc39a27520"
-        }
-      ]
+      "visual_validation": "passed",
+      "assets": []
     },
     {
       "id": "enade-2011-computing-q17",
       "markdown_path": "enade-2011-computing-q17.md",
-      "markdown_sha256": "496831f7b3c2180bcc543034668e5199b8a8cdf3eef058ccb80b68fc574938c9",
-      "extraction_status": "extracted",
+      "markdown_sha256": "6ef1240e0253ee681e563fca1b30735ef06ae5c718db63b05cc97fd728a1d12e",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "passed",
       "assets": [
         {
           "id": "figure-01",
@@ -341,34 +295,28 @@
     {
       "id": "enade-2011-computing-q18",
       "markdown_path": "enade-2011-computing-q18.md",
-      "markdown_sha256": "d60c24980b3d8b3e384f862ad31d0808d4ee7ad099ad19595a0b1107361406d8",
-      "extraction_status": "extracted",
+      "markdown_sha256": "f5298e8f0708a148a6cc599fbfa76e3f74bed372cb1f42ba06243637bcc186a8",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
-      "assets": [
-        {
-          "id": "figure-01",
-          "path": "enade-2011-computing-q18/figure-01.png",
-          "sha256": "5a97e0eaaf76e17db81d9a5a15dca3951bf0628cd957ca90228866da511e964d"
-        }
-      ]
+      "visual_validation": "passed",
+      "assets": []
     },
     {
       "id": "enade-2011-computing-q19",
       "markdown_path": "enade-2011-computing-q19.md",
-      "markdown_sha256": "459f3578ca23b00b56d46af88f8fbd4d9c0cc9d75b33e550905e16ef7dda7e50",
-      "extraction_status": "extracted",
+      "markdown_sha256": "26805bff4f40d637a7e74743f148e0869af972b5e7ac386edecca172d5e9a323",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "passed",
       "assets": []
     },
     {
       "id": "enade-2011-computing-q20",
       "markdown_path": "enade-2011-computing-q20.md",
-      "markdown_sha256": "b36379d301fb955be3085c7223862ca1be597fe2577c3c6916c1ac14cb647247",
-      "extraction_status": "extracted",
+      "markdown_sha256": "dd3420b480860caeac782f31bbc4daf26257952ba0733d1a32100f107a340f5a",
+      "extraction_status": "needs_review",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "failed",
       "assets": [
         {
           "id": "figure-01",
@@ -380,41 +328,31 @@
     {
       "id": "enade-2011-computing-q21",
       "markdown_path": "enade-2011-computing-q21.md",
-      "markdown_sha256": "cb85eca23a22b3ebb3eb1cad36ab49c0f2ab7b4aa0402c86fa5ad2aa0b9821b5",
-      "extraction_status": "extracted",
+      "markdown_sha256": "6a358ec6d3e91a42301315ecdb629181f308a3e8f04e9643684eb6647afe4046",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "passed",
       "assets": []
     },
     {
       "id": "enade-2011-computing-q22",
       "markdown_path": "enade-2011-computing-q22.md",
-      "markdown_sha256": "954f73d298d1b1fde7d88a7cd9f6b4e36918a89c9b4b457c858beaa4b2abaaac",
-      "extraction_status": "needs_review",
+      "markdown_sha256": "e5d908496707f16c2fb30fa3a7f3c39e6c02bce7b862e5a2557c3778273412f5",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "failed",
+      "visual_validation": "passed",
       "assets": [
-        {
-          "id": "figure-01",
-          "path": "enade-2011-computing-q22/figure-01.png",
-          "sha256": "d6ebd0fbc06cdc49386d80a549739c4f1ea4442ed303891cf0cfe3cca10df501"
-        },
-        {
-          "id": "figure-02",
-          "path": "enade-2011-computing-q22/figure-02.png",
-          "sha256": "fc47de09576cda535f57036fb34c893b66a13d66f10d70786751001539f4f6e2"
-        },
         {
           "id": "table-01",
           "path": "enade-2011-computing-q22/table-01.png",
-          "sha256": "1158fc7497ce693875d0b626865ef0764227e14ec911acde3371f11ea52d9398"
+          "sha256": "8947a731978088902220fa2e933a310a99d47ed4deee51a18ef1cb897ba580d1"
         }
       ]
     },
     {
       "id": "enade-2011-computing-q23",
       "markdown_path": "enade-2011-computing-q23.md",
-      "markdown_sha256": "8ec73cd6de7e1800a862928aa6d2e85aa0c3301eea976015023cb6e58a7546b4",
+      "markdown_sha256": "5f323a96b9849dbc7d4a0629280bb7d9daf22291692aef9e826b8b773c9f7917",
       "extraction_status": "needs_review",
       "automatic_validation": "passed",
       "visual_validation": "failed",
@@ -422,22 +360,22 @@
         {
           "id": "figure-01",
           "path": "enade-2011-computing-q23/figure-01.png",
-          "sha256": "d6ebd0fbc06cdc49386d80a549739c4f1ea4442ed303891cf0cfe3cca10df501"
+          "sha256": "fc47de09576cda535f57036fb34c893b66a13d66f10d70786751001539f4f6e2"
         },
         {
           "id": "figure-02",
           "path": "enade-2011-computing-q23/figure-02.png",
-          "sha256": "fc47de09576cda535f57036fb34c893b66a13d66f10d70786751001539f4f6e2"
+          "sha256": "daf60d979be41bc6d9138445d32aad4c969014ad41d6390cc260d4a634a297bc"
         }
       ]
     },
     {
       "id": "enade-2011-computing-q24",
       "markdown_path": "enade-2011-computing-q24.md",
-      "markdown_sha256": "c999ce1feff37c1e5e1cf7d0d4b7d023680415425271e2ec23990233039be986",
-      "extraction_status": "extracted",
+      "markdown_sha256": "ab514fa314b361d4dd2f4da5372a2a5ba24f16a4fe7ea342c74d4093e3235594",
+      "extraction_status": "needs_review",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "failed",
       "assets": [
         {
           "id": "figure-01",
@@ -449,10 +387,10 @@
     {
       "id": "enade-2011-computing-q25",
       "markdown_path": "enade-2011-computing-q25.md",
-      "markdown_sha256": "bfe7e707083a4ce04bc9adaea21e81769502abddd3702f9e86a83460b4dda881",
-      "extraction_status": "extracted",
+      "markdown_sha256": "dfd3cf6810374667296a4b99a196c53a910afa87c068fef2916ec52ec086dc65",
+      "extraction_status": "needs_review",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "failed",
       "assets": [
         {
           "id": "figure-01",
@@ -464,73 +402,73 @@
     {
       "id": "enade-2011-computing-q26",
       "markdown_path": "enade-2011-computing-q26.md",
-      "markdown_sha256": "9d230fadcba847896b925dab67ac4ac19006398da095c5b62438b6d98ddc8919",
-      "extraction_status": "extracted",
+      "markdown_sha256": "dd8ba92bcd6cf2a610d20a8e457e67505af4a21c96b65d57d5fcb7b567cf95e2",
+      "extraction_status": "needs_review",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "failed",
       "assets": []
     },
     {
       "id": "enade-2011-computing-q27",
       "markdown_path": "enade-2011-computing-q27.md",
-      "markdown_sha256": "15247fc627491073c0f985efcf97db23ae5375cde28b9704360543445162faec",
-      "extraction_status": "extracted",
+      "markdown_sha256": "3de1f03ff2189e5875f08b755675bd3173d51fc6670449bbcc06f45871f5f1e2",
+      "extraction_status": "needs_review",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "failed",
       "assets": []
     },
     {
       "id": "enade-2011-computing-q28",
       "markdown_path": "enade-2011-computing-q28.md",
-      "markdown_sha256": "0a74b1d61fe8b545cd7bdc6d32170f39d2486b13d2e9815fc1b599a97595afb4",
-      "extraction_status": "extracted",
+      "markdown_sha256": "0ce888d1e722f55e1a23460b1aff7fbeb408fd9d10131fb4f009833d653c021b",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "passed",
       "assets": []
     },
     {
       "id": "enade-2011-computing-q29",
       "markdown_path": "enade-2011-computing-q29.md",
-      "markdown_sha256": "c89ae74df4b6edbd2509f338018ba22f347bfb3c63bf99216485d65ec1f1ca6f",
-      "extraction_status": "extracted",
+      "markdown_sha256": "ed931a6511853ba37a32e0938e9c2c8032783910c9cacb67690c0a6e822e9741",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "passed",
       "assets": []
     },
     {
       "id": "enade-2011-computing-q30",
       "markdown_path": "enade-2011-computing-q30.md",
-      "markdown_sha256": "f4a67b9d168544cad57dd73849c719c08c8c3be116170eb761662dd0c4b790b2",
-      "extraction_status": "extracted",
+      "markdown_sha256": "893e2c9b112dea1d832d59e9ea8eaddd35587879a053e64f5136cf2dd283937f",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "passed",
       "assets": []
     },
     {
       "id": "enade-2011-computing-q31",
       "markdown_path": "enade-2011-computing-q31.md",
-      "markdown_sha256": "b54a7fc9dbd8d38e6f3b4c0053728af1c400f0bfb8642f037641262f9a932017",
-      "extraction_status": "extracted",
+      "markdown_sha256": "a099f6197bac9758a2d733498af98d0ff52ae1a9234bc2bcbd7db92b94b60543",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "passed",
       "assets": []
     },
     {
       "id": "enade-2011-computing-q32",
       "markdown_path": "enade-2011-computing-q32.md",
-      "markdown_sha256": "3d83fc3cd933fa7dd81822ad6663b796bbeed59df15bb393246ae1163dcb3f97",
-      "extraction_status": "extracted",
+      "markdown_sha256": "bf99fa6abf8ea5bc5ed555a49ff205f1592c66f60af467d748a0a1b633f1b3bf",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "passed",
       "assets": []
     },
     {
       "id": "enade-2011-computing-q33",
       "markdown_path": "enade-2011-computing-q33.md",
-      "markdown_sha256": "0ca55499ec4d1e41ab4dc675cbac54a6dd19d98a20806afaba2e45517e5c79f0",
-      "extraction_status": "extracted",
+      "markdown_sha256": "cd6487dca06d9f52e9504f306d1b69f842538fd98886b014e8c3b47b98508827",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "passed",
       "assets": [
         {
           "id": "figure-01",
@@ -566,28 +504,28 @@
     {
       "id": "enade-2011-computing-q36",
       "markdown_path": "enade-2011-computing-q36.md",
-      "markdown_sha256": "202f7ae65a583c3cc9cd3a2fcc5b7f8b6792f59d363a96e3b7314f3c11fe6e66",
-      "extraction_status": "extracted",
+      "markdown_sha256": "953ae4032ce809e8de53513e4dadbe38c0bac04df02f6ef618b12e975b596b22",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "passed",
       "assets": []
     },
     {
       "id": "enade-2011-computing-q37",
       "markdown_path": "enade-2011-computing-q37.md",
-      "markdown_sha256": "0777ef7e288b285a798129dc71b8ca3256189d194fe8a6ad4c9d66e201616abe",
-      "extraction_status": "extracted",
+      "markdown_sha256": "32405ab56da0fd912710ff1a46420f40f06077f0086367679d98224dfeb0fcb3",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "passed",
       "assets": []
     },
     {
       "id": "enade-2011-computing-q38",
       "markdown_path": "enade-2011-computing-q38.md",
-      "markdown_sha256": "cfb673715d84679f5b4172525c92b0fd7ed3d8b56f2aa1ed76c6aa5900aa015a",
-      "extraction_status": "extracted",
+      "markdown_sha256": "44532d17eb2ef75d3242e1ebb488d59d7a1bb4794c8459fadba6a389f4196498",
+      "extraction_status": "needs_review",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "failed",
       "assets": [
         {
           "id": "figure-01",
@@ -604,25 +542,19 @@
     {
       "id": "enade-2011-computing-q39",
       "markdown_path": "enade-2011-computing-q39.md",
-      "markdown_sha256": "14b8524016d47cf8e44a8e12dafd0377506d212a9820cd6443097b3c70c621bf",
-      "extraction_status": "extracted",
+      "markdown_sha256": "3409e4a5ce2a56b5dd732a3fdeb41a08af586d008cfd9ec988e49289d8b87cee",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
-      "assets": [
-        {
-          "id": "figure-01",
-          "path": "enade-2011-computing-q39/figure-01.png",
-          "sha256": "d8beb97f2f3e5a9a9c089b98d19a0a0af828c46bd509bbac3cd9bf8558b1a9cb"
-        }
-      ]
+      "visual_validation": "passed",
+      "assets": []
     },
     {
       "id": "enade-2011-computing-q40",
       "markdown_path": "enade-2011-computing-q40.md",
-      "markdown_sha256": "c271e6eab357b0de8df8a99db46ad98e3a7fbf9a160212e22e496205125a65f1",
-      "extraction_status": "extracted",
+      "markdown_sha256": "feb05cf4681131158058c95113da4d26b11cff0b4a6c314f88a34610fc6107d4",
+      "extraction_status": "needs_review",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "failed",
       "assets": [
         {
           "id": "figure-01",
@@ -634,10 +566,10 @@
     {
       "id": "enade-2011-computing-q41",
       "markdown_path": "enade-2011-computing-q41.md",
-      "markdown_sha256": "3b36b84dab8a4e5262dfd1b61b367bb9034127c876d7294b460b34539a801dc6",
-      "extraction_status": "extracted",
+      "markdown_sha256": "5a7ca659e4637bbd989c70600f950ce99b9988e7c5e8ddce59e9a70b4ec454dc",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "passed",
       "assets": [
         {
           "id": "figure-01",
@@ -649,25 +581,19 @@
     {
       "id": "enade-2011-computing-q42",
       "markdown_path": "enade-2011-computing-q42.md",
-      "markdown_sha256": "6c2593300e5196ea7b65f81113588a24d87795f17da476e943d9cd260efec27d",
-      "extraction_status": "extracted",
+      "markdown_sha256": "d38ecd43d0d8f9aebf00316d83861449044482760f352c1d97d2f2352639bdfc",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
-      "assets": [
-        {
-          "id": "figure-01",
-          "path": "enade-2011-computing-q42/figure-01.png",
-          "sha256": "3f50dae78b425c5ec593759034aca9984bd3e18fb6903d28d7da57cb95758fdd"
-        }
-      ]
+      "visual_validation": "passed",
+      "assets": []
     },
     {
       "id": "enade-2011-computing-q43",
       "markdown_path": "enade-2011-computing-q43.md",
-      "markdown_sha256": "a221682d9e28c42115b1701686e8516905d985dda48c6584e3479bb3e2fadb15",
-      "extraction_status": "extracted",
+      "markdown_sha256": "6cb7f274a2aa08f09518b5016cd0b4db5f82de079cb95b088c7d04df855e270e",
+      "extraction_status": "needs_review",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "failed",
       "assets": [
         {
           "id": "figure-01",
@@ -679,10 +605,10 @@
     {
       "id": "enade-2011-computing-q44",
       "markdown_path": "enade-2011-computing-q44.md",
-      "markdown_sha256": "8b0cfc736a72698da25a922de190f5a3d0867bb8b9974f5a22738f2374305519",
-      "extraction_status": "extracted",
+      "markdown_sha256": "67c0e477dfc04c2e6db47b551d1be2feffdd516d18f76f6fed25464541643ff6",
+      "extraction_status": "needs_review",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "failed",
       "assets": [
         {
           "id": "figure-01",
@@ -694,10 +620,10 @@
     {
       "id": "enade-2011-computing-q45",
       "markdown_path": "enade-2011-computing-q45.md",
-      "markdown_sha256": "850a4f5ca6729154ad52996ebc825487bb43f0c851a66900928535c357831db1",
-      "extraction_status": "extracted",
+      "markdown_sha256": "6beacb2928dfce603d175595950b87faddedbee353db7ef44601fbffd863c503",
+      "extraction_status": "needs_review",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "failed",
       "assets": [
         {
           "id": "figure-01",
@@ -727,10 +653,10 @@
     {
       "id": "enade-2011-computing-q48",
       "markdown_path": "enade-2011-computing-q48.md",
-      "markdown_sha256": "eea7964d3ee933c1031823d9cceb5acc03411bfb9c7d201270ef587e3a5e2c45",
-      "extraction_status": "extracted",
+      "markdown_sha256": "0c7f394d4daa29e48c5922d05ea7ea4728e9cd5b4067b599a3dd2d4c6bf501ed",
+      "extraction_status": "needs_review",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "failed",
       "assets": [
         {
           "id": "figure-01",
@@ -742,26 +668,20 @@
     {
       "id": "enade-2011-computing-q49",
       "markdown_path": "enade-2011-computing-q49.md",
-      "markdown_sha256": "4283b9180d57582b3ca89e88dd2e236a3af3ccda90f864fe7c1d79477d1e8e05",
-      "extraction_status": "extracted",
+      "markdown_sha256": "ef17ff087c0c18d5b225abf4b9fbeab2050e8401703c995e87e135d9e84eb784",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
+      "visual_validation": "passed",
       "assets": []
     },
     {
       "id": "enade-2011-computing-q50",
       "markdown_path": "enade-2011-computing-q50.md",
-      "markdown_sha256": "79c9f8b4cb9d4bbb9c53b9b8e25a485ded51a3ffb631fe48b1f10ca51e6a6037",
-      "extraction_status": "extracted",
+      "markdown_sha256": "9044778a26128d022ce230f01d7a5b636411e36a876ecd5898b5063e580d6b29",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "not_performed",
-      "assets": [
-        {
-          "id": "figure-01",
-          "path": "enade-2011-computing-q50/figure-01.png",
-          "sha256": "d5698af7f94d29a2fa9333f127797744b094dd1358562632e8318f9182650ec5"
-        }
-      ]
+      "visual_validation": "passed",
+      "assets": []
     }
   ],
   "answer_standards": [

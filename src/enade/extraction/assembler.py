@@ -25,6 +25,7 @@ from enade.extraction.chrome import is_chrome_line
 from enade.extraction.figures import VisualRegion, detect_visual_regions
 from enade.extraction.label_normalization import LabelCorrection
 from enade.extraction.layout import Line
+from enade.extraction.layout_overrides import LayoutOverrideSet
 from enade.extraction.spacing import SpacingCorrection
 from enade.extraction.tables import DetectedTable, detect_tables
 
@@ -467,6 +468,8 @@ def assemble_question(
     span: QuestionSpan,
     doc: pymupdf.Document,
     decorative_baseline: frozenset[tuple[int, int, int, int]],
+    overrides: LayoutOverrideSet | None = None,
+    pdf_sha256: str = "",
 ) -> ExtractedQuestion:
     warnings: list[str] = []
 
@@ -485,21 +488,49 @@ def assemble_question(
     # page would be wrongly attached here. Bound candidate regions to the
     # vertical range this span's own content_lines actually occupy on each
     # page (with a small tolerance for a figure sitting just outside its
-    # nearest text line).
+    # nearest text line). Y alone is not sufficient on a two-column page,
+    # though: two questions in different columns of the same page can
+    # still have overlapping Y-ranges (e.g. both starting near the top of
+    # their own column), so a left-column figure could satisfy a
+    # right-column question's Y-bounds purely by coincidence (2011 unified
+    # booklet, page 11: Q14's own Venn diagram - left column - was also
+    # attached to Q15 - right column, no figure of its own - because both
+    # questions' Y-ranges overlap near the top of the page). Also require
+    # the region's own X-range to overlap this span's X-range.
     page_y_bounds: dict[int, tuple[float, float]] = {}
+    page_x_bounds: dict[int, tuple[float, float]] = {}
     for ln in coarse_lines:
         lo, hi = page_y_bounds.get(ln.page_number, (ln.y0, ln.y1))
         page_y_bounds[ln.page_number] = (min(lo, ln.y0), max(hi, ln.y1))
+        xlo, xhi = page_x_bounds.get(ln.page_number, (ln.x0, ln.x1))
+        page_x_bounds[ln.page_number] = (min(xlo, ln.x0), max(xhi, ln.x1))
     y_tolerance = 15.0
+    #: Smaller than y_tolerance: this corpus's real column gaps run ~9-12pt
+    #: (e.g. page 5: 284.7 to 296.7), narrower than 15pt would reject, which
+    #: let a region hugging its own column's edge bridge into the
+    #: neighboring column's span (2011 unified booklet, Q6/Q7 sharing page
+    #: 5: Q6's own infographic - x1=284.7 - was also attached to Q7 -
+    #: x0=296.7 - a 12pt gap 15pt tolerance closed but a real column
+    #: boundary never should). 5pt keeps slack for a figure whose bbox sits
+    #: just outside its own span's text lines without reopening that gap.
+    x_tolerance = 5.0
 
     regions: list[VisualRegion] = []
     for page_number in pages_in_span:
-        page_regions = detect_visual_regions(doc, page_number, decorative_baseline)
+        page_regions = detect_visual_regions(
+            doc, page_number, decorative_baseline, overrides=overrides, pdf_sha256=pdf_sha256
+        )
         bounds = page_y_bounds.get(page_number)
-        if bounds is None:
+        x_bounds = page_x_bounds.get(page_number)
+        if bounds is None or x_bounds is None:
             continue
         y_min, y_max = bounds[0] - y_tolerance, bounds[1] + y_tolerance
-        regions.extend(r for r in page_regions if y_min <= r.bbox[1] <= y_max)
+        x_min, x_max = x_bounds[0] - x_tolerance, x_bounds[1] + x_tolerance
+        regions.extend(
+            r
+            for r in page_regions
+            if y_min <= r.bbox[1] <= y_max and r.bbox[0] <= x_max and r.bbox[2] >= x_min
+        )
 
     # A figure region can grow (via label absorption, see figures.py) far
     # enough to overlap the *start* of the alternatives section below the

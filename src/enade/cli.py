@@ -24,6 +24,7 @@ from enade.extraction.exam_profile import ExamStructureProfile, load_exam_struct
 from enade.extraction.expected_structure import (
     compare_with_expected as compare_extraction_with_expected,
 )
+from enade.extraction.layout_overrides import load_layout_overrides
 from enade.extraction.pipeline import extract_exam
 from enade.extraction.transformation_log import write_transformation_log_json
 from enade.extraction.visual_audit import (
@@ -426,6 +427,7 @@ def extract(
             f"  visual audit: {len(visual_audit)} entries loaded from {resolved_visual_audit_file}"
         )
     table_cells_verified_ids = load_table_cell_verified_question_ids(resolved_visual_audit_file)
+    layout_overrides = load_layout_overrides(DEFAULT_AUDIT_DIR / "layout-overrides.yaml")
 
     result = extract_exam(
         prova_path=prova_path,
@@ -441,6 +443,7 @@ def extract(
         structure_profile=structure_profile,
         output_dir_name=course_code.value if is_unified else None,
         answer_key_parser=parse_flat_item_gabarito if is_unified else parse_answer_key,
+        layout_overrides=layout_overrides,
     )
 
     m = result.metrics
@@ -748,13 +751,20 @@ def assess_readiness_cmd(
 
     manifest = read_gold_manifest(gold_path)
     course_dir = questions_dir / str(year) / naming.output_dir_name
-    report = assess_readiness(manifest, course_dir)
+    visual_audit_path = DEFAULT_AUDIT_DIR / f"visual-audit-{year}-{naming.file_slug}.json"
+    report = assess_readiness(manifest, course_dir, visual_audit_path=visual_audit_path)
 
     typer.echo(f"assess-readiness: {ready_label if report.ready else not_ready_label}")
     typer.echo(
         f"  {report.verified_count}/{report.total_questions} verified, "
         f"{report.needs_review_count} needs_review, gold maturity={report.gold_maturity}"
     )
+    if report.visual_audit_coverage is not None:
+        cov = report.visual_audit_coverage
+        typer.echo(
+            f"  visual audit: {cov.passed_count} passed, {cov.failed_count} failed, "
+            f"{cov.not_performed_count} not_performed (fully_covered={cov.fully_covered})"
+        )
     if report.blockers:
         typer.echo(f"  {len(report.blockers)} blocker(s):")
         for b in report.blockers:

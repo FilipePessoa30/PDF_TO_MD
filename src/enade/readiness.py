@@ -19,6 +19,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from enade.extraction.visual_audit import VisualAuditCoverage, assess_visual_audit_coverage
 from enade.gold import GoldDivergence, GoldManifest, verify_gold_manifest
 from enade.markdown_format import load_questions_directory
 from enade.models.enums import AnswerValidationStatus, ExtractionStatus, QuestionType
@@ -48,13 +49,16 @@ class ReadinessReport:
     needs_review_count: int
     gold_maturity: str
     gold_divergences: tuple[GoldDivergence, ...] = field(default_factory=tuple)
+    visual_audit_coverage: VisualAuditCoverage | None = None
 
     @property
     def classification(self) -> str:
         return "READY_FOR_2011" if self.ready else "NOT_READY_FOR_2011"
 
 
-def assess_readiness(manifest: GoldManifest, course_dir: Path) -> ReadinessReport:
+def assess_readiness(
+    manifest: GoldManifest, course_dir: Path, visual_audit_path: Path | None = None
+) -> ReadinessReport:
     """Compute a :class:`ReadinessReport` for the questions under
     ``course_dir`` against the locked ``manifest``.
 
@@ -62,6 +66,16 @@ def assess_readiness(manifest: GoldManifest, course_dir: Path) -> ReadinessRepor
     blockers already recorded on the manifest, automatic and visual
     validation, asset integrity, answer linkage, and answer-standard
     coverage for discursive questions - never test-pass-count alone.
+
+    ``visual_audit_path``, when given (PROMPT Phase 2B section 3/15), adds
+    one more, corpus-level check on top of the existing per-question
+    ``question_not_verified`` blockers: whether the audit *file itself*
+    reconciles exactly against this corpus's own canonical id set (no
+    question missing a verdict, no unexpected or duplicate id). Optional
+    and off by default so a course that predates this check (2021, audited
+    entirely through per-question ``visual_validation`` already baked into
+    each Question at extraction time) is not retroactively required to
+    keep a separate audit-file coverage record it never needed.
 
     On "non-structural" exceptions: this corpus currently has none (every
     question that was ever `needs_review` - D3, D5, Q20 - was resolved
@@ -90,6 +104,34 @@ def assess_readiness(manifest: GoldManifest, course_dir: Path) -> ReadinessRepor
     questions = load_questions_directory(course_dir)
     verified_count = 0
     needs_review_count = 0
+
+    visual_coverage: VisualAuditCoverage | None = None
+    if visual_audit_path is not None:
+        visual_coverage = assess_visual_audit_coverage(
+            visual_audit_path, frozenset(questions.keys())
+        )
+        if not visual_coverage.fully_covered:
+            blockers.append(
+                ReadinessBlocker(
+                    kind="visual_audit_incomplete",
+                    detail=(
+                        f"{visual_coverage.passed_count + visual_coverage.failed_count}/"
+                        f"{len(questions)} questions have an explicit visual-audit verdict "
+                        f"({visual_coverage.not_performed_count} not_performed"
+                        + (
+                            f", unexpected ids: {sorted(visual_coverage.unexpected_ids)}"
+                            if visual_coverage.unexpected_ids
+                            else ""
+                        )
+                        + (
+                            f", duplicate ids: {sorted(visual_coverage.duplicate_ids)}"
+                            if visual_coverage.duplicate_ids
+                            else ""
+                        )
+                        + ")"
+                    ),
+                )
+            )
 
     for question_id in sorted(questions):
         question = questions[question_id]
@@ -148,4 +190,5 @@ def assess_readiness(manifest: GoldManifest, course_dir: Path) -> ReadinessRepor
         needs_review_count=needs_review_count,
         gold_maturity=manifest.maturity,
         gold_divergences=tuple(divergences),
+        visual_audit_coverage=visual_coverage,
     )

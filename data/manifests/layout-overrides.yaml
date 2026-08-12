@@ -1,0 +1,232 @@
+# Declarative, hash-and-bbox-locked exceptions to general layout heuristics
+# (PROMPT Phase 2B section 6, Level 3). See
+# src/enade/extraction/layout_overrides.py for the loader and matching
+# rules, and docs/decisions.md (Phase 2B ADR) for why this specific case
+# needed Level 3 rather than a general fix.
+overrides:
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 14
+    bbox: [100.0, 115.0, 215.0, 138.0]
+    rule: exclude_from_orphan_marker_merge
+    question_id: enade-2011-computing-q22
+    reason: >-
+      Truth-table header row ("A B C D S", each a bare single-character
+      cell at y0~119.8) is real table structure, not a split circled-letter
+      alternative marker. Two general (Level 1) geometric heuristics were
+      tried and rejected after full 2021 byte-diff regression testing found
+      real false positives: (1) a minimum-glyph-width check changed 3
+      already-certified 2021 files (Q23, Q34, D4); (2) a "3+ short cells
+      share this y0" row heuristic still changed 2021 Q23, because that
+      question's own binary-tree figure has 3 independent node labels
+      ("R", "L", "A") that coincidentally share a y0 by diagram layout, not
+      because they are a table row. Neither discriminator generalizes
+      safely, so this exact bbox on this exact PDF is excluded explicitly
+      instead.
+    evidence: docs/phase-2b-report.md, Section G
+    status: reviewed
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 10
+    bbox: [0.0, 250.0, 300.0, 650.0]
+    rule: suppress_visual_region
+    question_id: enade-2011-computing-q13
+    reason: >-
+      detect_visual_regions grows a candidate region seeded by several tiny
+      raster images (each ~8-13pt wide, at y0 404-549 - almost certainly
+      inline math/logic symbols such as arrows or epsilon in Questao 12's
+      grammar productions, not a real figure) via its own iterative
+      label-absorption pass (figures.py's _expand_with_labels) until the
+      resulting bbox (28,294)-(287,609) spans from inside Questao 11's own
+      alternatives D/E, through the whole of Questao 12, into Questao 13's
+      own interval-scheduling pseudocode - splitting that pseudocode's code
+      block in two around a spurious "figure". Direct visual inspection
+      (Phase 2A/2B visual audit) confirmed no legitimate figure exists in
+      this region for any of Q11/Q12/Q13. This chain-absorption mechanism
+      is the same one three separate compounding bugs were already found
+      and fixed in during Phase 1C (2021, Discursiva 5's own region); a
+      fourth general tightening was not attempted here given the
+      regression risk already demonstrated twice during the Q22
+      investigation (see ADR 21) and the two-year corpus this logic must
+      stay correct for. Suppressed by region (not fixed at the source) so
+      Q11/Q12/Q13 all render as complete, uninterrupted text with no
+      figure asset.
+    evidence: docs/phase-2b-report.md, Section H
+    status: reviewed
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 14
+    bbox: [540.0, 125.0, 560.0, 148.0]
+    rule: protect_from_label_absorption
+    question_id: enade-2011-computing-q23
+    reason: >-
+      The word "e" trailing the alphabet-notation inline image
+      ("...alfabeto [Sigma={a,b,c}] e") sits at x0=547.3 - far from either
+      of page 14's two detected column margins (30, 295) because it is a
+      mid-sentence continuation after an inline symbol image, not the
+      start of a physical line. The existing two-column body-text
+      protection (_is_two_column_body_text) only recognizes a line by its
+      own starting x0 matching a known margin, so this single-word
+      fragment was eligible for absorption into the automaton diagram's
+      region, silently dropping "e" from the statement text.
+    evidence: docs/phase-2b-report.md, Section I
+    status: reviewed
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 14
+    bbox: [330.0, 150.0, 380.0, 170.0]
+    rule: protect_from_label_absorption
+    question_id: enade-2011-computing-q23
+    reason: >-
+      Same defect class as the "e" fragment above: ", em que" (x0=333.8)
+      trails the "Sigma*" inline symbol image mid-sentence
+      ("...subconjunto de [Sigma*], em que [lambda] representa..."), so it
+      does not start at either detected column margin and was eligible for
+      label absorption.
+    evidence: docs/phase-2b-report.md, Section I
+    status: reviewed
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 14
+    bbox: [388.0, 150.0, 510.0, 170.0]
+    rule: protect_from_label_absorption
+    question_id: enade-2011-computing-q23
+    reason: >-
+      Same defect class again: "representa o string vazio." (x0=392.8)
+      trails the "lambda" inline symbol image on the same line as the
+      ", em que" fragment above, so it too does not start at either
+      detected column margin.
+    evidence: docs/phase-2b-report.md, Section I
+    status: reviewed
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 14
+    bbox: [488.0, 129.0, 550.0, 146.0]
+    rule: exclude_from_region_candidates
+    question_id: enade-2011-computing-q23
+    reason: >-
+      The three "protect_from_label_absorption" overrides above stop these
+      text fragments from being actively absorbed as figure labels, but do
+      not stop the *image* candidates for "Sigma={a,b,c}"/"Sigma*"/"lambda"
+      (three tiny inline symbol images, ~10-13pt tall) from chain-merging
+      (via _merge_by_vertical_proximity's 18pt vertical-proximity sweep -
+      Sigma={a,b,c} at y0 131-144 is within 18pt of Sigma*/lambda at y0
+      156-165, which is in turn within 18pt of the automaton diagram
+      starting at y0=177) into one candidate cluster reaching back up to
+      y0=131 - independently re-anchoring the region's top edge into the
+      statement text regardless of label-absorption. Excluding these three
+      tiny images from ever entering the candidate list at all (they are
+      each far under MIN_REGION_HEIGHT on their own and would never form a
+      region by themselves once excluded from the merge) is the only point
+      that actually stops the region from reaching into the statement.
+      Each symbol is still visible in the source PDF itself, but is not
+      individually preserved as inline Markdown or as its own asset - a
+      disclosed residual limitation (see the Phase 2B report), not
+      silently hidden.
+    evidence: docs/phase-2b-report.md, Section I
+    status: reviewed
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 14
+    bbox: [313.0, 154.0, 330.0, 166.0]
+    rule: exclude_from_region_candidates
+    question_id: enade-2011-computing-q23
+    reason: Same class as the Sigma={a,b,c} exclusion above, for the "Sigma*" inline symbol image.
+    evidence: docs/phase-2b-report.md, Section I
+    status: reviewed
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 14
+    bbox: [377.0, 154.0, 391.0, 166.0]
+    rule: exclude_from_region_candidates
+    question_id: enade-2011-computing-q23
+    reason: Same class as the Sigma={a,b,c} exclusion above, for the "lambda" inline symbol image.
+    evidence: docs/phase-2b-report.md, Section I
+    status: reviewed
+  # NOTE: the Q1/Q2 force_single_column_page override that previously lived
+  # here was removed after detect_column_margins gained a general Y-range-
+  # overlap requirement (layout.py) that fixes this case - and a second,
+  # independently-discovered one on Discursiva 4/page 19 - without a
+  # per-document override. See docs/decisions.md, Phase 2B ADR 24/25.
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 5
+    bbox: [40.0, 368.0, 285.0, 378.0]
+    rule: protect_from_label_absorption
+    question_id: enade-2011-computing-q06
+    reason: >-
+      Questao 6's infographic ("o Xis da questao") is a vector chart whose
+      own true extent ends around y=352 (its "Fontes: Manager Assessoria
+      em Recursos Humanos e IBGE" credit line). Its caption, "Disponivel
+      em: <http://ead.uepb.edu.br/noticias,82>. Acesso em: 24 ago. 2011."
+      (x0=40.0, indented off the page's own left margin of 28.5 because
+      captions are conventionally indented under a figure), sits 16pt
+      below that and was close enough to be absorbed as a figure label,
+      which then bridged the gap to Questao 6's own statement text below
+      it (see the next two overrides) - the first domino in a longer
+      chain-absorption than any single-cause override could stop cleanly.
+    evidence: docs/phase-2b-report.md, Section K
+    status: reviewed
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 5
+    bbox: [28.0, 387.0, 288.0, 401.0]
+    rule: protect_from_label_absorption
+    question_id: enade-2011-computing-q06
+    reason: >-
+      "A expressao 'o Xis da questao' usada no titulo do" - the first line
+      of Questao 6's own statement tail (the sentence that leads into its
+      alternatives) - sits at x0=28.5, exactly the page's left column
+      margin, so it should already have been protected by
+      _is_two_column_body_text; it was not, because that check runs before
+      label absorption even begins to chain from the caption above (see
+      the previous override) which reaches it first via vertical
+      proximity. Once absorbed, this line (and its own wrapped second
+      line, protected separately below) silently vanished from Questao
+      6's rendered statement, truncating it mid-sentence.
+    evidence: docs/phase-2b-report.md, Section K
+    status: reviewed
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 5
+    bbox: [28.0, 399.0, 129.0, 413.0]
+    rule: protect_from_label_absorption
+    question_id: enade-2011-computing-q06
+    reason: >-
+      "infografico diz respeito" - the wrapped second line of the same
+      statement-tail sentence as the previous override, completing "A
+      expressao 'o Xis da questao' usada no titulo do infografico diz
+      respeito". Same defect class and same fix.
+    evidence: docs/phase-2b-report.md, Section K
+    status: reviewed
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 5
+    bbox: [45.0, 428.0, 257.0, 443.0]
+    rule: protect_from_label_absorption
+    question_id: enade-2011-computing-q06
+    reason: >-
+      "garantir um emprego estavel com salario digno." is the wrapped
+      second line of alternative A, indented to x0=45.5 (not the column
+      margin of 28.5, so _is_two_column_body_text does not protect it, and
+      not wide enough to trigger _is_paragraph_continuation's >300pt
+      previous-line-width signal, calibrated for single-column pages).
+      TEXT_ABSORPTION_PADDING (90pt) is wide enough to bridge the 62.6pt
+      gap from the chart's own true bottom edge (y=366.3) directly to this
+      line even with the two overrides above already in place, after
+      which three more alternative-continuation lines below it
+      (identically unprotected, for the same reason) chain-absorb in turn
+      until MAX_ABSORPTION_GROWTH (110pt beyond the original bbox) caps
+      growth at y=476.3 - deep into Questao 6's own alternative block, and
+      close enough in X (9.3pt gap) to also false-attach across the
+      column boundary into Questao 7 (which has no real figure at all;
+      see the region-suppression note in the Phase 2B report, Section K -
+      residual limitation not fully resolved by this override alone).
+      Protecting this one bridge line stops the chain at its true origin.
+    evidence: docs/phase-2b-report.md, Section K
+    status: reviewed
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 5
+    bbox: [45.0, 455.0, 264.0, 470.0]
+    rule: protect_from_label_absorption
+    question_id: enade-2011-computing-q06
+    reason: >-
+      "que aumenta o nivel de escolaridade dos individuos." - alternative
+      B's own wrapped continuation line, same defect class as alternative
+      A's continuation above. Its gap from the chart's true bottom edge
+      (y=366.3) is 89.5pt - just under TEXT_ABSORPTION_PADDING (90pt) - so
+      it independently bridges the same absorption chain even with
+      alternative A's continuation separately protected, since each
+      candidate is tested against the current bbox independently rather
+      than in a fixed sequence. Both bridge lines must be protected
+      together to keep the region at its true extent.
+    evidence: docs/phase-2b-report.md, Section K
+    status: reviewed

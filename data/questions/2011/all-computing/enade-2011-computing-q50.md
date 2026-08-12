@@ -19,15 +19,7 @@ correct_answer: A
 official_answer_source: 2011/2_gabarito.pdf
 answer_validation_status: validated
 answer_standard: null
-assets:
-- id: figure-01
-  type: image
-  path: enade-2011-computing-q50/figure-01.png
-  source_page: 31
-  extraction_method: raster_crop
-  sha256: d5698af7f94d29a2fa9333f127797744b094dd1358562632e8318f9182650ec5
-  alt_text: null
-  caption: null
+assets: []
 subjects: []
 topics: []
 concepts: []
@@ -38,19 +30,15 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: extracted
+extraction_status: verified
 automatic_validation: passed
-visual_validation: not_performed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 50
 
-Uma empresa vem desenvolvendo um programa de melhoria de seus processos de software utilizando o modelo de qualidade CMMI. O programa envolveu a
-
-![Figura da questão](enade-2011-computing-q50/figure-01.png)
-
-definição de todos os processos padrão da organização, implementação de técnicas de controle estatístico de processos e métodos de melhoria contínua. Após a avaliação SCAMPI, classe A, foi detectado que a área de processo de PP - Project Planning (Planejamento de Projeto) não estava aderente ao modelo. Nesse contexto, considerando a representação por estágios do CMMI, a empresa seria classificada em que nível de maturidade?
+Uma empresa vem desenvolvendo um programa de melhoria de seus processos de software utilizando o modelo de qualidade CMMI. O programa envolveu a definição de todos os processos padrão da organização, implementação de técnicas de controle estatístico de processos e métodos de melhoria contínua. Após a avaliação SCAMPI, classe A, foi detectado que a área de processo de PP - Project Planning (Planejamento de Projeto) não estava aderente ao modelo. Nesse contexto, considerando a representação por estágios do CMMI, a empresa seria classificada em que nível de maturidade?
 
 ## Alternativas
 

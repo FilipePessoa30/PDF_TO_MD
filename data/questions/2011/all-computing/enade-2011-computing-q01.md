@@ -30,15 +30,15 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: extracted
+extraction_status: verified
 automatic_validation: passed
-visual_validation: not_performed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 1
 
-No poema, a autora sugere que
+Retrato de uma princesa desconhecida Para que ela tivesse um pescoço tão fino Para que os seus pulsos tivessem um quebrar de caule Para que os seus olhos fossem tão frontais e limpos Para que a sua espinha fosse tão direita E ela usasse a cabeça tão erguida Com uma tão simples claridade sobre a testa Foram necessárias sucessivas gerações de escravos De corpo dobrado e grossas mãos pacientes Servindo sucessivas gerações de príncipes Ainda um pouco toscos e grosseiros Ávidos cruéis e fraudulentos Foi um imenso desperdiçar de gente Para que ela fosse aquela perfeição Solitária exilada sem destino ANDRESEN, S. M. B. Dual. Lisboa: Caminho, 2004. p. 73. No poema, a autora sugere que
 
 ## Alternativas
 

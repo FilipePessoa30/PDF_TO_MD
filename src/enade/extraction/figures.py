@@ -26,6 +26,7 @@ import pymupdf
 
 from enade.extraction.chrome import is_chrome_line
 from enade.extraction.layout import Line, detect_column_margins, extract_page_lines
+from enade.extraction.layout_overrides import LayoutOverrideSet
 
 Rect = tuple[float, float, float, float]
 
@@ -468,10 +469,23 @@ def detect_visual_regions(
     decorative_baseline: frozenset[tuple[int, int, int, int]],
     *,
     y_merge_tolerance: float = DEFAULT_Y_MERGE_TOLERANCE,
+    overrides: LayoutOverrideSet | None = None,
+    pdf_sha256: str = "",
 ) -> list[VisualRegion]:
-    """Detect non-decorative visual content regions on one (1-indexed) page."""
+    """Detect non-decorative visual content regions on one (1-indexed) page.
+
+    ``overrides``/``pdf_sha256`` (PROMPT Phase 2B section 6, Level 3) drop
+    any region already determined, by direct visual inspection, to be a
+    false positive of the label-absorption chain-growth this function
+    relies on (see ``layout_overrides.py`` and docs/decisions.md).
+    """
     page = doc[page_number - 1]
     candidates: list[tuple[Rect, bool]] = []
+
+    def _excluded(rect: tuple[float, float, float, float]) -> bool:
+        return overrides is not None and overrides.excludes_from_region_candidates(
+            pdf_sha256, page_number, rect
+        )
 
     for drawing in page.get_drawings():
         rect = drawing.get("rect")
@@ -480,11 +494,14 @@ def detect_visual_regions(
         key = _round_rect((rect.x0, rect.y0, rect.x1, rect.y1))
         if key in decorative_baseline:
             continue
-        candidates.append(((rect.x0, rect.y0, rect.x1, rect.y1), False))
+        rect_tuple = (rect.x0, rect.y0, rect.x1, rect.y1)
+        if _excluded(rect_tuple):
+            continue
+        candidates.append((rect_tuple, False))
 
     for image_info in page.get_image_info():
         bbox = image_info.get("bbox")
-        if bbox:
+        if bbox and not _excluded(tuple(bbox)):
             candidates.append((tuple(bbox), True))
 
     if not candidates:
@@ -501,6 +518,12 @@ def detect_visual_regions(
         and not is_chrome_line(ln.text)
         and not _is_paragraph_continuation(i, page_lines)
         and not _is_two_column_body_text(ln, column_margins)
+        and not (
+            overrides is not None
+            and overrides.protects_from_label_absorption(
+                pdf_sha256, page_number, (ln.x0, ln.y0, ln.x1, ln.y1)
+            )
+        )
     ]
 
     regions = []
@@ -510,6 +533,10 @@ def detect_visual_regions(
         if width < MIN_REGION_WIDTH or height < MIN_REGION_HEIGHT:
             continue
         expanded_bbox = _expand_with_labels(bbox, label_candidates, body_margin_x0)
+        if overrides is not None and overrides.suppresses_region(
+            pdf_sha256, page_number, expanded_bbox
+        ):
+            continue
         regions.append(
             VisualRegion(
                 page_number=page_number,
