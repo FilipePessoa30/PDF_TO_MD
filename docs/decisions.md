@@ -1040,3 +1040,302 @@ residual rather than a false claim of resolution.
 `ciencia-da-computacao-bacharelado` (`git status` clean, `verify-gold`
 40/40); `enade-2021-cc-b-q34.md` confirmed restored to its exact prior,
 certified text.
+
+## Phase 2D
+
+### 31. Q10's fractions: a hash-and-bbox-locked `force_fraction_merge` override, not a general rule
+
+**PROBLEMA**: ADR 30 rejected a general second-pass merge for Q10's own
+stacked fractions after it produced false positives on 2021 Q34. Q10
+itself remained unresolved.
+
+**DECISAO**: a new declarative override kind, `force_fraction_merge`,
+with a `secondary_bbox` field alongside the existing `bbox`. In
+`_merge_orphan_markers` (layout.py), before the general partner search
+runs, `overrides.fraction_merge_partner(pdf_sha256, page, marker_bbox)` is
+checked for a declared numerator bbox; if present, that candidate is
+excluded from the general search (guaranteeing the general search can
+only ever find the denominator, even where numerator/denominator
+distances from the marker differ by <0.001pt - real Q10 data), and after
+the primary partner is found, the exact line matching `secondary_bbox` is
+merged in as the numerator: `f"{marker}\t{numerator}/{denominator}"`.
+5 overrides were added (`layout-overrides.yaml`), one per alternative,
+each hash-locked to `1_prova.pdf`'s own SHA-256 and pinned to both
+bboxes' exact coordinates.
+
+**POR QUE NAO UM CROP VISUAL**: the fraction text is real, extractable
+text (not a raster image) - a full visual crop would have been a strictly
+worse outcome than correctly reconstructing it as text, given a safe,
+narrow mechanism was available (PROMPT Phase 2D section 8: "o fallback
+visual e preferivel a uma regra geral insegura", not "preferivel a uma
+extracao textual segura").
+
+**RESULTADO**: all 5 alternatives now read as complete fractions
+("A. 61/73" ... "E. 67/112"), byte-for-byte matching the source.
+
+**TESTE DE REGRESSAO**: `test_merge_orphan_markers_applies_a_matching_fraction_merge_override`
+(positive, Q10); `test_merge_orphan_markers_fraction_override_never_matches_unrelated_pairs`
+(negative, models 2021 Q34's own Dijkstra shape with a *different*
+`pdf_sha256` than the override declares - asserts `["A\t2", "B\t5",
+"C\t8"]`, zero cross-contamination). Full 2021 regen: zero diff,
+`verify-gold` 40/40.
+
+### 32. `MAX_ABSORPTION_GROWTH` as a growth *cap*, not just candidate exhaustion: `protect_from_region_membership`
+
+**PROBLEMA**: Q12 (item IV), Q44, Q45, and Q48 each lost a text fragment
+sitting close to a growing figure region. `protect_from_label_absorption`
+(the existing override kind) was tried first on each case, matching the
+already-solved Q6/Q20/Q23 precedent - but for Q12 and Q48 specifically,
+adding the override changed nothing: recomputing the region's own bbox
+with and without the override produced the *identical* final bbox.
+
+**DIAGNOSTICO**: the pre-expansion "large" candidate's own edge, plus
+`MAX_ABSORPTION_GROWTH` (110pt) exactly, matched the final region's own
+edge in both cases (Q12: `499.29 + 110 = 609.29`; Q48: `334.5 + 110 =
+444.5`). This is a different failure mode from every prior
+label-absorption case: growth was hitting a *hard cap*, not running out
+of absorbable candidates, so protecting any single candidate from
+absorption cannot change the outcome - the region grows exactly
+`MAX_ABSORPTION_GROWTH` regardless of which candidates exist.
+
+**DECISAO**: a new override kind, `protect_from_region_membership`,
+addressing the *symptom* (wrongful text exclusion) directly rather than
+the cause (the growth cap itself, a shared, load-bearing general constant
+that must not be changed per-question). `assembler.py`'s `_line_in_region`
+gained an `overrides`/`pdf_sha256` parameter; a line matching a declared
+override bbox is treated as never inside any region, regardless of the
+region's own final (capped) extent. Threaded through
+`_build_statement_segments` and all 3 call sites in `assemble_question`.
+
+Applied to Q12 (item IV's opening line) and Q48 (the "Da analise do
+diagrama..." connecting sentence) - both previously showed zero effect
+from `protect_from_label_absorption`. Q44 and Q45's own defects *were*
+each resolved by `protect_from_label_absorption` (4 and 5 overrides
+respectively) - their own limiting factor was genuine candidate
+absorption, not the growth cap, confirmed by the same before/after bbox
+diagnostic returning a *changed* bbox in those cases.
+
+**DIAGNOSTIC PROTOCOL** (reusable, established this phase): (1) recompute
+the pre-expansion candidate's own edge and check whether `edge +
+MAX_ABSORPTION_GROWTH` matches the final region's own edge exactly - if
+so, the cap is the limiting factor, not candidate exhaustion; (2) if
+`protect_from_label_absorption` on the suspected culprit line does not
+change the final region bbox at all when re-tested, this confirms the cap
+theory and signals `protect_from_region_membership` is needed instead.
+
+**RESULTADO**: Q12 item IV, Q44's 3 paragraphs + 2 equations, Q45's
+opening sentence + items II-V, and Q48's connecting sentence are all now
+present, matching the source exactly.
+
+**TESTE DE REGRESSAO**: `tests/test_layout_overrides.py` (5 new tests for
+`protect_from_region_membership` - containment/non-containment/
+hash-mismatch/distinctness-from-label-absorption); `tests/test_extraction_assembler.py`
+(2 new tests for `_line_in_region`'s own override handling). Full 2021
+regen: zero diff, `verify-gold` 40/40.
+
+### 33. D3's answer standard: a second `symbol_fonts.py` entry (Wingdings, not Euclid)
+
+**PROBLEMA**: D3's own answer-standard pseudocode (`3_padrao.pdf`) had
+every assignment arrow ("<-") corrupted to "A with ring above" (Å)
+throughout both the iterative and recursive listings.
+
+**EVIDENCIA**: direct rawdict inspection found `font=Wingdings-Regular,
+codepoint=0xC5` at every corrupted position - a dingbat font whose
+codepoints are pictures, not letters; PyMuPDF, absent a working
+ToUnicode CMap for this specific glyph, decoded the byte as
+Windows-1252 text. Confirmed by the pseudocode's own context: every
+occurrence sits between a variable name and its assigned value/expression
+(e.g. "prevFib [glyph] 0"), matching this corpus's own plain-ASCII "<-"
+assignment convention used elsewhere (D4's own CriaABP listing) - a
+geometric/font finding, never a value inferred from what the pseudocode
+"should" logically do (PROMPT Phase 2D section 5's own prohibition).
+
+**DECISAO**: extended the existing, closed `symbol_fonts.py` substitution
+table (the same mechanism already used for D3's own logic-operator
+glyphs, ADR from Phase 1B) with `"wingdings-regular"`/`"wingdings"` as
+known symbol font names and `"Å"` -> `"←"` as a new substitution - not a
+general "any Symbol-style font" decoder (a different PDF could map the
+same font name's codepoints to different glyphs; this module keys off
+both font name and the specific codepoint observed here).
+
+**RESULTADO**: every "prevFib <- 0", "currFib <- 1", "temp <- prevFib +
+currFib" etc. now renders correctly throughout both algorithm listings.
+
+**TESTE DE REGRESSAO**: `test_is_symbol_font_matches_wingdings`,
+`test_substitute_replaces_the_wingdings_arrow`. Full 2021 regen: zero
+diff (D3's own font substitution table is shared code, but 2021's own
+`b3_padrao.pdf` does not use Wingdings anywhere, confirmed by unchanged
+output).
+
+### 34. D5's answer-standard tables: a narrower rescue heuristic, not `tables.py`'s `detect_tables`
+
+**PROBLEMA**: D5's own answer standard (`3_padrao.pdf`, pages 4-5) has 3
+small bit-width breakdown tables, each just 1 data row (e.g. "Rotulo
+Linha Palavra" / "13 17 2"), missing entirely from the extracted text -
+the bare row numbers were indistinguishable, on text alone, from a
+running page number, and got dropped by chrome.py before
+`answer_standard.py`'s own text-assembly ever saw them.
+
+**POR QUE NAO `detect_tables`**: `tables.py`'s own `detect_tables` (used
+by `assembler.py` for question statements, e.g. D3's own larger grid)
+requires `MIN_TABLE_ROWS = 3` - a deliberate, documented anti-false-
+positive threshold. D5's own tables have only 1 data row each; using
+`detect_tables` here found zero tables (confirmed: a first fix attempt
+using it left D5's numbers still missing).
+
+**DECISAO**: a new, narrower heuristic scoped specifically to
+`answer_standard.py`'s own simpler parsing pipeline (which has no
+table-detection machinery of its own): `_rescue_table_row_numbers`. A
+genuine page footer has exactly one bare-number line; two or more
+bare-number lines sharing a Y position (within `_ROW_Y_TOLERANCE`,
+mirroring `tables.py`'s own `ROW_Y_TOLERANCE`) can only be a real table's
+own data row. Never rescues a lone digit (still indistinguishable from a
+page number on text alone). `parse_answer_standard`'s own `flush()` now
+tracks every line seen while `in_rubric` (before chrome filtering, in a
+`raw_buffer`) and calls the rescue pass against it before building the
+final rubric text.
+
+**RESULTADO**: all 3 rows now present in full ("Rotulo Linha Palavra / 13
+17 2", "Rotulo Palavra / 30 2", "Rotulo Conjunto Palavra / 15 15 2"),
+matching the source exactly.
+
+**TESTE DE REGRESSAO**: `tests/test_extraction_answer_standard.py` (new
+file, 4 tests: real-row-recovery, lone-page-number-never-rescued,
+already-buffered-numbers-not-double-counted, row-Y-tolerance-respected).
+Full 2021 regen: zero diff (2021's own answer standards have no
+comparable 1-row tables, confirmed unchanged).
+
+### 35. Cross-column asset contamination: crop-widening had no notion of columns (Q9, Q23)
+
+**PROBLEMA**: found by direct pixel inspection while re-verifying Q9 and
+Q23 after their other fixes, *not* previously documented in any prior
+phase's audit (which checked text completeness, never asset pixel
+purity). Q9's own `figure-01.png` (the canonical-projection formula) also
+showed Q10's own alternative fractions bleeding in from the right column.
+Q23's own `figure-01.png`/`figure-02.png` also showed the *entirety* of
+Q22's own left-column truth table and alternatives bleeding in across the
+column boundary.
+
+**ROOT CAUSE**: `assets.py`'s `_render_bbox` unconditionally widens every
+crop to the page's own full content width (`PAGE_CONTENT_MARGIN` from
+each physical edge) so a figure's own full extent is never truncated - a
+rule tuned against 2021's single-column layout (docstring: "observed on
+this booklet's Q3, Q5, Q11"), where a shared vertical band can only ever
+belong to the same question. On 2011's two-column pages, this same
+widening reaches straight across into the *other* column's own unrelated
+content, since it has no notion of columns at all - `ownership.py`'s own
+clipping (ADR 29) is applied to the *region*, well before this later,
+separate render-time widening step re-opens it back to full page width.
+
+**DECISAO**: `VisualRegion` gained an `owner_x_bounds: tuple[float,
+float] | None` field - the owning question's own claimed x-range,
+expanded by `OWNERSHIP_MARGIN` - populated only when *both* an owner is
+known *and* the page is a genuine two-column layout (via the existing
+`detect_column_margins`, already computed in `detect_visual_regions` for
+an unrelated purpose). The two-column gate matters because
+`QuestionRegion` (ownership.py) is built only from a question's own
+*text* lines - a full-width single-column diagram's own drawn extent can
+legitimately be wider than that text-only bbox (Q17's own circuit: its
+"f"/"g" output labels sit at x~550-580, but Q17's own `QuestionRegion.x1`
+is only 405.3, since it comes from text alone) - capping unconditionally
+first clipped Q17's own real diagram content, a regression caught before
+finalizing (`git diff` showed Q17's own figures changed for the first
+time in the whole phase; re-inspected, found the circuit's own "f"/"g"
+output labels missing). `assets.py`'s `_render_bbox` gained a
+`column_bounds` parameter, threaded from `render_region` via
+`region.owner_x_bounds`, intersected with (never replacing) the existing
+page-content-width bound.
+
+This is Level-1 (an already-proven general mechanism, ownership.py,
+extended into a stage it did not previously reach), not a new heuristic -
+PROMPT Phase 2D adjudication category 1.
+
+**RESULTADO**: Q9 and Q23's own figures now show only their own content,
+at most a 1-2pt sliver at the page edge (the small, expected
+`OWNERSHIP_MARGIN` residual). Q17's own full-width circuit diagram
+re-verified unaffected (single-column page, no cap applied).
+
+**TESTE DE REGRESSAO**: `tests/test_extraction_assets.py` (new file, 3
+tests: widens to page content width without `column_bounds`; caps to
+`column_bounds` when supplied; the two caps combine, whichever is
+narrower wins). `tests/test_extraction_figures.py` (`owner_x_bounds`
+union behavior on same-owner region merges). Full 2021 regen: zero diff,
+`verify-gold` 40/40 (2021's own single-column pages never trigger the cap
+- `detect_column_margins` returns `None` throughout).
+
+### 36. `_merge_overlapping_regions` had no ownership check at all (Q38/Q40)
+
+**PROBLEMA**: found by direct pixel inspection while re-verifying Q38.
+`figure-01.png` showed Q40's own grid-puzzle image (the A* search-cost
+question) rendered as if it were part of Q38 - despite ADR 29's own
+ownership model, and despite this exact question pair being ADR 29's own
+named regression case. This is a *different*, deeper root cause from what
+ADR 29 fixed, not a regression of it.
+
+**ROOT CAUSE**: `detect_visual_regions` groups candidates by owner and
+clips growth to each owner's own territory (ADR 29) - but its own final
+step, `_merge_overlapping_regions`, runs once across the *whole page's*
+region list, merging any two regions with substantial Y-overlap purely by
+geometry, with no ownership check of its own. Q38's own
+end-of-statement region and Q40's own grid-puzzle region, both already
+correctly computed and clipped under their own, different owners, sat
+close enough in Y (both near the bottom of page 25) to pass this later,
+unguarded merge and be blended into one bbox spanning both columns.
+
+**DECISAO**: `VisualRegion` gained an `owner_key: str | None` field
+(`ownership.question_key`, populated for every region regardless of
+column layout - a plain identity check, not the two-column-gated
+`owner_x_bounds`). `_merge_overlapping_regions` now refuses to merge two
+regions whose `owner_key` differs; two `None` owners (no owner info
+available) still merge, preserving this function's own pre-ownership
+behavior exactly. `owner_key` alone was chosen over reusing
+`owner_x_bounds` for this check because two *different* owners' bounds
+are not guaranteed to differ in a way a numeric comparison would reliably
+catch, where identity comparison is exact by construction.
+
+**RESULTADO**: `figure-01.png` now shows only Q38's own LR-parsing-table
+fragment; the grid puzzle correctly renders only under Q40's own
+`figure-01.png`; two new, correctly-split assets (`figure-06.png`,
+`figure-07.png`) recovered grammar-rule fragments previously absorbed
+into the contaminated region. Investigating this also surfaced two
+distinct, previously-undocumented text-image discrepancies now resolved
+in the visual-audit record: the hex-ambiguity paragraph's own missing
+symbol is "x" (not a font-substitution case - a genuine, isolated stray
+"g" glyph, U+0067, font ArialMT, confirmed by rawdict inspection,
+coexisting with a correct image elsewhere on the same page, not a
+substitute for it); and the PORQUE/assertion sentence is present as plain
+statement text, contradicting Phase 2C's own note that it was "only crop
+padding".
+
+**TESTE DE REGRESSAO**: `tests/test_extraction_figures.py` (4 new tests:
+same-owner fragments still merge; different owners never merge -
+directly modeling the Q38/Q40 page-25 geometry; both-unknown owners still
+merge; `owner_x_bounds` unions correctly on a same-owner merge). Full
+2021 regen: zero diff, `verify-gold` 40/40.
+
+### 37. Q22's `table-01.png`: same contamination class, found but not fixed this phase
+
+**PROBLEMA**: found by direct pixel inspection while investigating ADR 35
+(Q23). `table-01.png` (Q22's own mandatory visual-fallback crop for its
+truth table, rendered via `render_table_region`) also shows Q23's own
+automaton diagram and grammar bleeding in on the right edge - the same
+general root cause as ADR 35, but in the `render_table_region` code path,
+which ADR 35's fix did not touch.
+
+**DECISAO**: not fixed this phase (scoped out given time constraints).
+Registered as a new, disclosed, open blocker
+(`q22-table-asset-contamination`, blocker-ledger-2011.yaml) rather than
+silently left undocumented - PROMPT Phase 2D section 16's own "nenhum
+blocker pode sumir" applies equally to a newly-found one going
+unrecorded. Does not affect Q22's own passed status: the truth table
+itself is already fully and correctly reconstructed as Markdown text in
+the statement; `table-01.png` is a supplementary fallback asset, not the
+primary source of truth for this question.
+
+**MINIMAL FIX** (not implemented, for a future phase): thread the same
+`column_bounds` parameter ADR 35 added to `render_region` into
+`render_table_region` too - `DetectedTable` would need its own
+`owner_x_bounds`-equivalent, computed the same way, from the question's
+own `QuestionRegion` and `detect_column_margins` at the `pipeline.py`
+call site (`DetectedTable`, unlike `VisualRegion`, is not itself computed
+per-owner today).

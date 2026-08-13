@@ -27,7 +27,7 @@ import pymupdf
 from enade.extraction.chrome import is_chrome_line
 from enade.extraction.layout import Line, detect_column_margins, extract_page_lines
 from enade.extraction.layout_overrides import LayoutOverrideSet
-from enade.extraction.ownership import QuestionRegion, find_owner
+from enade.extraction.ownership import OWNERSHIP_MARGIN, QuestionRegion, find_owner
 
 Rect = tuple[float, float, float, float]
 
@@ -175,6 +175,46 @@ class VisualRegion:
     bbox: Rect
     element_count: int  # number of raw drawings/images merged into this region
     has_raster_image: bool = False  # True if a real embedded image contributed to this region
+    #: ``ownership.question_key`` of this region's own owner, or ``None``
+    #: when no owner was known (see ``_owner_of``) - used by
+    #: ``_merge_overlapping_regions`` to refuse merging two regions that
+    #: belong to *different* questions (PROMPT Phase 2D section 11: this
+    #: Y-overlap merge pass runs across the whole page's region list with
+    #: no per-owner grouping of its own, so two already-correctly-clipped
+    #: regions from different questions could still be blended into one
+    #: bbox spanning both - found on Questao 38/40, page 25: Questao 38's
+    #: own end-of-statement region and Questao 40's own grid-puzzle image
+    #: sit close enough in Y to merge, producing a crop with Questao 40's
+    #: own puzzle grid rendered as if it were part of Questao 38 - see
+    #: docs/decisions.md, Phase 2D ADR). Two regions merge only when this
+    #: key matches on both sides (including "both None"); this is the
+    #: identity check ``owner_x_bounds`` alone cannot give, since distinct
+    #: owners' bounds are not guaranteed to differ in a way that a numeric
+    #: comparison would catch.
+    owner_key: str | None = None
+    #: The owning question's own claimed x-range, expanded by
+    #: ``OWNERSHIP_MARGIN`` - set only when both an owner is known *and* the
+    #: page is a genuine two-column layout (``None`` otherwise, including
+    #: every single-column page). PROMPT Phase 2D section 11:
+    #: ``assets.py``'s render step widens every crop to the page's own full
+    #: content width so a figure's own full extent is never truncated, a
+    #: rule tuned against 2021's single-column layout where a shared
+    #: vertical band can only ever belong to the same question. On 2011's
+    #: two-column pages this same widening reaches straight across into the
+    #: *other* column's own unrelated content - e.g. Questao 23's own
+    #: automaton crop absorbing Questao 22's own truth table, found by
+    #: direct visual inspection - see docs/decisions.md, Phase 2D ADR.
+    #: The two-column gate matters because ``QuestionRegion`` is built only
+    #: from a question's own *text* lines (ownership.py) - a full-width
+    #: single-column diagram's own drawn extent (e.g. Questao 17's own
+    #: circuit, whose "f"/"g" output labels sit well past where its own
+    #: text lines reach) can legitimately be wider than that text-only
+    #: bbox, so capping to it unconditionally clipped real content; the
+    #: cap is only safe - and only needed - where a second column actually
+    #: exists to bleed into.
+    #: Passed through to ``assets.py`` so the render step can cap its own
+    #: widening to this region's own owner, never a neighboring column's.
+    owner_x_bounds: tuple[float, float] | None = None
 
 
 def _round_rect(rect: Rect) -> tuple[int, int, int, int]:
@@ -377,6 +417,21 @@ def _merge_overlapping_regions(regions: list[VisualRegion]) -> list[VisualRegion
     """Merge any two same-page regions with substantial y-overlap into their
     bounding union - repeated to a fixed point, since a merge can create a
     new overlap with a third region.
+
+    Two regions merge only when their own ``owner_key`` matches (PROMPT
+    Phase 2D section 11) - this pass runs across a whole page's regions
+    with no per-owner grouping of its own, so two regions built and
+    correctly clipped under *different* owners could still land close
+    enough in y to reach this merge; blending their bboxes would silently
+    recreate the cross-question contamination the ownership model exists
+    to prevent. Found on Questao 38/40 (page 25): Questao 38's own
+    end-of-statement region and Questao 40's own grid-puzzle image sit
+    close enough in y that, before this gate, their union produced a crop
+    showing Questao 40's own puzzle as if it were part of Questao 38 - see
+    docs/decisions.md, Phase 2D ADR. Two ``None`` owners (unowned - e.g.
+    ``question_regions`` not supplied, or a candidate whose center fell
+    outside every known region) still merge, matching this function's
+    pre-ownership behavior exactly.
     """
     current = list(regions)
     changed = True
@@ -392,7 +447,16 @@ def _merge_overlapping_regions(regions: list[VisualRegion]) -> list[VisualRegion
                 if j in used or current[j].page_number != combined.page_number:
                     continue
                 b = current[j]
+                if combined.owner_key != b.owner_key:
+                    continue
                 if _y_overlap_fraction(combined.bbox, b.bbox) >= _SUBSTANTIAL_Y_OVERLAP_FRACTION:
+                    if combined.owner_x_bounds is None or b.owner_x_bounds is None:
+                        merged_owner_x_bounds = None
+                    else:
+                        merged_owner_x_bounds = (
+                            min(combined.owner_x_bounds[0], b.owner_x_bounds[0]),
+                            max(combined.owner_x_bounds[1], b.owner_x_bounds[1]),
+                        )
                     combined = VisualRegion(
                         page_number=combined.page_number,
                         bbox=(
@@ -403,6 +467,8 @@ def _merge_overlapping_regions(regions: list[VisualRegion]) -> list[VisualRegion
                         ),
                         element_count=combined.element_count + b.element_count,
                         has_raster_image=combined.has_raster_image or b.has_raster_image,
+                        owner_key=combined.owner_key,
+                        owner_x_bounds=merged_owner_x_bounds,
                     )
                     used.add(j)
                     changed = True
@@ -628,6 +694,12 @@ def detect_visual_regions(
 
     for owner, group in _group_by_owner(large_candidates).items():
         owner_labels = _labels_for_owner(owner)
+        owner_key = owner.question_key if owner is not None else None
+        owner_x_bounds = (
+            (owner.x0 - OWNERSHIP_MARGIN, owner.x1 + OWNERSHIP_MARGIN)
+            if owner is not None and column_margins is not None
+            else None
+        )
         for bbox, count, has_image in _merge_by_vertical_proximity(group, y_merge_tolerance):
             width = bbox[2] - bbox[0]
             height = bbox[3] - bbox[1]
@@ -646,10 +718,18 @@ def detect_visual_regions(
                     bbox=expanded_bbox,
                     element_count=count,
                     has_raster_image=has_image,
+                    owner_key=owner_key,
+                    owner_x_bounds=owner_x_bounds,
                 )
             )
 
     for owner, group in _group_by_owner(small_candidates).items():
+        owner_key = owner.question_key if owner is not None else None
+        owner_x_bounds = (
+            (owner.x0 - OWNERSHIP_MARGIN, owner.x1 + OWNERSHIP_MARGIN)
+            if owner is not None and column_margins is not None
+            else None
+        )
         for bbox, count, has_image in _merge_by_vertical_proximity(
             group, SMALL_IMAGE_Y_MERGE_TOLERANCE
         ):
@@ -668,6 +748,8 @@ def detect_visual_regions(
                     bbox=final_bbox,
                     element_count=count,
                     has_raster_image=has_image,
+                    owner_key=owner_key,
+                    owner_x_bounds=owner_x_bounds,
                 )
             )
 

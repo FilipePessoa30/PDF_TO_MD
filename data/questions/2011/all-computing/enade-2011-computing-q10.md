@@ -30,9 +30,9 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
@@ -42,8 +42,8 @@ Em determinado período letivo, cada estudante de um curso universitário tem au
 
 ## Alternativas
 
-A. 73
-B. 155
-C. 155
-D. 112
-E. 112
+A. 61/73
+B. 61/155
+C. 67/155
+D. 22/112
+E. 67/112

@@ -25,7 +25,7 @@ assets:
   path: enade-2011-computing-q12/figure-01.png
   source_page: 10
   extraction_method: raster_crop
-  sha256: b6896a6c3fd4bc4dcb55e68f6a9667dbea8d69130e36de6361ecaa44cc97989d
+  sha256: 309a88937fdb571329eb0c032d38f29dfbbff27aff2cfd6711dc1278094d21e4
   alt_text: null
   caption: null
 subjects: []
@@ -38,9 +38,9 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
@@ -50,7 +50,7 @@ taxonomy_review_status: pending
 
 A respeito dessa gramática, analise as afirmações a seguir.
 
-uns estão à esquerda de todos os zeros. É correto apenas o que se afirma em
+IV. Nas cadeias geradas por essa gramática, todos os uns estão à esquerda de todos os zeros. É correto apenas o que se afirma em
 
 ## Alternativas
 

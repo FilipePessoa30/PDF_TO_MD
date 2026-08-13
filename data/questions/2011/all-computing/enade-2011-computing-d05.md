@@ -33,23 +33,19 @@ answer_standard:
     incluir todas as informações de cada esquema, mas deve diferenciá‐los claramente.
     Mapeamento direto: No mapeamento direto cada bloco da memória principal é mapeado
     em uma única posição da cache e seu endereço deve ser dividido da seguinte forma:
-    Rótulo Linha Palavra
-
-
-    Dois bits são usados para identificar a palavra (byte) dentro do bloco (ou linha).
-    São necessários 17 bits para determinar em qual das 128K linhas da cache o bloco
-    será mapeado. Os 13 bits mais significativos do endereço devem ser comparados
-    com o rótulo da cache naquela linha para saber se aquele é o bloco atualmente
-    mapeado. Mapeamento totalmente associativo: No mapeamento totalmente associativo
-    cada bloco da memória principal pode ser mapeado em qualquer posição da cache
-    e seu endereço deve ser dividido da seguinte forma: Rótulo Palavra
-
-
-    Dois bits são usados para identificar a palavra dentro do bloco. Todos os demais
-    bits (30) são usados como rótulo para identificar o bloco na memória cache. Mapeamento
-    associativo por conjunto: No mapeamento associativo por conjunto (4 vias) cada
-    bloco da memória principal é mapeado em um conjunto com 4 linhas e seu endereço
-    deve ser dividido da seguinte forma: Rótulo Conjunto Palavra
+    Rótulo Linha Palavra 13 17 2 Dois bits são usados para identificar a palavra (byte)
+    dentro do bloco (ou linha). São necessários 17 bits para determinar em qual das
+    128K linhas da cache o bloco será mapeado. Os 13 bits mais significativos do endereço
+    devem ser comparados com o rótulo da cache naquela linha para saber se aquele
+    é o bloco atualmente mapeado. Mapeamento totalmente associativo: No mapeamento
+    totalmente associativo cada bloco da memória principal pode ser mapeado em qualquer
+    posição da cache e seu endereço deve ser dividido da seguinte forma: Rótulo Palavra
+    30 2 Dois bits são usados para identificar a palavra dentro do bloco. Todos os
+    demais bits (30) são usados como rótulo para identificar o bloco na memória cache.
+    Mapeamento associativo por conjunto: No mapeamento associativo por conjunto (4
+    vias) cada bloco da memória principal é mapeado em um conjunto com 4 linhas e
+    seu endereço deve ser dividido da seguinte forma: Rótulo Conjunto Palavra 15 15
+    2
 
 
     Dois bits são usados para identificar a palavra dentro do bloco. São necessários
@@ -83,9 +79,9 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 

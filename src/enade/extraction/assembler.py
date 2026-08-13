@@ -131,7 +131,12 @@ class ExtractedQuestion:
         )
 
 
-def _line_in_region(line: Line, region: VisualRegion) -> bool:
+def _line_in_region(
+    line: Line,
+    region: VisualRegion,
+    overrides: LayoutOverrideSet | None = None,
+    pdf_sha256: str = "",
+) -> bool:
     # An alternative marker line is never figure-interior, no matter how
     # tight the vertical spacing is on this particular page (observed: on
     # a densely-laid-out DER diagram question, alternative A's marker sits
@@ -142,6 +147,10 @@ def _line_in_region(line: Line, region: VisualRegion) -> bool:
     if _ALTERNATIVE_LINE_RE.match(line.text):
         return False
     if line.page_number != region.page_number:
+        return False
+    if overrides is not None and overrides.protects_from_region_membership(
+        pdf_sha256, line.page_number, line.bbox
+    ):
         return False
     y_touches = (
         (region.bbox[1] - REGION_Y_PADDING) <= line.y0 <= (region.bbox[3] + REGION_Y_PADDING)
@@ -322,7 +331,11 @@ def _render_code_lines(code_lines: list[Line]) -> str:
 
 
 def _build_statement_segments(
-    lines: list[Line], regions: list[VisualRegion], tables: list[DetectedTable] | None = None
+    lines: list[Line],
+    regions: list[VisualRegion],
+    tables: list[DetectedTable] | None = None,
+    overrides: LayoutOverrideSet | None = None,
+    pdf_sha256: str = "",
 ) -> tuple[list[StatementSegment], list[int], list[int]]:
     """Merge text lines, figure regions and tables into position-ordered segments.
 
@@ -391,7 +404,10 @@ def _build_statement_segments(
         if kind == "line":
             line = payload
             assert isinstance(line, Line)
-            if any(_line_in_region(line, regions[i]) for i in range(len(regions))):
+            if any(
+                _line_in_region(line, regions[i], overrides, pdf_sha256)
+                for i in range(len(regions))
+            ):
                 continue
             if line in table_consumed:
                 continue
@@ -580,7 +596,9 @@ def assemble_question(
     # a detected table (running page numbers, the rascunho ruler, an
     # isolated stray digit) is filtered exactly as before Phase 1C.
     raw_candidate_lines = [
-        ln for ln in span.lines if not any(_line_in_region(ln, r) for r in regions)
+        ln
+        for ln in span.lines
+        if not any(_line_in_region(ln, r, overrides, pdf_sha256) for r in regions)
     ]
     detected_tables = detect_tables(raw_candidate_lines)
     table_consumed_lines = frozenset(ln for t in detected_tables for ln in t.consumed_lines)
@@ -593,7 +611,10 @@ def assemble_question(
         ln
         for ln in content_lines
         if _in_alternatives_section(ln)
-        or (not any(_line_in_region(ln, r) for r in regions) and ln not in table_consumed_lines)
+        or (
+            not any(_line_in_region(ln, r, overrides, pdf_sha256) for r in regions)
+            and ln not in table_consumed_lines
+        )
     ]
 
     alternatives: list[ExtractedAlternative] = []
@@ -636,7 +657,7 @@ def assemble_question(
                 alternatives.append(ExtractedAlternative(letter=letter, text=full_text))
 
     segments, placed_region_indices, placed_table_indices = _build_statement_segments(
-        statement_lines, statement_regions, statement_tables
+        statement_lines, statement_regions, statement_tables, overrides, pdf_sha256
     )
 
     unplaced = set(range(len(statement_regions))) - set(placed_region_indices)

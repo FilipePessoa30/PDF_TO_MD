@@ -25,7 +25,7 @@ assets:
   path: enade-2011-computing-q48/figure-01.png
   source_page: 31
   extraction_method: raster_crop
-  sha256: d5698af7f94d29a2fa9333f127797744b094dd1358562632e8318f9182650ec5
+  sha256: 607003413b659682d55c50f012c17cb1629706bdf8b51f9ffb2c0810a3703440
   alt_text: null
   caption: null
 subjects: []
@@ -38,9 +38,9 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
@@ -49,6 +49,8 @@ taxonomy_review_status: pending
 No desenvolvimento de um software para um sistema de venda de produtos nacionais e importados, o analista gerou o diagrama de casos de uso a seguir.
 
 ![Figura da questão](enade-2011-computing-q48/figure-01.png)
+
+Da análise do diagrama, conclui-se que
 
 ## Alternativas
 

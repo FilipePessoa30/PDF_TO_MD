@@ -177,6 +177,78 @@ def test_merge_orphan_markers_ignores_override_for_a_different_pdf_hash():
     assert merged[0].text.startswith("A\t")
 
 
+def test_merge_orphan_markers_applies_a_matching_fraction_merge_override():
+    # PROMPT Phase 2D section 8 (positive case): Q10's own stacked
+    # two-line fraction - marker "A", numerator "61" above, denominator
+    # "73" below (the general search already finds "73" as the closest
+    # partner) - the override supplies the numerator explicitly.
+    marker = _line(300.7, 309.8, "A", x1=321.0)
+    numerator = _line(330.0, 302.2, "61", x1=341.2)
+    denominator = _line(330.0, 317.5, "73", x1=341.2)
+    override_set = LayoutOverrideSet(
+        overrides=[
+            LayoutOverride(
+                pdf_sha256="deadbeef" * 8,
+                page=1,
+                bbox=(298.0, 307.0, 323.0, 326.0),
+                secondary_bbox=numerator.bbox,
+                rule="force_fraction_merge",
+                question_id="enade-2011-computing-q10",
+                reason="test",
+                evidence="test",
+                status="reviewed",
+            )
+        ]
+    )
+    merged = _merge_orphan_markers(
+        [marker, numerator, denominator],
+        margins=None,
+        overrides=override_set,
+        pdf_sha256="deadbeef" * 8,
+    )
+    assert len(merged) == 1
+    assert merged[0].text == "A\t61/73"
+
+
+def test_merge_orphan_markers_fraction_override_never_matches_unrelated_pairs():
+    # PROMPT Phase 2D section 8 (negative case): a 2021-Q34-shaped page -
+    # independent single-letter-node + single-digit-value pairs from a
+    # Dijkstra graph listing. No force_fraction_merge override is declared
+    # for this (different) pdf_sha256, so the general merge must behave
+    # exactly as before: each marker pairs only with its own closest
+    # partner, never splicing in a neighboring pair's own value.
+    lines = [
+        _line(29.8, 406.0, "C", x1=40.0),
+        _line(45.0, 406.0, "8", x1=52.0),
+        _line(60.0, 406.0, "A", x1=70.0),
+        _line(75.0, 406.0, "2", x1=82.0),
+        _line(90.0, 406.0, "B", x1=100.0),
+        _line(105.0, 406.0, "5", x1=112.0),
+    ]
+    override_set = LayoutOverrideSet(
+        overrides=[
+            LayoutOverride(
+                pdf_sha256="deadbeef" * 8,  # a *different* PDF than the one below
+                page=1,
+                bbox=(298.0, 307.0, 323.0, 326.0),
+                secondary_bbox=(330.0, 302.2, 341.2, 315.5),
+                rule="force_fraction_merge",
+                question_id="enade-2011-computing-q10",
+                reason="test",
+                evidence="test",
+                status="reviewed",
+            )
+        ]
+    )
+    merged = _merge_orphan_markers(
+        lines, margins=None, overrides=override_set, pdf_sha256="2021-b1-hash"
+    )
+    # Every marker still merges with only its own single closest partner -
+    # no fraction-shaped splice, no cross-pair contamination.
+    texts = sorted(ln.text for ln in merged if "\t" in ln.text)
+    assert texts == ["A\t2", "B\t5", "C\t8"]
+
+
 def test_detect_column_margins_rejects_non_overlapping_y_ranges():
     # An indented epigraph/poem block that sits entirely *before* the body
     # paragraph in Y (never running in parallel with it) must not be read

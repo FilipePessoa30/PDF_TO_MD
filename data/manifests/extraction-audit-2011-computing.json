@@ -52,7 +52,7 @@
     "answer_validation_status": "not_applicable",
     "answer_standard_available": true,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -90,7 +90,7 @@
     "answer_validation_status": "not_applicable",
     "answer_standard_available": true,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -261,7 +261,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -280,7 +280,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -318,7 +318,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -807,7 +807,7 @@
     "end_page": 25,
     "num_alternatives": 5,
     "has_assets": true,
-    "num_assets": 5,
+    "num_assets": 7,
     "answer": "E",
     "answer_validation_status": "validated",
     "answer_standard_available": false,
@@ -921,12 +921,12 @@
     "end_page": 28,
     "num_alternatives": 5,
     "has_assets": true,
-    "num_assets": 2,
+    "num_assets": 3,
     "answer": "",
     "answer_validation_status": "annulled",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -945,7 +945,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -1002,7 +1002,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },

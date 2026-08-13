@@ -38,6 +38,11 @@ class LayoutOverride(BaseModel):
     reason: str
     evidence: str
     status: str
+    #: Used only by ``force_fraction_merge`` (PROMPT Phase 2D section 8/12):
+    #: the bbox of the second physical line to merge in, alongside the
+    #: primary ``bbox`` (the orphan marker's own bbox). Unused/None for
+    #: every other rule kind.
+    secondary_bbox: tuple[float, float, float, float] | None = None
 
 
 class LayoutOverrideSet(BaseModel):
@@ -148,6 +153,82 @@ class LayoutOverrideSet(BaseModel):
         x0, y0, x1, y1 = bbox
         for override in self.overrides:
             if override.rule != "exclude_from_region_candidates":
+                continue
+            if override.pdf_sha256 != pdf_sha256 or override.page != page:
+                continue
+            ox0, oy0, ox1, oy1 = override.bbox
+            if x0 >= ox0 and y0 >= oy0 and x1 <= ox1 and y1 <= oy1:
+                return True
+        return False
+
+    def fraction_merge_partner(
+        self, pdf_sha256: str, page: int, marker_bbox: tuple[float, float, float, float]
+    ) -> tuple[float, float, float, float] | None:
+        """The bbox of a second physical line to merge into this orphan
+        marker's own text, if one is declared (PROMPT Phase 2D section 8).
+
+        2011 Q10: each alternative's own answer is a stacked two-line
+        fraction (a numerator line above the marker's own baseline, a
+        denominator below - PyMuPDF never emits a slash glyph). The
+        general orphan-marker merge (layout.py's own
+        ``_merge_orphan_markers``) already finds the denominator - closer
+        to the marker in every observed case - as the marker's primary
+        partner; this override supplies the *numerator*, which would
+        otherwise be left as a standalone bare-digit line for chrome.py's
+        running-page-number heuristic to strip.
+
+        A general (Level 1) second-pass search for this exact shape was
+        tried and rejected (PROMPT Phase 2C ADR 30): on 2021's own Q34
+        (a Dijkstra graph node-label listing, five independent
+        single-letter-node + single-digit-value pairs set close together),
+        the same opposite-side search spliced unrelated neighboring pairs
+        into spurious fractions. This override is deliberately the
+        opposite of that: it supplies *no* search heuristic at all, only
+        five explicit, hash-and-bbox-locked (marker bbox -> numerator
+        bbox) pairs for 2011's own Q10 - it can never match any other
+        line, on any other page, in any other document, regardless of
+        shape.
+
+        Containment, like the other rules above: ``marker_bbox`` must sit
+        fully inside the override's own declared ``bbox``.
+        """
+        x0, y0, x1, y1 = marker_bbox
+        for override in self.overrides:
+            if override.rule != "force_fraction_merge" or override.secondary_bbox is None:
+                continue
+            if override.pdf_sha256 != pdf_sha256 or override.page != page:
+                continue
+            ox0, oy0, ox1, oy1 = override.bbox
+            if x0 >= ox0 and y0 >= oy0 and x1 <= ox1 and y1 <= oy1:
+                return override.secondary_bbox
+        return None
+
+    def protects_from_region_membership(
+        self, pdf_sha256: str, page: int, bbox: tuple[float, float, float, float]
+    ) -> bool:
+        """True if some override keeps a text line at ``bbox`` on ``page``
+        out of a visual region's own text-exclusion check, even though its
+        geometry touches the region's (possibly growth-capped) bbox
+        (PROMPT Phase 2D section 12).
+
+        Distinct from ``protects_from_label_absorption``, which stops a
+        line from *expanding* a region during label-absorption growth: a
+        line can end up geometrically inside a region's final bbox
+        without ever having been an absorption candidate itself, simply
+        because growth capped by ``MAX_ABSORPTION_GROWTH`` (figures.py)
+        happened to land past its own top edge (2011 Q12: item IV's own
+        opening line sits ~0.9pt inside a region whose growth was capped
+        110pt from an unrelated image's own edge, not because item IV was
+        itself absorbed - protecting it from absorption alone does not
+        change the region's own final bbox). This rule addresses the
+        text-exclusion side directly, regardless of why the geometry
+        overlaps.
+
+        Containment, like the other rules above.
+        """
+        x0, y0, x1, y1 = bbox
+        for override in self.overrides:
+            if override.rule != "protect_from_region_membership":
                 continue
             if override.pdf_sha256 != pdf_sha256 or override.page != page:
                 continue

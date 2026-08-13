@@ -40,6 +40,18 @@ RENDER_ZOOM = 3.0
 #: crop only spans the figure itself - observed on this booklet's Q3, Q5,
 #: Q11. Cropping to content width instead shows those lines in full rather
 #: than as truncated fragments; it never removes anything, only shows more).
+#:
+#: On a two-column page this same widening reaches straight across into the
+#: *other* column's own unrelated content, since it has no notion of which
+#: column a region belongs to (2011 unified booklet: Questao 23's own
+#: automaton crop was found, by direct visual inspection, to also contain
+#: Questao 22's own truth table - see docs/decisions.md, Phase 2D ADR).
+#: ``_render_bbox``'s own ``column_bounds`` parameter (populated from
+#: ``VisualRegion.owner_x_bounds``, see ownership.py) caps this widening to
+#: the region's own owning question whenever an owner is known, leaving
+#: single-column pages (2021) unaffected - there, a question's own text
+#: already reaches close to the full content width, so the owner-bounds cap
+#: and the plain page-content-width fallback below coincide.
 PAGE_CONTENT_MARGIN = 15.0
 
 
@@ -64,10 +76,14 @@ def _render_bbox(
     relative_path: str,
     asset_id: str,
     asset_type: AssetType,
+    column_bounds: tuple[float, float] | None = None,
 ) -> RenderedAsset:
     page = doc[page_number - 1]
     content_x0 = page.rect.x0 + PAGE_CONTENT_MARGIN
     content_x1 = page.rect.x1 - PAGE_CONTENT_MARGIN
+    if column_bounds is not None:
+        content_x0 = max(content_x0, column_bounds[0])
+        content_x1 = min(content_x1, column_bounds[1])
     clip = pymupdf.Rect(
         min(bbox[0], content_x0),
         bbox[1] - RENDER_PADDING,
@@ -114,7 +130,14 @@ def render_region(
     """
     asset_type = AssetType.IMAGE if region.has_raster_image else AssetType.DIAGRAM
     return _render_bbox(
-        doc, region.page_number, region.bbox, output_path, relative_path, asset_id, asset_type
+        doc,
+        region.page_number,
+        region.bbox,
+        output_path,
+        relative_path,
+        asset_id,
+        asset_type,
+        column_bounds=region.owner_x_bounds,
     )
 
 

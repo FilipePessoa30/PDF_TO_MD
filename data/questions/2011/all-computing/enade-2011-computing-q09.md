@@ -25,7 +25,7 @@ assets:
   path: enade-2011-computing-q09/figure-01.png
   source_page: 9
   extraction_method: raster_crop
-  sha256: 8dda1169b026fa2579b9aeedb5eff148889916b70ac743502769ad5e972d7fa7
+  sha256: 4b2d76af587bf443910930371ac3dccc3c00acdeff4ad4a70dc74ac3a0682c51
   alt_text: null
   caption: null
 - id: figure-02
@@ -33,7 +33,7 @@ assets:
   path: enade-2011-computing-q09/figure-02.png
   source_page: 9
   extraction_method: raster_crop
-  sha256: 2663d55bc4c73b1c233876d6a4dbef387aae6fed4e1d68e636e0500d9845b916
+  sha256: 2d76feb54da1f3e42464f1edb9d4c7a99cbeb6dc1ea05f257fc7ba648d6cdebc
   alt_text: null
   caption: null
 - id: figure-03
@@ -41,7 +41,7 @@ assets:
   path: enade-2011-computing-q09/figure-03.png
   source_page: 9
   extraction_method: raster_crop
-  sha256: 9497e824941983fa56cae1859eaa42396d8862ab671085177cc6d17173118768
+  sha256: 1da400f9ec2d8400cfc8708f8e581d1e6439343ba20bed87829b42e9c45e8159
   alt_text: null
   caption: null
 - id: figure-04
@@ -49,7 +49,7 @@ assets:
   path: enade-2011-computing-q09/figure-04.png
   source_page: 9
   extraction_method: raster_crop
-  sha256: 99ebb71dbd72ef140217d38609ec2a9cbb6a0725fecadebc37ec36f9716f1e8b
+  sha256: 9cfd40550c7b16c7e40dd94c86ea43b4adae89cff29c377d8b642717637d6f48
   alt_text: null
   caption: null
 subjects: []
@@ -62,9 +62,9 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 

@@ -23,9 +23,9 @@ answer_standard:
   pdf_sha256: 386353635a8e2fa8081dce177f37918bcaf9426d8ee6881b88aa739bdf0cd412
   pages:
   - 2
-  text: 'Algoritmo iterativo int fibonacci(n) { prevFib Å 0, currFib Å 1 if n == 1
-    return 0 if n == 2 return 1 for i Å 1 to n − 2 /* repetir n‐2 vezes */ { temp
-    Å prevFib + currFib prevFib Å currFib currFib Å temp }
+  text: 'Algoritmo iterativo int fibonacci(n) { prevFib ← 0, currFib ← 1 if n == 1
+    return 0 if n == 2 return 1 for i ← 1 to n − 2 /* repetir n‐2 vezes */ { temp
+    ← prevFib + currFib prevFib ← currFib currFib ← temp }
 
 
     return currFib } Algoritmo recursivo int fibonacci(n) { if n == 1 return 0 if
@@ -54,9 +54,9 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 

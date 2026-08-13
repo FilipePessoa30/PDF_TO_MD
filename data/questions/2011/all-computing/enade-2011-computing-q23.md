@@ -25,7 +25,7 @@ assets:
   path: enade-2011-computing-q23/figure-01.png
   source_page: 14
   extraction_method: raster_crop
-  sha256: fc47de09576cda535f57036fb34c893b66a13d66f10d70786751001539f4f6e2
+  sha256: 67fd480695f319b89efb5620c3415cf6a4824580fd6c2d2f2fbe5c378536c392
   alt_text: null
   caption: null
 - id: figure-02
@@ -33,7 +33,7 @@ assets:
   path: enade-2011-computing-q23/figure-02.png
   source_page: 14
   extraction_method: raster_crop
-  sha256: daf60d979be41bc6d9138445d32aad4c969014ad41d6390cc260d4a634a297bc
+  sha256: af0f3acc4fbc92f343353f057f32d7749db210a6eefff05b0e797664064259f1
   alt_text: null
   caption: null
 subjects: []

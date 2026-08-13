@@ -25,7 +25,7 @@ assets:
   path: enade-2011-computing-q06/figure-01.png
   source_page: 5
   extraction_method: raster_crop
-  sha256: 2b221a3aeb90d6b15a386a996b9a1e8efa1b13be2bf143845943d2487ca73783
+  sha256: 7ecd39105ac4f8e4a0b0b11aef6a8d1156a46a1dc07232b12a591f0ef3c97b9f
   alt_text: null
   caption: null
 subjects: []

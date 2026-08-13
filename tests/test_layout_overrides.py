@@ -190,3 +190,46 @@ def test_the_three_rules_are_mutually_exclusive():
     assert overrides.protects_from_label_absorption("a" * 64, 14, bbox)
     assert not overrides.excludes_from_region_candidates("a" * 64, 14, bbox)
     assert not overrides.suppresses_region("a" * 64, 14, bbox)
+
+
+def _region_membership_override(**overrides) -> LayoutOverride:
+    base = dict(
+        pdf_sha256="a" * 64,
+        page=10,
+        bbox=(44.0, 607.0, 289.0, 623.0),
+        rule="protect_from_region_membership",
+        question_id="enade-2011-computing-q12",
+        reason="test",
+        evidence="test",
+        status="reviewed",
+    )
+    base.update(overrides)
+    return LayoutOverride(**base)
+
+
+def test_line_inside_region_membership_bbox_is_protected():
+    overrides = LayoutOverrideSet(overrides=[_region_membership_override()])
+    assert overrides.protects_from_region_membership("a" * 64, 10, (45.5, 608.4, 287.5, 621.8))
+
+
+def test_line_outside_region_membership_bbox_is_not_protected():
+    overrides = LayoutOverrideSet(overrides=[_region_membership_override()])
+    assert not overrides.protects_from_region_membership("a" * 64, 10, (45.5, 700.0, 287.5, 713.0))
+
+
+def test_region_membership_protection_respects_pdf_hash():
+    overrides = LayoutOverrideSet(overrides=[_region_membership_override()])
+    assert not overrides.protects_from_region_membership(
+        "different" * 8, 10, (45.5, 608.4, 287.5, 621.8)
+    )
+
+
+def test_region_membership_protection_is_distinct_from_label_absorption_protection():
+    # protect_from_region_membership stops the *exclusion* check
+    # (_line_in_region); protect_from_label_absorption stops the region
+    # from *growing* toward a candidate. A line covered by one must not
+    # be reported as covered by the other.
+    overrides = LayoutOverrideSet(overrides=[_region_membership_override()])
+    bbox = (45.5, 608.4, 287.5, 621.8)
+    assert overrides.protects_from_region_membership("a" * 64, 10, bbox)
+    assert not overrides.protects_from_label_absorption("a" * 64, 10, bbox)

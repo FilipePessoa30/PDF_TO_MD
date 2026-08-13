@@ -3,12 +3,14 @@ from __future__ import annotations
 from enade.extraction.figures import (
     MAX_ABSORPTION_GROWTH,
     TEXT_ABSORPTION_PADDING,
+    VisualRegion,
     _dominant_left_margin,
     _expand_with_labels,
     _is_marker_at_margin,
     _is_paragraph_continuation,
     _is_two_column_body_text,
     _merge_by_vertical_proximity,
+    _merge_overlapping_regions,
     _rects_touch,
 )
 from enade.extraction.layout import Line
@@ -235,3 +237,72 @@ def test_is_two_column_body_text_false_for_a_line_not_at_either_margin():
     margins = (33.8, 291.5)
     diagram_label = _line(1, 100.0, "12", x=160.1, width=10.6)
     assert _is_two_column_body_text(diagram_label, margins) is False
+
+
+def test_merge_overlapping_regions_merges_same_owner_fragments():
+    # 2011 Questao 22's own precedent (module docstring): several
+    # vertically-clustered vector groups from the same owner, whose
+    # expanded bboxes end up overlapping, collapse into one - unchanged
+    # behavior from before the owner_key gate existed.
+    a = VisualRegion(
+        page_number=1, bbox=(100, 100, 300, 200), element_count=1, owner_key="objective-1"
+    )
+    b = VisualRegion(
+        page_number=1, bbox=(100, 150, 320, 250), element_count=1, owner_key="objective-1"
+    )
+    merged = _merge_overlapping_regions([a, b])
+    assert len(merged) == 1
+    assert merged[0].bbox == (100, 100, 320, 250)
+    assert merged[0].owner_key == "objective-1"
+
+
+def test_merge_overlapping_regions_never_merges_across_different_owners():
+    """Regression test: 2011 Questao 38/40 (page 25) - Questao 38's own
+    end-of-statement region and Questao 40's own grid-puzzle image sat
+    close enough in y to pass the plain Y-overlap check, and before this
+    gate existed their union produced a crop with Questao 40's own puzzle
+    rendered as if it were part of Questao 38 (see docs/decisions.md,
+    Phase 2D ADR). Two regions with a different, known owner_key must never
+    merge, no matter how much their bboxes overlap in y.
+    """
+    q38_region = VisualRegion(
+        page_number=25, bbox=(28, 700, 287, 725), element_count=1, owner_key="objective-38"
+    )
+    q40_region = VisualRegion(
+        page_number=25, bbox=(297, 690, 556, 780), element_count=1, owner_key="objective-40"
+    )
+    merged = _merge_overlapping_regions([q38_region, q40_region])
+    assert len(merged) == 2
+    bboxes = {r.bbox for r in merged}
+    assert q38_region.bbox in bboxes
+    assert q40_region.bbox in bboxes
+
+
+def test_merge_overlapping_regions_still_merges_when_both_owners_unknown():
+    # Pre-ownership behavior (question_regions not supplied, or a
+    # candidate's center fell outside every known region) is unchanged:
+    # two owner-less regions still merge on y-overlap alone.
+    a = VisualRegion(page_number=1, bbox=(100, 100, 300, 200), element_count=1, owner_key=None)
+    b = VisualRegion(page_number=1, bbox=(100, 150, 320, 250), element_count=1, owner_key=None)
+    merged = _merge_overlapping_regions([a, b])
+    assert len(merged) == 1
+    assert merged[0].bbox == (100, 100, 320, 250)
+
+
+def test_merge_overlapping_regions_unions_owner_x_bounds_for_same_owner():
+    a = VisualRegion(
+        page_number=1,
+        bbox=(100, 100, 300, 200),
+        element_count=1,
+        owner_key="objective-1",
+        owner_x_bounds=(90.0, 310.0),
+    )
+    b = VisualRegion(
+        page_number=1,
+        bbox=(100, 150, 320, 250),
+        element_count=1,
+        owner_key="objective-1",
+        owner_x_bounds=(95.0, 330.0),
+    )
+    merged = _merge_overlapping_regions([a, b])
+    assert merged[0].owner_x_bounds == (90.0, 330.0)

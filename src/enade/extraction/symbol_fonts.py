@@ -21,6 +21,21 @@ This is direct visual/glyph identity evidence, not a linguistic guess -
 the same evidentiary standard as spacing.py's ligature-space fix and
 label_normalization.py's case-mangled labels.
 
+2011's own answer standard (``3_padrao.pdf``, Discursiva 3's iterative/
+recursive Fibonacci pseudocode) sets its assignment operator in font
+"Wingdings-Regular" - a dingbat font whose codepoints are pictures, not
+letters. PyMuPDF, absent a working ToUnicode CMap for this specific
+codepoint, decodes byte 0xC5 as if it were Windows-1252 text: "Å" (Latin
+capital A with ring above). Confirmed by direct rawdict inspection
+(``font=Wingdings-Regular, codepoint=0xC5``) together with the source
+page's own visual rendering and pseudocode context (every occurrence sits
+between a variable name and its assigned value/expression, e.g.
+"prevFib <-arrow-glyph-> 0" - the standard left-arrow assignment notation
+this corpus's own pseudocode convention uses elsewhere in plain ASCII
+"<-" form, e.g. D4's own CriaABP listing) - PROMPT Phase 2D section 5:
+this is geometric/font evidence, never a value inferred from what the
+pseudocode "should" logically do.
+
 This is a closed, per-font character table, extended only after visually
 confirming a new instance the same way - never a general "Symbol font"
 decoder (a different PDF could map the same font name's code points to
@@ -31,7 +46,9 @@ specific codepoint observed here, nothing else).
 from __future__ import annotations
 
 #: Font names (case-insensitive) known to need this substitution.
-_SYMBOL_FONT_NAMES = frozenset({"euclidsymbol-bolditalic", "euclidsymbol"})
+_SYMBOL_FONT_NAMES = frozenset(
+    {"euclidsymbol-bolditalic", "euclidsymbol", "wingdings-regular", "wingdings"}
+)
 
 #: Wrongly-decoded character -> its confirmed correct Unicode symbol.
 _KNOWN_SYMBOL_SUBSTITUTIONS: dict[str, str] = {
@@ -39,6 +56,7 @@ _KNOWN_SYMBOL_SUBSTITUTIONS: dict[str, str] = {
     "Ù": "∧",  # U-grave -> ^ (and / conjunction)
     "Ú": "∨",  # U-acute -> v (or / disjunction)
     "Ø": "¬",  # O-slash -> not (negation)
+    "Å": "←",  # A-ring -> <- (Wingdings 0xC5, D3's own assignment operator)
 }
 
 

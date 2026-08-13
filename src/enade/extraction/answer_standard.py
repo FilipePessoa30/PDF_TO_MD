@@ -20,6 +20,19 @@ import pymupdf
 from enade.extraction.chrome import is_chrome_line
 from enade.extraction.layout import Line, extract_document_lines
 
+#: A bare-digit line matching this shape is, by text alone,
+#: indistinguishable from a running page number (chrome.py's own
+#: heuristic) - but a *row* of two or more such lines sharing a Y
+#: position is a real table's own data row, never a page footer (a page
+#: has exactly one page-number line, never several side by side).
+_BARE_NUMBER_RE = re.compile(r"^\d+$")
+#: Vertical tolerance (points) for treating two bare-number lines as
+#: sitting on the same visual row - mirrors tables.py's own ROW_Y_TOLERANCE.
+_ROW_Y_TOLERANCE = 3.0
+#: A rescued row needs at least this many bare-number cells - one alone
+#: is exactly the page-number shape this must not rescue.
+_MIN_ROW_NUMBERS = 2
+
 _DISCURSIVE_MARKER_RE = re.compile(r"(?i)^quest[aã]o\s+discursiva\s+0*(\d+)\b")
 _RUBRIC_HEADING_RE = re.compile(r"(?i)^padr[aã]o\s+de\s+resposta$")
 #: Same paragraph-break heuristic as assembler.py: a vertical gap this large
@@ -47,6 +60,47 @@ class AnswerStandardParseResult:
     warnings: list[str]
 
 
+def _rescue_table_row_numbers(raw_lines: list[Line], buffer: list[Line]) -> list[Line]:
+    """Recover bare-number table cells the chrome filter already dropped
+    (PROMPT Phase 2D section 11/12).
+
+    2011 D5's own answer standard has three small bit-width breakdown
+    tables (e.g. "Rotulo Linha Palavra" / "13 17 2"), each just one data
+    row - too few rows for tables.py's own ``detect_tables`` (built for
+    D3's own larger, multi-row question-numbering grid, and requiring
+    ``MIN_TABLE_ROWS=3`` to avoid false positives). A narrower, safe
+    signature works here instead: a *page footer has exactly one*
+    bare-number line; two or more bare-number lines sharing a Y position
+    can only be a real row of table cells. Never rescues a lone digit
+    (indistinguishable from a page number on text alone, so left as
+    chrome, same as everywhere else in this corpus).
+    """
+    buffer_ids = {id(ln) for ln in buffer}
+    # Row membership is judged against *every* bare-number line, whether
+    # or not it still needs rescuing - a cell already present in the
+    # buffer for some unrelated reason still counts as this row's own
+    # partner, so its chrome-filtered neighbor is not penalized for it.
+    all_numbers = [ln for ln in raw_lines if _BARE_NUMBER_RE.match(ln.text)]
+    rescued: list[Line] = []
+    seen_ids: set[int] = set()
+    for i, ln in enumerate(all_numbers):
+        if id(ln) in buffer_ids or not is_chrome_line(ln.text) or id(ln) in seen_ids:
+            continue
+        row = [
+            other
+            for j, other in enumerate(all_numbers)
+            if j != i and abs(other.y0 - ln.y0) <= _ROW_Y_TOLERANCE
+        ]
+        if len(row) + 1 >= _MIN_ROW_NUMBERS:
+            rescued.append(ln)
+            seen_ids.add(id(ln))
+            for other in row:
+                if id(other) not in buffer_ids and id(other) not in seen_ids:
+                    rescued.append(other)
+                    seen_ids.add(id(other))
+    return rescued
+
+
 def _lines_to_paragraphs(lines: list[Line]) -> str:
     if not lines:
         return ""
@@ -69,6 +123,11 @@ def parse_answer_standard(doc: pymupdf.Document) -> AnswerStandardParseResult:
     current_number: int | None = None
     in_rubric = False
     buffer: list[Line] = []
+    #: Every line seen while ``in_rubric`` is True, *before* chrome
+    #: filtering - the table-rescue pass in ``flush()`` needs this to see
+    #: a bare-number table cell that the chrome filter already dropped
+    #: from ``buffer`` itself.
+    raw_buffer: list[Line] = []
     #: Pages where a new discursive marker or rubric heading was seen - a
     #: page *not* in this set, but that a rubric's own buffer still
     #: touches, is entirely consumed by that one rubric with nothing else
@@ -76,8 +135,11 @@ def parse_answer_standard(doc: pymupdf.Document) -> AnswerStandardParseResult:
     pages_with_markers: set[int] = set()
 
     def flush() -> None:
-        nonlocal buffer
+        nonlocal buffer, raw_buffer
         if current_number is not None and buffer:
+            rescued = _rescue_table_row_numbers(raw_buffer, buffer)
+            if rescued:
+                buffer = sorted(buffer + rescued, key=lambda ln: (ln.page_number, ln.y0, ln.x0))
             text = _lines_to_paragraphs(buffer)
             if text.strip():
                 if current_number in entries:
@@ -93,6 +155,7 @@ def parse_answer_standard(doc: pymupdf.Document) -> AnswerStandardParseResult:
                     number=current_number, pages=pages, text=text, page_bounds=page_bounds
                 )
         buffer = []
+        raw_buffer = []
 
     for line in lines:
         # Markers are checked *before* the chrome filter: "PADRAO DE RESPOSTA"
@@ -111,6 +174,8 @@ def parse_answer_standard(doc: pymupdf.Document) -> AnswerStandardParseResult:
             in_rubric = True
             pages_with_markers.add(line.page_number)
             continue
+        if in_rubric and current_number is not None:
+            raw_buffer.append(line)
         if is_chrome_line(line.text):
             continue
         if in_rubric and current_number is not None:

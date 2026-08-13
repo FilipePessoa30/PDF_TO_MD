@@ -14,6 +14,7 @@ from enade.extraction.assembler import (
 )
 from enade.extraction.figures import VisualRegion
 from enade.extraction.layout import Line
+from enade.extraction.layout_overrides import LayoutOverride, LayoutOverrideSet
 
 
 def _line(
@@ -80,6 +81,52 @@ def test_line_in_region_false_on_different_page():
     region = VisualRegion(page_number=1, bbox=(0, 100, 500, 200), element_count=1)
     label_line = _line(2, 150, "Rótulo em outra página")
     assert _line_in_region(label_line, region) is False
+
+
+def test_line_in_region_respects_a_matching_protect_from_region_membership_override():
+    # PROMPT Phase 2D section 12: 2011 Q12's own item IV overlaps a
+    # growth-capped region by under 1pt (see docs/decisions.md, Phase 2D
+    # ADR) - a matching override keeps it out of the region regardless of
+    # geometric overlap.
+    region = VisualRegion(page_number=1, bbox=(0, 100, 500, 200), element_count=1)
+    line = _line(1, 150, "IV. Nas cadeias geradas por essa gramática, todos os")
+    overrides = LayoutOverrideSet(
+        overrides=[
+            LayoutOverride(
+                pdf_sha256="deadbeef" * 8,
+                page=1,
+                bbox=(0.0, 100.0, 500.0, 200.0),
+                rule="protect_from_region_membership",
+                question_id="enade-2011-computing-q12",
+                reason="test",
+                evidence="test",
+                status="reviewed",
+            )
+        ]
+    )
+    assert _line_in_region(line, region, overrides, "deadbeef" * 8) is False
+
+
+def test_line_in_region_ignores_override_for_a_different_pdf_hash():
+    region = VisualRegion(page_number=1, bbox=(0, 100, 500, 200), element_count=1)
+    line = _line(1, 150, "IV. Nas cadeias geradas por essa gramática, todos os")
+    overrides = LayoutOverrideSet(
+        overrides=[
+            LayoutOverride(
+                pdf_sha256="deadbeef" * 8,
+                page=1,
+                bbox=(0.0, 100.0, 500.0, 200.0),
+                rule="protect_from_region_membership",
+                question_id="enade-2011-computing-q12",
+                reason="test",
+                evidence="test",
+                status="reviewed",
+            )
+        ]
+    )
+    # Same bbox/page, but a different pdf_sha256 - normal containment
+    # behavior applies (still True, unaffected by the override).
+    assert _line_in_region(line, region, overrides, "cafebabe" * 8) is True
 
 
 def test_detect_broken_words_flags_ligature_artifact():

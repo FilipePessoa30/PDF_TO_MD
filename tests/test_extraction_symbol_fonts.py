@@ -10,6 +10,15 @@ def test_is_symbol_font_matches_known_font_case_insensitively():
     assert is_symbol_font("Calibri-Bold") is False
 
 
+def test_is_symbol_font_matches_wingdings():
+    # 2011 D3's own answer standard (3_padrao.pdf) sets its pseudocode
+    # assignment arrow in this dingbat font - see docs/decisions.md,
+    # Phase 2D ADR.
+    assert is_symbol_font("Wingdings-Regular") is True
+    assert is_symbol_font("wingdings-regular") is True
+    assert is_symbol_font("Wingdings") is True
+
+
 def test_substitute_replaces_all_known_symbols():
     assert substitute_symbol_font_text("a ® ¬ b") == "a → ¬ b"
     assert substitute_symbol_font_text("b Ù a") == "b ∧ a"
@@ -24,3 +33,7 @@ def test_substitute_leaves_unrelated_text_unchanged():
 
 def test_substitute_is_idempotent_on_already_correct_text():
     assert substitute_symbol_font_text("a → ¬ b") == "a → ¬ b"
+
+
+def test_substitute_replaces_the_wingdings_arrow():
+    assert substitute_symbol_font_text("prevFib Å 0") == "prevFib ← 0"

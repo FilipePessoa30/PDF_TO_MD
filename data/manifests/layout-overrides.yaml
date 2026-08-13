@@ -214,3 +214,227 @@ overrides:
       together to keep the region at its true extent.
     evidence: docs/phase-2b-report.md, Section K
     status: reviewed
+  # --- Phase 2D: Q10's 5 stacked two-line fractions -----------------
+  # A general (Level 1) fix was tried and rejected here in Phase 2C
+  # (spurious fractions on 2021 Q34's Dijkstra graph node-label listing -
+  # see docs/decisions.md, ADR 30). These 5 entries are the Section 8
+  # "perfil declarativo... preso ao SHA-256" alternative: each pairs one
+  # alternative's own marker bbox with its own numerator's own bbox,
+  # explicitly, with no search/distance heuristic at all - they can only
+  # ever match these 5 exact lines, on this exact PDF. The existing
+  # general orphan-marker search still finds each marker's own denominator
+  # (unchanged); this override supplies only the numerator that search
+  # does not look for.
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 9
+    bbox: [298.0, 307.0, 323.0, 326.0]
+    secondary_bbox: [330.0486145019531, 302.1814880371094, 341.1686096191406, 315.4914855957031]
+    rule: force_fraction_merge
+    question_id: enade-2011-computing-q10
+    reason: >-
+      Alternative A's own marker "A" (bbox ~300.7,309.8-321.0,323.1) sits
+      between its own numerator "61" (above, y0=302.2) and denominator
+      "73" (below, y0=317.5) - a stacked fraction, never a single line
+      with a slash glyph in the source. The general merge already finds
+      "73" as the marker's primary partner (closest in Y); this override
+      supplies "61" explicitly so the rendered alternative reads "61/73"
+      instead of just "73".
+    evidence: docs/decisions.md, Phase 2D ADR 31 (force_fraction_merge)
+    status: reviewed
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 9
+    bbox: [298.0, 342.0, 323.0, 360.0]
+    secondary_bbox: [330.0486145019531, 336.7420959472656, 341.1686096191406, 350.0520935058594]
+    rule: force_fraction_merge
+    question_id: enade-2011-computing-q10
+    reason: Same defect class as alternative A above, for alternative B's own "61/155".
+    evidence: docs/decisions.md, Phase 2D ADR 31 (force_fraction_merge)
+    status: reviewed
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 9
+    bbox: [298.0, 376.0, 323.0, 395.0]
+    secondary_bbox: [330.0486145019531, 371.30267333984375, 341.1686096191406, 384.6126708984375]
+    rule: force_fraction_merge
+    question_id: enade-2011-computing-q10
+    reason: Same defect class as alternative A above, for alternative C's own "67/155".
+    evidence: docs/decisions.md, Phase 2D ADR 31 (force_fraction_merge)
+    status: reviewed
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 9
+    bbox: [298.0, 411.0, 323.0, 429.0]
+    secondary_bbox: [330.0486145019531, 405.8631896972656, 341.1686096191406, 419.1731872558594]
+    rule: force_fraction_merge
+    question_id: enade-2011-computing-q10
+    reason: Same defect class as alternative A above, for alternative D's own "22/112".
+    evidence: docs/decisions.md, Phase 2D ADR 31 (force_fraction_merge)
+    status: reviewed
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 9
+    bbox: [298.0, 446.0, 323.0, 464.0]
+    secondary_bbox: [330.0486145019531, 440.4237976074219, 341.1686096191406, 453.7337951660156]
+    rule: force_fraction_merge
+    question_id: enade-2011-computing-q10
+    reason: Same defect class as alternative A above, for alternative E's own "67/112".
+    evidence: docs/decisions.md, Phase 2D ADR 31 (force_fraction_merge)
+    status: reviewed
+  # --- Phase 2D: Q12's item IV cut off by MAX_ABSORPTION_GROWTH -----
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 10
+    bbox: [44.0, 607.0, 289.0, 623.0]
+    rule: protect_from_region_membership
+    question_id: enade-2011-computing-q12
+    reason: >-
+      Item IV's own opening line ("IV. Nas cadeias geradas por essa
+      gramatica, todos os") sits exactly where the region seeded by
+      Q12's own formula images (see the ownership-model note above) hits
+      MAX_ABSORPTION_GROWTH's 110pt cap - measured directly: the region's
+      one "large" pre-expansion candidate (the BNF-grammar raster image)
+      has its own y1=499.29; 499.29+110=609.29, exactly the final
+      region's own y1. This is a hard growth ceiling, not a consequence
+      of item IV itself being absorbed as a label (confirmed: adding a
+      protect_from_label_absorption override for this same bbox did not
+      change the region's final bbox at all, since items I-III alone
+      already reach the cap without it) - so the fix has to stop
+      _line_in_region's own overlap check from treating item IV's line as
+      "inside" the region, not stop it from being absorbed. Item IV's own
+      first line overlaps the growth-capped edge by under 1pt (608.4 vs
+      609.29), wide enough with REGION_Y_PADDING's 2pt tolerance to be
+      excluded from the statement text even though the rendered crop
+      itself does not show it either (RENDER_PADDING's own 4pt does not
+      reach far enough to make it legible). Protecting it from region
+      membership directly keeps it as plain text, where it is fully
+      legible; the image crop's own extent is unaffected (still complete
+      for the intro sentence, grammar, and items I-III).
+    evidence: docs/decisions.md, Phase 2D ADR 32 (protect_from_region_membership)
+    status: reviewed
+  # --- Phase 2D: Q45's own analysis items I-V absorbed as circuit labels
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 29
+    bbox: [44.0, 308.0, 205.0, 324.0]
+    rule: protect_from_label_absorption
+    question_id: enade-2011-computing-q45
+    reason: >-
+      Q45's own op-amp circuit diagram (a real embedded raster image,
+      natural extent y=110.8-263.0) grows via label absorption to
+      y0=67.5-y1=373.0 - reaching MAX_ABSORPTION_GROWTH's 110pt cap below
+      (263.0+110=373.0, matching exactly) by absorbing items I-V of Q45's
+      own analysis list as if each were a diagram annotation (each is
+      narrow, non-monospace, non-chrome, not at a two-column margin - the
+      same geometric shape as a real figure label). This drags the
+      region's own Y-range across the whole statement, excluding the
+      intro sentence, the "Considerando..." sentence, and items II-V from
+      the rendered statement even though most of them are individually
+      too wide to have been absorption candidates themselves - once the
+      region's bbox reaches their own Y position via the items that WERE
+      absorbed, plain geometric overlap excludes them regardless.
+      Protecting item I's own marker line here (its own statement text,
+      "A corrente i1 e idealmente nula.", already happens to escape via
+      an unrelated, coincidental match against the A-E alternative-marker
+      pattern - protecting the marker line itself too for consistency and
+      auditability, not reliance on that coincidence).
+    evidence: docs/decisions.md, Phase 2D ADR 32 (protect_from_label_absorption growth-cap diagnostic)
+    status: reviewed
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 29
+    bbox: [44.0, 323.0, 205.0, 339.0]
+    rule: protect_from_label_absorption
+    question_id: enade-2011-computing-q45
+    reason: Same defect class as item I above, for item II's own line.
+    evidence: docs/decisions.md, Phase 2D ADR 32 (protect_from_label_absorption growth-cap diagnostic)
+    status: reviewed
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 29
+    bbox: [44.0, 338.0, 266.0, 354.0]
+    rule: protect_from_label_absorption
+    question_id: enade-2011-computing-q45
+    reason: Same defect class as item I above, for item III's own line.
+    evidence: docs/decisions.md, Phase 2D ADR 32 (protect_from_label_absorption growth-cap diagnostic)
+    status: reviewed
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 29
+    bbox: [44.0, 353.0, 446.0, 368.0]
+    rule: protect_from_label_absorption
+    question_id: enade-2011-computing-q45
+    reason: Same defect class as item I above, for item IV's own line.
+    evidence: docs/decisions.md, Phase 2D ADR 32 (protect_from_label_absorption growth-cap diagnostic)
+    status: reviewed
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 29
+    bbox: [44.0, 368.0, 418.0, 383.0]
+    rule: protect_from_label_absorption
+    question_id: enade-2011-computing-q45
+    reason: Same defect class as item I above, for item V's own line.
+    evidence: docs/decisions.md, Phase 2D ADR 32 (protect_from_label_absorption growth-cap diagnostic)
+    status: reviewed
+  # --- Phase 2D: Q44's own trailing paragraphs/equations absorbed as labels
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 28
+    bbox: [27.0, 449.0, 320.0, 464.0]
+    rule: protect_from_label_absorption
+    question_id: enade-2011-computing-q44
+    reason: >-
+      Q44's own 8-bit adder circuit diagram (natural extent
+      y=148.0-408.2) grows via label absorption to y1=518.2 - exactly
+      408.2+MAX_ABSORPTION_GROWTH(110). "tempo, o multiplexador pode
+      entregar o resultado mais rapidamente." is narrow enough
+      (290.4pt < 300pt) to be an absorption candidate itself, and is the
+      first domino: once absorbed, the chain reaches the two short
+      sentences introducing each equation below it (see the next two
+      overrides), and their own small formula images (already correctly
+      classified as size-based "formula" candidates, but still pulled
+      into a Y-overlap merge with the by-then-larger diagram region -
+      see figures.py's _merge_overlapping_regions) plus the wide (>500pt)
+      paragraphs above and below all end up geometrically inside the
+      grown region's own Y-range regardless of their own individual
+      absorbability.
+    evidence: docs/decisions.md, Phase 2D ADR 32 (protect_from_label_absorption growth-cap diagnostic)
+    status: reviewed
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 28
+    bbox: [27.0, 466.0, 255.0, 482.0]
+    rule: protect_from_label_absorption
+    question_id: enade-2011-computing-q44
+    reason: Same defect class as above, for "Considere as seguintes equacoes dos somadores:".
+    evidence: docs/decisions.md, Phase 2D ADR 32 (protect_from_label_absorption growth-cap diagnostic)
+    status: reviewed
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 28
+    bbox: [230.0, 483.0, 254.0, 499.0]
+    rule: protect_from_label_absorption
+    question_id: enade-2011-computing-q44
+    reason: >-
+      Same defect class as above, for the single-word "e" connecting the
+      two somador equation images ("S = A xor B xor VemUm" "e"
+      "VaiUm = A.B + VemUm.A + VemUm.B").
+    evidence: docs/decisions.md, Phase 2D ADR 32 (protect_from_label_absorption growth-cap diagnostic)
+    status: reviewed
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 28
+    bbox: [27.0, 500.0, 291.0, 517.0]
+    rule: protect_from_label_absorption
+    question_id: enade-2011-computing-q44
+    reason: Same defect class as above, for "Considere, ainda, a equacao dos multiplexadores a seguir:".
+    evidence: docs/decisions.md, Phase 2D ADR 32 (protect_from_label_absorption growth-cap diagnostic)
+    status: reviewed
+  # --- Phase 2D: Q48's own connecting sentence excluded by a growth-capped region
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 31
+    bbox: [27.0, 349.0, 206.0, 366.0]
+    rule: protect_from_region_membership
+    question_id: enade-2011-computing-q48
+    reason: >-
+      Q48's own UML use-case diagram (natural extent y=137.2-334.5) hits
+      MAX_ABSORPTION_GROWTH's own 110pt cap regardless of any single
+      candidate (334.5+110=444.5, matching the final region's own y1
+      exactly, confirmed by testing that a protect_from_label_absorption
+      override for this same bbox did not change the region's final bbox
+      at all - the same finding as Q12's own item IV, see that override's
+      own reason). "Da analise do diagrama, conclui-se que" (the sentence
+      leading into the alternatives) overlaps the growth-capped region
+      geometrically even though it was never itself an absorption
+      candidate that mattered. protect_from_region_membership addresses
+      the exclusion check directly rather than absorption eligibility.
+      The alternatives themselves (A-E) are unaffected (already protected
+      by the existing alternative-marker/alternatives-section exemptions).
+    evidence: docs/decisions.md, Phase 2D ADR 32 (protect_from_region_membership)
+    status: reviewed
