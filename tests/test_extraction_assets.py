@@ -3,7 +3,8 @@ from __future__ import annotations
 import pymupdf
 import pytest
 
-from enade.extraction.assets import PAGE_CONTENT_MARGIN, _render_bbox
+from enade.extraction.assets import PAGE_CONTENT_MARGIN, _render_bbox, render_table_region
+from enade.extraction.tables import DetectedTable
 from enade.models.enums import AssetType
 
 
@@ -78,6 +79,70 @@ def test_render_bbox_column_bounds_never_widens_past_page_edges(
         "figure-01",
         AssetType.DIAGRAM,
         column_bounds=(-500.0, 2000.0),
+    )
+    page = blank_doc[0]
+    expected_width_pt = page.rect.width - 2 * PAGE_CONTENT_MARGIN
+    assert rendered.width_px == pytest.approx(expected_width_pt * RENDER_ZOOM, abs=2)
+
+
+def test_render_table_region_caps_widening_to_column_bounds(blank_doc: pymupdf.Document, tmp_path):
+    """Regression test: 2011 Questao 22 -> Questao 23 (page 14, PROMPT
+    Phase 2E section 7). Questao 22's own ``table-01.png`` was found, by
+    direct pixel inspection, to widen all the way across to Questao 23's
+    own automaton diagram and grammar on the right column -
+    ``render_table_region`` had no ``column_bounds`` parameter at all,
+    unlike ``render_region`` (fixed in Phase 2D for the same defect class
+    on Q9/Q23). A ``DetectedTable``'s own bbox is already correctly
+    confined to its owning question's own lines (``detect_tables`` runs on
+    one question's own span only) - the leak was entirely in this
+    function's own unconditional page-content-width widening.
+    """
+    from enade.extraction.assets import RENDER_ZOOM
+
+    table = DetectedTable(
+        page_number=1,
+        bbox=(112.9, 152.6, 201.5, 395.5),
+        headers=["A", "B", "C", "D", "S"],
+        rows=[["0", "0", "0", "0", "1"]],
+        consumed_lines=frozenset(),
+    )
+    column_bounds = (8.5, 221.5)  # Questao 22's own left column only
+    rendered = render_table_region(
+        blank_doc,
+        table,
+        tmp_path / "table-01.png",
+        "table-01.png",
+        "table-01",
+        column_bounds=column_bounds,
+    )
+    page = blank_doc[0]
+    # The render clip is the intersection of column_bounds and the plain
+    # page-content-width fallback (whichever side is narrower wins on each
+    # edge) - here column_bounds[1]=221.5 is the narrower right edge
+    # (vs. the page's own default 565.0), so it caps the render; the left
+    # edge stays at the page's own default margin either way.
+    expected_x0 = max(page.rect.x0 + PAGE_CONTENT_MARGIN, column_bounds[0])
+    expected_x1 = min(page.rect.x1 - PAGE_CONTENT_MARGIN, column_bounds[1])
+    assert expected_x1 < page.rect.x1 - PAGE_CONTENT_MARGIN  # sanity: cap is the binding one
+    expected_width_pt = expected_x1 - expected_x0
+    assert rendered.width_px == pytest.approx(expected_width_pt * RENDER_ZOOM, abs=2)
+
+
+def test_render_table_region_widens_to_full_page_without_column_bounds(
+    blank_doc: pymupdf.Document, tmp_path
+):
+    # Unchanged pre-Phase-2E behavior when no column_bounds is supplied.
+    from enade.extraction.assets import RENDER_ZOOM
+
+    table = DetectedTable(
+        page_number=1,
+        bbox=(112.9, 152.6, 201.5, 395.5),
+        headers=["A"],
+        rows=[["0"]],
+        consumed_lines=frozenset(),
+    )
+    rendered = render_table_region(
+        blank_doc, table, tmp_path / "table-01.png", "table-01.png", "table-01"
     )
     page = blank_doc[0]
     expected_width_pt = page.rect.width - 2 * PAGE_CONTENT_MARGIN

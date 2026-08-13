@@ -77,48 +77,21 @@ overrides:
       detected column margin.
     evidence: docs/phase-2b-report.md, Section I
     status: reviewed
-  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
-    page: 14
-    bbox: [488.0, 129.0, 550.0, 146.0]
-    rule: exclude_from_region_candidates
-    question_id: enade-2011-computing-q23
-    reason: >-
-      The three "protect_from_label_absorption" overrides above stop these
-      text fragments from being actively absorbed as figure labels, but do
-      not stop the *image* candidates for "Sigma={a,b,c}"/"Sigma*"/"lambda"
-      (three tiny inline symbol images, ~10-13pt tall) from chain-merging
-      (via _merge_by_vertical_proximity's 18pt vertical-proximity sweep -
-      Sigma={a,b,c} at y0 131-144 is within 18pt of Sigma*/lambda at y0
-      156-165, which is in turn within 18pt of the automaton diagram
-      starting at y0=177) into one candidate cluster reaching back up to
-      y0=131 - independently re-anchoring the region's top edge into the
-      statement text regardless of label-absorption. Excluding these three
-      tiny images from ever entering the candidate list at all (they are
-      each far under MIN_REGION_HEIGHT on their own and would never form a
-      region by themselves once excluded from the merge) is the only point
-      that actually stops the region from reaching into the statement.
-      Each symbol is still visible in the source PDF itself, but is not
-      individually preserved as inline Markdown or as its own asset - a
-      disclosed residual limitation (see the Phase 2B report), not
-      silently hidden.
-    evidence: docs/phase-2b-report.md, Section I
-    status: reviewed
-  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
-    page: 14
-    bbox: [313.0, 154.0, 330.0, 166.0]
-    rule: exclude_from_region_candidates
-    question_id: enade-2011-computing-q23
-    reason: Same class as the Sigma={a,b,c} exclusion above, for the "Sigma*" inline symbol image.
-    evidence: docs/phase-2b-report.md, Section I
-    status: reviewed
-  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
-    page: 14
-    bbox: [377.0, 154.0, 391.0, 166.0]
-    rule: exclude_from_region_candidates
-    question_id: enade-2011-computing-q23
-    reason: Same class as the Sigma={a,b,c} exclusion above, for the "lambda" inline symbol image.
-    evidence: docs/phase-2b-report.md, Section I
-    status: reviewed
+  # NOTE (Phase 2E): the three exclude_from_region_candidates overrides that
+  # lived here (Sigma={a,b,c}/Sigma*/lambda, bboxes ~488-550x129-146,
+  # 313-330x154-166, 377-391x154-166) are superseded by the small-formula-
+  # image mechanism (Phase 2C, figures.py's own SMALL_IMAGE_MAX_WIDTH/
+  # _HEIGHT + MIN_FORMULA_WIDTH/_HEIGHT pool) reaching general availability
+  # after this override was first written (Phase 2B, before that pool
+  # existed): each symbol image is 12-57pt wide x ~12pt tall, comfortably
+  # within SMALL_IMAGE_MAX_WIDTH(250)/_HEIGHT(40) and MIN_FORMULA_WIDTH(4)/
+  # _HEIGHT(4) - it no longer needs the large-candidate MIN_REGION_HEIGHT
+  # (20pt) the original reason cited, and small-formula candidates never
+  # participate in the large-candidate chain-merge that used to re-anchor
+  # the automaton region's own top edge. Removing the exclusion let each
+  # symbol form its own small, correctly-scoped region instead of being
+  # discarded before ever reaching classification. See docs/decisions.md,
+  # Phase 2E ADR 41.
   # NOTE: the Q1/Q2 force_single_column_page override that previously lived
   # here was removed after detect_column_margins gained a general Y-range-
   # overlap requirement (layout.py) that fixes this case - and a second,
@@ -437,4 +410,98 @@ overrides:
       The alternatives themselves (A-E) are unaffected (already protected
       by the existing alternative-marker/alternatives-section exemptions).
     evidence: docs/decisions.md, Phase 2D ADR 32 (protect_from_region_membership)
+    status: reviewed
+  # --- Phase 2E: Q38's own "N -> Nd" / "N -> ·Nd" productions swallowed by
+  # a small-formula region's own exclusion padding, not rendered by it either
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 25
+    bbox: [28.4, 296.4, 65.7, 313.9]
+    rule: protect_from_region_membership
+    question_id: enade-2011-computing-q38
+    reason: >-
+      Production 4 of Q38's own grammar ("N -> Nd") is real, correctly
+      decoded text (TimesNewRomanPS-ItalicMT, chars 'N' 0x4e + 'd' 0x64,
+      confirmed by direct rawdict inspection) sitting immediately below
+      production 3 ("E -> Nx"). Production 3's own terminal "x" is a tiny
+      embedded raster image (bbox ~59.6,292.7-69.9,300.4, ~10x8pt) that
+      the existing small-formula-image mechanism (Phase 2C) correctly
+      detects and crops as figure-05.png - but that region's own bbox
+      (292.7-300.4, only 7.7pt tall) sits close enough to production 4's
+      own top edge (y0=299.6) that REGION_Y_PADDING (2pt,
+      assembler.py) is enough to mark the whole "N -> Nd" line as
+      "inside" the region and exclude it from the statement text, even
+      though the rendered crop (RENDER_PADDING only reaching y=304.4)
+      never shows enough of it to be legible either - the line was
+      neither readable as text nor as image. Confirmed by direct
+      before/after comparison of the assembled statement.
+      protect_from_region_membership exempts this specific line from
+      that exclusion check directly - the same mechanism already used
+      for Q12's own item IV and Q48's own connecting sentence (both
+      Phase 2D, MAX_ABSORPTION_GROWTH cap cases) - here applied to a
+      small-formula region's own tight bbox instead of a growth-capped
+      large region, but the same "the exclusion check, not the region
+      itself, needs to be fixed" diagnosis applies.
+    evidence: docs/decisions.md, Phase 2E ADR 39 (small-formula region membership)
+    status: reviewed
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 25
+    bbox: [28.4, 400.3, 68.9, 418.8]
+    rule: protect_from_region_membership
+    question_id: enade-2011-computing-q38
+    reason: >-
+      Same defect class as the "N -> Nd" override above, for the e0
+      state's own analogous production "N -> ·Nd" (y0=403.5), swallowed
+      by the small-formula region carrying e0's own "E -> ·Nx" (bbox
+      ~62.8,396.6-73.2,404.3; 404.3+REGION_Y_PADDING(2)=406.3 >= 403.5).
+    evidence: docs/decisions.md, Phase 2E ADR 39 (small-formula region membership)
+    status: reviewed
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 25
+    bbox: [28.4, 469.8, 75.5, 488.3]
+    rule: protect_from_region_membership
+    question_id: enade-2011-computing-q38
+    reason: >-
+      Same defect class as the two overrides above, for the e1 state's
+      own third production "M -> N·d" (y0=469.9), swallowed by the
+      small-formula region carrying e1's own "M -> N·x" (bbox
+      ~67.5,462.5-77.9,470.2; 470.2+REGION_Y_PADDING(2)=472.2 >= 469.9).
+      Found via a systematic page-25 sweep (every Q38-owned small-formula
+      region cross-checked against every Q38-owned line for this same Y-
+      proximity signature) after the first two instances were found
+      individually - not assumed to be the only ones.
+    evidence: docs/decisions.md, Phase 2E ADR 39 (small-formula region membership)
+    status: reviewed
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 25
+    bbox: [28.4, 251.6, 131.4, 265.1]
+    rule: protect_from_region_membership
+    question_id: enade-2011-computing-q38
+    reason: >-
+      "d representa um digito." (y0=251.7), the closing clause of the
+      sentence naming Q38's own grammar symbols, is real text
+      (ArialMT) sitting immediately below the small-formula region
+      carrying the "M, N, E" non-terminal symbols and the "x"/"d"
+      terminal symbols (bbox ~89.5,234.1-247.0,252.3;
+      252.3+REGION_Y_PADDING(2)=254.3 >= 251.7). Found in the same
+      systematic sweep as the two "N -> Nd"-class overrides above -
+      confirmed missing from both the plain statement text and
+      figure-02.png's own crop (which ends at "...em que", one line
+      short).
+    evidence: docs/decisions.md, Phase 2E ADR 39 (small-formula region membership)
+    status: reviewed
+  - pdf_sha256: eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548
+    page: 25
+    bbox: [28.4, 161.1, 287.5, 174.6]
+    rule: protect_from_region_membership
+    question_id: enade-2011-computing-q38
+    reason: >-
+      "interpretada como doze em base dez ou como dezoito em" (y0=161.2),
+      the third line of Q38's own opening paragraph, sits immediately
+      below figure-01's own region (bbox ~28.0,140.9-279.6,161.9;
+      161.9+REGION_Y_PADDING(2)=163.9 >= 161.2) - the same MAX_
+      ABSORPTION_GROWTH-driven wide-crop pattern as figure-01 itself
+      (which legitimately captures the two lines above this one), but
+      the crop's own extent stops one line short. Confirmed missing from
+      both the plain statement text and figure-01.png's own crop.
+    evidence: docs/decisions.md, Phase 2E ADR 39 (small-formula region membership)
     status: reviewed

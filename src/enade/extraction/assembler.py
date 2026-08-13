@@ -67,6 +67,13 @@ _MARKER_PREFIX_RE = re.compile(r"(?i)^quest[aã]o\s+(discursiva\s+)?0*\d+\b[.:\s
 class ExtractedAlternative:
     letter: str
     text: str
+    #: Index into ``ExtractedQuestion.figure_regions``, when this
+    #: alternative's own content is (fully or partly) a small raster/vector
+    #: formula image rather than text (PROMPT Phase 2E section 10) - e.g.
+    #: 2011 Q14, where every alternative is only a boolean-algebra formula
+    #: image with no other text. ``None`` for the overwhelming majority of
+    #: alternatives, which are real text.
+    figure_region_index: int | None = None
 
 
 @dataclass
@@ -481,6 +488,103 @@ def _strip_leading_marker(lines: list[Line]) -> list[Line]:
     return [stripped_first, *lines[1:]]
 
 
+#: An alternative's own text is "empty" (nothing but the marker and
+#: trailing punctuation survived) - the shape ``_attach_alternative_
+#: formula_regions`` looks for, never a question id.
+_EMPTY_ALTERNATIVE_TEXT_RE = re.compile(r"^[\s.,;:]*$")
+
+
+def _attach_alternative_formula_regions(
+    alternatives: list[ExtractedAlternative],
+    text_only_lines: list[Line],
+    alt_bounds: list[int],
+    candidate_regions: list[VisualRegion],
+) -> tuple[list[VisualRegion], set[int]]:
+    """Reattach a per-alternative formula image to an alternative whose own
+    text is empty after its marker (PROMPT Phase 2E section 10).
+
+    2011 Q14's own 5 alternatives are each *only* a small raster/vector
+    boolean-algebra formula (e.g. "(x+z)y + x-ybar-zbar"), never real
+    text - the alternative-marker line leaves nothing behind but a
+    trailing period. Several such per-alternative formula candidates,
+    sitting close together in Y (well within figures.py's own
+    ``SMALL_IMAGE_Y_MERGE_TOLERANCE``), merge into *one* region spanning
+    multiple alternatives' own rows, since the general merge pass has no
+    notion of an alternative boundary between them - leaving every
+    alternative's own text empty and the merged formula stranded as one
+    undifferentiated statement-level figure.
+
+    For each empty alternative, this slices the candidate region with
+    the largest Y-overlap against that alternative's own row (from its
+    own marker line down to the next alternative's, or the end of the
+    text for the last one) into a new, narrower ``VisualRegion`` scoped
+    to just that row - "crop the whole visual line" (PROMPT Phase 2E
+    section 7's own fallback guidance), never an attempt to reconstruct
+    the formula's own components. Returns the new per-alternative
+    regions (mutating each claimed alternative's own
+    ``figure_region_index`` in place to point into this returned list)
+    and the set of ``id()``s of original candidate regions that were
+    sliced from, so the caller can exclude them from the statement's own
+    figure placement - otherwise the same formula would render twice,
+    once merged at the top of the statement and once per alternative.
+
+    Triggered only by this geometric/textual shape - an alternative with
+    no real text of its own, and a candidate region overlapping its
+    row - never by question id, so this is inert for every alternative
+    that has real text (the overwhelming majority of this corpus).
+    """
+    empty_indices = [
+        i for i, alt in enumerate(alternatives) if _EMPTY_ALTERNATIVE_TEXT_RE.match(alt.text)
+    ]
+    if not empty_indices:
+        return [], set()
+
+    extra_regions: list[VisualRegion] = []
+    consumed_ids: set[int] = set()
+    for i in empty_indices:
+        start_line = text_only_lines[alt_bounds[i]]
+        next_index = alt_bounds[i + 1] if i + 1 < len(alt_bounds) else len(text_only_lines)
+        row_y0 = start_line.y0
+        row_y1 = (
+            text_only_lines[next_index].y0
+            if next_index < len(text_only_lines)
+            else start_line.y1 + 1000.0  # last alternative: no next-line bound on this page
+        )
+
+        def _y_overlap(region: VisualRegion, y0: float = row_y0, y1: float = row_y1) -> float:
+            return min(region.bbox[3], y1) - max(region.bbox[1], y0)
+
+        candidates = [
+            r
+            for r in candidate_regions
+            if r.page_number == start_line.page_number and _y_overlap(r) > 0
+        ]
+        if not candidates:
+            continue
+        best = max(candidates, key=_y_overlap)
+        slice_bbox = (
+            best.bbox[0],
+            max(best.bbox[1], row_y0),
+            best.bbox[2],
+            min(best.bbox[3], row_y1),
+        )
+        if slice_bbox[3] - slice_bbox[1] <= 0:
+            continue
+        extra_regions.append(
+            VisualRegion(
+                page_number=start_line.page_number,
+                bbox=slice_bbox,
+                element_count=1,
+                has_raster_image=best.has_raster_image,
+                owner_key=best.owner_key,
+                owner_x_bounds=best.owner_x_bounds,
+            )
+        )
+        consumed_ids.add(id(best))
+        alternatives[i].figure_region_index = len(extra_regions) - 1
+    return extra_regions, consumed_ids
+
+
 def assemble_question(
     span: QuestionSpan,
     doc: pymupdf.Document,
@@ -621,6 +725,8 @@ def assemble_question(
     statement_lines = content_lines
     statement_regions = regions
     statement_tables = detected_tables
+    alt_figure_regions: list[VisualRegion] = []
+    consumed_ids: set[int] = set()
 
     if span.kind == QuestionKind.OBJECTIVE:
         starts = _find_alternative_starts(text_only_lines)
@@ -656,15 +762,33 @@ def assemble_question(
                 full_text = f"{first_text} {rest_text}".strip() if rest_text else first_text
                 alternatives.append(ExtractedAlternative(letter=letter, text=full_text))
 
+            alt_figure_regions, consumed_ids = _attach_alternative_formula_regions(
+                alternatives, text_only_lines, alt_bounds, regions
+            )
+            if alt_figure_regions:
+                statement_regions = [r for r in statement_regions if id(r) not in consumed_ids]
+
     segments, placed_region_indices, placed_table_indices = _build_statement_segments(
         statement_lines, statement_regions, statement_tables, overrides, pdf_sha256
     )
 
+    # Computed against the pre-attachment statement_regions/consumed_ids
+    # (PROMPT Phase 2E section 10): a region reattached to an alternative
+    # was never meant to land in the statement flow, and one consumed by
+    # that attachment was deliberately replaced by per-alternative slices,
+    # not lost - neither is a real "could not place"/"dropped" finding.
     unplaced = set(range(len(statement_regions))) - set(placed_region_indices)
     if unplaced:
         warnings.append(
             f"{len(unplaced)} detected figure region(s) could not be placed in the statement flow"
         )
+
+    if alt_figure_regions:
+        base_index = len(statement_regions)
+        for alt in alternatives:
+            if alt.figure_region_index is not None:
+                alt.figure_region_index += base_index
+        statement_regions = statement_regions + alt_figure_regions
 
     unplaced_tables = set(range(len(statement_tables))) - set(placed_table_indices)
     if unplaced_tables:
@@ -685,7 +809,13 @@ def assemble_question(
     if span.kind == QuestionKind.OBJECTIVE and len(alternatives) not in (0, 5):
         warnings.append(f"expected 5 alternatives, found {len(alternatives)}")
 
-    dropped_regions = [r for r in regions if r not in statement_regions]
+    # A region consumed by an alternative attachment (PROMPT Phase 2E
+    # section 10) was deliberately replaced by per-alternative slices, not
+    # lost - excluded here the same way it is from the "unplaced" check
+    # above.
+    dropped_regions = [
+        r for r in regions if r not in statement_regions and id(r) not in consumed_ids
+    ]
     if dropped_regions:
         warnings.append(
             f"{len(dropped_regions)} figure region(s) fell after the alternatives cutoff "

@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from enade.extraction.assembler import (
     CodeSegment,
+    ExtractedAlternative,
     FigureSegment,
     TextSegment,
+    _attach_alternative_formula_regions,
     _build_statement_segments,
     _find_alternative_starts,
     _line_in_region,
@@ -127,6 +129,110 @@ def test_line_in_region_ignores_override_for_a_different_pdf_hash():
     # Same bbox/page, but a different pdf_sha256 - normal containment
     # behavior applies (still True, unaffected by the override).
     assert _line_in_region(line, region, overrides, "cafebabe" * 8) is True
+
+
+def test_line_in_region_small_formula_region_swallows_the_line_below_without_override():
+    """Regression test: 2011 Q38 (page 25, PROMPT Phase 2E section 9) -
+    production 4 of Q38's own grammar ("N -> Nd") sits at y0=296.5, just
+    below the small-formula region carrying production 3's own terminal
+    "x" (region bbox y1=300.4). REGION_Y_PADDING (2pt) alone is enough to
+    mark "N -> Nd" as inside the region and exclude it from the
+    statement, even though the region's own tiny bbox never renders
+    enough of that line to be legible either - real content, neither
+    readable as text nor as image, without an override.
+    """
+    region = VisualRegion(
+        page_number=25, bbox=(59.55, 292.74, 69.90, 300.39), element_count=1, has_raster_image=True
+    )
+    line = _line(25, 299.6, "N → Nd", x=28.47, width=37.1)
+    assert _line_in_region(line, region) is True
+
+
+def test_line_in_region_small_formula_region_override_recovers_the_swallowed_line():
+    region = VisualRegion(
+        page_number=25, bbox=(59.55, 292.74, 69.90, 300.39), element_count=1, has_raster_image=True
+    )
+    line = _line(25, 299.6, "N → Nd", x=28.47, width=37.1)
+    overrides = LayoutOverrideSet(
+        overrides=[
+            LayoutOverride(
+                pdf_sha256="eb3b497f" * 8,
+                page=25,
+                bbox=(28.4, 296.4, 65.7, 313.9),
+                rule="protect_from_region_membership",
+                question_id="enade-2011-computing-q38",
+                reason="test",
+                evidence="test",
+                status="reviewed",
+            )
+        ]
+    )
+    assert _line_in_region(line, region, overrides, "eb3b497f" * 8) is False
+
+
+def test_attach_alternative_formula_regions_splits_a_merged_region_per_alternative():
+    """Regression test: 2011 Q14 (PROMPT Phase 2E section 10) - all 5
+    alternatives are only a boolean-algebra formula image, no real text,
+    and the 5 per-alternative formula candidates merge into one region
+    spanning all 5 rows (well within figures.py's own small-image merge
+    tolerance) before this function ever sees them. Each empty
+    alternative must get its own Y-sliced piece of that one region.
+    """
+    text_only_lines = [
+        _line(1, 100.0, "A"),
+        _line(1, 115.0, "B"),
+        _line(1, 130.0, "C"),
+        _line(1, 145.0, "D"),
+        _line(1, 160.0, "E"),
+    ]
+    alt_bounds = [0, 1, 2, 3, 4]
+    alternatives = [ExtractedAlternative(letter=letter, text=".") for letter in "ABCDE"]
+    merged_region = VisualRegion(
+        page_number=1, bbox=(200.0, 98.0, 300.0, 175.0), element_count=5, has_raster_image=True
+    )
+    extra_regions, consumed_ids = _attach_alternative_formula_regions(
+        alternatives, text_only_lines, alt_bounds, [merged_region]
+    )
+    assert len(extra_regions) == 5
+    assert consumed_ids == {id(merged_region)}
+    assert [alt.figure_region_index for alt in alternatives] == [0, 1, 2, 3, 4]
+    # Each slice stays within the merged region's own Y-range, in order,
+    # and none of them overlap each other.
+    for i in range(4):
+        assert extra_regions[i].bbox[3] <= extra_regions[i + 1].bbox[1] + 1e-6
+    for region in extra_regions:
+        assert region.bbox[1] >= merged_region.bbox[1]
+        assert region.bbox[3] <= merged_region.bbox[3]
+
+
+def test_attach_alternative_formula_regions_ignores_alternatives_with_real_text():
+    text_only_lines = [_line(1, 100.0, "A\t Texto real da alternativa A.")]
+    alternatives = [ExtractedAlternative(letter="A", text="Texto real da alternativa A.")]
+    region = VisualRegion(page_number=1, bbox=(200.0, 98.0, 300.0, 112.0), element_count=1)
+    extra_regions, consumed_ids = _attach_alternative_formula_regions(
+        alternatives, text_only_lines, [0], [region]
+    )
+    assert extra_regions == []
+    assert consumed_ids == set()
+    assert alternatives[0].figure_region_index is None
+
+
+def test_attach_alternative_formula_regions_none_when_no_region_overlaps():
+    text_only_lines = [_line(1, 100.0, "A"), _line(1, 115.0, "B")]
+    alternatives = [
+        ExtractedAlternative(letter="A", text="."),
+        ExtractedAlternative(letter="B", text="."),
+    ]
+    # On a different page entirely - never overlaps alternative A's own
+    # row (100.0-115.0 on page 1), regardless of the last-alternative
+    # fallback window.
+    far_region = VisualRegion(page_number=2, bbox=(200.0, 100.0, 300.0, 112.0), element_count=1)
+    extra_regions, consumed_ids = _attach_alternative_formula_regions(
+        alternatives, text_only_lines, [0, 1], [far_region]
+    )
+    assert extra_regions == []
+    assert consumed_ids == set()
+    assert alternatives[0].figure_region_index is None
 
 
 def test_detect_broken_words_flags_ligature_artifact():

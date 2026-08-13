@@ -25,6 +25,13 @@ FRONT_MATTER_DELIMITER = "---"
 _HEADING_RE = re.compile(r"^#\s+Quest[aã]o\s+(?P<number>\d+)\s*$", re.IGNORECASE)
 _ALTERNATIVES_HEADING_RE = re.compile(r"^##\s+Alternativas\s*$", re.IGNORECASE)
 _ALTERNATIVE_LINE_RE = re.compile(r"^(?P<letter>[A-E])[.)]\s+(?P<text>.+)$")
+#: An alternative whose own content is a formula image (PROMPT Phase 2E
+#: section 10, e.g. 2011 Q14) embeds it the same way a statement figure
+#: does - ``![alt](path)`` inline in its own line - matched here so the
+#: path can be resolved back to the matching entry in ``Question.assets``
+#: (the body carries only the portable path, never the full Asset
+#: metadata - see ``_parse_body``/``parse_question_markdown``).
+_ALTERNATIVE_ASSET_RE = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
 
 
 class MarkdownFormatError(ValueError):
@@ -53,13 +60,26 @@ def parse_question_markdown(text: str) -> dict[str, Any]:
         )
 
     statement, alternatives = _parse_body(body)
+
+    # An alternative embedding a formula image (PROMPT Phase 2E section
+    # 10) carries only the portable path in the body - resolve it back to
+    # the matching full Asset entry already parsed from the front matter,
+    # the same source of truth Question.assets itself uses. A path with no
+    # matching asset entry is left unresolved (asset=None) rather than
+    # fabricating one - schema validation then surfaces the mismatch, the
+    # same way a missing statement figure would.
+    assets_by_path = {a.get("path"): a for a in (data.get("assets") or [])}
+    for alt in alternatives:
+        asset_path = alt.pop("asset_path", None)
+        alt["asset"] = assets_by_path.get(asset_path) if asset_path is not None else None
+
     data = dict(data)
     data["statement"] = statement
     data["alternatives"] = alternatives
     return data
 
 
-def _parse_body(body: str) -> tuple[str, list[dict[str, str]]]:
+def _parse_body(body: str) -> tuple[str, list[dict[str, Any]]]:
     lines = body.splitlines()
     idx = 0
     while idx < len(lines) and not lines[idx].strip():
@@ -68,7 +88,7 @@ def _parse_body(body: str) -> tuple[str, list[dict[str, str]]]:
         idx += 1
 
     statement_lines: list[str] = []
-    alternatives: list[dict[str, str]] = []
+    alternatives: list[dict[str, Any]] = []
     current_letter: str | None = None
     current_text: list[str] = []
     in_alternatives = False
@@ -76,7 +96,16 @@ def _parse_body(body: str) -> tuple[str, list[dict[str, str]]]:
     def flush_alternative() -> None:
         nonlocal current_letter, current_text
         if current_letter is not None:
-            alternatives.append({"letter": current_letter, "text": " ".join(current_text).strip()})
+            joined = " ".join(current_text).strip()
+            asset_match = _ALTERNATIVE_ASSET_RE.search(joined)
+            entry: dict[str, Any] = {"letter": current_letter}
+            if asset_match is not None:
+                remaining = (joined[: asset_match.start()] + joined[asset_match.end() :]).strip()
+                entry["text"] = remaining or "."
+                entry["asset_path"] = asset_match.group(1)
+            else:
+                entry["text"] = joined
+            alternatives.append(entry)
         current_letter = None
         current_text = []
 
@@ -140,5 +169,11 @@ def render_question_markdown(question: Question) -> str:
     ]
     if question.alternatives:
         parts += ["", "## Alternativas", ""]
-        parts += [f"{alt.letter}. {alt.text}" for alt in question.alternatives]
+        for alt in question.alternatives:
+            if alt.asset is not None:
+                parts.append(
+                    f"{alt.letter}. ![Alternativa {alt.letter}]({alt.asset.path}) {alt.text}"
+                )
+            else:
+                parts.append(f"{alt.letter}. {alt.text}")
     return "\n".join(parts) + "\n"

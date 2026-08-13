@@ -3,11 +3,13 @@ from __future__ import annotations
 from enade.extraction.boundaries import QuestionKind, QuestionSpan
 from enade.extraction.layout import Line
 from enade.extraction.ownership import (
+    OWNERSHIP_MARGIN,
     QuestionRegion,
     compute_question_regions,
     detect_contamination,
     find_owner,
     question_key,
+    render_bounds_for_owner,
 )
 
 
@@ -169,3 +171,20 @@ def test_detect_contamination_ignores_trivial_overlap_below_threshold():
 def test_question_key_matches_kind_and_number():
     span = _span(QuestionKind.DISCURSIVE, 3, [_line(1, 10, "x")])
     assert question_key(span) == "discursive-3"
+
+
+def test_render_bounds_for_owner_none_without_an_owner():
+    assert render_bounds_for_owner(None, (296.0, 556.0)) is None
+
+
+def test_render_bounds_for_owner_none_on_a_single_column_page():
+    # Questao 17 regression (PROMPT Phase 2D ADR 35): a full-width,
+    # single-column diagram must never be capped to its own text-only bbox.
+    owner = QuestionRegion("objective-17", 12, x0=28.5, y0=68.2, x1=405.3, y1=717.2)
+    assert render_bounds_for_owner(owner, None) is None
+
+
+def test_render_bounds_for_owner_expands_by_the_ownership_margin():
+    owner = QuestionRegion("objective-22", 14, x0=28.5, y0=152.6, x1=201.5, y1=395.5)
+    bounds = render_bounds_for_owner(owner, (296.7, 555.7))
+    assert bounds == (28.5 - OWNERSHIP_MARGIN, 201.5 + OWNERSHIP_MARGIN)

@@ -86,9 +86,9 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
@@ -98,7 +98,7 @@ taxonomy_review_status: pending
 
 ![Figura da questão](enade-2011-computing-q38/figure-01.png)
 
-hexadecimal. Uma maneira de resolver esse problema é exigindo que as constantes em hexadecimal terminem com o caracter “ ”. Assim, não há ambiguidade,g por g
+interpretada como doze em base dez ou como dezoito em hexadecimal. Uma maneira de resolver esse problema é exigindo que as constantes em hexadecimal terminem com o caracter “ ”. Assim, não há ambiguidade,g por g
 
 ![Figura da questão](enade-2011-computing-q38/figure-03.png)
 
@@ -106,19 +106,19 @@ A gramática a seguir descreve números inteiros, possivelmente com o símbolo �
 
 ![Figura da questão](enade-2011-computing-q38/figure-02.png)
 
-M → E M → N E → N N
+d representa um dígito. M → E M → N E → N N
 
 ![Figura da questão](enade-2011-computing-q38/figure-05.png)
 
-N → d Durante a construção de um autômato LR para essa gramática, os seguintes estados são definidos: e0: M´ → ·M M → ·E M → ·N E → ·N N
+N → Nd N → d Durante a construção de um autômato LR para essa gramática, os seguintes estados são definidos: e0: M´ → ·M M → ·E M → ·N E → ·N N
 
 ![Figura da questão](enade-2011-computing-q38/figure-06.png)
 
-N → ·d e1(e0, N): M → N · M → N ·
+N → ·Nd N → ·d e1(e0, N): M → N · M → N ·
 
 ![Figura da questão](enade-2011-computing-q38/figure-07.png)
 
-A respeito dessa gramática, analise as seguintes asserções e a relação proposta entre elas. A gramática descrita é do tipo LR(0). PORQUE É possível construir um autômato LR(0), determinístico, cujos estados incluem e acima descritos.
+M → N · d A respeito dessa gramática, analise as seguintes asserções e a relação proposta entre elas. A gramática descrita é do tipo LR(0). PORQUE É possível construir um autômato LR(0), determinístico, cujos estados incluem e acima descritos.
 
 ![Figura da questão](enade-2011-computing-q38/figure-04.png)
 

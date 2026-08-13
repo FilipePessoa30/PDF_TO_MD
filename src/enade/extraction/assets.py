@@ -147,15 +147,37 @@ def render_table_region(
     output_path: Path,
     relative_path: str,
     asset_id: str,
+    column_bounds: tuple[float, float] | None = None,
 ) -> RenderedAsset:
     """Render a detected table's bbox to a PNG crop - the mandatory visual
     fallback for structured table content (PROMPT Phase 1C section 5.2):
     this is rendered unconditionally whenever a table is detected,
     regardless of whether its structured (Markdown) reconstruction is
     later confirmed cell-by-cell.
+
+    ``column_bounds`` (PROMPT Phase 2E section 7): same cap as
+    ``render_region``'s own, computed by the caller via
+    ``ownership.render_bounds_for_owner`` - a ``DetectedTable`` has no
+    owner of its own (unlike ``VisualRegion``, it is built directly from
+    one question's own already-scoped lines, see ``tables.py``), so the
+    owner is supplied here rather than looked up by bbox center. Found on
+    Questao 22 (page 14): its own ``table-01.png`` widened across the
+    column boundary into Questao 23's own automaton diagram and grammar,
+    same root cause as ADR 35's fix for ``render_region`` - the table's
+    own bbox was already correctly confined to Questao 22's own column
+    (``detect_tables`` runs on one question's own span lines only), so
+    the leak was entirely this function's own unconditional page-content-
+    width widening - see docs/decisions.md, Phase 2E ADR.
     """
     return _render_bbox(
-        doc, table.page_number, table.bbox, output_path, relative_path, asset_id, AssetType.TABLE
+        doc,
+        table.page_number,
+        table.bbox,
+        output_path,
+        relative_path,
+        asset_id,
+        AssetType.TABLE,
+        column_bounds=column_bounds,
     )
 
 

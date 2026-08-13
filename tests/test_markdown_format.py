@@ -36,6 +36,27 @@ def test_render_then_parse_round_trips(fixtures_dir: Path):
     assert reparsed_data["alternatives"] == [a.model_dump() for a in original.alternatives]
 
 
+def test_alternative_asset_round_trips_through_render_and_parse(fixtures_dir: Path):
+    """PROMPT Phase 2E section 10: an alternative whose own content is a
+    formula image (2011 Q14's own shape) embeds it inline the same way a
+    statement figure does - the body carries only the portable path, and
+    the full Asset is resolved back from Question.assets on reparse.
+    """
+    original = load_question_markdown(fixtures_dir / "questions" / "valid" / "q-with-asset.md")
+    asset = original.assets[0]
+    alternatives = list(original.alternatives)
+    alternatives[0] = alternatives[0].model_copy(update={"text": ".", "asset": asset})
+    with_alt_asset = original.model_copy(update={"alternatives": alternatives})
+
+    rendered = render_question_markdown(with_alt_asset)
+    assert f"A. ![Alternativa A]({asset.path}) ." in rendered
+
+    reparsed = parse_question_markdown(rendered)
+    assert reparsed["alternatives"][0]["text"] == "."
+    assert reparsed["alternatives"][0]["asset"]["path"] == asset.path
+    assert reparsed["alternatives"][1]["asset"] is None
+
+
 def test_front_matter_must_not_declare_statement_or_alternatives():
     text = "\n".join(
         [

@@ -88,6 +88,31 @@ class QuestionRegion:
         )
 
 
+def render_bounds_for_owner(
+    owner: QuestionRegion | None, column_margins: tuple[float, float] | None
+) -> tuple[float, float] | None:
+    """The safe x-range a rendered crop may widen into, for one owner.
+
+    Shared by every asset-rendering call site that needs to cap
+    ``assets.py``'s own page-content-width widening (PROMPT Phase 2D
+    section 11, Phase 2E section 7): ``figures.py``'s two ``VisualRegion``
+    construction sites, and ``pipeline.py``'s own table-asset render call
+    (``DetectedTable`` has no owner of its own - unlike ``VisualRegion``,
+    it is built directly from one question's own already-scoped
+    ``span.lines``, see ``tables.py``/``assembler.py`` - so the owner is
+    supplied by the caller instead of looked up by bbox center).
+
+    ``None`` when no owner is known, or the page is not a genuine
+    two-column layout (``column_margins`` is ``None``) - single-column
+    pages never need this cap, since a full-width asset's own drawn
+    extent can legitimately exceed its owning question's own *text*
+    bbox (e.g. Questao 17's own circuit diagram).
+    """
+    if owner is None or column_margins is None:
+        return None
+    return (owner.x0 - OWNERSHIP_MARGIN, owner.x1 + OWNERSHIP_MARGIN)
+
+
 def compute_question_regions(
     spans: list[QuestionSpan],
 ) -> dict[int, list[QuestionRegion]]:

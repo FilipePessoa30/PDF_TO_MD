@@ -82,26 +82,32 @@ blockers:
   status: resolved
   visual_validation: passed
 - affected_assets:
-  - enade-2011-computing-q14/figure-02.png
+  - enade-2011-computing-q14/figure-03.png
+  - enade-2011-computing-q14/figure-04.png
+  - enade-2011-computing-q14/figure-05.png
+  - enade-2011-computing-q14/figure-06.png
+  - enade-2011-computing-q14/figure-07.png
   category: math-notation
   cause: Each alternative's own boolean-algebra formula is a small embedded raster
     image; the alternative-building path is text-only (marker regex) and has no mechanism
     to attach an inline image to a specific alternative's own text.
   description: All 5 alternatives render as empty ("A. ." ... "E. .").
-  evidence: data/manifests/visual-audit-2011-computing.json#enade-2011-computing-q14
+  evidence: docs/decisions.md, Phase 2E ADR (inline alternative formula assets)
   id: q14-alternatives-empty
   question_id: enade-2011-computing-q14
   regression_tests:
-  - tests/test_ownership.py
-  resolution: 'PARTIALLY IMPROVED (Phase 2C): the formulas are now confirmed present,
-    complete, legible, and correctly owned (figure-02.png shows all 5), but not yet
-    placed inline per-alternative ("no local correto" not yet satisfied, PROMPT Phase
-    2C section 16). Extending ExtractedAlternative to carry an optional formula-asset
-    reference was scoped but not implemented this phase.'
+  - tests/test_extraction_assembler.py
+  - tests/test_markdown_format.py
+  resolution: 'RESOLVED (Phase 2E): fixed via a new, general inline-alternative-asset
+    mechanism - Alternative gained an optional asset field, and a new assembler.py
+    function (_attach_alternative_formula_regions) Y-slices a merged multi-alternative
+    formula region back into one piece per alternative, triggered only by the empty-alternative-text
+    + overlapping-region shape, never by question id. All 5 alternatives now show
+    their own correct, distinct formula image.'
   source_pages:
   - 11
-  status: open
-  visual_validation: failed
+  status: resolved
+  visual_validation: passed
 - affected_assets:
   - enade-2011-computing-q20/figure-01.png
   category: figure-region-absorption
@@ -122,17 +128,29 @@ blockers:
   visual_validation: passed
 - affected_assets: []
   category: math-notation
-  cause: Small inline symbol images excluded from region candidates (Level-3 overrides,
-    ADR 23) to stop them re-anchoring the automaton diagram's region into the statement
-    text - the symbols themselves were never separately preserved.
-  description: Three inline symbols (Sigma={a,b,c}, Sigma*, lambda) are not individually
-    preserved as inline Markdown or as their own asset.
+  cause: Two small embedded raster images (Sigma, 8.4x9.2pt at D's own row; the regex,
+    133.6x12.4pt at E's own row) fall after the alternatives cutoff and are dropped
+    - no mechanism currently attaches an asset in the middle of an alternative that
+    already has real text on both sides of the gap.
+  description: Alternative D's own missing Sigma symbol and alternative E's own missing
+    regular-expression notation are each a small embedded image sitting inside an
+    otherwise-complete alternative's own text, not covered by the general inline-alternative-asset
+    mechanism (which only triggers for a wholly-empty alternative, not a partial mid-text
+    gap).
   evidence: data/manifests/visual-audit-2011-computing.json#enade-2011-computing-q23
   id: q23-inline-symbols-residual
   question_id: enade-2011-computing-q23
-  regression_tests:
-  - tests/test_layout_overrides.py
-  resolution: Unchanged this phase - not attempted, out of scope given time.
+  regression_tests: []
+  resolution: 'PARTIALLY RESOLVED (Phase 2E): the opening paragraph''s own 3 symbols
+    (Sigma={a,b,c}, Sigma*, lambda) are now fully resolved - the exclude_from_region_candidates
+    overrides suppressing them were found obsolete (written before the small-formula-image
+    mechanism existed) and removed; all 3 now render correctly via a new figure-03.png.
+    Alternative D''s own Sigma gap is now low-severity (redundant with the fixed intro
+    paragraph). Alternative E''s own missing regex remains a genuine, answerability-relevant
+    gap - fixing it generally would need a further schema change (inline mid-text
+    asset embedding within Alternative, beyond the single-asset-per-alternative field
+    added this phase for Q14) - out of scope this phase given the risk/value trade
+    for one single symbol.'
   source_pages:
   - 14
   status: open
@@ -166,8 +184,15 @@ blockers:
   id: q27-pseudocode-not-code-block
   question_id: enade-2011-computing-q27
   regression_tests: []
-  resolution: Unchanged this phase - matches the already-accepted Q46/D4 precedent
-    (content preserved, formatting lost, not itself misleading).
+  resolution: 'RE-INVESTIGATED (Phase 2E), status unchanged (open, non-blocking to
+    content fidelity). Reproduced and reconfirmed by direct rawdict font inspection:
+    every pseudocode line is set in ArialMT (proportional, not monospace) - the identical
+    root cause already documented for Q46 (Phase 2A) and D4 (Phase 1C). All 7 lines
+    verified present, complete, and correctly ordered this phase - zero content loss.
+    A new force_code_block-style override was considered (PROMPT Phase 2E section
+    11) and rejected: the gap is optional formatting, not content fidelity, and a
+    new override rule kind for one single-question, zero-loss, already-accepted-elsewhere
+    case is a worse risk/value trade than leaving it disclosed.'
   source_pages:
   - 16
   status: open
@@ -284,6 +309,8 @@ blockers:
   - enade-2011-computing-q38/figure-03.png
   - enade-2011-computing-q38/figure-04.png
   - enade-2011-computing-q38/figure-05.png
+  - enade-2011-computing-q38/figure-06.png
+  - enade-2011-computing-q38/figure-07.png
   category: math-notation
   cause: Not fully root-caused this phase - distinct from, and not resolved by, the
     cross-question contamination fix (q38-q40 pair). The "g" character artifact in
@@ -291,32 +318,23 @@ blockers:
   description: The BNF grammar block's own productions and LR-automaton state definitions
     still read interspersed with figure references rather than as a clean sequential
     block.
-  evidence: data/manifests/visual-audit-2011-computing.json#enade-2011-computing-q38
+  evidence: docs/decisions.md, Phase 2E ADR (small-formula region membership)
   id: q38-remaining-content-defects
   question_id: enade-2011-computing-q38
   regression_tests:
-  - tests/test_ownership.py
-  resolution: 'PARTIALLY CLARIFIED (Phase 2D), still open. Two of the three original
-    sub-issues are now resolved/clarified: (1) the hexadecimal-ambiguity paragraph
-    is CONFIRMED present, complete and correct via figure-02.png/figure-03.png (''...que
-    nao usam os digitos de A a F...'', ''...com o caracter "x"...''), now that this
-    phase''s cross-owner region-merge fix (see q38-q40-region-merge-contamination)
-    removed Q40''s own grid puzzle from figure-01.png and let the LR-table fragments
-    re-split cleanly - the plain text''s own parallel copy of this paragraph is separately
-    corrupted with stray ''g'' characters, confirmed by rawdict inspection to be a
-    genuine, isolated U+0067 glyph in font ArialMT (not a symbol-font substitution
-    case like D3''s Wingdings) - figure-02/03.png are the canonical source for this
-    paragraph. (2) the PORQUE/assertion sentence is CONFIRMED present as plain statement
-    text in full (''...analise as seguintes assercoes e a relacao proposta entre elas.
-    A gramatica descrita e do tipo LR(0). PORQUE E possivel construir um automato
-    LR(0)...''), contradicting the prior note that it was ''only crop padding''. STILL
-    OPEN: the grammar productions/automaton states remain interspersed with figure
-    references rather than reading as a clean sequence - not attempted this phase
-    given time constraints.'
+  - tests/test_extraction_assembler.py
+  resolution: 'RESOLVED (Phase 2E): a systematic sweep found 5 lines of genuinely
+    missing content (real, correctly-decoded text swallowed by a small-formula region''s
+    own REGION_Y_PADDING, never rendered legibly by its crop either) - fixed via 5
+    new protect_from_region_membership overrides, the same mechanism proven for Q12/Q48
+    in Phase 2D. The statement now reads in the exact correct order. Remaining, disclosed,
+    non-fabricated residuals (the "g" glyph artifact, the duplicate-"N" "Nx" artifact,
+    and the "e" vs "e0 e e1" truncation) are all genuine source-PDF-level artifacts,
+    each with a complete, correct, legible visual fallback confirmed this phase.'
   source_pages:
   - 25
-  status: open
-  visual_validation: failed
+  status: resolved_by_visual_fallback
+  visual_validation: passed
 - affected_assets: []
   category: figure-region-absorption
   cause: Same label-absorption mechanism as the original blocker, but the defect geometry
@@ -391,11 +409,13 @@ blockers:
   evidence: data/manifests/extraction-audit-2011-computing.json
   id: q14-not-verified
   question_id: enade-2011-computing-q14
-  regression_tests: []
-  resolution: Still needs_review - q14-alternatives-empty remains open.
+  regression_tests:
+  - tests/test_extraction_assembler.py
+  resolution: 'RESOLVED (Phase 2E): q14''s own underlying content blocker is now resolved;
+    extraction_status is now verified.'
   source_pages:
   - 11
-  status: open
+  status: resolved
 - category: readiness-status
   cause: See q20-missing-second-assertion.
   description: extraction_status was not "verified" (see q20-missing-second-assertion).
@@ -487,11 +507,13 @@ blockers:
   evidence: data/manifests/extraction-audit-2011-computing.json
   id: q38-not-verified
   question_id: enade-2011-computing-q38
-  regression_tests: []
-  resolution: Still needs_review - q38-remaining-content-defects remains open.
+  regression_tests:
+  - tests/test_extraction_assembler.py
+  resolution: 'RESOLVED (Phase 2E): q38''s own underlying content blocker is now resolved;
+    extraction_status is now verified.'
   source_pages:
   - 25
-  status: open
+  status: resolved
 - category: readiness-status
   cause: See q38-q40-cross-question-figure-contamination.
   description: extraction_status was not "verified" (see q38-q40-cross-question-figure-contamination).
@@ -672,17 +694,18 @@ blockers:
     table, rendered via render_table_region) was found, by direct pixel inspection
     while investigating q23-cross-column-asset-contamination, to also show Q23's own
     automaton diagram and grammar bleeding in on the right edge.
-  evidence: data/manifests/visual-audit-2011-computing.json#enade-2011-computing-q22
+  evidence: docs/decisions.md, Phase 2E ADR (column-aware table crop widening)
   id: q22-table-asset-contamination
   question_id: enade-2011-computing-q22
-  regression_tests: []
-  resolution: 'Not resolved this phase - disclosed, unattempted given time. Does NOT
-    affect Q22''s own passed status: the truth table itself is already fully and correctly
-    reconstructed as Markdown text/table in the statement; table-01.png is a supplementary
-    fallback asset, not the primary source of truth. Minimal fix: thread a column_bounds
-    parameter into render_table_region the same way render_region now receives one
-    from VisualRegion.owner_x_bounds.'
+  regression_tests:
+  - tests/test_extraction_assets.py
+  - tests/test_ownership.py
+  resolution: 'RESOLVED (Phase 2E): render_table_region gained the same column_bounds
+    parameter render_region received in Phase 2D, computed via the new shared ownership.render_bounds_for_owner
+    helper (also used to refactor figures.py''s own two prior call sites, removing
+    duplicated logic). Re-inspected: table-01.png now shows only Q22''s own truth
+    table.'
   source_pages:
   - 14
-  status: open
+  status: resolved
   visual_validation: passed

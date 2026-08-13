@@ -33,7 +33,7 @@ assets:
   path: enade-2011-computing-q14/figure-02.png
   source_page: 11
   extraction_method: raster_crop
-  sha256: b75d45304dfd1e2d20778c527a92ea6947eed042185c19b99e670a208806d26c
+  sha256: 3de2e7a8d2e3dd0a37339dbcef2a475b5ece96f468266ffd3252405ea1130502
   alt_text: null
   caption: null
 - id: figure-03
@@ -41,7 +41,39 @@ assets:
   path: enade-2011-computing-q14/figure-03.png
   source_page: 11
   extraction_method: raster_crop
-  sha256: 3de2e7a8d2e3dd0a37339dbcef2a475b5ece96f468266ffd3252405ea1130502
+  sha256: e34063711d546a5ba805bfd953772b8c2ca16c2302ab6ac83cb641ce49f161ae
+  alt_text: null
+  caption: null
+- id: figure-04
+  type: image
+  path: enade-2011-computing-q14/figure-04.png
+  source_page: 11
+  extraction_method: raster_crop
+  sha256: 0551077cc83ef0e1766fc209f6dcaa8f476b9b9cc1d8023465d01cd107fc96d4
+  alt_text: null
+  caption: null
+- id: figure-05
+  type: image
+  path: enade-2011-computing-q14/figure-05.png
+  source_page: 11
+  extraction_method: raster_crop
+  sha256: a7f6a3a680b2495b79221c63c99270575a56e90e6b80b80553a5d74a30908dce
+  alt_text: null
+  caption: null
+- id: figure-06
+  type: image
+  path: enade-2011-computing-q14/figure-06.png
+  source_page: 11
+  extraction_method: raster_crop
+  sha256: d3e8c9efbee814caf482bb67cdb2dab31864e8e6a7836bfb87947c9a52459e05
+  alt_text: null
+  caption: null
+- id: figure-07
+  type: image
+  path: enade-2011-computing-q14/figure-07.png
+  source_page: 11
+  extraction_method: raster_crop
+  sha256: 4119a0c066fe4751e3382765a900484654a904fcbf3edd31bef1bb22798700e9
   alt_text: null
   caption: null
 subjects: []
@@ -54,9 +86,9 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
@@ -68,14 +100,12 @@ Observe o diagrama de Venn a seguir.
 
 A função representada em azul no diagrama também
 
-![Figura da questão](enade-2011-computing-q14/figure-03.png)
-
 ![Figura da questão](enade-2011-computing-q14/figure-02.png)
 
 ## Alternativas
 
-A. .
-B. .
-C. .
-D. .
-E. .
+A. ![Alternativa A](enade-2011-computing-q14/figure-03.png) .
+B. ![Alternativa B](enade-2011-computing-q14/figure-04.png) .
+C. ![Alternativa C](enade-2011-computing-q14/figure-05.png) .
+D. ![Alternativa D](enade-2011-computing-q14/figure-06.png) .
+E. ![Alternativa E](enade-2011-computing-q14/figure-07.png) .

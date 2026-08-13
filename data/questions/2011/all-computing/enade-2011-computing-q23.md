@@ -36,6 +36,14 @@ assets:
   sha256: af0f3acc4fbc92f343353f057f32d7749db210a6eefff05b0e797664064259f1
   alt_text: null
   caption: null
+- id: figure-03
+  type: image
+  path: enade-2011-computing-q23/figure-03.png
+  source_page: 14
+  extraction_method: raster_crop
+  sha256: bad242288322406f801cb0972e5e5d921239e7d45c43a355ca06b489038ba3e1
+  alt_text: null
+  caption: null
 subjects: []
 topics: []
 concepts: []
@@ -54,7 +62,11 @@ taxonomy_review_status: pending
 
 # Questão 23
 
-Autômatos finitos possuem diversas aplicações práticas, como na detecção de sequências de caracteres em um texto. A figura abaixo apresenta um autômato que reconhece sequências sobre o alfabeto e uma gramática livre de contexto que gera um subconjunto de , em que representa o string vazio.
+Autômatos finitos possuem diversas aplicações práticas, como na detecção de sequências de caracteres em um texto. A figura abaixo apresenta um autômato que
+
+![Figura da questão](enade-2011-computing-q23/figure-03.png)
+
+de
 
 ![Figura da questão](enade-2011-computing-q23/figure-01.png)
 

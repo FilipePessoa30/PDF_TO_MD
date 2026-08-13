@@ -27,7 +27,7 @@ import pymupdf
 from enade.extraction.chrome import is_chrome_line
 from enade.extraction.layout import Line, detect_column_margins, extract_page_lines
 from enade.extraction.layout_overrides import LayoutOverrideSet
-from enade.extraction.ownership import OWNERSHIP_MARGIN, QuestionRegion, find_owner
+from enade.extraction.ownership import QuestionRegion, find_owner, render_bounds_for_owner
 
 Rect = tuple[float, float, float, float]
 
@@ -695,11 +695,7 @@ def detect_visual_regions(
     for owner, group in _group_by_owner(large_candidates).items():
         owner_labels = _labels_for_owner(owner)
         owner_key = owner.question_key if owner is not None else None
-        owner_x_bounds = (
-            (owner.x0 - OWNERSHIP_MARGIN, owner.x1 + OWNERSHIP_MARGIN)
-            if owner is not None and column_margins is not None
-            else None
-        )
+        owner_x_bounds = render_bounds_for_owner(owner, column_margins)
         for bbox, count, has_image in _merge_by_vertical_proximity(group, y_merge_tolerance):
             width = bbox[2] - bbox[0]
             height = bbox[3] - bbox[1]
@@ -725,11 +721,7 @@ def detect_visual_regions(
 
     for owner, group in _group_by_owner(small_candidates).items():
         owner_key = owner.question_key if owner is not None else None
-        owner_x_bounds = (
-            (owner.x0 - OWNERSHIP_MARGIN, owner.x1 + OWNERSHIP_MARGIN)
-            if owner is not None and column_margins is not None
-            else None
-        )
+        owner_x_bounds = render_bounds_for_owner(owner, column_margins)
         for bbox, count, has_image in _merge_by_vertical_proximity(
             group, SMALL_IMAGE_Y_MERGE_TOLERANCE
         ):

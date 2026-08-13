@@ -1339,3 +1339,210 @@ primary source of truth for this question.
 own `QuestionRegion` and `detect_column_margins` at the `pipeline.py`
 call site (`DetectedTable`, unlike `VisualRegion`, is not itself computed
 per-owner today).
+
+## Phase 2E
+
+### 38. Q22's `table-01.png` contamination: the fix ADR 37 sketched, implemented
+
+**PROBLEMA**: ADR 37 (Phase 2D) found `table-01.png` contaminated with
+Q23's own content but ran out of time to fix it, sketching the fix as a
+`column_bounds` parameter on `render_table_region`.
+
+**DECISAO**: implemented exactly as sketched, plus one refactor: a new
+shared helper, `ownership.render_bounds_for_owner(owner, column_margins)`,
+factored out of the two near-identical `owner_x_bounds` computations
+already inline in `figures.py` (from ADR 35) - both now call it, and
+`pipeline.py`'s own table-rendering loop computes the same inputs (the
+current span's own `QuestionRegion`, looked up by `question_key(span)` in
+`question_regions_by_page`; `detect_column_margins` on the table's own
+page) and calls it a third time. `render_table_region` gained a
+`column_bounds` parameter threaded straight to `_render_bbox`, exactly
+like `render_region`'s own.
+
+This is Level-1 (an already-proven general mechanism, extended to a third
+call site it had not yet reached), not a new heuristic, and the shared
+helper removes duplication rather than adding a new mechanism-shaped
+thing to reason about.
+
+**RESULTADO**: `table-01.png` now shows only Q22's own truth table, at
+most a 1-2pt sliver at the page edge (the small, expected
+`OWNERSHIP_MARGIN` residual).
+
+**TESTE DE REGRESSAO**: `tests/test_extraction_assets.py` (2 new tests:
+`render_table_region` caps to `column_bounds` when supplied; widens to
+full page content width without it, unchanged pre-Phase-2E behavior).
+`tests/test_ownership.py` (3 new tests for `render_bounds_for_owner`
+directly: `None` without an owner; `None` on a single-column page - the
+Q17 regression case ADR 35 already established, re-verified against the
+shared helper; expands by `OWNERSHIP_MARGIN` on a genuine two-column
+page). Full 2021 regen: zero diff, `verify-gold` 40/40.
+
+### 39. Q38's remaining defects: a systematic sweep, not case-by-case guessing
+
+**PROBLEMA**: Q38's own blocker (`q38-remaining-content-defects`, Phase
+2D) described the residual as "grammar productions read scrambled inline
+with figure references" - re-reading the actual current Markdown against
+the source page side by side (not presumed from the prior note, per
+PROMPT Phase 2E section 9's own instruction) found this characterization
+was imprecise: the *reading order* was already correct throughout: the
+real defect was that several lines of genuine, correctly-decoded text
+were missing entirely - present in neither the plain statement nor any
+figure crop.
+
+**DIAGNOSTICO**: direct rawdict inspection of the grammar-productions
+block (`TimesNewRomanPS-ItalicMT`) confirmed productions like "N -> Nd"
+decode as real text (chars 'N' 0x4e, 'd' 0x64) - not an image, not a
+vector path - yet were absent from the assembled statement. Tracing the
+cause: a small-formula region carrying the *previous* production's own
+terminal symbol (e.g. "E -> Nx"'s own "x", a genuine tiny raster image)
+had a bbox only ~8pt tall, and `REGION_Y_PADDING` (2pt, assembler.py)
+alone was enough to mark the next line's own text as "inside" the region
+and exclude it - the same class of defect ADR 32 (Phase 2D) diagnosed for
+Q12/Q48, but there the culprit was a `MAX_ABSORPTION_GROWTH`-capped
+*large* region; here it is a small-formula region's own tight,
+un-grown bbox landing close to an unrelated neighboring line by
+coincidence, not by any absorption growth at all.
+
+Rather than fix instances one at a time as found, a systematic sweep was
+written: every region owned by Q38 cross-checked against every line owned
+by Q38 for the same "Y-padding reaches past the region's own rendered
+extent" signature - checked, applied its first 2 fixes, then re-run
+*again* after each fix (since fixing one instance does not itself reveal
+whether others exist) until it found nothing further. This found 5
+genuinely missing lines in total, not the 1 first noticed.
+
+**DECISAO**: 5 new `protect_from_region_membership` overrides (the same
+override kind Phase 2D's ADR 32 introduced), one per swallowed line - no
+new mechanism, no question-id logic in any shared module.
+
+**RESULTADO**: the full statement now reads in the exact correct order,
+matching the source page line-for-line. Investigating this also
+resolved two *separate*, previously-uncertain text/image discrepancies:
+the hex-ambiguity paragraph's own missing symbol is "x" (confirmed via
+its own correct figure crop), and the earlier-suspected "g" artifact is
+a genuine, isolated stray `U+0067` glyph in font ArialMT at the source-
+PDF level (rawdict-confirmed), not a font-substitution case like D3's
+Wingdings - both now explicitly disclosed as `resolved_by_visual_fallback`
+rather than left as an open, mischaracterized "scrambling" defect.
+
+**TESTE DE REGRESSAO**: `tests/test_extraction_assembler.py` (2 new
+tests modeling the exact page-25 geometry: a small region swallows the
+line below it without an override; the override recovers it). Full 2021
+regen: zero diff, `verify-gold` 40/40.
+
+### 40. Q14's alternatives: a general inline-alternative-asset mechanism, not a Q14-specific patch
+
+**PROBLEMA**: all 5 of Q14's own alternatives are *only* a boolean-
+algebra formula image (e.g. "(x+z)y + x-ybar-zbar"), with no other text
+at all - the alternative-marker line leaves nothing behind but trailing
+punctuation, so every alternative rendered as the misleading `"A. ."`
+(PROMPT Phase 2D section 13's own "truncated text beside a correct image,
+with no indication of which is canonical" case).
+
+**DIAGNOSTICO**: `figure-02.png` already showed all 5 formulas, complete
+and in correct top-to-bottom order - the content was never actually
+missing. The real defect was structural: 5 separate per-alternative
+formula candidates, sitting close together in Y (well within
+`SMALL_IMAGE_Y_MERGE_TOLERANCE`), merged into *one* region spanning all 5
+alternatives' own rows, since `figures.py`'s own proximity merge has no
+notion of an alternative boundary between two candidates - the same
+*class* of gap ADR 36 (Phase 2D) closed for question-owner boundaries in
+`_merge_overlapping_regions`, but no equivalent existed for
+*alternative*-level boundaries within one question.
+
+**DECISAO**: rather than special-case Q14 by question id (explicitly
+prohibited, PROMPT section 22), a general mechanism:
+
+- `Alternative` (`models/question.py`) gained an optional `asset: Asset |
+  None` field - additive, backward-compatible, `None` for every
+  alternative with real text (the overwhelming majority of the corpus).
+- A new `assembler.py` function, `_attach_alternative_formula_regions`,
+  runs once per question: for every alternative whose own text is empty
+  after its marker (`_EMPTY_ALTERNATIVE_TEXT_RE` - nothing but
+  punctuation survived), it finds the candidate region with the largest
+  Y-overlap against that alternative's own row (from its own marker line
+  down to the next alternative's) and Y-slices it into a new region
+  scoped to just that row - "crop the whole visual line" (PROMPT section
+  7's own fallback guidance) applied per-alternative, never an attempt to
+  reconstruct the formula's own components. The original merged region is
+  excluded from the statement's own figure placement once any alternative
+  claims a slice of it, so the same formula never renders twice.
+- `markdown_format.py` renders it inline, matching how a statement figure
+  is already referenced (`A. ![Alternativa A](path) .`), and resolves it
+  back to the full `Asset` (with its own sha256/source_page/
+  extraction_method) via `Question.assets` on reparse - the body only
+  ever carries the portable path, the same design already used for every
+  other asset reference in this format.
+
+Triggered only by the geometric/textual shape "this alternative's own
+text is empty, and a candidate region overlaps its own row" - inert for
+every alternative with real text, so this cannot affect any of the other
+54 questions' own output (confirmed: re-extracting the full 2011 corpus
+after this change touched only Q14's own files).
+
+**RESULTADO**: `figure-03.png` through `figure-07.png` each now show
+exactly one alternative's own correct, distinct formula with its own
+circled-letter marker, matching the source exactly.
+
+**TESTE DE REGRESSAO**: `tests/test_extraction_assembler.py` (3 new
+tests: a merged region correctly splits one-per-alternative; an
+alternative with real text is never touched; no region overlapping means
+no attachment, not a crash). `tests/test_markdown_format.py` (a new
+round-trip test: render then reparse recovers the exact same `Asset`).
+Full 2021 regen: zero diff, `verify-gold` 40/40 (2021 has no alternative
+built entirely from a formula image anywhere in its own 40 questions).
+
+### 41. Q23's inline symbols: an obsolete override, not a new mechanism
+
+**PROBLEMA**: `q23-inline-symbols-residual` (open since Phase 2B) - the
+opening paragraph's own alphabet/epsilon symbols (`Sigma={a,b,c}`,
+`Sigma*`, `lambda`) were disclosed as "not individually preserved as
+inline Markdown or as their own asset."
+
+**DIAGNOSTICO**: the Phase 2B override suppressing these three symbols'
+own image candidates (`exclude_from_region_candidates`) gave its own
+reason at the time: each is "far under `MIN_REGION_HEIGHT` on their own
+and would never form a region by themselves once excluded from the
+merge." That reasoning predates the small-formula-image mechanism (Phase
+2C), which routes any image under `SMALL_IMAGE_MAX_WIDTH`(250)/
+`_HEIGHT`(40) through a *separate* merge pool using
+`MIN_FORMULA_WIDTH`/`_HEIGHT` (4pt) instead of `MIN_REGION_WIDTH`/
+`_HEIGHT` (40/20pt) - all three symbol images (12-57pt wide, ~12pt tall)
+comfortably clear the small-formula thresholds and would never re-enter
+the large-candidate chain-merge the override was written to stop.
+
+**DECISAO**: removed the three now-obsolete overrides. This is Level-1
+(relying on an already-proven, already-general mechanism reaching a case
+it could not reach when the override was first written), not a new
+heuristic - re-verified the automaton (`figure-02.png`) and grammar/
+alternatives-intro (`figure-01.png`) regions are unaffected (still
+correctly scoped to Q23 alone), confirming the original chain-merge
+concern the override existed to prevent does not recur now that these
+three images are classified as small-formula candidates.
+
+**RESULTADO**: a new `figure-03.png` captures the complete sentence,
+all 3 previously-missing symbols now present and legible in context. Two
+short, redundant text fragments ("que", "de") remain at the growth
+boundary, duplicating words already shown complete in the new image -
+the same class of cosmetic redundancy already accepted for Q9's own "A
+funcao" fragment (Phase 2D ADR 35).
+
+**RESIDUAL, NOT FIXED**: investigating this surfaced a second, distinct
+gap - alternative D's own missing `Sigma` and alternative E's own missing
+regular-expression notation are each a small image sitting *inside* an
+otherwise-complete alternative's own text (both alternatives already have
+substantial real text on both sides of the gap), a different shape from
+Q14's wholly-empty alternatives that ADR 40's own mechanism does not
+reach (it only triggers for an alternative with *no* real text at all).
+Fixing this generally would need inline mid-text asset embedding within
+`Alternative` - a further schema change beyond the single-asset field
+ADR 40 added, judged out of scope this phase for two single symbols. D's
+own gap is now low-severity (`Sigma={a,b,c}` is already shown in full in
+the now-fixed intro paragraph); E's own gap remains answerability-
+relevant (the alternative's entire claim is a direct comparison against
+a specific regular expression) - Q23 remains `failed`/open for this
+narrower reason.
+
+**TESTE DE REGRESSAO**: full 2011 re-extraction confirmed only Q23's own
+files changed (no other question's regions were affected by removing
+these three overrides). Full 2021 regen: zero diff, `verify-gold` 40/40.

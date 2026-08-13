@@ -59,6 +59,14 @@ class Alternative(BaseModel):
 
     letter: str = Field(..., pattern=r"^[A-E]$")
     text: str = Field(..., min_length=1)
+    #: Set when this alternative's own content is (fully or partly) a
+    #: small raster/vector formula image rather than text (PROMPT Phase 2E
+    #: section 10) - e.g. 2011 Q14, where every alternative is only a
+    #: boolean-algebra formula image with no other text at all (``text``
+    #: then holds just the source's own trailing punctuation, never an
+    #: invented transcription of the formula). ``None`` for the
+    #: overwhelming majority of alternatives, which are real text.
+    asset: Asset | None = None
 
 
 class Question(BaseModel):

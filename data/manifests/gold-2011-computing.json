@@ -9,21 +9,16 @@
   "pipeline_version": "0.1.0",
   "data_contract_version": "1.1.0",
   "maturity": "provisional",
-  "verified_count": 50,
-  "needs_review_count": 5,
+  "verified_count": 52,
+  "needs_review_count": 3,
   "unresolved_question_ids": [
-    "enade-2011-computing-q14",
     "enade-2011-computing-q23",
     "enade-2011-computing-q27",
-    "enade-2011-computing-q34",
-    "enade-2011-computing-q38"
+    "enade-2011-computing-q34"
   ],
   "structural_blockers": [
-    "q14-alternatives-empty",
-    "q22-table-asset-contamination",
     "q23-inline-symbols-residual",
-    "q27-pseudocode-not-code-block",
-    "q38-remaining-content-defects"
+    "q27-pseudocode-not-code-block"
   ],
   "questions": [
     {
@@ -236,10 +231,10 @@
     {
       "id": "enade-2011-computing-q14",
       "markdown_path": "enade-2011-computing-q14.md",
-      "markdown_sha256": "18150d4f0a60939c33b39a0a7d1eb162313acbc1fabb1ac11346e62d1094ed64",
-      "extraction_status": "needs_review",
+      "markdown_sha256": "1439471e5565b514808b7e5c9c4f6f90bf00b8534069470598161e3a2fbc8999",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "failed",
+      "visual_validation": "passed",
       "assets": [
         {
           "id": "figure-01",
@@ -249,12 +244,32 @@
         {
           "id": "figure-02",
           "path": "enade-2011-computing-q14/figure-02.png",
-          "sha256": "b75d45304dfd1e2d20778c527a92ea6947eed042185c19b99e670a208806d26c"
+          "sha256": "3de2e7a8d2e3dd0a37339dbcef2a475b5ece96f468266ffd3252405ea1130502"
         },
         {
           "id": "figure-03",
           "path": "enade-2011-computing-q14/figure-03.png",
-          "sha256": "3de2e7a8d2e3dd0a37339dbcef2a475b5ece96f468266ffd3252405ea1130502"
+          "sha256": "e34063711d546a5ba805bfd953772b8c2ca16c2302ab6ac83cb641ce49f161ae"
+        },
+        {
+          "id": "figure-04",
+          "path": "enade-2011-computing-q14/figure-04.png",
+          "sha256": "0551077cc83ef0e1766fc209f6dcaa8f476b9b9cc1d8023465d01cd107fc96d4"
+        },
+        {
+          "id": "figure-05",
+          "path": "enade-2011-computing-q14/figure-05.png",
+          "sha256": "a7f6a3a680b2495b79221c63c99270575a56e90e6b80b80553a5d74a30908dce"
+        },
+        {
+          "id": "figure-06",
+          "path": "enade-2011-computing-q14/figure-06.png",
+          "sha256": "d3e8c9efbee814caf482bb67cdb2dab31864e8e6a7836bfb87947c9a52459e05"
+        },
+        {
+          "id": "figure-07",
+          "path": "enade-2011-computing-q14/figure-07.png",
+          "sha256": "4119a0c066fe4751e3382765a900484654a904fcbf3edd31bef1bb22798700e9"
         }
       ]
     },
@@ -341,7 +356,7 @@
     {
       "id": "enade-2011-computing-q22",
       "markdown_path": "enade-2011-computing-q22.md",
-      "markdown_sha256": "e5d908496707f16c2fb30fa3a7f3c39e6c02bce7b862e5a2557c3778273412f5",
+      "markdown_sha256": "d629e320a9bc8344370e64c4bd32940878344e877b34561c0c82e33f6e2eee4b",
       "extraction_status": "verified",
       "automatic_validation": "passed",
       "visual_validation": "passed",
@@ -349,14 +364,14 @@
         {
           "id": "table-01",
           "path": "enade-2011-computing-q22/table-01.png",
-          "sha256": "8947a731978088902220fa2e933a310a99d47ed4deee51a18ef1cb897ba580d1"
+          "sha256": "8a016f1def64b6e364f6db73c3c325acd2df2e01208603afdab4239f2a1664e8"
         }
       ]
     },
     {
       "id": "enade-2011-computing-q23",
       "markdown_path": "enade-2011-computing-q23.md",
-      "markdown_sha256": "8990e56b166d083da5bb0ffa311a4e5aa5080d8f9835df1e4dc3240fd78aab35",
+      "markdown_sha256": "f9529d1737f8de0a537bee8596031b4705a2bae97ecb25b207962e1f957400cb",
       "extraction_status": "needs_review",
       "automatic_validation": "failed",
       "visual_validation": "failed",
@@ -370,6 +385,11 @@
           "id": "figure-02",
           "path": "enade-2011-computing-q23/figure-02.png",
           "sha256": "af0f3acc4fbc92f343353f057f32d7749db210a6eefff05b0e797664064259f1"
+        },
+        {
+          "id": "figure-03",
+          "path": "enade-2011-computing-q23/figure-03.png",
+          "sha256": "bad242288322406f801cb0972e5e5d921239e7d45c43a355ca06b489038ba3e1"
         }
       ]
     },
@@ -520,10 +540,10 @@
     {
       "id": "enade-2011-computing-q38",
       "markdown_path": "enade-2011-computing-q38.md",
-      "markdown_sha256": "6a3ec596807c94e0d0df90d529ac225a1fb421c76da4a82d18cc0269a8159482",
-      "extraction_status": "needs_review",
+      "markdown_sha256": "259b8b8de992f48086aa782d0fd5a09565a53b7b0d8c2592879a77a26f239ba0",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "failed",
+      "visual_validation": "passed",
       "assets": [
         {
           "id": "figure-01",

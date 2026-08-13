@@ -229,7 +229,21 @@ def build_question(
     content_blocks = _build_content_blocks(
         extracted, assets_by_region, assets_by_table, table_cells_verified=table_cells_verified
     )
-    alternatives = [Alternative(letter=a.letter, text=a.text) for a in extracted.alternatives]
+    alternatives = []
+    for a in extracted.alternatives:
+        alt_asset: Asset | None = None
+        if a.figure_region_index is not None:
+            rendered = assets_by_region.get(a.figure_region_index)
+            if rendered is not None:
+                alt_asset = Asset(
+                    id=rendered.asset_id,
+                    type=rendered.asset_type,
+                    path=rendered.relative_path,
+                    source_page=rendered.source_page,
+                    extraction_method=rendered.extraction_method,
+                    sha256=rendered.sha256,
+                )
+        alternatives.append(Alternative(letter=a.letter, text=a.text, asset=alt_asset))
 
     correct_answer: str | None = None
     official_answer_source: str | None = None

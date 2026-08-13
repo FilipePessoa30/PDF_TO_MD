@@ -33,10 +33,18 @@ from enade.extraction.boundaries import QuestionKind, detect_question_boundaries
 from enade.extraction.declared_structure import parse_declared_structure
 from enade.extraction.exam_profile import ExamStructureProfile, verify_declared_profile
 from enade.extraction.figures import compute_decorative_baseline
-from enade.extraction.layout import extract_document_lines
+from enade.extraction.layout import (
+    detect_column_margins,
+    extract_document_lines,
+    extract_page_lines,
+)
 from enade.extraction.layout_overrides import LayoutOverrideSet
 from enade.extraction.markdown_writer import WriteResult, write_question_markdown
-from enade.extraction.ownership import compute_question_regions
+from enade.extraction.ownership import (
+    compute_question_regions,
+    question_key,
+    render_bounds_for_owner,
+)
 from enade.extraction.pdf_source import PdfDocument
 from enade.extraction.to_question import COURSE_ID_SHORTHAND, _section_for, build_question
 from enade.extraction.transformation_log import TransformationLogEntry
@@ -266,12 +274,38 @@ def extract_exam(
                 # never gated on whether the structured reconstruction
                 # looks trustworthy.
                 assets_by_table: dict[int, RenderedAsset] = {}
+                own_key = question_key(span)
                 for index, table in enumerate(extracted.tables):
                     asset_id = f"table-{index + 1:02d}"
                     relative_path = f"{question_id}/{asset_id}.png"
                     absolute_path = course_dir / question_id / f"{asset_id}.png"
+                    # column_bounds (PROMPT Phase 2E section 7): a
+                    # DetectedTable has no owner of its own - looked up
+                    # here from this span's own QuestionRegion on the
+                    # table's own page, the same way render_region's own
+                    # VisualRegion.owner_x_bounds is computed (see
+                    # ownership.render_bounds_for_owner).
+                    owner_region = next(
+                        (
+                            r
+                            for r in question_regions_by_page.get(table.page_number, [])
+                            if r.question_key == own_key
+                        ),
+                        None,
+                    )
+                    table_page_lines = extract_page_lines(
+                        prova.raw[table.page_number - 1], table.page_number
+                    )
+                    column_bounds = render_bounds_for_owner(
+                        owner_region, detect_column_margins(table_page_lines)
+                    )
                     rendered = render_table_region(
-                        prova.raw, table, absolute_path, relative_path, asset_id
+                        prova.raw,
+                        table,
+                        absolute_path,
+                        relative_path,
+                        asset_id,
+                        column_bounds=column_bounds,
                     )
                     rendered_assets.append(rendered)
                     assets_by_table[index] = rendered

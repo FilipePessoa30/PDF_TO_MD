@@ -122,7 +122,7 @@ assets:
   path: enade-2011-computing-q22/table-01.png
   source_page: 14
   extraction_method: raster_crop
-  sha256: 8947a731978088902220fa2e933a310a99d47ed4deee51a18ef1cb897ba580d1
+  sha256: 8a016f1def64b6e364f6db73c3c325acd2df2e01208603afdab4239f2a1664e8
   alt_text: null
   caption: null
 subjects: []
