@@ -61,17 +61,32 @@ def parse_question_markdown(text: str) -> dict[str, Any]:
 
     statement, alternatives = _parse_body(body)
 
-    # An alternative embedding a formula image (PROMPT Phase 2E section
-    # 10) carries only the portable path in the body - resolve it back to
-    # the matching full Asset entry already parsed from the front matter,
-    # the same source of truth Question.assets itself uses. A path with no
-    # matching asset entry is left unresolved (asset=None) rather than
-    # fabricating one - schema validation then surfaces the mismatch, the
-    # same way a missing statement figure would.
+    # An alternative embedding one or more formula images (PROMPT Phase
+    # 2E section 10 / Phase 2F section 7) carries only the portable
+    # path(s) in the body - resolve each back to the matching full Asset
+    # entry already parsed from the front matter, the same source of
+    # truth Question.assets itself uses. A path with no matching asset
+    # entry is left unresolved (asset=None / block omitted from
+    # content_blocks) rather than fabricating one - schema validation
+    # then surfaces the mismatch, the same way a missing statement figure
+    # would.
     assets_by_path = {a.get("path"): a for a in (data.get("assets") or [])}
     for alt in alternatives:
         asset_path = alt.pop("asset_path", None)
         alt["asset"] = assets_by_path.get(asset_path) if asset_path is not None else None
+        raw_blocks = alt.pop("content_blocks_raw", None)
+        if raw_blocks is None:
+            alt["content_blocks"] = None
+        else:
+            resolved_blocks = []
+            for block in raw_blocks:
+                if block["type"] == "asset":
+                    asset = assets_by_path.get(block["asset_path"])
+                    if asset is not None:
+                        resolved_blocks.append({"type": "asset", "asset_id": asset["id"]})
+                else:
+                    resolved_blocks.append(block)
+            alt["content_blocks"] = resolved_blocks
 
     data = dict(data)
     data["statement"] = statement
@@ -97,12 +112,34 @@ def _parse_body(body: str) -> tuple[str, list[dict[str, Any]]]:
         nonlocal current_letter, current_text
         if current_letter is not None:
             joined = " ".join(current_text).strip()
-            asset_match = _ALTERNATIVE_ASSET_RE.search(joined)
+            matches = list(_ALTERNATIVE_ASSET_RE.finditer(joined))
             entry: dict[str, Any] = {"letter": current_letter}
-            if asset_match is not None:
-                remaining = (joined[: asset_match.start()] + joined[asset_match.end() :]).strip()
+            if len(matches) == 1 and matches[0].start() == 0:
+                # Phase 2E's own single-asset rendering: the image is the
+                # very first token, with only trailing punctuation (if
+                # anything) after it - e.g. 2011 Q14's own alternatives.
+                m = matches[0]
+                remaining = (joined[: m.start()] + joined[m.end() :]).strip()
                 entry["text"] = remaining or "."
-                entry["asset_path"] = asset_match.group(1)
+                entry["asset_path"] = m.group(1)
+            elif matches:
+                # Phase 2F's own interleaved rendering: one or more images
+                # sitting after real text - e.g. 2011 Q23's own D/E.
+                blocks: list[dict[str, Any]] = []
+                cursor = 0
+                for m in matches:
+                    pre = joined[cursor : m.start()].strip()
+                    if pre:
+                        blocks.append({"type": "paragraph", "text": pre})
+                    blocks.append({"type": "asset", "asset_path": m.group(1)})
+                    cursor = m.end()
+                tail = joined[cursor:].strip()
+                if tail:
+                    blocks.append({"type": "paragraph", "text": tail})
+                entry["text"] = (
+                    " ".join(b["text"] for b in blocks if b["type"] == "paragraph") or "."
+                )
+                entry["content_blocks_raw"] = blocks
             else:
                 entry["text"] = joined
             alternatives.append(entry)
@@ -168,9 +205,20 @@ def render_question_markdown(question: Question) -> str:
         question.statement,
     ]
     if question.alternatives:
+        assets_by_id = {a.id: a for a in question.assets}
         parts += ["", "## Alternativas", ""]
         for alt in question.alternatives:
-            if alt.asset is not None:
+            if alt.content_blocks is not None:
+                rendered_segments: list[str] = []
+                for block in alt.content_blocks:
+                    if block.type == "paragraph":
+                        rendered_segments.append(block.text)
+                    elif block.type == "asset":
+                        asset = assets_by_id.get(block.asset_id)
+                        if asset is not None:
+                            rendered_segments.append(f"![Alternativa {alt.letter}]({asset.path})")
+                parts.append(f"{alt.letter}. {' '.join(rendered_segments)}")
+            elif alt.asset is not None:
                 parts.append(
                     f"{alt.letter}. ![Alternativa {alt.letter}]({alt.asset.path}) {alt.text}"
                 )

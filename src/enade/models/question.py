@@ -67,6 +67,21 @@ class Alternative(BaseModel):
     #: invented transcription of the formula). ``None`` for the
     #: overwhelming majority of alternatives, which are real text.
     asset: Asset | None = None
+    #: Ordered text/asset segments, when this alternative's own content
+    #: interleaves real text with one or more small inline formula images
+    #: (PROMPT Phase 2F section 7) - e.g. 2011 Q23's own alternatives D/E,
+    #: each "<text> <formula image> <text>". Reuses the same ``ContentBlock``
+    #: union already defined for ``Question.content_blocks`` (only
+    #: ``ParagraphBlock``/``AssetBlock`` variants are ever produced here -
+    #: no new taxonomy). Distinct from ``asset`` (Phase 2E's own mechanism,
+    #: for an alternative that is *only* an image with no text at all -
+    #: Q14's own shape, left untouched by this field). ``None`` for every
+    #: alternative that is either plain text or a single whole-alternative
+    #: asset - ``text`` remains a flattened, human-readable projection of
+    #: the same content even when ``content_blocks`` is set (full-text
+    #: search/back-compat, the same relationship ``Question.statement``
+    #: already has to ``Question.content_blocks``).
+    content_blocks: list[ContentBlock] | None = None
 
 
 class Question(BaseModel):
@@ -218,28 +233,42 @@ class Question(BaseModel):
 
     @model_validator(mode="after")
     def _validate_content_blocks(self) -> Question:
-        if self.content_blocks is None:
-            return self
         asset_ids = {a.id for a in self.assets}
-        has_visual_fallback = any(isinstance(b, AssetBlock) for b in self.content_blocks)
-        for block in self.content_blocks:
-            if isinstance(block, AssetBlock) and block.asset_id not in asset_ids:
-                raise ValueError(
-                    f"content_blocks references undeclared asset id {block.asset_id!r}"
-                )
-            if (
-                isinstance(block, TableBlock)
-                and block.validation_status != TableValidationStatus.VERIFIED
-                and not has_visual_fallback
-            ):
-                # PROMPT section 5.2: a table that was not confirmed
-                # cell-by-cell must never be presented without a visual
-                # fallback the reader can fall back on - this is not
-                # optional, regardless of which question it is.
-                raise ValueError(
-                    "content_blocks has a non-verified TableBlock but no AssetBlock "
-                    "visual fallback - an unvalidated table must never stand alone"
-                )
+
+        if self.content_blocks is not None:
+            has_visual_fallback = any(isinstance(b, AssetBlock) for b in self.content_blocks)
+            for block in self.content_blocks:
+                if isinstance(block, AssetBlock) and block.asset_id not in asset_ids:
+                    raise ValueError(
+                        f"content_blocks references undeclared asset id {block.asset_id!r}"
+                    )
+                if (
+                    isinstance(block, TableBlock)
+                    and block.validation_status != TableValidationStatus.VERIFIED
+                    and not has_visual_fallback
+                ):
+                    # PROMPT section 5.2: a table that was not confirmed
+                    # cell-by-cell must never be presented without a visual
+                    # fallback the reader can fall back on - this is not
+                    # optional, regardless of which question it is.
+                    raise ValueError(
+                        "content_blocks has a non-verified TableBlock but no AssetBlock "
+                        "visual fallback - an unvalidated table must never stand alone"
+                    )
+
+        # An alternative's own content_blocks (PROMPT Phase 2F section 7,
+        # e.g. 2011 Q23's own D/E) has no assets list of its own - any
+        # AssetBlock it carries must reference this Question's own assets,
+        # the same single source of truth every other asset reference uses.
+        for alt in self.alternatives:
+            if alt.content_blocks is None:
+                continue
+            for block in alt.content_blocks:
+                if isinstance(block, AssetBlock) and block.asset_id not in asset_ids:
+                    raise ValueError(
+                        f"alternative {alt.letter}'s content_blocks references undeclared "
+                        f"asset id {block.asset_id!r}"
+                    )
         return self
 
     @model_validator(mode="after")

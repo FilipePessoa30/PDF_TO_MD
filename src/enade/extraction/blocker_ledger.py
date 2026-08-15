@@ -35,8 +35,36 @@ BlockerStatus = Literal[
     "source_ambiguity",
     "superseded",
     "not_reproducible",
+    "accepted_non_material_difference",
 ]
 
+#: A verified, documented gap between the *ideal* state (a question fully
+#: promoted, pixel-for-pixel identical to its own source) and the
+#: *actual* one, proven non-material - never assumed away. Two distinct
+#: shapes, both covered by this one general status rather than one each
+#: (PROMPT Phase 2F section 10 - "não crie um status novo apenas para
+#: liberar readiness", so this stays broad and reusable, not a per-shape
+#: taxonomy):
+#:   1. A genuine PDF-vs-Markdown *presentation* divergence with no
+#:      content loss, semantic risk, or contamination (e.g. 2011 Q27's
+#:      own pseudocode, preserved line-for-line and in the exact correct
+#:      order, but as flowing inline text rather than a formatted code
+#:      block, since its own source font is proportional, not monospace -
+#:      the same class already accepted for Q46/D4 in earlier phases
+#:      without a name for it).
+#:   2. A confirmed false positive of a deliberately conservative
+#:      *automated* check, where a human visual_validation has already
+#:      confirmed the actual content is complete and correct (e.g. 2011
+#:      Q34's/Q11's own "figure region fell after the alternatives
+#:      cutoff" warning - the region was never part of either question's
+#:      own content in the first place, `assets=[]` is correct, but the
+#:      pipeline's own promotion rule never auto-trusts any structural
+#:      warning, by design, regardless of cause).
+#: Never used to wave away a genuine, disclosed content gap (see
+#: docs/data-contract.md, "documentary fidelity vs. visual identity").
+#: Does not block readiness (see ``Blocker.is_open`` - only ``status ==
+#: "open"`` does) but is never silently interchangeable with "resolved":
+#: nothing was fixed, a documented acceptance criterion was met instead.
 _TERMINAL_STATUSES: frozenset[str] = frozenset(
     {
         "resolved",
@@ -45,6 +73,7 @@ _TERMINAL_STATUSES: frozenset[str] = frozenset(
         "superseded",
         "source_ambiguity",
         "not_reproducible",
+        "accepted_non_material_difference",
     }
 )
 
@@ -112,6 +141,10 @@ class BlockerLedger(BaseModel):
     def not_reproducible_count(self) -> int:
         return sum(1 for b in self.blockers if b.status == "not_reproducible")
 
+    @property
+    def accepted_non_material_difference_count(self) -> int:
+        return sum(1 for b in self.blockers if b.status == "accepted_non_material_difference")
+
     def by_id(self, blocker_id: str) -> Blocker | None:
         return next((b for b in self.blockers if b.id == blocker_id), None)
 
@@ -163,6 +196,7 @@ def validate_ledger(ledger: BlockerLedger) -> list[BlockerLedgerIssue]:
             "resolved",
             "resolved_by_structured_extraction",
             "resolved_by_visual_fallback",
+            "accepted_non_material_difference",
         ):
             if not blocker.evidence:
                 issues.append(
@@ -198,6 +232,7 @@ def validate_ledger(ledger: BlockerLedger) -> list[BlockerLedgerIssue]:
         + ledger.superseded_count
         + ledger.source_ambiguity_count
         + ledger.not_reproducible_count
+        + ledger.accepted_non_material_difference_count
     )
     if accounted != ledger.total:
         issues.append(
@@ -207,7 +242,9 @@ def validate_ledger(ledger: BlockerLedger) -> list[BlockerLedgerIssue]:
                     f"open({ledger.open_count}) + resolved({ledger.resolved_count}) + "
                     f"superseded({ledger.superseded_count}) + "
                     f"source_ambiguity({ledger.source_ambiguity_count}) + "
-                    f"not_reproducible({ledger.not_reproducible_count}) = {accounted}, "
+                    f"not_reproducible({ledger.not_reproducible_count}) + "
+                    f"accepted_non_material_difference("
+                    f"{ledger.accepted_non_material_difference_count}) = {accounted}, "
                     f"expected total = {ledger.total}"
                 ),
             )

@@ -132,6 +132,85 @@ def test_needs_review_question_blocks_readiness(tmp_path):
     assert any(b.kind == "question_not_verified" for b in report.blockers)
 
 
+def test_needs_review_question_covered_by_accepted_difference_does_not_block_readiness(
+    tmp_path,
+):
+    # PROMPT Phase 2F section 10/18: 2011 Q34's own real shape - a
+    # question that will never reach extraction_status=verified through
+    # any code fix (a deliberately conservative structural-warning false
+    # positive), but whose own non-verification is formally adjudicated
+    # in the blocker ledger as accepted_non_material_difference. The
+    # finding is still reported (never hidden) but marked non-structural,
+    # so it does not block readiness on its own.
+    course_dir = tmp_path / "questions" / "2021" / "ciencia-da-computacao-bacharelado"
+    course_dir.mkdir(parents=True)
+    write_question_markdown(
+        _objective(
+            extraction_status="needs_review",
+            automatic_validation="failed",
+            visual_validation="passed",
+        ),
+        course_dir,
+    )
+    manifest = _build(course_dir, tmp_path)
+    ledger_path = tmp_path / "blocker-ledger.yaml"
+    ledger_path.write_text(
+        "baseline_count: 1\n"
+        "blockers:\n"
+        "  - id: q01-benign-warning\n"
+        "    question_id: enade-2021-cc-b-q01\n"
+        "    category: readiness-status\n"
+        "    description: a confirmed benign structural-warning false positive\n"
+        "    cause: test cause\n"
+        "    status: accepted_non_material_difference\n"
+        "    evidence: some evidence\n"
+        "    regression_tests: [tests/test_x.py]\n",
+        encoding="utf-8",
+    )
+    report = assess_readiness(manifest, course_dir, blocker_ledger_path=ledger_path)
+    assert report.ready is True
+    assert report.classification == "READY_FOR_2011"
+    question_not_verified = [b for b in report.blockers if b.kind == "question_not_verified"]
+    assert len(question_not_verified) == 1
+    assert question_not_verified[0].structural is False
+
+
+def test_needs_review_question_not_covered_by_ledger_still_blocks_readiness(tmp_path):
+    # The accepted-difference exemption is per-question, matched by
+    # question_id - an unrelated ledger entry must never suppress a
+    # genuine, undocumented question_not_verified finding.
+    course_dir = tmp_path / "questions" / "2021" / "ciencia-da-computacao-bacharelado"
+    course_dir.mkdir(parents=True)
+    write_question_markdown(
+        _objective(
+            extraction_status="needs_review",
+            automatic_validation="failed",
+            visual_validation="not_performed",
+        ),
+        course_dir,
+    )
+    manifest = _build(course_dir, tmp_path)
+    ledger_path = tmp_path / "blocker-ledger.yaml"
+    ledger_path.write_text(
+        "baseline_count: 1\n"
+        "blockers:\n"
+        "  - id: some-other-accepted-difference\n"
+        "    question_id: enade-2021-cc-b-q99\n"
+        "    category: readiness-status\n"
+        "    description: an unrelated question's own accepted difference\n"
+        "    cause: test cause\n"
+        "    status: accepted_non_material_difference\n"
+        "    evidence: some evidence\n"
+        "    regression_tests: [tests/test_x.py]\n",
+        encoding="utf-8",
+    )
+    report = assess_readiness(manifest, course_dir, blocker_ledger_path=ledger_path)
+    assert report.ready is False
+    question_not_verified = [b for b in report.blockers if b.kind == "question_not_verified"]
+    assert len(question_not_verified) == 1
+    assert question_not_verified[0].structural is True
+
+
 def test_gold_hash_divergence_blocks_readiness(ready_course_dir, tmp_path):
     manifest = _build(ready_course_dir, tmp_path)
     md_path = ready_course_dir / "enade-2021-cc-b-q01.md"
@@ -293,6 +372,32 @@ def test_resolved_blocker_in_ledger_does_not_block_readiness(ready_course_dir, t
         "    description: a resolved defect\n"
         "    cause: test cause\n"
         "    status: resolved\n"
+        "    evidence: some evidence\n"
+        "    regression_tests: [tests/test_x.py]\n",
+        encoding="utf-8",
+    )
+    report = assess_readiness(manifest, ready_course_dir, blocker_ledger_path=ledger_path)
+    assert report.ready is True
+    assert not any(b.kind.startswith("blocker_ledger") for b in report.blockers)
+
+
+def test_accepted_non_material_difference_in_ledger_does_not_block_readiness(
+    ready_course_dir, tmp_path
+):
+    # PROMPT Phase 2F section 10: 2011 Q27's own pseudocode - a verified,
+    # documented presentation-only divergence - must not block readiness,
+    # unlike a genuine open blocker.
+    manifest = _build(ready_course_dir, tmp_path)
+    ledger_path = tmp_path / "blocker-ledger.yaml"
+    ledger_path.write_text(
+        "baseline_count: 1\n"
+        "blockers:\n"
+        "  - id: some-accepted-difference\n"
+        "    question_id: enade-2021-cc-b-q01\n"
+        "    category: presentation_fidelity\n"
+        "    description: pseudocode rendered as inline text, not a code block\n"
+        "    cause: test cause\n"
+        "    status: accepted_non_material_difference\n"
         "    evidence: some evidence\n"
         "    regression_tests: [tests/test_x.py]\n",
         encoding="utf-8",

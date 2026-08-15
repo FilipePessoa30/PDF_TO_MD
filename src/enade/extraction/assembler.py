@@ -74,6 +74,15 @@ class ExtractedAlternative:
     #: image with no other text. ``None`` for the overwhelming majority of
     #: alternatives, which are real text.
     figure_region_index: int | None = None
+    #: Ordered text/asset segments, when this alternative's own content
+    #: interleaves real text with one or more small inline formula images
+    #: (PROMPT Phase 2F section 7) - e.g. 2011 Q23's own alternatives D/E,
+    #: each "<text> <formula image> <text>". Distinct from
+    #: ``figure_region_index`` (Phase 2E's own mechanism, for an
+    #: alternative that is *only* an image with no text at all - Q14's own
+    #: shape, left untouched). ``None`` for every alternative that is
+    #: either plain text or a single whole-alternative asset.
+    segments: list[TextSegment | FigureSegment] | None = None
 
 
 @dataclass
@@ -494,6 +503,32 @@ def _strip_leading_marker(lines: list[Line]) -> list[Line]:
 _EMPTY_ALTERNATIVE_TEXT_RE = re.compile(r"^[\s.,;:]*$")
 
 
+def _is_alternative_formula_candidate(region: VisualRegion) -> bool:
+    """True only for a region plausibly one alternative's own inline
+    formula, never a statement-level diagram or grammar block that
+    happens to geometrically overlap an alternative's own row (PROMPT
+    Phase 2F: 2011 Q23's own grammar-productions region, y-range
+    293.6-445.2, was found - by direct inspection of a first,
+    size-checking-only implementation - to overlap alternatives A/B/C's
+    own rows too, incorrectly attaching the *entire diagram* to each as
+    if it were their own small formula).
+
+    Keys off ``VisualRegion.is_small_formula`` (provenance: was this
+    region built from the small-formula candidate pool at all -
+    figures.py's own ``_is_small_formula_candidate``), never the region's
+    own *current* bbox size - re-checking size after merging rejected
+    2011 Q14's own legitimate case: 5 per-alternative formulas merge into
+    one region spanning all 5 rows before this function ever sees them,
+    and that merged bbox's own height comfortably exceeds
+    ``SMALL_IMAGE_MAX_HEIGHT`` even though every one of its 5 constituent
+    elements was small (a regression caught by
+    ``test_assemble_question_indexes_an_inline_alternative_asset_correctly_alongside_a_statement_figure``
+    - Q14's own alternatives all went back to empty ("A. .") until this
+    was fixed to check provenance instead of size).
+    """
+    return region.is_small_formula
+
+
 def _attach_alternative_formula_regions(
     alternatives: list[ExtractedAlternative],
     text_only_lines: list[Line],
@@ -557,7 +592,9 @@ def _attach_alternative_formula_regions(
         candidates = [
             r
             for r in candidate_regions
-            if r.page_number == start_line.page_number and _y_overlap(r) > 0
+            if r.page_number == start_line.page_number
+            and _is_alternative_formula_candidate(r)
+            and _y_overlap(r) > 0
         ]
         if not candidates:
             continue
@@ -578,10 +615,150 @@ def _attach_alternative_formula_regions(
                 has_raster_image=best.has_raster_image,
                 owner_key=best.owner_key,
                 owner_x_bounds=best.owner_x_bounds,
+                is_small_formula=best.is_small_formula,
             )
         )
         consumed_ids.add(id(best))
         alternatives[i].figure_region_index = len(extra_regions) - 1
+    return extra_regions, consumed_ids
+
+
+#: How close (points) two items' own Y-ranges must overlap to be treated
+#: as sitting on the same visual row, for ``_merge_alternative_reading_order``
+#: - a small inline formula image often has a slightly different own y0
+#: than the surrounding text (different font metrics/baseline), so a
+#: region is matched to a row by *overlap*, never by an exact y0 match.
+_SAME_ROW_OVERLAP_MIN = 0.0
+
+
+def _merge_alternative_reading_order(
+    lines: list[Line], regions: list[VisualRegion]
+) -> list[Line | VisualRegion]:
+    """Merge one alternative's own lines and any small-formula regions
+    overlapping its row into a single reading-order sequence (PROMPT Phase
+    2F section 7).
+
+    ``extract_document_lines`` itself already splits one *visual* line into
+    several ``Line`` objects wherever an inline image creates a horizontal
+    gap (2011 Q23's own alternative D: "...linguagem sobre" / [Sigma] /
+    "em que...", three separate ``Line``s at nearly - never exactly - the
+    same y0, since an italic math glyph's own baseline metrics differ
+    slightly from the surrounding body font). A region is anchored to
+    whichever line's own Y-range it overlaps (never its own y0, which can
+    sit slightly off from the text it visually shares a row with) and
+    ordered just past that line's own x1, so it sorts between same-row
+    text correctly; a region with no such overlap (Q23's own alternative
+    E: the formula sits on its own row, between one text line above and a
+    trailing "." on the same row below) is ordered by its own bbox
+    position relative to the surrounding lines instead.
+    """
+    keyed: list[tuple[float, float, Line | VisualRegion]] = [(ln.y0, ln.x0, ln) for ln in lines]
+    for region in regions:
+        same_row = [
+            ln
+            for ln in lines
+            if min(ln.y1, region.bbox[3]) - max(ln.y0, region.bbox[1]) > _SAME_ROW_OVERLAP_MIN
+        ]
+        if same_row:
+            anchor = min(same_row, key=lambda ln: ln.y0)
+            keyed.append((anchor.y0, region.bbox[0], region))
+        else:
+            keyed.append((region.bbox[1], region.bbox[0], region))
+    keyed.sort(key=lambda t: (t[0], t[1]))
+    return [item for _, _, item in keyed]
+
+
+def _flush_alternative_text(
+    text_buffer: list[str], segments: list[TextSegment | FigureSegment]
+) -> list[str]:
+    """Join and append ``text_buffer`` as one ``TextSegment`` (mutating
+    ``segments`` in place), then return a fresh, empty buffer.
+
+    A plain module-level helper, not a closure over the caller's own
+    loop-local ``text_buffer``/``segments`` (ruff B023: a nested function
+    redefined every outer-loop iteration is safe here in practice, since
+    each iteration's own closure is used and discarded before the next
+    begins, but explicit parameters are clearer and avoid the lint
+    entirely).
+    """
+    if text_buffer:
+        joined = " ".join(text_buffer).strip()
+        if joined:
+            segments.append(TextSegment(text=joined))
+    return []
+
+
+def _attach_alternative_inline_segments(
+    alternatives: list[ExtractedAlternative],
+    text_only_lines: list[Line],
+    alt_bounds: list[int],
+    candidate_regions: list[VisualRegion],
+) -> tuple[list[VisualRegion], set[int]]:
+    """Build an ordered text/asset segment list for an alternative whose
+    own text is real but interleaves one or more small inline formula
+    images (PROMPT Phase 2F section 7) - e.g. 2011 Q23's own alternatives
+    D ("...sobre <Sigma> em que...") and E ("...regular <regex>.").
+
+    Distinct from ``_attach_alternative_formula_regions`` (Phase 2E),
+    which only handles an alternative with *no* real text at all (2011
+    Q14's own shape) - this one is skipped entirely for an alternative
+    that mechanism already claimed (``figure_region_index is not None``),
+    and does nothing when no candidate region overlaps the alternative's
+    own row (the overwhelming majority of alternatives in this corpus),
+    leaving ``segments`` as ``None`` and ``text`` as the sole
+    representation, unchanged.
+    """
+    extra_regions: list[VisualRegion] = []
+    consumed_ids: set[int] = set()
+    for i, alt in enumerate(alternatives):
+        if alt.figure_region_index is not None:
+            continue
+        start_line = text_only_lines[alt_bounds[i]]
+        next_index = alt_bounds[i + 1] if i + 1 < len(alt_bounds) else len(text_only_lines)
+        row_y0 = start_line.y0
+        row_y1 = (
+            text_only_lines[next_index].y0
+            if next_index < len(text_only_lines)
+            else start_line.y1 + 1000.0
+        )
+        group = text_only_lines[alt_bounds[i] : next_index]
+
+        def _y_overlap(region: VisualRegion, y0: float = row_y0, y1: float = row_y1) -> float:
+            return min(region.bbox[3], y1) - max(region.bbox[1], y0)
+
+        own_regions = [
+            r
+            for r in candidate_regions
+            if r.page_number == start_line.page_number
+            and _is_alternative_formula_candidate(r)
+            and _y_overlap(r) > 0
+        ]
+        if not own_regions:
+            continue
+
+        ordered = _merge_alternative_reading_order(group, own_regions)
+        segments: list[TextSegment | FigureSegment] = []
+        text_buffer: list[str] = []
+
+        for index, item in enumerate(ordered):
+            if isinstance(item, VisualRegion):
+                text_buffer = _flush_alternative_text(text_buffer, segments)
+                extra_regions.append(item)
+                consumed_ids.add(id(item))
+                segments.append(FigureSegment(region_index=len(extra_regions) - 1))
+            else:
+                raw = item.text
+                if index == 0:
+                    match = _ALTERNATIVE_LINE_RE.match(raw)
+                    raw = match.group(2).strip() if match is not None else raw.strip()
+                else:
+                    raw = raw.strip()
+                if raw:
+                    text_buffer.append(raw)
+        _flush_alternative_text(text_buffer, segments)
+
+        if any(isinstance(seg, FigureSegment) for seg in segments):
+            alt.segments = segments
     return extra_regions, consumed_ids
 
 
@@ -765,6 +942,30 @@ def assemble_question(
             alt_figure_regions, consumed_ids = _attach_alternative_formula_regions(
                 alternatives, text_only_lines, alt_bounds, regions
             )
+
+            # A second, distinct pattern (PROMPT Phase 2F section 7): an
+            # alternative with *real* text that also interleaves one or
+            # more small formula images (2011 Q23's own D/E) - skipped
+            # entirely for any alternative the wholly-empty mechanism
+            # above already claimed. Its own region indices are 0-based
+            # within its own returned list, so they are offset past
+            # alt_figure_regions's own count before the two lists merge.
+            inline_regions, inline_consumed_ids = _attach_alternative_inline_segments(
+                alternatives, text_only_lines, alt_bounds, regions
+            )
+            if inline_regions:
+                base = len(alt_figure_regions)
+                for alt in alternatives:
+                    if alt.segments is not None:
+                        alt.segments = [
+                            FigureSegment(region_index=seg.region_index + base)
+                            if isinstance(seg, FigureSegment)
+                            else seg
+                            for seg in alt.segments
+                        ]
+                alt_figure_regions = alt_figure_regions + inline_regions
+                consumed_ids = consumed_ids | inline_consumed_ids
+
             if alt_figure_regions:
                 statement_regions = [r for r in statement_regions if id(r) not in consumed_ids]
 
@@ -788,6 +989,13 @@ def assemble_question(
         for alt in alternatives:
             if alt.figure_region_index is not None:
                 alt.figure_region_index += base_index
+            if alt.segments is not None:
+                alt.segments = [
+                    FigureSegment(region_index=seg.region_index + base_index)
+                    if isinstance(seg, FigureSegment)
+                    else seg
+                    for seg in alt.segments
+                ]
         statement_regions = statement_regions + alt_figure_regions
 
     unplaced_tables = set(range(len(statement_tables))) - set(placed_table_indices)

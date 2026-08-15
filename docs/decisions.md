@@ -1546,3 +1546,204 @@ narrower reason.
 **TESTE DE REGRESSAO**: full 2011 re-extraction confirmed only Q23's own
 files changed (no other question's regions were affected by removing
 these three overrides). Full 2021 regen: zero diff, `verify-gold` 40/40.
+
+## Phase 2F
+
+### 42. Q22's `table-01.png` and Q23's alternatives D/E: the last two structural blockers closed
+
+**CONTEXTO**: Phase 2E ended with 5 open ledger blockers: `q23-inline-
+symbols-residual`'s own narrower residual (D/E's own mid-text symbols),
+`q27-pseudocode-not-code-block`, and their 3 own `*-not-verified`
+mirrors. This phase closes all 5.
+
+**Alternative.content_blocks (Q23 D/E)**: extends ADR 40's own
+inline-alternative-asset mechanism (built for Q14's wholly-empty
+alternatives) with a second function, `_attach_alternative_inline_
+segments`, for an alternative with *real* text that also interleaves
+one or more small formula images - 2011 Q23's own alternatives D
+("...sobre `<Sigma>` em que...") and E ("...regular `<regex>`."). A new
+`Alternative.content_blocks: list[ContentBlock] | None` field reuses the
+*exact same* `ContentBlock` union already defined for
+`Question.content_blocks` (`ParagraphBlock`/`AssetBlock` only) - no new
+taxonomy, matching PROMPT Phase 2F section 7's own preference order
+("reutilizar `content_blocks` existentes" before extending anything).
+`_merge_alternative_reading_order` merges an alternative's own lines and
+any small-formula regions overlapping its row into one reading-order
+sequence, anchoring a region to whichever line's own Y-range it overlaps
+(never the region's own, slightly-different-baseline y0) - correctly
+ordering both a region sitting *mid-row* (Q23 D: "sobre" / [Sigma] / "em
+que", three separate `Line`s at nearly, never exactly, the same y0,
+split by `extract_document_lines`'s own gap-clustering) and one on its
+*own* row (Q23 E: the regex sits between one text line above and a
+trailing "." on the same row below it).
+
+**Two real bugs found and fixed while implementing this** (both by
+direct visual inspection of the rendered assets, neither caught by any
+function-level unit test written in isolation):
+
+1. A first, size-only-filtered version (checking a candidate region's
+   own current bbox against `SMALL_IMAGE_MAX_WIDTH`/`_HEIGHT`) picked up
+   Q23's own large grammar-productions region (205x151.6pt) for
+   alternatives A/B/C too, since it geometrically overlapped their own
+   rows - the region was never a "small formula" at all, just large
+   enough (in Y) to spill into three unrelated rows below it. Fixed by
+   adding `VisualRegion.is_small_formula: bool` - a provenance flag set
+   only by the small-formula candidate pool at construction, never
+   re-derived from a region's own bbox size after the fact. Re-checking
+   size regressed Q14: its own 5 per-alternative formulas legitimately
+   merge into *one* region spanning all 5 rows before this code ever
+   sees them, and that merged bbox's own height comfortably exceeds
+   `SMALL_IMAGE_MAX_HEIGHT` even though every constituent element was
+   small - `is_small_formula` survives merging (`_merge_overlapping_
+   regions` ANDs it: both sides must stay small for the result to)
+   exactly because it tracks origin, not current size.
+2. A second index-offsetting pass in `assemble_question` (accounting for
+   statement figures landing before alternative-attached ones in the
+   final `figure_regions` list) updated only the older `figure_region_
+   index` field (Phase 2E), never the new `segments` field - silently
+   aliasing alternative D's own asset reference to the *statement's* own
+   first figure instead of D's own inline formula. Found by direct
+   visual inspection (D's own rendered asset showed the wrong, unrelated
+   diagram), then reproduced and fixed via a dedicated integration test
+   exercising the full `assemble_question` pipeline with both a
+   statement-level figure and an alternative-embedded one together -
+   confirmed to fail against the pre-fix code and pass after.
+
+**Q22's `table-01.png`**: `render_table_region` gained the same
+`column_bounds` parameter Phase 2D's own ADR 35 added to `render_region`
+- exactly the fix that ADR 37 (Phase 2D) had sketched but run out of
+time to implement. A new shared helper, `ownership.render_bounds_for_
+owner(owner, column_margins)`, factors out the near-identical
+`owner_x_bounds` computation already inline twice in `figures.py`; both
+now call it, and `pipeline.py`'s own table-rendering loop computes the
+same inputs (the current span's own `QuestionRegion`, `detect_column_
+margins` on the table's own page) and calls it a third time.
+
+**RESULTADO**: `table-01.png` now shows only Q22's own truth table;
+`figure-04.png`/`figure-05.png` show exactly Q23's own alternative D/E
+symbols, each in the correct position within otherwise-unchanged
+alternative text; Q14's own mechanism re-verified byte-identical to its
+pre-Phase-2F output.
+
+**TESTE DE REGRESSAO**: `tests/test_extraction_assembler.py` (integration
+test modeling the exact statement-figure + alternative-inline-asset
+interaction that regressed; unit tests for `_attach_alternative_inline_
+segments`, `_merge_alternative_reading_order`); `tests/test_schema_
+question.py` (`Alternative.content_blocks` - defaults, order preservation,
+asset-at-start, two-assets-in-one-alternative, undeclared-asset-id
+validation, `Alternative.asset` untouched, Markdown round-trip);
+`tests/test_extraction_assets.py`/`tests/test_ownership.py`
+(`render_table_region`'s own `column_bounds`, `render_bounds_for_owner`
+directly). Full 2011 re-extraction confirmed only Q22/Q23/Q14 (unchanged
+output) touched. Full 2021 regen: zero diff, `verify-gold` 40/40.
+
+### 43. Q27: formally adjudicated as a non-material presentation difference, not fixed
+
+**PROBLEMA**: `q27-pseudocode-not-code-block` - the 7-line pseudocode
+renders as one continuous inline sentence rather than a formatted code
+block.
+
+**INVESTIGACAO** (PROMPT Phase 2F section 9, not presumed from any prior
+phase's own note): a direct, fresh, high-resolution render of source
+page 16 confirmed the pseudocode is set in `ArialMT` (rawdict-verified -
+a proportional font, not monospace), so `layout.py`'s own `is_monospace`
+detection (font-name hints only) never classifies it as code - the
+identical root cause already documented, and already accepted without a
+fix, for Q46 (Phase 2A) and D4 (Phase 1C). Line-by-line comparison
+confirmed all 7 lines' own text - numbers, brackets, variable names,
+indices - present, complete, in the exact correct order; nothing
+missing, nothing duplicated, nothing contaminated from another question.
+Classified per PROMPT section 9's own taxonomy: `content_loss=false`,
+`semantic_risk=false` (the algorithm's own meaning, and the
+alternatives' own truth values, do not depend on code-block formatting),
+`ownership_contamination=false`, `presentation_fidelity=true` (the sole
+real difference), `accessibility_limitation=true`/minor.
+
+**DECISAO**: a general code-block-detection heuristic (e.g. "numbered
+lines with increasing left-indentation, even in a non-monospace font")
+was considered and rejected - a new, general, content-shape-based
+heuristic broad enough to catch this case would need the same rigorous,
+full-corpus 2021 regression testing this project has repeatedly required
+for any Level-1 change, for a single-question, zero-content-loss,
+already-accepted-elsewhere case; a worse risk/value trade than formal,
+documented, verifiable acceptance (PROMPT section 10's own explicit
+option). Rather than force this into an existing status whose own
+documented semantics don't quite fit (`resolved*` implies a technical
+fix was made; none was), a new, deliberately general `BlockerStatus`
+value was added: `accepted_non_material_difference` - covering both (1)
+a genuine PDF-vs-Markdown presentation-only divergence (Q27's own shape)
+and (2) a confirmed false positive of a deliberately conservative
+automated check where a human `visual_validation` has already confirmed
+the actual content (2011 Q34's/Q11's own "figure region fell after the
+alternatives cutoff" warning, formally adjudicated the same way this
+phase - see ADR 44). Requires the same `evidence`+`regression_tests` bar
+`validate_ledger` already enforces for every `resolved*` status; counted
+in its own, separate `accepted_non_material_difference_count` - never
+folded into `resolved_count`, so a report can never misrepresent "the
+difference was accepted" as "something was fixed."
+
+**RESULTADO**: `q27-pseudocode-not-code-block` and `q27-not-verified`
+both closed (the former `accepted_non_material_difference`, the latter
+`resolved` since `extraction_status` naturally follows once
+`visual_validation` is promoted).
+
+**TESTE DE REGRESSAO**: `tests/test_blocker_ledger.py` (5 new tests: the
+new status is non-open/terminal; requires evidence; requires a
+regression test; counts toward the ledger total; never counted as
+`resolved`).
+
+### 44. Readiness gains a real non-structural exception: `ReadinessBlocker.structural`
+
+**PROBLEMA**: closing Q34's own blocker (`q34-not-verified`) in the
+ledger as `accepted_non_material_difference` did not, by itself, make
+`assess-readiness` report `READY_FOR_LEGACY_LAYOUT_TEST` - `readiness.py`
+has its *own*, independent `question_not_verified` check, reading
+`Question.extraction_status` directly rather than going through the
+ledger at all, and it kept firing (correctly reporting the true
+mechanical state - Q34's own `extraction_status` is still, and will
+always remain, `needs_review`, since the underlying conservative
+promotion rule was deliberately left untouched, see below).
+
+**DECISAO**: `ReadinessBlocker` already had a `structural: bool = True`
+field, added in an earlier phase specifically anticipating this exact
+case - its own docstring already said "this corpus currently has none
+[...] a future phase would record one" - but `ReadinessReport.ready`
+never actually consulted it (`ready = not blockers`, unconditionally).
+This phase activates it: `assess_readiness` now loads the blocker ledger
+*before* its own per-question loop, collects every `question_id` with an
+`accepted_non_material_difference` blocker, and marks a `question_not_
+verified` finding `structural=False` when its own question_id is in that
+set. `ready` is now `not any(b.structural for b in blockers)` - a
+non-structural finding is still reported (`cli.py` already printed the
+`structural`/`non-structural` tag on every blocker line, another
+dormant feature this phase finally exercises) but never counted toward
+readiness.
+
+**POR QUE NAO UM CODE FIX PARA Q34 EM VEZ DISSO**: `validator.py`'s own
+conservative rule ("a question with *any* mechanical warning always
+routes to needs_review, regardless of cause") is deliberate, foundational
+design, shared by every question in both 2011 and 2021 - loosening it
+for this one warning class (even narrowly, e.g. "only when `assets=[]`
+and no asset-count mismatch") risks silently promoting a genuinely-broken
+question elsewhere in the corpus that happens to share the same
+superficial shape. A formally documented, individually-adjudicated,
+per-question acceptance - verified by an actual human `visual_
+validation` pass, not inferred - is the safer, more honest mechanism for
+a case that is genuinely a false positive without touching a rule that
+protects every other question in the corpus.
+
+**RESULTADO**: `assess-readiness --year 2011 --course all-computing`
+reports `READY_FOR_LEGACY_LAYOUT_TEST`, exit code 0, with Q34's own
+`question_not_verified` finding printed as `non-structural` - visible,
+not hidden, but not blocking.
+
+**TESTE DE REGRESSAO**: `tests/test_readiness.py` (3 new tests: a
+`question_not_verified` finding covered by a matching ledger entry is
+non-structural and does not block readiness; an *unrelated* ledger
+entry - different `question_id` - never suppresses a real, undocumented
+finding; the existing `test_needs_review_question_blocks_readiness`
+re-verified unaffected, since it passes no ledger at all). Full 2021
+regen: zero diff, `verify-gold` 40/40, `assess-readiness` still
+`READY_FOR_2011` with zero blockers (2021 has no accepted-difference
+ledger entries, so this new mechanism is a no-op for it, matching every
+other Phase 2A-2F change's own zero-2021-impact bar).

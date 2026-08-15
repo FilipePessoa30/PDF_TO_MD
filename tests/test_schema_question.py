@@ -377,3 +377,188 @@ def test_content_blocks_round_trips_through_rendered_markdown():
     data = parse_question_markdown(rendered)
     round_tripped = Question.model_validate(data)
     assert round_tripped.content_blocks == q.content_blocks
+
+
+# --- Phase 2F: Alternative.content_blocks (see docs/decisions.md, "Phase 2F" ADR) ---
+
+
+def _asset_dict(asset_id: str, path: str | None = None) -> dict:
+    return {
+        "id": asset_id,
+        "type": "diagram",
+        "path": path or f"{asset_id}.png",
+        "source_page": 14,
+    }
+
+
+def test_alternative_content_blocks_defaults_to_none_and_is_backward_compatible():
+    alt = Alternative(letter="A", text="texto comum")
+    assert alt.content_blocks is None
+    assert alt.asset is None
+
+
+def test_alternative_content_blocks_preserves_text_asset_text_order():
+    q = _question(
+        assets=[_asset_dict("q23-d-sigma")],
+        alternatives=[
+            Alternative(
+                letter="D",
+                text="o automato reconhece a linguagem sobre em que os strings...",
+                content_blocks=[
+                    ParagraphBlock(text="o automato reconhece a linguagem sobre"),
+                    AssetBlock(asset_id="q23-d-sigma"),
+                    ParagraphBlock(text="em que os strings possuem o prefixo ababc."),
+                ],
+            ),
+            Alternative(letter="E", text="e"),
+        ],
+    )
+    alt_d = q.alternatives[0]
+    assert [b.type for b in alt_d.content_blocks] == ["paragraph", "asset", "paragraph"]
+
+
+def test_alternative_content_blocks_asset_at_start():
+    q = _question(
+        assets=[_asset_dict("formula-01")],
+        alternatives=[
+            Alternative(
+                letter="A",
+                text=".",
+                content_blocks=[
+                    AssetBlock(asset_id="formula-01"),
+                    ParagraphBlock(text="."),
+                ],
+            ),
+            Alternative(letter="B", text="b"),
+        ],
+    )
+    assert q.alternatives[0].content_blocks[0].type == "asset"
+
+
+def test_alternative_content_blocks_with_two_assets_in_one_alternative():
+    # "multiplos segmentos intercalados" (PROMPT Phase 2F section 8) - two
+    # separate inline formulas in the same alternative's own text.
+    q = _question(
+        assets=[_asset_dict("formula-01"), _asset_dict("formula-02")],
+        alternatives=[
+            Alternative(
+                letter="A",
+                text="primeiro segundo terceiro",
+                content_blocks=[
+                    ParagraphBlock(text="primeiro"),
+                    AssetBlock(asset_id="formula-01"),
+                    ParagraphBlock(text="segundo"),
+                    AssetBlock(asset_id="formula-02"),
+                    ParagraphBlock(text="terceiro"),
+                ],
+            ),
+            Alternative(letter="B", text="b"),
+        ],
+    )
+    alt_a = q.alternatives[0]
+    assert [b.type for b in alt_a.content_blocks] == [
+        "paragraph",
+        "asset",
+        "paragraph",
+        "asset",
+        "paragraph",
+    ]
+    asset_ids = [b.asset_id for b in alt_a.content_blocks if b.type == "asset"]
+    assert asset_ids == ["formula-01", "formula-02"]
+
+
+def test_alternative_content_blocks_asset_block_must_reference_declared_asset():
+    with pytest.raises(ValidationError, match="content_blocks references undeclared asset id"):
+        _question(
+            alternatives=[
+                Alternative(
+                    letter="A",
+                    text=".",
+                    content_blocks=[AssetBlock(asset_id="does-not-exist")],
+                ),
+                Alternative(letter="B", text="b"),
+            ],
+        )
+
+
+def test_alternative_asset_field_is_preserved_alongside_content_blocks_field():
+    # PROMPT Phase 2F section 7: the Phase 2E mechanism (a single asset for
+    # a wholly-empty alternative, e.g. 2011 Q14) must keep working exactly
+    # as before - unaffected by the new content_blocks field existing.
+    q = _question(
+        assets=[_asset_dict("q14-a-formula")],
+        alternatives=[
+            Alternative(letter="A", text=".", asset=_asset_dict("q14-a-formula")),
+            Alternative(letter="B", text="b"),
+        ],
+    )
+    assert q.alternatives[0].asset is not None
+    assert q.alternatives[0].content_blocks is None
+
+
+def test_alternative_content_blocks_round_trips_through_rendered_markdown():
+    from enade.markdown_format import parse_question_markdown, render_question_markdown
+
+    q = _question(
+        assets=[_asset_dict("q23-d-sigma", "enade-2011-computing-q23/figure-04.png")],
+        alternatives=[
+            Alternative(
+                letter="D",
+                text="o automato reconhece a linguagem sobre em que os strings possuem o prefixo ababc.",
+                content_blocks=[
+                    ParagraphBlock(text="o automato reconhece a linguagem sobre"),
+                    AssetBlock(asset_id="q23-d-sigma"),
+                    ParagraphBlock(text="em que os strings possuem o prefixo ababc."),
+                ],
+            ),
+            Alternative(letter="E", text="e"),
+        ],
+    )
+    rendered = render_question_markdown(q)
+    assert "![Alternativa D](enade-2011-computing-q23/figure-04.png)" in rendered
+    data = parse_question_markdown(rendered)
+    round_tripped = Question.model_validate(data)
+    assert round_tripped.alternatives[0].content_blocks == q.alternatives[0].content_blocks
+
+
+def test_alternative_markdown_asset_reference_with_no_matching_asset_resolves_to_none():
+    # PROMPT Phase 2F section 8 ("asset inexistente"): a stale/broken
+    # reference in the body must never fabricate an Asset - it is simply
+    # left unresolved (None / omitted from content_blocks), the same way
+    # a missing statement figure already behaves.
+    from enade.markdown_format import parse_question_markdown
+
+    text = "\n".join(
+        [
+            "---",
+            "id: fixture-q",
+            "exam_year: 2021",
+            "source_occurrences:",
+            "  - exam_id: enade-2021-b",
+            "    pdf_sha256: " + "a" * 64,
+            "    source_path: 2021/b1_prova.pdf",
+            "    pages: [14]",
+            "    question_number: 12",
+            "    section: componente-especifico",
+            "applicable_courses: [ciencia-da-computacao-bacharelado]",
+            "section: componente-especifico",
+            "question_number: 12",
+            "question_type: multiple_choice",
+            "assets: []",
+            "---",
+            "",
+            "# Questão 12",
+            "",
+            "Enunciado.",
+            "",
+            "## Alternativas",
+            "",
+            "A. texto antes ![Alternativa A](does/not/exist.png) texto depois",
+            "B. texto b",
+        ]
+    )
+    data = parse_question_markdown(text)
+    alt_a = data["alternatives"][0]
+    assert alt_a["content_blocks"] is not None
+    asset_blocks = [b for b in alt_a["content_blocks"] if b["type"] == "asset"]
+    assert asset_blocks == []

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from enade.extraction.assembler import (
     CodeSegment,
     ExtractedAlternative,
@@ -180,15 +182,25 @@ def test_attach_alternative_formula_regions_splits_a_merged_region_per_alternati
     """
     text_only_lines = [
         _line(1, 100.0, "A"),
-        _line(1, 115.0, "B"),
-        _line(1, 130.0, "C"),
-        _line(1, 145.0, "D"),
-        _line(1, 160.0, "E"),
+        _line(1, 107.0, "B"),
+        _line(1, 114.0, "C"),
+        _line(1, 121.0, "D"),
+        _line(1, 128.0, "E"),
     ]
     alt_bounds = [0, 1, 2, 3, 4]
     alternatives = [ExtractedAlternative(letter=letter, text=".") for letter in "ABCDE"]
+    # Built from the small-formula candidate pool (is_small_formula=True) -
+    # see _is_alternative_formula_candidate, which keys off this
+    # provenance flag, never the region's own (post-merge, possibly much
+    # taller) bbox size - a merged region spanning 5 rows can easily
+    # exceed SMALL_IMAGE_MAX_HEIGHT even though each constituent formula
+    # was small (2011 Q14's own real shape).
     merged_region = VisualRegion(
-        page_number=1, bbox=(200.0, 98.0, 300.0, 175.0), element_count=5, has_raster_image=True
+        page_number=1,
+        bbox=(200.0, 98.0, 300.0, 135.0),
+        element_count=5,
+        has_raster_image=True,
+        is_small_formula=True,
     )
     extra_regions, consumed_ids = _attach_alternative_formula_regions(
         alternatives, text_only_lines, alt_bounds, [merged_region]
@@ -495,3 +507,87 @@ def test_assemble_question_does_not_attach_a_region_across_a_narrow_column_gap()
     baseline = compute_decorative_baseline(doc)
     result = assemble_question(span, doc, baseline)
     assert result.figure_regions == []
+
+
+def test_assemble_question_indexes_an_inline_alternative_asset_correctly_alongside_a_statement_figure():
+    """Regression test (PROMPT Phase 2F section 8, "multiplos segmentos
+    intercalados" + index integrity): a first implementation of the
+    alternative-inline-asset mechanism correctly built each alternative's
+    own ``segments`` with *locally* 0-based ``FigureSegment.region_index``
+    values, but only re-offset ``ExtractedAlternative.figure_region_index``
+    (Phase 2E's own field) to account for the statement's own figures
+    landing first in ``ExtractedQuestion.figure_regions`` - never
+    ``segments`` itself. On a real question (2011 Q23), this silently
+    aliased alternative D's own asset reference to the *statement's* own
+    first figure instead of D's own inline formula - found by direct
+    visual inspection of the rendered asset, not caught by any function-
+    level unit test (each attachment function was tested in isolation,
+    never together with a statement figure occupying the earlier indices).
+
+    This test exercises the full ``assemble_question`` pipeline with both
+    a statement-level figure (large rectangle, before the alternatives
+    cutoff) and an alternative D whose own text is split around a second,
+    small rectangle (a plausible formula-image candidate) - asserting the
+    *content* each index resolves to, not just that some index exists.
+    """
+    import pymupdf
+
+    from enade.extraction.assembler import FigureSegment as _FigureSegment
+    from enade.extraction.assembler import TextSegment as _TextSegment
+    from enade.extraction.assembler import assemble_question
+    from enade.extraction.boundaries import QuestionKind, QuestionSpan
+    from enade.extraction.figures import compute_decorative_baseline
+
+    doc = pymupdf.open()
+    page = doc.new_page()
+    # Statement-level figure: large enough (50pt tall) to exceed the
+    # small-formula threshold, landing in figure_regions before anything
+    # alternative-attached.
+    statement_rect = pymupdf.Rect(30, 70, 200, 120)
+    page.draw_rect(statement_rect, color=(0, 0, 0), fill=(0, 0, 0))
+    # Alternative D's own inline formula: a small (25x10pt) *raster*
+    # image, sitting in the gap between its own two text runs on the same
+    # row - only a real embedded image (never a vector drawing) can
+    # qualify as a small-formula candidate (_is_small_formula_candidate
+    # requires is_image=True), matching every real inline symbol found in
+    # this corpus (e.g. 2011 Q23's own Sigma/regex, both raster images).
+    pix = pymupdf.Pixmap(pymupdf.csGRAY, (0, 0, 4, 4), False)
+    pix.set_rect(pix.irect, (0,))
+    d_formula_rect = pymupdf.Rect(155, 186, 180, 196)
+    page.insert_image(d_formula_rect, stream=pix.tobytes("png"))
+
+    lines = [
+        Line(page_number=1, text="Enunciado com uma figura abaixo.", x0=30, y0=50, x1=300, y1=62),
+        Line(page_number=1, text="A Texto da alternativa A.", x0=30, y0=140, x1=200, y1=152),
+        Line(page_number=1, text="B Texto da alternativa B.", x0=30, y0=155, x1=200, y1=167),
+        Line(page_number=1, text="C Texto da alternativa C.", x0=30, y0=170, x1=200, y1=182),
+        Line(page_number=1, text="D Texto antes", x0=30, y0=185, x1=150, y1=197),
+        Line(page_number=1, text="texto depois", x0=185, y0=185.5, x1=300, y1=197.5),
+        Line(page_number=1, text="E Texto da alternativa E.", x0=30, y0=200, x1=200, y1=212),
+    ]
+    span = QuestionSpan(
+        kind=QuestionKind.OBJECTIVE, number=23, lines=tuple(lines), start_page=1, end_page=1
+    )
+    baseline = compute_decorative_baseline(doc)
+    result = assemble_question(span, doc, baseline)
+
+    # The statement's own figure is referenced from statement_segments.
+    statement_figure_indices = [
+        seg.region_index for seg in result.statement_segments if isinstance(seg, _FigureSegment)
+    ]
+    assert len(statement_figure_indices) == 1
+    statement_region = result.figure_regions[statement_figure_indices[0]]
+    assert statement_region.bbox[1] == pytest.approx(statement_rect.y0, abs=1.0)
+
+    alt_d = next(a for a in result.alternatives if a.letter == "D")
+    assert alt_d.segments is not None
+    fig_segments = [s for s in alt_d.segments if isinstance(s, _FigureSegment)]
+    assert len(fig_segments) == 1
+    d_region = result.figure_regions[fig_segments[0].region_index]
+    # D's own resolved region must be its own small formula rect, never
+    # aliased to the statement's own (larger, differently-positioned) one.
+    assert d_region.bbox[1] == pytest.approx(d_formula_rect.y0, abs=1.0)
+    assert fig_segments[0].region_index != statement_figure_indices[0]
+
+    text_segments = [s.text for s in alt_d.segments if isinstance(s, _TextSegment)]
+    assert text_segments == ["Texto antes", "texto depois"]

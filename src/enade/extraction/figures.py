@@ -215,6 +215,22 @@ class VisualRegion:
     #: Passed through to ``assets.py`` so the render step can cap its own
     #: widening to this region's own owner, never a neighboring column's.
     owner_x_bounds: tuple[float, float] | None = None
+    #: True when this region was built entirely from the small-formula
+    #: candidate pool (``_is_small_formula_candidate`` - a single inline
+    #: symbol, or several merged into one, e.g. 2011 Q14's own 5
+    #: per-alternative formulas merging into one region before being
+    #: re-split). Distinct from the region's own *current* bbox size: once
+    #: several small candidates merge, the resulting bbox can exceed
+    #: ``SMALL_IMAGE_MAX_WIDTH``/``_HEIGHT`` even though every constituent
+    #: element was small - re-checking size after the fact (PROMPT Phase
+    #: 2F's own alternative-asset-attachment code, a first implementation)
+    #: wrongly rejected Q14's own legitimate merged region while also
+    #: needing to reject a genuinely large, unrelated statement diagram
+    #: (2011 Q23's own grammar-productions block) that happens to
+    #: geometrically overlap an alternative's own row - a `False` region
+    #: is never eligible for per-alternative attachment, regardless of its
+    #: own bbox size.
+    is_small_formula: bool = False
 
 
 def _round_rect(rect: Rect) -> tuple[int, int, int, int]:
@@ -469,6 +485,7 @@ def _merge_overlapping_regions(regions: list[VisualRegion]) -> list[VisualRegion
                         has_raster_image=combined.has_raster_image or b.has_raster_image,
                         owner_key=combined.owner_key,
                         owner_x_bounds=merged_owner_x_bounds,
+                        is_small_formula=combined.is_small_formula and b.is_small_formula,
                     )
                     used.add(j)
                     changed = True
@@ -742,6 +759,7 @@ def detect_visual_regions(
                     has_raster_image=has_image,
                     owner_key=owner_key,
                     owner_x_bounds=owner_x_bounds,
+                    is_small_formula=True,
                 )
             )
 

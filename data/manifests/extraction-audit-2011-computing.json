@@ -522,14 +522,14 @@
     "end_page": 14,
     "num_alternatives": 5,
     "has_assets": true,
-    "num_assets": 3,
+    "num_assets": 5,
     "answer": "C",
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
-    "warning_count": 1,
-    "warnings": "2 figure region(s) fell after the alternatives cutoff and were excluded from the statement (unexpected layout - needs review)"
+    "extraction_status": "verified",
+    "warning_count": 0,
+    "warnings": ""
   },
   {
     "id": "enade-2011-computing-q24",
@@ -603,7 +603,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },

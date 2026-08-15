@@ -44,6 +44,22 @@ assets:
   sha256: bad242288322406f801cb0972e5e5d921239e7d45c43a355ca06b489038ba3e1
   alt_text: null
   caption: null
+- id: figure-04
+  type: image
+  path: enade-2011-computing-q23/figure-04.png
+  source_page: 14
+  extraction_method: raster_crop
+  sha256: c26c69fa6a1af4ac90b15e6dc1630aab2cc1b90ee255aaa52b863e9524092229
+  alt_text: null
+  caption: null
+- id: figure-05
+  type: image
+  path: enade-2011-computing-q23/figure-05.png
+  source_page: 14
+  extraction_method: raster_crop
+  sha256: a72c5f3d6a8bcfb1cf61d85308e15a94e0a8e70a25507b34db99e1052841b75b
+  alt_text: null
+  caption: null
 subjects: []
 topics: []
 concepts: []
@@ -54,9 +70,9 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
-automatic_validation: failed
-visual_validation: failed
+extraction_status: verified
+automatic_validation: passed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
@@ -77,5 +93,5 @@ de
 A. a linguagem gerada pela gramática é inerentemente ambígua.
 B. a gramática é regular e gera uma linguagem livre de contexto.
 C. a linguagem reconhecida pelo autômato é a mesma gerada pela gramática.
-D. o autômato reconhece a linguagem sobre em que os strings possuem o prefixo ababc.
-E. a linguagem reconhecida pelo autômato é a mesma que a representada pela expressão regular .
+D. o autômato reconhece a linguagem sobre ![Alternativa D](enade-2011-computing-q23/figure-04.png) em que os strings possuem o prefixo ababc.
+E. a linguagem reconhecida pelo autômato é a mesma que a representada pela expressão regular ![Alternativa E](enade-2011-computing-q23/figure-05.png) .

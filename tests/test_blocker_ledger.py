@@ -149,3 +149,88 @@ def test_blocker_is_open_and_is_terminal_properties():
     assert open_blocker.is_terminal is False
     assert resolved_blocker.is_open is False
     assert resolved_blocker.is_terminal is True
+
+
+# --- Phase 2F: accepted_non_material_difference (see docs/decisions.md, "Phase 2F" ADR) ---
+
+
+def test_accepted_non_material_difference_is_not_open_and_is_terminal():
+    # PROMPT Phase 2F section 10: a documented, verified presentation-only
+    # divergence (e.g. 2011 Q27's own pseudocode) must never block
+    # readiness the way a genuine open blocker does, but it is also never
+    # silently interchangeable with "resolved" - nothing was fixed.
+    blocker = _blocker(
+        status="accepted_non_material_difference",
+        evidence="docs/decisions.md, Phase 2F ADR",
+        regression_tests=["tests/test_x.py"],
+    )
+    assert blocker.is_open is False
+    assert blocker.is_terminal is True
+
+
+def test_accepted_non_material_difference_requires_evidence():
+    ledger = BlockerLedger(
+        blockers=[
+            _blocker(
+                status="accepted_non_material_difference",
+                evidence=None,
+                regression_tests=["tests/test_x.py"],
+            )
+        ]
+    )
+    issues = validate_ledger(ledger)
+    assert any(i.kind == "resolved_without_evidence" for i in issues)
+
+
+def test_accepted_non_material_difference_requires_regression_test():
+    ledger = BlockerLedger(
+        blockers=[
+            _blocker(
+                status="accepted_non_material_difference",
+                evidence="some evidence",
+                regression_tests=[],
+            )
+        ]
+    )
+    issues = validate_ledger(ledger)
+    assert any(i.kind == "resolved_without_test" for i in issues)
+
+
+def test_accepted_non_material_difference_counts_toward_the_ledger_total():
+    ledger = BlockerLedger(
+        blockers=[
+            _blocker(id="a", status="open"),
+            _blocker(
+                id="b",
+                status="accepted_non_material_difference",
+                evidence="e",
+                regression_tests=["t"],
+            ),
+        ]
+    )
+    assert ledger.accepted_non_material_difference_count == 1
+    assert (
+        ledger.open_count
+        + ledger.resolved_count
+        + ledger.superseded_count
+        + ledger.source_ambiguity_count
+        + ledger.not_reproducible_count
+        + ledger.accepted_non_material_difference_count
+    ) == ledger.total
+    assert validate_ledger(ledger) == []
+
+
+def test_accepted_non_material_difference_never_counted_as_resolved():
+    # A distinct status/count from "resolved" - conflating the two would
+    # misrepresent an accepted difference as a fix that was made.
+    ledger = BlockerLedger(
+        blockers=[
+            _blocker(
+                status="accepted_non_material_difference",
+                evidence="e",
+                regression_tests=["t"],
+            )
+        ]
+    )
+    assert ledger.resolved_count == 0
+    assert ledger.accepted_non_material_difference_count == 1

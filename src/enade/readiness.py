@@ -90,15 +90,20 @@ def assess_readiness(
     inconsistent, drifted ledger), nor can a blocker the ledger still
     calls ``open`` be silently absent from a NOT_READY report.
 
-    On "non-structural" exceptions: this corpus currently has none (every
-    question that was ever `needs_review` - D3, D5, Q20 - was resolved
-    with documented evidence during Phase 1C, not left as a classified
-    ambiguity). Modeling a dedicated "verified_with_source_ambiguity"-style
-    exception list was deliberately not added to the schema for a case
-    with zero live instances (PROMPT: "não implemente uma arquitetura
-    enorme sem necessidade") - `manifest.structural_blockers` remains the
-    place a future phase would record one, and every blocker this function
-    raises is `structural=True` unless that list says otherwise.
+    On "non-structural" exceptions (PROMPT Phase 2F section 10/18): the
+    blocker ledger's own ``accepted_non_material_difference`` status (see
+    blocker_ledger.py) is the first live case - a question whose own
+    ``extraction_status`` will never reach ``verified`` through any code
+    fix (e.g. 2011 Q34's own deliberately-conservative structural-warning
+    false positive), but whose content has been independently,
+    individually confirmed correct and formally adjudicated, not silently
+    ignored. The ledger is loaded *before* the per-question loop
+    specifically so a ``question_not_verified`` finding for a
+    ledger-covered question can be marked ``structural=False`` right when
+    it is created - a derived consequence of an already-adjudicated gap,
+    never hidden, but never counted toward ``ready`` either. Every other
+    blocker this function raises is `structural=True` unless the ledger
+    says otherwise for that exact question.
     """
     blockers: list[ReadinessBlocker] = []
 
@@ -113,6 +118,19 @@ def assess_readiness(
                 detail=f"{blocker_id}: still listed in the gold manifest's structural_blockers",
             )
         )
+
+    # Loaded early (PROMPT Phase 2F): question ids whose own non-
+    # verification is already formally adjudicated as a non-material
+    # difference, not a real defect - consulted below when a
+    # question_not_verified finding is created for that same question.
+    accepted_difference_question_ids: set[str] = set()
+    if blocker_ledger_path is not None:
+        early_ledger = load_blocker_ledger(blocker_ledger_path)
+        accepted_difference_question_ids = {
+            b.question_id
+            for b in early_ledger.blockers
+            if b.status == "accepted_non_material_difference"
+        }
 
     questions = load_questions_directory(course_dir)
     verified_count = 0
@@ -157,6 +175,7 @@ def assess_readiness(
                 ReadinessBlocker(
                     kind="question_not_verified",
                     detail=f"{question_id}: extraction_status={question.extraction_status.value}",
+                    structural=question_id not in accepted_difference_question_ids,
                 )
             )
 
@@ -196,7 +215,7 @@ def assess_readiness(
                         )
 
     if blocker_ledger_path is not None:
-        ledger = load_blocker_ledger(blocker_ledger_path)
+        ledger = early_ledger
         for issue in validate_ledger(ledger):
             blockers.append(
                 ReadinessBlocker(kind=f"blocker_ledger_invalid:{issue.kind}", detail=issue.detail)
@@ -210,8 +229,12 @@ def assess_readiness(
                     )
                 )
 
+    # A non-structural blocker (PROMPT Phase 2F: a question_not_verified
+    # finding already covered by an accepted_non_material_difference
+    # ledger entry) is reported - never hidden - but never counted toward
+    # readiness; only a genuine structural finding blocks it.
     return ReadinessReport(
-        ready=not blockers,
+        ready=not any(b.structural for b in blockers),
         blockers=tuple(blockers),
         total_questions=len(questions),
         verified_count=verified_count,

@@ -126,35 +126,52 @@ blockers:
   - 13
   status: resolved
   visual_validation: passed
-- affected_assets: []
+- affected_assets:
+  - enade-2011-computing-q23/figure-04.png
+  - enade-2011-computing-q23/figure-05.png
   category: math-notation
   cause: Two small embedded raster images (Sigma, 8.4x9.2pt at D's own row; the regex,
     133.6x12.4pt at E's own row) fall after the alternatives cutoff and are dropped
     - no mechanism currently attaches an asset in the middle of an alternative that
     already has real text on both sides of the gap.
-  description: Alternative D's own missing Sigma symbol and alternative E's own missing
-    regular-expression notation are each a small embedded image sitting inside an
-    otherwise-complete alternative's own text, not covered by the general inline-alternative-asset
-    mechanism (which only triggers for a wholly-empty alternative, not a partial mid-text
-    gap).
-  evidence: data/manifests/visual-audit-2011-computing.json#enade-2011-computing-q23
+  description: Alternative D's own Sigma symbol and alternative E's own regular-expression
+    notation, each a small embedded image sitting inside an otherwise-complete alternative's
+    own text.
+  evidence: docs/decisions.md, Phase 2F ADR (inline alternative content_blocks)
   id: q23-inline-symbols-residual
   question_id: enade-2011-computing-q23
-  regression_tests: []
-  resolution: 'PARTIALLY RESOLVED (Phase 2E): the opening paragraph''s own 3 symbols
-    (Sigma={a,b,c}, Sigma*, lambda) are now fully resolved - the exclude_from_region_candidates
-    overrides suppressing them were found obsolete (written before the small-formula-image
-    mechanism existed) and removed; all 3 now render correctly via a new figure-03.png.
-    Alternative D''s own Sigma gap is now low-severity (redundant with the fixed intro
-    paragraph). Alternative E''s own missing regex remains a genuine, answerability-relevant
-    gap - fixing it generally would need a further schema change (inline mid-text
-    asset embedding within Alternative, beyond the single-asset-per-alternative field
-    added this phase for Q14) - out of scope this phase given the risk/value trade
-    for one single symbol.'
+  regression_tests:
+  - tests/test_extraction_assembler.py
+  - tests/test_schema_question.py
+  - tests/test_markdown_format.py
+  resolution: 'RESOLVED (Phase 2F): extended the general inline-alternative-asset
+    mechanism (Phase 2E, originally built for a wholly-empty alternative - 2011 Q14''s
+    own shape) with a second function, _attach_alternative_inline_segments, for an
+    alternative with *real* text that also interleaves one or more small formula images.
+    For each such alternative, the candidate region with the largest Y-overlap against
+    its own row is Y-sliced and spliced into an ordered text/asset/text sequence (a
+    new Alternative.content_blocks field, reusing the exact same ContentBlock union
+    already defined for Question.content_blocks - ParagraphBlock/AssetBlock only,
+    no new taxonomy). Two real bugs were found and fixed during implementation: (1)
+    a first, unfiltered version picked up Q23''s own large grammar-productions region
+    (not a small formula) for alternatives A/B/C too, since it geometrically overlapped
+    their own rows - fixed via a new VisualRegion.is_small_formula provenance flag
+    (set only by the small-formula candidate pool, independent of a region''s own
+    bbox size after merging - re-checking size after the fact wrongly rejected Q14''s
+    own legitimate merged region, whose bbox exceeds SMALL_IMAGE_MAX_HEIGHT despite
+    being built entirely from small elements); (2) a second index-offsetting pass
+    (for statement figures landing before alternative-attached ones in figure_regions)
+    updated only the older figure_region_index field, not the new segments field,
+    silently aliasing D''s own asset reference to the statement''s own first figure
+    - caught by a dedicated integration test, not any function-level unit test. Re-inspected:
+    figure-04.png shows only D''s own Sigma; figure-05.png shows only E''s own regular
+    expression ''(a+b+c)*(ab)*abc(a+b+c)*.'', each in the correct position within
+    otherwise-unchanged alternative text; Q14''s own mechanism reverified byte-identical
+    to its pre-Phase-2F output.'
   source_pages:
   - 14
-  status: open
-  visual_validation: failed
+  status: resolved
+  visual_validation: passed
 - affected_assets:
   - enade-2011-computing-q26/figure-01.png
   category: cross-question-contamination
@@ -175,28 +192,49 @@ blockers:
   status: resolved
   visual_validation: passed
 - affected_assets: []
-  category: formatting
+  category: presentation_fidelity
   cause: Pseudocode is set in a regular, non-monospace font in the source; is_monospace
     detection keys off font-name hints and does not classify it as code.
   description: 7-line numbered pseudocode renders as one continuous inline sentence
     rather than a fenced code block.
-  evidence: data/manifests/visual-audit-2011-computing.json#enade-2011-computing-q27
+  evidence: docs/decisions.md, Phase 2F ADR (Q27 non-material presentation difference)
   id: q27-pseudocode-not-code-block
   question_id: enade-2011-computing-q27
-  regression_tests: []
-  resolution: 'RE-INVESTIGATED (Phase 2E), status unchanged (open, non-blocking to
-    content fidelity). Reproduced and reconfirmed by direct rawdict font inspection:
-    every pseudocode line is set in ArialMT (proportional, not monospace) - the identical
-    root cause already documented for Q46 (Phase 2A) and D4 (Phase 1C). All 7 lines
-    verified present, complete, and correctly ordered this phase - zero content loss.
-    A new force_code_block-style override was considered (PROMPT Phase 2E section
-    11) and rejected: the gap is optional formatting, not content fidelity, and a
-    new override rule kind for one single-question, zero-loss, already-accepted-elsewhere
-    case is a worse risk/value trade than leaving it disclosed.'
+  regression_tests:
+  - tests/test_blocker_ledger.py
+  - tests/test_readiness.py
+  resolution: 'ADJUDICATED (Phase 2F, PROMPT section 9-10): formally classified after
+    objective, evidence-based comparison against a direct high-resolution render of
+    source page 16 (not presumed from any prior phase note). What differs: the PDF
+    renders the 7-line pseudocode as a visually distinct block (own paragraph, numbered
+    lines 1-7, left-to-right increasing indentation) in font ArialMT (a proportional
+    font, confirmed by direct rawdict inspection - not monospace, so layout.py''s
+    own is_monospace detection, which keys off font-name hints, never classifies it
+    as code); the Markdown renders the identical text as one continuous inline sentence,
+    indentation and line breaks collapsed by normal prose-joining rules, but all 7
+    lines'' own text - numbers, brackets, variable names, indices - present, complete,
+    in the exact correct order. Classification per PROMPT section 9: content_loss=false
+    (nothing missing); semantic_risk=false (the algorithm''s own meaning is 100% preserved,
+    unambiguous, and the alternatives A-D''s own truth values do not depend on code-block
+    formatting); ownership_contamination=false; presentation_fidelity=true (the sole
+    real difference); accessibility_limitation=true, minor (a screen reader/search
+    tool will not recognize this as a formatted code block, though the text itself
+    remains fully readable and searchable - arguably more so as flowing text than
+    inside a fenced block). Acceptance criterion (PROMPT section 10 - documentary
+    fidelity vs. visual identity): documentary fidelity requires every needed piece
+    of content, present, complete, in the correct order, uncontaminated - it does
+    NOT require pixel-identical visual presentation. This criterion is met. A new
+    declarative override or general code-block-detection heuristic was considered
+    and rejected: this is the identical, already-accepted root cause documented for
+    Q46 (Phase 2A) and D4 (Phase 1C) - a real, recurring source-PDF authoring choice
+    (pseudocode set in a prose font), not a pipeline defect; a new general heuristic
+    risky enough to warrant full 2021 regression testing, for a single-question, zero-content-loss,
+    already-accepted-elsewhere case, is a worse risk/value trade than formal, documented
+    acceptance. Never silently equated with resolved - nothing was technically fixed.'
   source_pages:
   - 16
-  status: open
-  visual_validation: failed
+  status: accepted_non_material_difference
+  visual_validation: passed
 - affected_assets:
   - enade-2011-computing-q40/figure-01.png
   category: cross-question-contamination
@@ -434,11 +472,13 @@ blockers:
   evidence: data/manifests/extraction-audit-2011-computing.json
   id: q23-not-verified
   question_id: enade-2011-computing-q23
-  regression_tests: []
-  resolution: Still needs_review - q23-inline-symbols-residual remains open.
+  regression_tests:
+  - tests/test_extraction_assembler.py
+  resolution: 'RESOLVED (Phase 2F): q23-inline-symbols-residual is now resolved; extraction_status
+    is now verified.'
   source_pages:
   - 14
-  status: open
+  status: resolved
 - category: readiness-status
   cause: See q24-q25-q26-cross-question-figure-contamination.
   description: extraction_status was not "verified" (see q24-q25-q26-cross-question-figure-contamination).
@@ -481,11 +521,14 @@ blockers:
   evidence: data/manifests/extraction-audit-2011-computing.json
   id: q27-not-verified
   question_id: enade-2011-computing-q27
-  regression_tests: []
-  resolution: Still needs_review - q27-pseudocode-not-code-block remains open.
+  regression_tests:
+  - tests/test_blocker_ledger.py
+  resolution: 'RESOLVED (Phase 2F): q27-pseudocode-not-code-block was formally adjudicated
+    as accepted_non_material_difference (documentary fidelity confirmed); extraction_status
+    is now verified.'
   source_pages:
   - 16
-  status: open
+  status: resolved
 - category: readiness-status
   cause: 'Conservative-by-design: the pipeline never auto-promotes a question with
     any structural warning, even a disclosed false positive.'
@@ -495,12 +538,32 @@ blockers:
   evidence: data/manifests/visual-audit-2011-computing.json#enade-2011-computing-q34
   id: q34-not-verified
   question_id: enade-2011-computing-q34
-  regression_tests: []
-  resolution: Deliberately left open - this is a disclosed, accepted conservatism,
-    not a defect to fix. See visual-audit entry for Q34.
+  regression_tests:
+  - tests/test_blocker_ledger.py
+  - tests/test_readiness.py
+  resolution: 'ADJUDICATED (Phase 2F, PROMPT section 11): formally classified rather
+    than left as a bare open item. This is shape 2 of accepted_non_material_difference
+    (see blocker_ledger.py docstring) - not a PDF-vs-Markdown presentation difference
+    (Q34s own Markdown already matches the source exactly, confirmed by visual_validation=passed),
+    but a confirmed false positive of the pipelines own deliberately conservative
+    auto-promotion rule: a candidate region is detected near Q34s own page, correctly
+    produces zero rendered assets (assets=[] is the CORRECT outcome, not a symptom
+    of lost content), yet the pipelines own dropped-region warning fires unconditionally
+    whenever any region fails to land in a question''s own figure_regions, regardless
+    of whether that region was ever really the questions own content. A general code
+    fix (relaxing this specific warning class when assets=[] and no asset-count mismatch
+    exists) was considered and rejected: this conservative rule is deliberate, foundational
+    design (validator.py: a question with ANY mechanical warning always routes to
+    needs_review, regardless of cause - never self-trusted, always deferred to a human),
+    shared by every question in both 2011 and 2021 - loosening it for this one warning
+    class risks silently promoting a genuinely-broken case elsewhere in the corpus
+    that happens to share the same superficial shape, a worse trade than a formally
+    documented, individually-adjudicated acceptance for the one specific, already-re-confirmed-multiple-times
+    case (Q34, and its own sibling Q11) where a human has independently verified the
+    content is correct. Does not block readiness.'
   source_pages:
   - 23
-  status: open
+  status: accepted_non_material_difference
 - category: readiness-status
   cause: See q38-remaining-content-defects.
   description: extraction_status was not "verified" (see q38-remaining-content-defects).

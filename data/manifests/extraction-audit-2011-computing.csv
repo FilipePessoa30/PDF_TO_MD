@@ -26,11 +26,11 @@ enade-2011-computing-q19,2011,multiple_choice,19,componente-especifico-comum-obj
 enade-2011-computing-q20,2011,multiple_choice,20,componente-especifico-comum-objetiva,13,13,5,True,1,D,validated,False,text_layer,verified,0,
 enade-2011-computing-q21,2011,multiple_choice,21,componente-especifico-comum-objetiva,13,13,5,False,0,A,validated,False,text_layer,verified,0,
 enade-2011-computing-q22,2011,multiple_choice,22,componente-especifico-comum-objetiva,14,14,5,True,1,C,validated,False,text_layer,verified,0,
-enade-2011-computing-q23,2011,multiple_choice,23,componente-especifico-comum-objetiva,14,14,5,True,3,C,validated,False,text_layer,needs_review,1,2 figure region(s) fell after the alternatives cutoff and were excluded from the statement (unexpected layout - needs review)
+enade-2011-computing-q23,2011,multiple_choice,23,componente-especifico-comum-objetiva,14,14,5,True,5,C,validated,False,text_layer,verified,0,
 enade-2011-computing-q24,2011,multiple_choice,24,componente-especifico-comum-objetiva,15,15,5,False,0,C,validated,False,text_layer,verified,0,
 enade-2011-computing-q25,2011,multiple_choice,25,componente-especifico-comum-objetiva,15,15,5,False,0,E,validated,False,text_layer,verified,0,
 enade-2011-computing-q26,2011,multiple_choice,26,componente-especifico-comum-objetiva,15,15,5,True,1,D,validated,False,text_layer,verified,0,
-enade-2011-computing-q27,2011,multiple_choice,27,componente-especifico-comum-objetiva,16,16,5,False,0,E,validated,False,text_layer,needs_review,0,
+enade-2011-computing-q27,2011,multiple_choice,27,componente-especifico-comum-objetiva,16,16,5,False,0,E,validated,False,text_layer,verified,0,
 enade-2011-computing-q28,2011,multiple_choice,28,componente-especifico-comum-objetiva,16,16,5,False,0,B,validated,False,text_layer,verified,0,
 enade-2011-computing-q29,2011,multiple_choice,29,componente-especifico-comum-objetiva,17,17,5,False,0,A,validated,False,text_layer,verified,0,
 enade-2011-computing-q30,2011,multiple_choice,30,componente-especifico-comum-objetiva,17,17,5,False,0,C,validated,False,text_layer,verified,0,

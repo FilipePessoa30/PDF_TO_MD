@@ -243,7 +243,23 @@ def build_question(
                     extraction_method=rendered.extraction_method,
                     sha256=rendered.sha256,
                 )
-        alternatives.append(Alternative(letter=a.letter, text=a.text, asset=alt_asset))
+        alt_content_blocks: list[ContentBlock] | None = None
+        if a.segments is not None:
+            alt_content_blocks = []
+            for seg in a.segments:
+                if isinstance(seg, TextSegment):
+                    alt_content_blocks.append(ParagraphBlock(text=seg.text))
+                elif isinstance(seg, FigureSegment):
+                    seg_asset = assets_by_region.get(seg.region_index)
+                    if seg_asset is not None:
+                        alt_content_blocks.append(AssetBlock(asset_id=seg_asset.asset_id))
+            if not alt_content_blocks:
+                alt_content_blocks = None
+        alternatives.append(
+            Alternative(
+                letter=a.letter, text=a.text, asset=alt_asset, content_blocks=alt_content_blocks
+            )
+        )
 
     correct_answer: str | None = None
     official_answer_source: str | None = None
