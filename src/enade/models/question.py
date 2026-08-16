@@ -58,14 +58,23 @@ class Alternative(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     letter: str = Field(..., pattern=r"^[A-E]$")
-    text: str = Field(..., min_length=1)
+    #: Non-empty for every alternative that has any text at all - but see
+    #: the ``_text_or_asset_required`` validator below for the one
+    #: documented exception (an alternative whose printed content is
+    #: *only* an image, with literally nothing else on its own marker
+    #: line - not even trailing punctuation).
+    text: str
     #: Set when this alternative's own content is (fully or partly) a
     #: small raster/vector formula image rather than text (PROMPT Phase 2E
     #: section 10) - e.g. 2011 Q14, where every alternative is only a
     #: boolean-algebra formula image with no other text at all (``text``
     #: then holds just the source's own trailing punctuation, never an
-    #: invented transcription of the formula). ``None`` for the
-    #: overwhelming majority of alternatives, which are real text.
+    #: invented transcription of the formula) - or 2008-b's own Q38/Q55
+    #: (PROMPT Phase 3A), whose equivalent alternatives leave behind no
+    #: punctuation either, hence ``text`` may be "" there (see
+    #: ``_text_or_asset_required``, never invented to satisfy a length
+    #: check). ``None`` for the overwhelming majority of alternatives,
+    #: which are real text.
     asset: Asset | None = None
     #: Ordered text/asset segments, when this alternative's own content
     #: interleaves real text with one or more small inline formula images
@@ -82,6 +91,28 @@ class Alternative(BaseModel):
     #: search/back-compat, the same relationship ``Question.statement``
     #: already has to ``Question.content_blocks``).
     content_blocks: list[ContentBlock] | None = None
+
+    @model_validator(mode="after")
+    def _text_or_asset_required(self) -> Alternative:
+        """Blank/whitespace-only ``text`` is only ever legitimate when a
+        real asset stands in for the content - either ``asset`` (PROMPT
+        Phase 3A - 2008-b's Q38/Q55, whose printed alternatives are a bare
+        letter marker with *nothing* else on the line, not even 2011
+        Q14's own trailing punctuation) or an ``AssetBlock`` inside
+        ``content_blocks`` (the interleaved shape, PROMPT Phase 2F). An
+        alternative with neither is not a documented shape - a genuine
+        extraction gap, never silently accepted here.
+        """
+        has_asset_content = self.asset is not None or (
+            self.content_blocks is not None
+            and any(block.type == "asset" for block in self.content_blocks)
+        )
+        if not self.text.strip() and not has_asset_content:
+            raise ValueError(
+                f"alternative {self.letter}: text is empty and no asset is set - "
+                "an alternative must have real text, an asset, or both"
+            )
+        return self
 
 
 class Question(BaseModel):

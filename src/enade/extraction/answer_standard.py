@@ -33,7 +33,14 @@ _ROW_Y_TOLERANCE = 3.0
 #: is exactly the page-number shape this must not rescue.
 _MIN_ROW_NUMBERS = 2
 
-_DISCURSIVE_MARKER_RE = re.compile(r"(?i)^quest[aã]o\s+discursiva\s+0*(\d+)\b")
+#: The "discursiva" qualifier itself is optional (PROMPT Phase 3A): 2021's
+#: own padrao heading is "QUESTAO DISCURSIVA N", but 2008-b's is simply
+#: "Questao N" - confirmed empirically to appear standalone, nothing else
+#: on the same line, in both real PDFs, hence anchoring both ends (safe:
+#: every heading in *this* document type is a discursive's own rubric by
+#: definition, so a bare "Questao N" here is never ambiguous with an
+#: objective the way it would be inside the prova itself).
+_DISCURSIVE_MARKER_RE = re.compile(r"(?i)^quest[aã]o\s+(?:discursiva\s+)?0*(\d+)\b$")
 _RUBRIC_HEADING_RE = re.compile(r"(?i)^padr[aã]o\s+de\s+resposta$")
 #: Same paragraph-break heuristic as assembler.py: a vertical gap this large
 #: (points) between consecutive lines is a real paragraph boundary.
@@ -119,9 +126,19 @@ def parse_answer_standard(doc: pymupdf.Document) -> AnswerStandardParseResult:
     lines = extract_document_lines(doc)
     warnings: list[str] = []
     entries: dict[int, AnswerStandardEntry] = {}
+    all_marker_numbers: set[int] = set()
+
+    # Whether this document separates a restated question from its own
+    # rubric with an explicit "PADRAO DE RESPOSTA" heading is detected once
+    # from the document itself, never assumed (PROMPT Phase 3A): 2011/2021's
+    # own padrao always restates the question first, discarded here up to
+    # that heading; 2008-b's own padrao never restates the question at all
+    # and has no such heading anywhere - its rubric begins immediately after
+    # the "Questao N" marker, so there is nothing to skip past.
+    uses_rubric_heading = any(_RUBRIC_HEADING_RE.match(ln.text.strip()) for ln in lines)
 
     current_number: int | None = None
-    in_rubric = False
+    in_rubric = not uses_rubric_heading
     buffer: list[Line] = []
     #: Every line seen while ``in_rubric`` is True, *before* chrome
     #: filtering - the table-rescue pass in ``flush()`` needs this to see
@@ -166,7 +183,8 @@ def parse_answer_standard(doc: pymupdf.Document) -> AnswerStandardParseResult:
         if marker:
             flush()
             current_number = int(marker.group(1))
-            in_rubric = False
+            all_marker_numbers.add(current_number)
+            in_rubric = not uses_rubric_heading
             pages_with_markers.add(line.page_number)
             continue
         if _RUBRIC_HEADING_RE.match(line.text.strip()):
@@ -204,8 +222,15 @@ def parse_answer_standard(doc: pymupdf.Document) -> AnswerStandardParseResult:
         if changed:
             entries[number] = replace(entry, page_bounds=widened)
 
-    expected = set(range(1, 6))
-    missing = expected - set(entries)
+    # Every discursive number a real "Questao N" marker was actually seen
+    # for (PROMPT Phase 3A - not a hardcoded range(1, 6): that was 2011/2021's
+    # own D1..D5 convention specifically, and this parser has no visibility
+    # into a different booklet's real discursive numbering, e.g. 2008-b's
+    # own 9, 10, 20, 39, 40, 59, 60, 79, 80). A number the marker loop never
+    # even encountered is simply outside this check's own scope - the
+    # exam-structure profile is what knows the full expected set, not this
+    # document-local parser.
+    missing = all_marker_numbers - set(entries)
     if missing:
         warnings.append(
             f"answer standard: no rubric text found for discursiva(s) {sorted(missing)}"

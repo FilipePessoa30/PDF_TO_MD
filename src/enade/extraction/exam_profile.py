@@ -61,6 +61,22 @@ class ExamStructureProfile(BaseModel):
     exam_id: str
     id_shorthand: str
     sections: list[SectionRange] = Field(..., min_length=1)
+    #: The single-character course-letter prefix this unified booklet's own
+    #: source filenames carry (PROMPT Phase 3A), e.g. "b" for 2008's
+    #: ``b1_prova.pdf``/``b2_gabarito.pdf``/``b3_padrao.pdf``. 2011's own
+    #: unified booklet has no letter at all (plain ``1_prova.pdf``), hence
+    #: the default of ``None`` - not every unified booklet is named the same
+    #: way, and nothing here should have to guess which convention applies.
+    source_letter: str | None = None
+    #: True when this booklet's discursive markers reuse the same printed
+    #: number stream as its objectives, interleaved among them (2008-b's
+    #: "QUESTAO 39 - DISCURSIVA" sits between objectives 38 and 41) rather
+    #: than each kind having its own independent 1..N run (2011's "QUESTAO
+    #: DISCURSIVA 1".."5", entirely separate from objectives 1..50 - the
+    #: default, unchanged, ``False`` case). See
+    #: ``boundaries.detect_question_boundaries``'s own ``combined_numbering``
+    #: parameter, which this value is threaded into.
+    combined_numbering: bool = False
 
     @model_validator(mode="after")
     def _validate_sections(self) -> ExamStructureProfile:
@@ -122,17 +138,51 @@ _RANGE_PATTERNS: dict[str, re.Pattern[str]] = {
 }
 
 
-def verify_declared_profile(doc: pymupdf.Document, instructions_page: int = 1) -> list[str]:
+#: 2008-b's own equivalent (PROMPT Phase 3A). Unlike 2011, this booklet's
+#: page 1 cover is a single embedded raster image with *zero* extractable
+#: text (confirmed empirically: ``page[0].get_text()`` returns ""), so its
+#: printed range table cannot be cross-checked there at all - not a defect
+#: in this verification, just a limitation of what the source PDF actually
+#: offers. Its Componente Especifico transition page (11) does repeat the
+#: three course-specific ranges in real, selectable text ("Bacharelado em
+#: Ciencia da Computacao | 21 a 38 | 39 e 40", etc. - confirmed against the
+#: real PDF), so only those three are checked; Formacao Geral and Nucleo
+#: Comum are not independently re-printed anywhere else in this PDF's own
+#: text layer and are therefore not claimed as machine-confirmed here (see
+#: docs/phase-3a-report.md for how those two were instead confirmed by
+#: direct visual reading of the cover image).
+_RANGE_PATTERNS_2008_B: dict[str, re.Pattern[str]] = {
+    "Bacharelado em Ciencia da Computacao objetivas (21 a 38)": re.compile(r"\b21\s*a\s*38\b"),
+    "Bacharelado em Ciencia da Computacao discursivas (39 e 40)": re.compile(r"\b39\s*e\s*40\b"),
+    "Engenharia de Computacao objetivas (41 a 58)": re.compile(r"\b41\s*a\s*58\b"),
+    "Engenharia de Computacao discursivas (59 e 60)": re.compile(r"\b59\s*e\s*60\b"),
+    "Sistemas de Informacao objetivas (61 a 78)": re.compile(r"\b61\s*a\s*78\b"),
+    "Sistemas de Informacao discursivas (79 e 80)": re.compile(r"\b79\s*e\s*80\b"),
+}
+
+
+def verify_declared_profile(
+    doc: pymupdf.Document,
+    instructions_page: int = 1,
+    patterns: dict[str, re.Pattern[str]] | None = None,
+) -> list[str]:
     """Confirm the profile's ranges are actually printed on the instructions page.
 
     Returns a note per pattern that could not be confirmed - never raises,
     matching ``declared_structure.parse_declared_structure``'s
     fail-loud-but-not-blocking discipline (PROMPT: "documente a estrutura
     real" rather than silently trusting the YAML).
+
+    ``patterns`` defaults to the 2011 unified booklet's own set
+    (``_RANGE_PATTERNS``) so every existing call site is unaffected; a
+    different booklet whose instructions page uses different wording (see
+    ``_RANGE_PATTERNS_2008_B``) passes its own set explicitly rather than
+    this function guessing a booklet's shape from its year.
     """
+    active_patterns = patterns if patterns is not None else _RANGE_PATTERNS
     text = doc[instructions_page - 1].get_text("text")
     return [
         f"could not confirm '{label}' in the printed instructions on page {instructions_page}"
-        for label, pattern in _RANGE_PATTERNS.items()
+        for label, pattern in active_patterns.items()
         if not pattern.search(text)
     ]

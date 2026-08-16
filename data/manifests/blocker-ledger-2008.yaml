@@ -1,0 +1,766 @@
+# Blocker ledger for the 2008-b legacy-layout pilot (PROMPT Phase 3A).
+# Independent from data/manifests/blocker-ledger-2011.yaml - no 2011 blockers were
+# copied; every entry below reflects a real defect actually observed in this booklet.
+# See docs/phase-3a-report.md for the full narrative and root-cause evidence.
+baseline_count: 0
+blockers:
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
+    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
+    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
+    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
+    then merges them together with real embedded photos/diagrams into one oversized region that can span
+    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
+    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
+    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
+    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
+    section M for why no fix was attempted this session.'
+  description: Empty statement - only figure-01.png remains, all prose text lost.
+  evidence: null
+  id: d09-region-merge-content-loss
+  question_id: enade-2008-computing-d09
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 9
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
+    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
+    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
+    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
+    then merges them together with real embedded photos/diagrams into one oversized region that can span
+    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
+    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
+    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
+    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
+    section M for why no fix was attempted this session.'
+  description: Statement severely truncated and reordered ('tratamento A Escreva, no espaco reservado...')
+    - the real hash-table-collision scenario is largely missing/scrambled.
+  evidence: null
+  id: d20-region-merge-content-loss
+  question_id: enade-2008-computing-d20
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 10
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
+    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
+    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
+    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
+    then merges them together with real embedded photos/diagrams into one oversized region that can span
+    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
+    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
+    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
+    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
+    section M for why no fix was attempted this session.'
+  description: Empty statement - only 2 images remain, all prose ('Quando o homem nao trata bem a natureza...')
+    lost.
+  evidence: null
+  id: q02-region-merge-content-loss
+  question_id: enade-2008-computing-q02
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 3
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
+    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
+    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
+    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
+    then merges them together with real embedded photos/diagrams into one oversized region that can span
+    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
+    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
+    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
+    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
+    section M for why no fix was attempted this session.'
+  description: Statement truncated to a bare fragment ('aos 20% de maior renda foi,').
+  evidence: null
+  id: q07-region-merge-content-loss
+  question_id: enade-2008-computing-q07
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 4
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
+    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
+    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
+    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
+    then merges them together with real embedded photos/diagrams into one oversized region that can span
+    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
+    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
+    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
+    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
+    section M for why no fix was attempted this session.'
+  description: 'Empty statement AND the rendered figure-01.png asset is itself contaminated: directly
+    re-opened, it shows Q21''s own statement plus the entirety of the unrelated Q22 and part of Q23 merged
+    into one crop - the most severe confirmed instance, cross-question content contamination, not just
+    loss.'
+  evidence: null
+  id: q21-region-merge-content-loss
+  question_id: enade-2008-computing-q21
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 11
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
+    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
+    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
+    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
+    then merges them together with real embedded photos/diagrams into one oversized region that can span
+    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
+    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
+    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
+    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
+    section M for why no fix was attempted this session.'
+  description: Statement replaced by garbled instructions-table fragments ('Multipla Escolha Discursivas
+    21 a 38 39 e 40 41 a 58 59 e 60 61 a 78 79 e 80') with 2 misplaced images - the real SQL/relational-algebra
+    statement is entirely lost.
+  evidence: null
+  id: q22-region-merge-content-loss
+  question_id: enade-2008-computing-q22
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 11
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
+    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
+    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
+    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
+    then merges them together with real embedded photos/diagrams into one oversized region that can span
+    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
+    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
+    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
+    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
+    section M for why no fix was attempted this session.'
+  description: Empty statement - the same contaminated merged region documented for Q21 spans into Q23's
+    own page/column too.
+  evidence: null
+  id: q23-region-merge-content-loss
+  question_id: enade-2008-computing-q23
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 11
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
+    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
+    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
+    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
+    then merges them together with real embedded photos/diagrams into one oversized region that can span
+    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
+    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
+    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
+    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
+    section M for why no fix was attempted this session.'
+  description: Statement replaced by garbled table/diagram fragments ('A 0 B S0 / A II B 1 / A 0 B S0').
+  evidence: null
+  id: q24-region-merge-content-loss
+  question_id: enade-2008-computing-q24
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 12
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
+    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
+    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
+    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
+    then merges them together with real embedded photos/diagrams into one oversized region that can span
+    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
+    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
+    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
+    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
+    section M for why no fix was attempted this session.'
+  description: Statement truncated to a bare fragment ('imagens I e II acima?') with 3 misplaced images.
+  evidence: null
+  id: q26-region-merge-content-loss
+  question_id: enade-2008-computing-q26
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 13
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
+    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
+    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
+    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
+    then merges them together with real embedded photos/diagrams into one oversized region that can span
+    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
+    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
+    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
+    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
+    section M for why no fix was attempted this session.'
+  description: Statement severely scrambled/truncated around one image ('...um controlador de um robo
+    e um controlador [image] planta inteira de manufatura sistematica...').
+  evidence: null
+  id: q41-region-merge-content-loss
+  question_id: enade-2008-computing-q41
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 18
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
+    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
+    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
+    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
+    then merges them together with real embedded photos/diagrams into one oversized region that can span
+    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
+    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
+    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
+    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
+    section M for why no fix was attempted this session.'
+  description: Statement severely scrambled/truncated around otherwise-correct SQL code blocks.
+  evidence: null
+  id: q44-region-merge-content-loss
+  question_id: enade-2008-computing-q44
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 19
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
+    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
+    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
+    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
+    then merges them together with real embedded photos/diagrams into one oversized region that can span
+    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
+    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
+    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
+    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
+    section M for why no fix was attempted this session.'
+  description: Empty structured statement - the entire statement (including embedded integral notation
+    and 2 sub-figures) was captured as one self-contained whole-question image rather than structured
+    text+asset. Less severe than the cross-contamination cases (nothing lost or mixed with neighbors,
+    just unstructured) but still a real defect - alternatives remained correctly separate as text.
+  evidence: null
+  id: q45-region-merge-content-loss
+  question_id: enade-2008-computing-q45
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 20
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
+    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
+    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
+    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
+    then merges them together with real embedded photos/diagrams into one oversized region that can span
+    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
+    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
+    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
+    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
+    section M for why no fix was attempted this session.'
+  description: Empty statement; a detected table also fell after the alternatives cutoff and was excluded
+    rather than mis-attached.
+  evidence: null
+  id: q50-region-merge-content-loss
+  question_id: enade-2008-computing-q50
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 21
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
+    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
+    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
+    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
+    then merges them together with real embedded photos/diagrams into one oversized region that can span
+    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
+    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
+    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
+    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
+    section M for why no fix was attempted this session.'
+  description: Statement fragmented across 4 separate images with disconnected text shards ('o seguinte
+    estado final.' / 'tenha o estado E0 a seguir.' / ...).
+  evidence: null
+  id: q51-region-merge-content-loss
+  question_id: enade-2008-computing-q51
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 22
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
+    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
+    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
+    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
+    then merges them together with real embedded photos/diagrams into one oversized region that can span
+    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
+    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
+    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
+    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
+    section M for why no fix was attempted this session.'
+  description: Statement replaced by a nonsense fragment ('D ÷ TL; | TL; D').
+  evidence: null
+  id: q52-region-merge-content-loss
+  question_id: enade-2008-computing-q52
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 22
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
+    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
+    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
+    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
+    then merges them together with real embedded photos/diagrams into one oversized region that can span
+    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
+    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
+    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
+    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
+    section M for why no fix was attempted this session.'
+  description: Statement reduced to formula/label fragments with reordered item text.
+  evidence: null
+  id: q53-region-merge-content-loss
+  question_id: enade-2008-computing-q53
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 23
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
+    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
+    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
+    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
+    then merges them together with real embedded photos/diagrams into one oversized region that can span
+    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
+    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
+    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
+    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
+    section M for why no fix was attempted this session.'
+  description: Empty statement - only figure-01.png (routing table) remains.
+  evidence: null
+  id: q54-region-merge-content-loss
+  question_id: enade-2008-computing-q54
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 23
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
+    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
+    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
+    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
+    then merges them together with real embedded photos/diagrams into one oversized region that can span
+    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
+    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
+    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
+    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
+    section M for why no fix was attempted this session.'
+  description: Statement truncated mid-sentence ('A figura acima, adaptada do documento que descreve o').
+  evidence: null
+  id: q61-region-merge-content-loss
+  question_id: enade-2008-computing-q61
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 27
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
+    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
+    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
+    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
+    then merges them together with real embedded photos/diagrams into one oversized region that can span
+    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
+    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
+    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
+    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
+    section M for why no fix was attempted this session.'
+  description: Statement replaced by garbled diagram-label fragments.
+  evidence: null
+  id: q62-region-merge-content-loss
+  question_id: enade-2008-computing-q62
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 28
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
+    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
+    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
+    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
+    then merges them together with real embedded photos/diagrams into one oversized region that can span
+    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
+    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
+    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
+    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
+    section M for why no fix was attempted this session.'
+  description: Statement replaced by garbled table-cell fragments ('A atrA C atrB B atrC').
+  evidence: null
+  id: q63-region-merge-content-loss
+  question_id: enade-2008-computing-q63
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 27
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
+    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
+    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
+    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
+    then merges them together with real embedded photos/diagrams into one oversized region that can span
+    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
+    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
+    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
+    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
+    section M for why no fix was attempted this session.'
+  description: Statement truncated mid-sentence ('A decisao envolve substituir o sistema atual, que emprega').
+  evidence: null
+  id: q64-region-merge-content-loss
+  question_id: enade-2008-computing-q64
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 28
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
+    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
+    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
+    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
+    then merges them together with real embedded photos/diagrams into one oversized region that can span
+    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
+    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
+    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
+    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
+    section M for why no fix was attempted this session.'
+  description: Empty statement - only figure-01.png remains.
+  evidence: null
+  id: q69-region-merge-content-loss
+  question_id: enade-2008-computing-q69
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 29
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
+    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
+    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
+    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
+    then merges them together with real embedded photos/diagrams into one oversized region that can span
+    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
+    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
+    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
+    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
+    section M for why no fix was attempted this session.'
+  description: Statement replaced by garbled diagram-label fragments.
+  evidence: null
+  id: q71-region-merge-content-loss
+  question_id: enade-2008-computing-q71
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 30
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
+    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
+    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
+    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
+    then merges them together with real embedded photos/diagrams into one oversized region that can span
+    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
+    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
+    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
+    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
+    section M for why no fix was attempted this session.'
+  description: Empty statement - only figure-01.png remains.
+  evidence: null
+  id: q73-region-merge-content-loss
+  question_id: enade-2008-computing-q73
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 31
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
+    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
+    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
+    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
+    then merges them together with real embedded photos/diagrams into one oversized region that can span
+    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
+    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
+    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
+    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
+    section M for why no fix was attempted this session.'
+  description: Empty statement - only figure-01.png remains.
+  evidence: null
+  id: q75-region-merge-content-loss
+  question_id: enade-2008-computing-q75
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 32
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: section-transition-chrome-bleed
+  cause: The section-transition instructional paragraph printed between Componente Especifico Comum and
+    each course-specific block ('As questoes de X a Y, a seguir, sao comuns/especificas para os estudantes
+    de cursos com perfis profissionais de ...') is not recognized by chrome.py (its wording is 2008-b-specific
+    and was not added this phase - see docs/phase-3a-report.md section M for why a safe general pattern
+    was not attempted in the time available). Because it sits between the last discursive of one section
+    and the first marker of the next, boundary detection's own span-slicing attributes it to the immediately
+    preceding question.
+  description: Statement ends with the page-8 Nucleo Comum -> course-specific transition paragraph wrongly
+    appended as if it were D10's own content. D10's own real statement text is present but the trailing
+    contamination makes this a real defect.
+  evidence: null
+  id: d10-section-transition-chrome-bleed
+  question_id: enade-2008-computing-d10
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 8
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: section-transition-chrome-bleed
+  cause: The section-transition instructional paragraph printed between Componente Especifico Comum and
+    each course-specific block ('As questoes de X a Y, a seguir, sao comuns/especificas para os estudantes
+    de cursos com perfis profissionais de ...') is not recognized by chrome.py (its wording is 2008-b-specific
+    and was not added this phase - see docs/phase-3a-report.md section M for why a safe general pattern
+    was not attempted in the time available). Because it sits between the last discursive of one section
+    and the first marker of the next, boundary detection's own span-slicing attributes it to the immediately
+    preceding question.
+  description: Statement ends with the page-17 CC-Bacharelado -> Engenharia de Computacao transition paragraph
+    wrongly appended.
+  evidence: null
+  id: d40-section-transition-chrome-bleed
+  question_id: enade-2008-computing-d40
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 17
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: unstructured-image-alternatives
+  cause: This question could not be built into a valid Question at all (Alternative requires real text,
+    an asset, or both) and is therefore absent from data/questions/2008/all-computing entirely - not needs_review,
+    genuinely not published. 80/80 academic question numbers are accounted for (77 published + these 3
+    explicitly excluded, loudly, via a structural warning), never silently dropped.
+  description: All 5 alternatives are bare letter markers (A/B/C/D/E) floating above/beside unrelated-looking
+    images (formula/circuit diagrams or, for Q8, unrelated artwork thumbnails) with no small-formula-candidate
+    region detected nearby (unlike 2011 Q14/Q23's own precedent, where a genuinely small per-alternative
+    formula image was found and sliced) - the detected regions on these pages are large, merged blobs
+    (492x343pt, 342x681pt, 508x687pt), architecturally different from the small-formula shape the existing
+    Alternative.asset mechanism was built for. Question excluded from the published corpus entirely (pipeline.py's
+    own per-question ValidationError isolation, PROMPT Phase 3A) rather than published with fabricated
+    or missing alternative content.
+  evidence: null
+  id: q08-unstructured-image-alternatives
+  question_id: enade-2008-computing-q08
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 5
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: unstructured-image-alternatives
+  cause: This question could not be built into a valid Question at all (Alternative requires real text,
+    an asset, or both) and is therefore absent from data/questions/2008/all-computing entirely - not needs_review,
+    genuinely not published. 80/80 academic question numbers are accounted for (77 published + these 3
+    explicitly excluded, loudly, via a structural warning), never silently dropped.
+  description: All 5 alternatives are bare letter markers (A/B/C/D/E) floating above/beside unrelated-looking
+    images (formula/circuit diagrams or, for Q8, unrelated artwork thumbnails) with no small-formula-candidate
+    region detected nearby (unlike 2011 Q14/Q23's own precedent, where a genuinely small per-alternative
+    formula image was found and sliced) - the detected regions on these pages are large, merged blobs
+    (492x343pt, 342x681pt, 508x687pt), architecturally different from the small-formula shape the existing
+    Alternative.asset mechanism was built for. Question excluded from the published corpus entirely (pipeline.py's
+    own per-question ValidationError isolation, PROMPT Phase 3A) rather than published with fabricated
+    or missing alternative content.
+  evidence: null
+  id: q38-unstructured-image-alternatives
+  question_id: enade-2008-computing-q38
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 15
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: unstructured-image-alternatives
+  cause: This question could not be built into a valid Question at all (Alternative requires real text,
+    an asset, or both) and is therefore absent from data/questions/2008/all-computing entirely - not needs_review,
+    genuinely not published. 80/80 academic question numbers are accounted for (77 published + these 3
+    explicitly excluded, loudly, via a structural warning), never silently dropped.
+  description: All 5 alternatives are bare letter markers (A/B/C/D/E) floating above/beside unrelated-looking
+    images (formula/circuit diagrams or, for Q8, unrelated artwork thumbnails) with no small-formula-candidate
+    region detected nearby (unlike 2011 Q14/Q23's own precedent, where a genuinely small per-alternative
+    formula image was found and sliced) - the detected regions on these pages are large, merged blobs
+    (492x343pt, 342x681pt, 508x687pt), architecturally different from the small-formula shape the existing
+    Alternative.asset mechanism was built for. Question excluded from the published corpus entirely (pipeline.py's
+    own per-question ValidationError isolation, PROMPT Phase 3A) rather than published with fabricated
+    or missing alternative content.
+  evidence: null
+  id: q55-unstructured-image-alternatives
+  question_id: enade-2008-computing-q55
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 23
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: answer-standard-incomplete
+  cause: 'Genuine source-document shape, not an extraction bug: parse_answer_standard only creates an
+    AnswerStandardEntry when non-empty text is captured, so a purely visual rubric with no text produces
+    no entry at all, and there is therefore no page_bounds window for find_answer_standard_images to search
+    within. D59''s own statement text is otherwise complete and correctly extracted (visual_validation=passed).'
+  description: D59's own padrao de resposta (b3_padrao.pdf) has zero rubric text between the 'Questao
+    59' and 'Questao 60' markers - the rubric is diagram-only (4 embedded images, no text at all).
+  evidence: null
+  id: d59-answer-standard-image-only
+  question_id: enade-2008-computing-d59
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 3
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: answer-standard-absent-from-source
+  cause: Confirmed by full-document inspection of b3_padrao.pdf (6 pages) and cross-checked against 2011's
+    own unified padrao, which DOES include its own Formacao Geral discursivas (D1/D2) - this is not a
+    shared convention, genuinely absent from this specific source document. Never fabricated a rubric
+    to fill the gap.
+  description: D09's own answer standard is entirely absent from b3_padrao.pdf - the document jumps directly
+    from its own cover to 'Questao 20', never restating or grading the two Formacao Geral discursivas
+    (9, 10) at all.
+  evidence: null
+  id: d09-answer-standard-absent-from-source
+  question_id: enade-2008-computing-d09
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 1
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: answer-standard-absent-from-source
+  cause: Confirmed by full-document inspection of b3_padrao.pdf (6 pages) and cross-checked against 2011's
+    own unified padrao, which DOES include its own Formacao Geral discursivas (D1/D2) - this is not a
+    shared convention, genuinely absent from this specific source document. Never fabricated a rubric
+    to fill the gap.
+  description: D10's own answer standard is entirely absent from b3_padrao.pdf - the document jumps directly
+    from its own cover to 'Questao 20', never restating or grading the two Formacao Geral discursivas
+    (9, 10) at all.
+  evidence: null
+  id: d10-answer-standard-absent-from-source
+  question_id: enade-2008-computing-d10
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 1
+  status: open
+  superseded_by: null
+  visual_validation: failed

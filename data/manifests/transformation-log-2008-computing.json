@@ -1,0 +1,154 @@
+[
+  {
+    "question": "enade-2008-computing-q01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'ERMAKOFF,'+'George.' -> 'ERMAKOFF,George.' (gap=0.961pt, p.2)"
+  },
+  {
+    "question": "enade-2008-computing-q01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'In'+':' -> 'In:' (gap=0.374pt, p.2)"
+  },
+  {
+    "question": "enade-2008-computing-q01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'Jacó'+'.' -> 'Jacó.' (gap=0.147pt, p.2)"
+  },
+  {
+    "question": "enade-2008-computing-q16",
+    "type": "label_case_normalization",
+    "source_page": 9,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'porque' -> 'PORQUE' (p.9)"
+  },
+  {
+    "question": "enade-2008-computing-q19",
+    "type": "label_case_normalization",
+    "source_page": 10,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'porque' -> 'PORQUE' (p.10)"
+  },
+  {
+    "question": "enade-2008-computing-q38",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 15,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'('+'A' -> '(A' (gap=-0.004pt, p.15)"
+  },
+  {
+    "question": "enade-2008-computing-q38",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 15,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'('+'A' -> '(A' (gap=-0.004pt, p.15)"
+  },
+  {
+    "question": "enade-2008-computing-q38",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 15,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'(A'+',' -> '(A,' (gap=0.123pt, p.15)"
+  },
+  {
+    "question": "enade-2008-computing-q38",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 15,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'(A'+',' -> '(A,' (gap=0.123pt, p.15)"
+  },
+  {
+    "question": "enade-2008-computing-q38",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 15,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'B'+',' -> 'B,' (gap=0.121pt, p.15)"
+  },
+  {
+    "question": "enade-2008-computing-q38",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 15,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'B'+',' -> 'B,' (gap=0.121pt, p.15)"
+  },
+  {
+    "question": "enade-2008-computing-q38",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 15,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'C'+',' -> 'C,' (gap=-0.000pt, p.15)"
+  },
+  {
+    "question": "enade-2008-computing-q38",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 15,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'D'+',' -> 'D,' (gap=0.115pt, p.15)"
+  },
+  {
+    "question": "enade-2008-computing-q43",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 18,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'X0'+',' -> 'X0,' (gap=0.840pt, p.18)"
+  },
+  {
+    "question": "enade-2008-computing-q43",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 18,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'X1'+'e' -> 'X1e' (gap=0.840pt, p.18)"
+  },
+  {
+    "question": "enade-2008-computing-q44",
+    "type": "label_case_normalization",
+    "source_page": 19,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'porque' -> 'PORQUE' (p.19)"
+  },
+  {
+    "question": "enade-2008-computing-q50",
+    "type": "label_case_normalization",
+    "source_page": 21,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'porque' -> 'PORQUE' (p.21)"
+  },
+  {
+    "question": "enade-2008-computing-q58",
+    "type": "label_case_normalization",
+    "source_page": 24,
+    "method": "known_font_label_lookup",
+    "automatic": true,
+    "detail": "'porque' -> 'PORQUE' (p.24)"
+  },
+  {
+    "question": "enade-2008-computing-q69",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 30,
+    "method": "character_geometry",
+    "automatic": true,
+    "detail": "'valor'+'estratégico' -> 'valorestratégico' (gap=-7.309pt, p.30)"
+  }
+]

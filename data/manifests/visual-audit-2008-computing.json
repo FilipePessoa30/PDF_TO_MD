@@ -1,0 +1,310 @@
+{
+  "enade-2008-computing-d09": {
+    "status": "failed",
+    "notes": "Empty statement - only figure-01.png remains, all prose text lost. Root cause: oversized merged visual region (see blocker region-merge-content-loss)."
+  },
+  "enade-2008-computing-d10": {
+    "status": "failed",
+    "notes": "Statement ends with the page-8 section-transition chrome paragraph ('As questoes de 11 a 20, a seguir, sao comuns para os estudantes de cursos com perfis profissionais de BACHARELADO EM CIENCIA DA COMPUTACAO, ENGENHARIA DE COMPUTACAO e BACHARELADO EM SISTEMAS DE INFORMACAO.') wrongly appended as if it were D10's own content (see blocker section-transition-chrome-bleed). D10's own real statement text is present but the trailing chrome contamination makes this a real defect."
+  },
+  "enade-2008-computing-d20": {
+    "status": "failed",
+    "notes": "Statement severely truncated and reordered ('tratamento A Escreva, no espaco reservado...') - compared against page 10, the real statement (hash table collision scenario, 'chaves envolvidas em colisoes {44, 49, 95, 90}...') is largely missing/scrambled (see blocker region-merge-content-loss)."
+  },
+  "enade-2008-computing-d39": {
+    "status": "passed",
+    "notes": "Statement (gramatica livre de contexto, arvore de analise sintatica) and figure-01.png compared against page 16. Complete after the Phase 3A marker-suffix fix (previously had a stray leading '– DISCURSIVA' fragment - see docs/decisions.md). Padrao de resposta linked and non-empty."
+  },
+  "enade-2008-computing-d40": {
+    "status": "failed",
+    "notes": "Statement ends with the page-17 section-transition chrome paragraph (CC-Bacharelado -> Engenharia de Computacao) wrongly appended (see blocker section-transition-chrome-bleed)."
+  },
+  "enade-2008-computing-d59": {
+    "status": "passed",
+    "notes": "Statement (inversao de prioridade, escalonamento de tarefas) compared against page 25 - long, complete, coherent, no image. NOTE: this question's own padrao de resposta (page 3 of b3_padrao.pdf) is diagram-only with zero rubric text between the 'Questao 59' and 'Questao 60' markers - genuinely absent from the source, not an extraction defect - hence answer_standard remains unlinked (see blocker d59-answer-standard-image-only)."
+  },
+  "enade-2008-computing-d60": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-d79": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-d80": {
+    "status": "passed",
+    "notes": "Statement (diagrama de sequencia, DUPLA-CONTA) and 2 images compared against pages 5/6 of the prova. Long, complete, both A/B rubric-style statement parts intact - another positive multi-image case."
+  },
+  "enade-2008-computing-q01": {
+    "status": "passed",
+    "notes": "Statement (Machado de Assis / Esau e Jaco fragment) and figure-01.png (5 labelled portrait images) compared against page 2. Full paragraph present, alternatives A-E correct and complete. No residuals."
+  },
+  "enade-2008-computing-q02": {
+    "status": "failed",
+    "notes": "Empty statement - only 2 images remain (figure-01/02.png), all prose ('Quando o homem nao trata bem a natureza...') lost (see blocker region-merge-content-loss)."
+  },
+  "enade-2008-computing-q03": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q04": {
+    "status": "passed",
+    "notes": "Statement (mulheres cidadas de segunda classe) compared against page 3 - complete, no image. Alternatives A-E correct. The 'figure region fell after the alternatives cutoff' structural warning refers to a discarded, correctly-excluded spurious region - no content loss (same accepted shape as 2011 Q34/Q11)."
+  },
+  "enade-2008-computing-q05": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q06": {
+    "status": "passed",
+    "notes": "Statement (mapa de centros urbanos sustentaveis) and figure-01.png compared against page 4. Complete paragraph before and after the image, alternatives correct."
+  },
+  "enade-2008-computing-q07": {
+    "status": "failed",
+    "notes": "Statement truncated to a bare fragment ('aos 20% de maior renda foi,') - real statement (Curva de Lorenz / distribuicao de renda) almost entirely lost (see blocker region-merge-content-loss)."
+  },
+  "enade-2008-computing-q11": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q12": {
+    "status": "passed",
+    "notes": "Statement (grafo de fluxo de controle / complexidade ciclomatica) compared against page 8. Complete, coherent, alternatives correct."
+  },
+  "enade-2008-computing-q13": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q14": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q15": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q16": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q17": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q18": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q19": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q21": {
+    "status": "failed",
+    "notes": "Empty statement AND figure-01.png itself is contaminated: the rendered crop was directly re-opened and shows Q21's own statement plus the ENTIRETY of the unrelated Q22 and part of Q23 in one merged image (see blocker region-merge-content-loss - the most severe confirmed instance, cross-question content contamination not just loss)."
+  },
+  "enade-2008-computing-q22": {
+    "status": "failed",
+    "notes": "Statement replaced by garbled instructions-table fragments ('Multipla Escolha Discursivas 21 a 38 39 e 40 41 a 58 59 e 60 61 a 78 79 e 80') with 2 misplaced images - the real statement (SQL/relational algebra question) is entirely lost (see blocker region-merge-content-loss)."
+  },
+  "enade-2008-computing-q23": {
+    "status": "failed",
+    "notes": "Empty statement - the same contaminated merged region documented for Q21 spans into Q23's own page/column too (see blocker region-merge-content-loss)."
+  },
+  "enade-2008-computing-q24": {
+    "status": "failed",
+    "notes": "Statement replaced by garbled table/diagram fragments ('A 0 B S0 / A II B 1 / A 0 B S0') - real statement lost (see blocker region-merge-content-loss)."
+  },
+  "enade-2008-computing-q25": {
+    "status": "passed",
+    "notes": "Statement (imagem binaria com retas) and figure-01.png compared against page 12. Complete paragraph, alternatives correct."
+  },
+  "enade-2008-computing-q26": {
+    "status": "failed",
+    "notes": "Statement truncated to a bare fragment ('imagens I e II acima?') with 3 misplaced images - real statement almost entirely lost (see blocker region-merge-content-loss)."
+  },
+  "enade-2008-computing-q27": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q28": {
+    "status": "passed",
+    "notes": "Statement (arvore de decisao, 2 images: tree + object table) compared against page 13. Both images correctly placed with real text before/between/after - a positive case showing multi-image questions CAN extract correctly when regions are not over-merged."
+  },
+  "enade-2008-computing-q29": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q30": {
+    "status": "passed",
+    "notes": "Statement (espectro de radiofrequencia / multiplo acesso) compared against page 13/14. Complete, no image, alternatives correct."
+  },
+  "enade-2008-computing-q31": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q32": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q33": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q34": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q35": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q36": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q37": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q41": {
+    "status": "failed",
+    "notes": "Statement severely scrambled/truncated ('Um exemplo simples pode ser um controlador de um robo e um controlador [image] planta inteira de manufatura sistematica...') - real statement heavily corrupted (see blocker region-merge-content-loss)."
+  },
+  "enade-2008-computing-q42": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q43": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q44": {
+    "status": "failed",
+    "notes": "Statement severely scrambled/truncated around otherwise-correct SQL code blocks ('primeira da tabela Produtos... apresentadas a seguir... que o da Consulta 2 PORQUE 2 tera (10.000)2 registros.') - real statement heavily corrupted (see blocker region-merge-content-loss)."
+  },
+  "enade-2008-computing-q45": {
+    "status": "failed",
+    "notes": "Empty structured statement - the entire statement (including embedded integral notation and 2 sub-figures) was captured as ONE self-contained whole-question image rather than structured text+asset. Less severe than the cross-contamination cases (content is visible in the image, not lost or mixed with neighbors) but still a real structural defect - alternatives text is correctly separate (see blocker region-merge-content-loss)."
+  },
+  "enade-2008-computing-q46": {
+    "status": "passed",
+    "notes": "Statement (grafico cartesiano y=f(x)) and figure-01.png compared against page 20. Complete, alternatives correct."
+  },
+  "enade-2008-computing-q47": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q48": {
+    "status": "passed",
+    "notes": "Statement (metodo da biseccao, raizes de f(x)) compared against page 20/21. Complete, no image, alternatives correct."
+  },
+  "enade-2008-computing-q49": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q50": {
+    "status": "failed",
+    "notes": "Empty statement, plus a detected table also fell after the alternatives cutoff and was excluded (see blocker region-merge-content-loss and table-fell-after-cutoff)."
+  },
+  "enade-2008-computing-q51": {
+    "status": "failed",
+    "notes": "Statement severely fragmented across 4 separate images with disconnected text shards ('o seguinte estado final.' / 'tenha o estado E0 a seguir.' / 'possiveis sao os estados E1, E2 e E3...' / 'informacoes analise as assercoes a seguir.' / 'ser E3 porque,' / ...) - real statement almost entirely lost (see blocker region-merge-content-loss)."
+  },
+  "enade-2008-computing-q52": {
+    "status": "failed",
+    "notes": "Statement replaced by a nonsense fragment ('D ÷ TL; | TL; D') - real statement (deteccao/tratamento de erros) lost (see blocker region-merge-content-loss)."
+  },
+  "enade-2008-computing-q53": {
+    "status": "failed",
+    "notes": "Statement reduced to formula/label fragments with reordered item text ('itens. I A probabilidade de ocorrer o evento A em uma subsequencia II') - real statement heavily corrupted (see blocker region-merge-content-loss)."
+  },
+  "enade-2008-computing-q54": {
+    "status": "failed",
+    "notes": "Empty statement - only figure-01.png (routing table) remains, all prose lost (see blocker region-merge-content-loss)."
+  },
+  "enade-2008-computing-q56": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q57": {
+    "status": "passed",
+    "notes": "Statement (bloco logico look-up table) and figure-01.png compared against page 24. Complete paragraph before and after the image, alternatives correct."
+  },
+  "enade-2008-computing-q58": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q61": {
+    "status": "failed",
+    "notes": "Statement truncated mid-sentence ('A figura acima, adaptada do documento que descreve o') - real statement mostly lost (see blocker region-merge-content-loss)."
+  },
+  "enade-2008-computing-q62": {
+    "status": "failed",
+    "notes": "Statement replaced by garbled diagram-label fragments ('Suporte a servicos Operador de suporte tecnico Gerenciamento de infra-estrutura de TIC Tratar Operar obsolescencia servicos Operacoes') - real statement lost (see blocker region-merge-content-loss)."
+  },
+  "enade-2008-computing-q63": {
+    "status": "failed",
+    "notes": "Statement replaced by garbled table-cell fragments ('A atrA C atrB B atrC') - real statement lost (see blocker region-merge-content-loss)."
+  },
+  "enade-2008-computing-q64": {
+    "status": "failed",
+    "notes": "Statement truncated mid-sentence ('A decisao envolve substituir o sistema atual, que emprega') - real statement mostly lost (see blocker region-merge-content-loss)."
+  },
+  "enade-2008-computing-q65": {
+    "status": "passed",
+    "notes": "Statement (niveis de abstracao de processos) compared against page 28. Complete, no image, alternatives correct."
+  },
+  "enade-2008-computing-q66": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q67": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q68": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q69": {
+    "status": "failed",
+    "notes": "Empty statement - only figure-01.png remains, all prose lost (see blocker region-merge-content-loss)."
+  },
+  "enade-2008-computing-q70": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q71": {
+    "status": "failed",
+    "notes": "Statement replaced by garbled diagram-label fragments ('A alternativa 1 A alternativa 2 B F D B C D E C E F') - real statement lost (see blocker region-merge-content-loss)."
+  },
+  "enade-2008-computing-q72": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q73": {
+    "status": "failed",
+    "notes": "Empty statement - only figure-01.png remains, all prose lost (see blocker region-merge-content-loss)."
+  },
+  "enade-2008-computing-q74": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q75": {
+    "status": "failed",
+    "notes": "Empty statement - only figure-01.png remains, all prose lost (see blocker region-merge-content-loss)."
+  },
+  "enade-2008-computing-q76": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q77": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  },
+  "enade-2008-computing-q78": {
+    "status": "not_performed",
+    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+  }
+}

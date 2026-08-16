@@ -13,12 +13,14 @@ later phase, not something that falls out accidentally.
 
 from __future__ import annotations
 
+import re
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 
 import pymupdf
+from pydantic import ValidationError
 
 from enade.extraction.answer_key import AnswerKeyParseResult, AnswerKeyValueKind, parse_answer_key
 from enade.extraction.answer_standard import find_answer_standard_images, parse_answer_standard
@@ -106,6 +108,8 @@ def extract_exam(
     visual_audit: dict[str, VisualValidationStatus] | None = None,
     table_cells_verified_ids: frozenset[str] | None = None,
     structure_profile: ExamStructureProfile | None = None,
+    structure_verification_page: int = 1,
+    structure_verification_patterns: dict[str, re.Pattern[str]] | None = None,
     output_dir_name: str | None = None,
     answer_key_parser: Callable[[pymupdf.Document], AnswerKeyParseResult] = parse_answer_key,
     layout_overrides: LayoutOverrideSet | None = None,
@@ -122,12 +126,18 @@ def extract_exam(
       question's ``applicable_courses`` is simply ``[course]``, and its id
       shorthand comes from ``COURSE_ID_SHORTHAND``. This is the exact
       pre-Phase-2A behavior, unchanged.
-    - Unified multi-course booklet (2011): pass ``structure_profile``
+    - Unified multi-course booklet (2011, 2008-b): pass ``structure_profile``
       instead. Each question's section, applicable courses and id
       shorthand are resolved per question number from the profile (see
       ``exam_profile.py``); a question number the profile does not cover is
       recorded as a structural warning and excluded from the output rather
-      than guessed.
+      than guessed. ``structure_verification_page``/``structure_verification_patterns``
+      (PROMPT Phase 3A, both default to ``verify_declared_profile``'s own
+      2011-shaped defaults) let a differently-worded instructions page
+      (2008-b's own range table lives on page 11 in real extractable text,
+      not page 1 - its own cover is a single embedded image with no text
+      layer at all) be cross-checked with its own wording instead of
+      2011's, without this function branching on year itself.
 
     ``output_dir_name`` overrides the output subdirectory name (defaults to
     ``course.value``); required when ``course`` is not given.
@@ -159,7 +169,12 @@ def extract_exam(
             lines = extract_document_lines(
                 prova.raw, overrides=layout_overrides, pdf_sha256=prova.identity.sha256
             )
-            boundary_result = detect_question_boundaries(lines)
+            boundary_result = detect_question_boundaries(
+                lines,
+                combined_numbering=structure_profile.combined_numbering
+                if structure_profile is not None
+                else False,
+            )
             structural_warnings.extend(boundary_result.warnings)
 
             declared_structure_2021 = None
@@ -168,7 +183,13 @@ def extract_exam(
                 structural_warnings.extend(declared.notes)
                 declared_structure_2021 = declared.structure
             else:
-                structural_warnings.extend(verify_declared_profile(prova.raw))
+                structural_warnings.extend(
+                    verify_declared_profile(
+                        prova.raw,
+                        instructions_page=structure_verification_page,
+                        patterns=structure_verification_patterns,
+                    )
+                )
 
             baseline = compute_decorative_baseline(prova.raw)
 
@@ -385,32 +406,49 @@ def extract_exam(
                     question_id, VisualValidationStatus.NOT_PERFORMED
                 )
 
-                question = build_question(
-                    extracted=extracted,
-                    exam_year=exam_year,
-                    applicable_courses=applicable_courses,
-                    id_shorthand=shorthand,
-                    section=section,
-                    exam_id=exam_id,
-                    prova_source_path=prova.identity.source_path,
-                    prova_sha256=prova.identity.sha256,
-                    answer_key_entry=answer_key_entry,
-                    answer_standard_entry=answer_standard_entry,
-                    answer_standard_source_path=padrao_source_path
-                    if span.kind == QuestionKind.DISCURSIVE
-                    else None,
-                    answer_standard_sha256=padrao_sha256
-                    if span.kind == QuestionKind.DISCURSIVE
-                    else None,
-                    gabarito_source_path=gabarito_source_path,
-                    rendered_assets=rendered_assets,
-                    assets_by_region=assets_by_region,
-                    assets_by_table=assets_by_table,
-                    table_cells_verified=question_id in table_cells_verified_ids,
-                    answer_standard_assets=answer_standard_assets,
-                    validation=validation,
-                    visual_validation=question_visual_validation,
-                )
+                try:
+                    question = build_question(
+                        extracted=extracted,
+                        exam_year=exam_year,
+                        applicable_courses=applicable_courses,
+                        id_shorthand=shorthand,
+                        section=section,
+                        exam_id=exam_id,
+                        prova_source_path=prova.identity.source_path,
+                        prova_sha256=prova.identity.sha256,
+                        answer_key_entry=answer_key_entry,
+                        answer_standard_entry=answer_standard_entry,
+                        answer_standard_source_path=padrao_source_path
+                        if span.kind == QuestionKind.DISCURSIVE
+                        else None,
+                        answer_standard_sha256=padrao_sha256
+                        if span.kind == QuestionKind.DISCURSIVE
+                        else None,
+                        gabarito_source_path=gabarito_source_path,
+                        rendered_assets=rendered_assets,
+                        assets_by_region=assets_by_region,
+                        assets_by_table=assets_by_table,
+                        table_cells_verified=question_id in table_cells_verified_ids,
+                        answer_standard_assets=answer_standard_assets,
+                        validation=validation,
+                        visual_validation=question_visual_validation,
+                    )
+                except ValidationError as exc:
+                    # A single question that the data contract itself
+                    # refuses to represent (PROMPT Phase 3A - e.g. 2008-b's
+                    # Q8, whose "alternatives" are five bare letter markers
+                    # floating above unrelated images with no attached text
+                    # at all, a layout no general or declarative rule
+                    # should be bent to accommodate) must not take the
+                    # other 79 correctly-extracted questions down with it.
+                    # Loud, not silent: recorded once per failure, and the
+                    # question is simply absent from ``questions`` - never
+                    # a fabricated placeholder standing in for it.
+                    structural_warnings.append(
+                        f"{span.kind.value} {span.number}: could not build a valid Question - "
+                        f"{exc} - excluded from output, needs manual resolution"
+                    )
+                    continue
 
                 questions.append(question)
                 per_question_warnings[question.id] = validation.reasons

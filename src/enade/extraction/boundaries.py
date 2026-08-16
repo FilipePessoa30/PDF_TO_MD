@@ -25,7 +25,17 @@ from enum import StrEnum
 from enade.extraction.chrome import is_chrome_line, normalize_for_chrome_check
 from enade.extraction.layout import Line
 
-_MARKER_RE = re.compile(r"(?i)quest[aã]o\s+(discursiva\s+)?0*(\d+)\b")
+#: Two distinct discursive-marker shapes are known in this corpus: 2021's
+#: "QUESTAO DISCURSIVA N" (kind word *before* the number - group 1) and
+#: 2008-b's "QUESTAO N - DISCURSIVA" (kind word *after* the number - group
+#: 3, PROMPT Phase 3A). The trailing separator is not a plain ASCII hyphen
+#: in the source PDF - it is U+2013 (en dash) for every instance except
+#: 2008-b's own Q59, which uses U+2014 (em dash) and lower-case
+#: "Discursiva" (confirmed by direct codepoint inspection of
+#: 2008/b1_prova.pdf, not assumed) - hence matching any of ``-``/en
+#: dash/em dash, case-insensitively, rather than the one literal character
+#: seen most often.
+_MARKER_RE = re.compile(r"(?i)quest[aã]o\s+(discursiva\s+)?0*(\d+)\b(\s*[-–—]\s*discursiva)?")
 # Anchored to the *whole* (normalized) line - deliberately stricter than a
 # bare substring search. The exact same phrase "questionario de percepcao da
 # prova" also appears as a table-row label in page 1's instruction table and
@@ -46,7 +56,13 @@ _MARKER_RE = re.compile(r"(?i)quest[aã]o\s+(discursiva\s+)?0*(\d+)\b")
 # confirmed: page 1 has 0 QUESTAO-marker lines, page 44 has 9). See
 # ``detect_question_boundaries``, which requires both signals to co-occur on
 # the same page before treating it as a perception page.
-_PERCEPTION_MARKER_RE = re.compile(r"(?i)^question[aá]rio\s+de\s+percep[cç][aã]o(\s+da\s+prova)?$")
+# The trailing qualifier wording itself varies across years (PROMPT Phase
+# 3A): 2021 prints "...da prova", 2008-b prints "...sobre a prova"
+# (confirmed against the real PDF) - both, and the bare heading with no
+# qualifier at all, must be recognized as the same heading.
+_PERCEPTION_MARKER_RE = re.compile(
+    r"(?i)^question[aá]rio\s+de\s+percep[cç][aã]o(\s+(da|sobre\s+a)\s+prova)?$"
+)
 
 
 class QuestionKind(StrEnum):
@@ -82,11 +98,27 @@ def _line_matches_perception_marker(line: Line) -> bool:
     return bool(_PERCEPTION_MARKER_RE.match(normalize_for_chrome_check(line.text)))
 
 
-def detect_question_boundaries(all_lines: list[Line]) -> BoundaryDetectionResult:
+def detect_question_boundaries(
+    all_lines: list[Line], *, combined_numbering: bool = False
+) -> BoundaryDetectionResult:
     """Find every objective/discursive question marker and its content span.
 
     ``all_lines`` must already be in correct document reading order (see
     :func:`enade.extraction.layout.extract_document_lines`).
+
+    ``combined_numbering`` (PROMPT Phase 3A, default False - exact prior
+    behaviour unchanged): 2011/2021 give discursive questions their own,
+    independent 1..N run ("QUESTAO DISCURSIVA 1".."5"), entirely separate
+    from the objective 1..N run - each kind's numbering is validated for
+    gaps on its own. 2008-b's discursive markers instead reuse the same
+    printed number sequence as its objectives, interleaved among them
+    ("QUESTAO 38", "QUESTAO 39 - DISCURSIVA", "QUESTAO 40 - DISCURSIVA",
+    "QUESTAO 41") - checking *that* kind of booklet for per-kind gaps
+    would misreport every interleaving as a "gap in numbering" (there
+    genuinely is no discursive question 11, because 11 is objective in
+    this booklet - that is not a defect). Set True for a booklet whose
+    printed numbering is known to work this way; the check then runs once,
+    over the union of both kinds, instead of once per kind.
     """
     warnings: list[str] = []
 
@@ -113,7 +145,7 @@ def detect_question_boundaries(all_lines: list[Line]) -> BoundaryDetectionResult
         prefix = normalize_for_chrome_check(line.text[: match.start()])
         if prefix:
             continue
-        is_discursive = match.group(1) is not None
+        is_discursive = match.group(1) is not None or match.group(3) is not None
         number = int(match.group(2))
         markers.append(
             Marker(
@@ -159,8 +191,11 @@ def detect_question_boundaries(all_lines: list[Line]) -> BoundaryDetectionResult
             )
         )
 
-    _validate_numbering(spans, QuestionKind.OBJECTIVE, warnings)
-    _validate_numbering(spans, QuestionKind.DISCURSIVE, warnings)
+    if combined_numbering:
+        _validate_combined_numbering(spans, warnings)
+    else:
+        _validate_numbering(spans, QuestionKind.OBJECTIVE, warnings)
+        _validate_numbering(spans, QuestionKind.DISCURSIVE, warnings)
 
     return BoundaryDetectionResult(
         spans=spans, perception_pages=perception_pages, warnings=warnings
@@ -178,3 +213,22 @@ def _validate_numbering(spans: list[QuestionSpan], kind: QuestionKind, warnings:
     missing = expected - set(numbers)
     if missing:
         warnings.append(f"{kind.value}: gap(s) in numbering, missing {sorted(missing)}")
+
+
+def _validate_combined_numbering(spans: list[QuestionSpan], warnings: list[str]) -> None:
+    """The ``combined_numbering=True`` counterpart to ``_validate_numbering``
+    (PROMPT Phase 3A) - objective and discursive markers share one printed
+    number stream, so duplicates and gaps are checked once, across both
+    kinds together, rather than per kind (see ``detect_question_boundaries``'s
+    own docstring for why the per-kind check is wrong for this shape).
+    """
+    numbers = [s.number for s in spans]
+    duplicates = {n for n in numbers if numbers.count(n) > 1}
+    if duplicates:
+        warnings.append(f"combined: duplicate question number(s) found: {sorted(duplicates)}")
+    if not numbers:
+        return
+    expected = set(range(min(numbers), max(numbers) + 1))
+    missing = expected - set(numbers)
+    if missing:
+        warnings.append(f"combined: gap(s) in numbering, missing {sorted(missing)}")

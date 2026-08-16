@@ -1,0 +1,1226 @@
+{
+  "exam_id": "enade-2008-b-computacao",
+  "exam_year": 2008,
+  "course": "all-computing",
+  "corpus_commit": "a657632b72b97468c8a5eb3b433d1abb4a5511c5",
+  "prova_sha256": "5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264",
+  "gabarito_sha256": "707a326330c6982a9368957c6d9af1563b886d32d6c6720319faeb71803f2425",
+  "padrao_sha256": "7021d115731ddcbad3c227da50f6d8c9c2c7f8a5a4b4d7dabce4b3726d0d35ef",
+  "pipeline_version": "0.1.0",
+  "data_contract_version": "1.1.0",
+  "maturity": "provisional",
+  "verified_count": 11,
+  "needs_review_count": 66,
+  "unresolved_question_ids": [
+    "enade-2008-computing-d09",
+    "enade-2008-computing-d10",
+    "enade-2008-computing-d20",
+    "enade-2008-computing-d40",
+    "enade-2008-computing-d59",
+    "enade-2008-computing-d60",
+    "enade-2008-computing-d79",
+    "enade-2008-computing-q02",
+    "enade-2008-computing-q03",
+    "enade-2008-computing-q04",
+    "enade-2008-computing-q05",
+    "enade-2008-computing-q07",
+    "enade-2008-computing-q11",
+    "enade-2008-computing-q13",
+    "enade-2008-computing-q14",
+    "enade-2008-computing-q15",
+    "enade-2008-computing-q16",
+    "enade-2008-computing-q17",
+    "enade-2008-computing-q18",
+    "enade-2008-computing-q19",
+    "enade-2008-computing-q21",
+    "enade-2008-computing-q22",
+    "enade-2008-computing-q23",
+    "enade-2008-computing-q24",
+    "enade-2008-computing-q26",
+    "enade-2008-computing-q27",
+    "enade-2008-computing-q28",
+    "enade-2008-computing-q29",
+    "enade-2008-computing-q31",
+    "enade-2008-computing-q32",
+    "enade-2008-computing-q33",
+    "enade-2008-computing-q34",
+    "enade-2008-computing-q35",
+    "enade-2008-computing-q36",
+    "enade-2008-computing-q37",
+    "enade-2008-computing-q41",
+    "enade-2008-computing-q42",
+    "enade-2008-computing-q43",
+    "enade-2008-computing-q44",
+    "enade-2008-computing-q45",
+    "enade-2008-computing-q47",
+    "enade-2008-computing-q49",
+    "enade-2008-computing-q50",
+    "enade-2008-computing-q51",
+    "enade-2008-computing-q52",
+    "enade-2008-computing-q53",
+    "enade-2008-computing-q54",
+    "enade-2008-computing-q56",
+    "enade-2008-computing-q58",
+    "enade-2008-computing-q61",
+    "enade-2008-computing-q62",
+    "enade-2008-computing-q63",
+    "enade-2008-computing-q64",
+    "enade-2008-computing-q66",
+    "enade-2008-computing-q67",
+    "enade-2008-computing-q68",
+    "enade-2008-computing-q69",
+    "enade-2008-computing-q70",
+    "enade-2008-computing-q71",
+    "enade-2008-computing-q72",
+    "enade-2008-computing-q73",
+    "enade-2008-computing-q74",
+    "enade-2008-computing-q75",
+    "enade-2008-computing-q76",
+    "enade-2008-computing-q77",
+    "enade-2008-computing-q78"
+  ],
+  "structural_blockers": [
+    "answer-standard-incomplete",
+    "region-merge-content-loss",
+    "section-transition-chrome-bleed",
+    "unstructured-image-alternatives"
+  ],
+  "questions": [
+    {
+      "id": "enade-2008-computing-d09",
+      "markdown_path": "enade-2008-computing-d09.md",
+      "markdown_sha256": "8a4d39a1777127dfacc3a317792420bb6bd60a9f4307a28cafa7fd75f2ee0c51",
+      "extraction_status": "needs_review",
+      "automatic_validation": "failed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-d09/figure-01.png",
+          "sha256": "d8fef45a623df693ad1f67469b75e1b293bda2385ef237dc342cff7f7e2fc1b8"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-d10",
+      "markdown_path": "enade-2008-computing-d10.md",
+      "markdown_sha256": "2c9de5739ba1b9a5288d9eee0350417483ea57be5ac6ddd3f557d8c3e4e4762a",
+      "extraction_status": "needs_review",
+      "automatic_validation": "failed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-d10/figure-01.png",
+          "sha256": "bb5d5ee05ca7fa6b515dc698e42816bbf63bc108c735a65cb4462ec95b442b25"
+        },
+        {
+          "id": "figure-02",
+          "path": "enade-2008-computing-d10/figure-02.png",
+          "sha256": "e528f05b85480ae4dd0daa7cf3e67665e315322d1073135521641c6e96326a15"
+        },
+        {
+          "id": "figure-03",
+          "path": "enade-2008-computing-d10/figure-03.png",
+          "sha256": "82b4d63840b1f1ec8fe558183f41fee328d681884a2d1dd4a44114fcb49f8c1d"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-d20",
+      "markdown_path": "enade-2008-computing-d20.md",
+      "markdown_sha256": "c916760f0f80e4e623dc517fa7c01d8eb991ef0a5ae9b429362f28233d355268",
+      "extraction_status": "needs_review",
+      "automatic_validation": "passed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-d20/figure-01.png",
+          "sha256": "8af3937b73b7b04f6de9d6136de8ec3bf1b62d6b3bc1fc3e10d56e5c89725977"
+        },
+        {
+          "id": "figure-02",
+          "path": "enade-2008-computing-d20/figure-02.png",
+          "sha256": "ba3b2af0056e56e1603a8c180749c9ed8a7be0358a349f5a5ed874543aefac68"
+        },
+        {
+          "id": "figure-03",
+          "path": "enade-2008-computing-d20/figure-03.png",
+          "sha256": "4708f4a348165f48e36a7ae06dfe8f3375262043f45698a05a49059daaba529c"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-d39",
+      "markdown_path": "enade-2008-computing-d39.md",
+      "markdown_sha256": "a6ccf6443fa81ef92af2c72d3f171396e8cdfdb7f2c8407e1177c3e7c38619e7",
+      "extraction_status": "verified",
+      "automatic_validation": "passed",
+      "visual_validation": "passed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-d39/figure-01.png",
+          "sha256": "b07518d14b462a042e4127eb8731a2121fcf355da6f5cc7bb63d7fd1492f0cb6"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-d40",
+      "markdown_path": "enade-2008-computing-d40.md",
+      "markdown_sha256": "aec9724103a56d0c853751eda5c78b292cb91489e4c7f0dc02c0b7753d82204c",
+      "extraction_status": "needs_review",
+      "automatic_validation": "passed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-d40/figure-01.png",
+          "sha256": "4f1207f96e62da13c5736416d2ce35039f319b92cb7b5f8dbbdc77ca50e09045"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-d59",
+      "markdown_path": "enade-2008-computing-d59.md",
+      "markdown_sha256": "7f0e17ce490c98e696875a3290db1bc74dce55479ccb17b8db87dacabb809c7f",
+      "extraction_status": "needs_review",
+      "automatic_validation": "failed",
+      "visual_validation": "passed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-d59/figure-01.png",
+          "sha256": "0fa775454a4adf54ac714830312e3b89918ebae9f3973aad35f62e7b5a6f43ab"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-d60",
+      "markdown_path": "enade-2008-computing-d60.md",
+      "markdown_sha256": "eec7e64759bfa2cad7809f67cdd571d3099c7ebeca88af0fb016804622e008fd",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-d60/figure-01.png",
+          "sha256": "d6dcde209e1c2ae27ca0060e4aeda9be12a23163fe973913d1b2e7274cf9277b"
+        },
+        {
+          "id": "figure-02",
+          "path": "enade-2008-computing-d60/figure-02.png",
+          "sha256": "ebf9b4c11d15ba0d016f77884d142620011901d63f7687b383fe5691d3c3efd4"
+        },
+        {
+          "id": "figure-03",
+          "path": "enade-2008-computing-d60/figure-03.png",
+          "sha256": "510f07289ef6cfdf70b41d384755863daecbbf1b5a032a6c0e7a1e1c0f5c7aaa"
+        },
+        {
+          "id": "figure-04",
+          "path": "enade-2008-computing-d60/figure-04.png",
+          "sha256": "4331aa937ac88f5102e609ab13f0e861e535332f2640651001c46a98717ec9e1"
+        },
+        {
+          "id": "figure-05",
+          "path": "enade-2008-computing-d60/figure-05.png",
+          "sha256": "5bc9ce34c0c7d192695f008786f33d2a3e6ff9da4fe0f5e0a1acadd164b6d967"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-d79",
+      "markdown_path": "enade-2008-computing-d79.md",
+      "markdown_sha256": "5d09c403d9923f6cf83664bb48623aa6a32a603708d12dc955418f8814010964",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-d79/figure-01.png",
+          "sha256": "d9a74b07d5ad828ac66d1d4addc7f7f185af61ab5c6ed103ecbbb1e46c89af3d"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-d80",
+      "markdown_path": "enade-2008-computing-d80.md",
+      "markdown_sha256": "868896c939b55d16dc9f6cdac1e5c66af2160987eea7a93919eb4078a4cef69f",
+      "extraction_status": "verified",
+      "automatic_validation": "passed",
+      "visual_validation": "passed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-d80/figure-01.png",
+          "sha256": "fe93d0fa30aa13c1c0a23fa89791b705dbcaa88c12c0618cc366047a53f6cab3"
+        },
+        {
+          "id": "figure-02",
+          "path": "enade-2008-computing-d80/figure-02.png",
+          "sha256": "c444faf3a925b2bef45f7aba07222da6352d18ac81588dda0ee12350768b1b44"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q01",
+      "markdown_path": "enade-2008-computing-q01.md",
+      "markdown_sha256": "fd54dc616c4fc3c497c840d200ec6597df10d2284c5f36474bf5450f43d1a167",
+      "extraction_status": "verified",
+      "automatic_validation": "passed",
+      "visual_validation": "passed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q01/figure-01.png",
+          "sha256": "cd0026965e2d3eaeae124f4f39e9982a7f5256fbc790a57d983df379428b6f6b"
+        },
+        {
+          "id": "figure-02",
+          "path": "enade-2008-computing-q01/figure-02.png",
+          "sha256": "a43cd1b1d843acc3db0dbdd34fd088d1a887a03d300fafb072f604ab605715ed"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q02",
+      "markdown_path": "enade-2008-computing-q02.md",
+      "markdown_sha256": "6b5971546ccb78fe88c3efe336a6467cd5177c87a892de65e77379b401734dac",
+      "extraction_status": "needs_review",
+      "automatic_validation": "failed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q02/figure-01.png",
+          "sha256": "539aa18ee257af20e15d41528fff1aa28670d1531bf5af58c58bf496e00b6ae4"
+        },
+        {
+          "id": "figure-02",
+          "path": "enade-2008-computing-q02/figure-02.png",
+          "sha256": "ad2c450dc92f42d28599864da6b206f494faa9e22910b1c1ac39eb0e82144dd7"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q03",
+      "markdown_path": "enade-2008-computing-q03.md",
+      "markdown_sha256": "43925896f588537bde7f470a3b509564de4f15a7a2d3ec2804d3d8d7df470058",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q04",
+      "markdown_path": "enade-2008-computing-q04.md",
+      "markdown_sha256": "c455a4ae40cad9c87dd99fa65b677399a4f874c169276ad169d4747fb5033833",
+      "extraction_status": "needs_review",
+      "automatic_validation": "failed",
+      "visual_validation": "passed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q05",
+      "markdown_path": "enade-2008-computing-q05.md",
+      "markdown_sha256": "808b311d905fb6f20399ccd4be16561bbe25d87fd176407ec650cca4a83075cf",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q06",
+      "markdown_path": "enade-2008-computing-q06.md",
+      "markdown_sha256": "fbccea26aeed63e2dfe8774f3916cf138debeb39795c793faae9d1b7a3e16119",
+      "extraction_status": "verified",
+      "automatic_validation": "passed",
+      "visual_validation": "passed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q06/figure-01.png",
+          "sha256": "65fa9c5e650c961e5f5f5ca042dbe8e33c8f79e8653a415711f499feefe6f521"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q07",
+      "markdown_path": "enade-2008-computing-q07.md",
+      "markdown_sha256": "c1c034648461e755b3cf3e606c4f0a9f11940df044aca5cdf249fd3a2140a1aa",
+      "extraction_status": "needs_review",
+      "automatic_validation": "passed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q07/figure-01.png",
+          "sha256": "a07f6b03ceaab89070058c3c30b9b11214f3e109b3dba54a1317433b38883670"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q11",
+      "markdown_path": "enade-2008-computing-q11.md",
+      "markdown_sha256": "ecf6e37d3761df5f74ad767f97568ac35538a82d640d8c3f6bd721050724ef99",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q12",
+      "markdown_path": "enade-2008-computing-q12.md",
+      "markdown_sha256": "d8ebded82892eebc0db715a5ded64314791c1384849e3a20dc0e13b6e28388f1",
+      "extraction_status": "verified",
+      "automatic_validation": "passed",
+      "visual_validation": "passed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q13",
+      "markdown_path": "enade-2008-computing-q13.md",
+      "markdown_sha256": "f56b2f594673fe9da958d15271e5142e8cdc097f5f6e7a57e90f6359e61630ab",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q14",
+      "markdown_path": "enade-2008-computing-q14.md",
+      "markdown_sha256": "2c0ba97fe476d6368a7a647f8de396dfcef1a6e878184930f3c999847d91ff81",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q15",
+      "markdown_path": "enade-2008-computing-q15.md",
+      "markdown_sha256": "97348e884f0f6be9774953b9808f37e6f96f340e3b379a03cb3852d60bea45a2",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q16",
+      "markdown_path": "enade-2008-computing-q16.md",
+      "markdown_sha256": "6449f225127679b9788384aac88c8b49c2d228d4ef5d6fccb14254e71446b961",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q17",
+      "markdown_path": "enade-2008-computing-q17.md",
+      "markdown_sha256": "a5a766174753ec2b7f7f950d1d2dd58dc654983e7803d72f3216e0d9512b5f21",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q18",
+      "markdown_path": "enade-2008-computing-q18.md",
+      "markdown_sha256": "919d1a01a6f95e9b90cca8424f79898201fa91d65d71081ddb9d62a77252f364",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q19",
+      "markdown_path": "enade-2008-computing-q19.md",
+      "markdown_sha256": "4321240963638c737a75f27b9816e1895b2ddf2f8ba7a47ea1db0d307da76361",
+      "extraction_status": "needs_review",
+      "automatic_validation": "failed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q21",
+      "markdown_path": "enade-2008-computing-q21.md",
+      "markdown_sha256": "f8ca11d38e261585750ee6ea6330a4acc35184028f50daefa4948b80cd3bcf3e",
+      "extraction_status": "needs_review",
+      "automatic_validation": "failed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q21/figure-01.png",
+          "sha256": "ba3b2af0056e56e1603a8c180749c9ed8a7be0358a349f5a5ed874543aefac68"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q22",
+      "markdown_path": "enade-2008-computing-q22.md",
+      "markdown_sha256": "a605c75d66d7006f248dfd754768dcbaea1d85902121f32f97ec60aaf32d1627",
+      "extraction_status": "needs_review",
+      "automatic_validation": "passed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q22/figure-01.png",
+          "sha256": "ba3b2af0056e56e1603a8c180749c9ed8a7be0358a349f5a5ed874543aefac68"
+        },
+        {
+          "id": "figure-02",
+          "path": "enade-2008-computing-q22/figure-02.png",
+          "sha256": "54d4c7766146ac13f8d5e5f37bd09928f8ecde74d1421190d5c2e8bcd2ac2fb5"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q23",
+      "markdown_path": "enade-2008-computing-q23.md",
+      "markdown_sha256": "c021404af3f714eb4323483cf0305138c3aac9d827683a70d9bceeed38f82e89",
+      "extraction_status": "needs_review",
+      "automatic_validation": "failed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q23/figure-01.png",
+          "sha256": "ba3b2af0056e56e1603a8c180749c9ed8a7be0358a349f5a5ed874543aefac68"
+        },
+        {
+          "id": "figure-02",
+          "path": "enade-2008-computing-q23/figure-02.png",
+          "sha256": "54d4c7766146ac13f8d5e5f37bd09928f8ecde74d1421190d5c2e8bcd2ac2fb5"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q24",
+      "markdown_path": "enade-2008-computing-q24.md",
+      "markdown_sha256": "57f496e6f54400d65b4493333efff848819712066f6997d815d90c7cea86f591",
+      "extraction_status": "needs_review",
+      "automatic_validation": "passed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q24/figure-01.png",
+          "sha256": "8ecfc2acbe7a95d013f00db62eeee1d200f4d93949d9fddf176be599ded44749"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q25",
+      "markdown_path": "enade-2008-computing-q25.md",
+      "markdown_sha256": "e2d21f40b00f9774580fa5e0d4747477985b2a21d59d6df9fd885767950b50f2",
+      "extraction_status": "verified",
+      "automatic_validation": "passed",
+      "visual_validation": "passed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q25/figure-01.png",
+          "sha256": "cbe101ea4805de3db691318df41827e3bfa4d8e41b84f1216b6722e2e74793eb"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q26",
+      "markdown_path": "enade-2008-computing-q26.md",
+      "markdown_sha256": "f9b174334c57e82c427e50ff04677b54545f3089a3c3da5f0f39f3681e5e0d98",
+      "extraction_status": "needs_review",
+      "automatic_validation": "passed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q26/figure-01.png",
+          "sha256": "90748bdb51951a78ef37febb13cd7f710eae126d386631e1d42d54f8960284f7"
+        },
+        {
+          "id": "figure-02",
+          "path": "enade-2008-computing-q26/figure-02.png",
+          "sha256": "5f787a87aff2b0544cf1058a2b4812b4997fae27d1451b9426e970e94fce88a3"
+        },
+        {
+          "id": "figure-03",
+          "path": "enade-2008-computing-q26/figure-03.png",
+          "sha256": "132bced3481a55b8dc447d9f972e31d145cb72e278df21354ea93f4146e3cbcc"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q27",
+      "markdown_path": "enade-2008-computing-q27.md",
+      "markdown_sha256": "c4d19bb9e1ab1b1814ba2edb464e03542e88deed8aa518d32c5a595271082114",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q28",
+      "markdown_path": "enade-2008-computing-q28.md",
+      "markdown_sha256": "25511d6d28bf3f603d3945c3dca4af7fb64f9cc59d6c9510adb874a711d72f5b",
+      "extraction_status": "needs_review",
+      "automatic_validation": "failed",
+      "visual_validation": "passed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q28/figure-01.png",
+          "sha256": "2847d0a864f560ea2b9891f42d95ec28ab901c0037e52338caffb835a17bb9a0"
+        },
+        {
+          "id": "figure-02",
+          "path": "enade-2008-computing-q28/figure-02.png",
+          "sha256": "c3286458f52bc1fbe4da8ca914445d8b569f13d62097cde4dd038a01ee56d35b"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q29",
+      "markdown_path": "enade-2008-computing-q29.md",
+      "markdown_sha256": "16afa17f0bf2c53fd72b4cad9621e8b2e6a473fe5c12c7d0858786ecf586be8a",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q30",
+      "markdown_path": "enade-2008-computing-q30.md",
+      "markdown_sha256": "b4f88d56abc0c4dd4f876a2db1c0fd074c2078d21251ed25d7d218cf896df0e4",
+      "extraction_status": "verified",
+      "automatic_validation": "passed",
+      "visual_validation": "passed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q31",
+      "markdown_path": "enade-2008-computing-q31.md",
+      "markdown_sha256": "14d17c31db899c3150d2bf7802d5fb4685cfcbb3402c81d8ea8bc5e06b38afe6",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q32",
+      "markdown_path": "enade-2008-computing-q32.md",
+      "markdown_sha256": "49a7635e8cb011cb81b59e4fe56f9fee70545ff9a5e428518a442cde236c26d0",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q33",
+      "markdown_path": "enade-2008-computing-q33.md",
+      "markdown_sha256": "852994518b9f9f738513ec566db35d71cb6cf4c3e601d1650e4abb1e920bbf67",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q34",
+      "markdown_path": "enade-2008-computing-q34.md",
+      "markdown_sha256": "0c1a36f3a9a8c1352a171e31744910972bb6a86ecc93e3f74734d4f0cb8442cd",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q35",
+      "markdown_path": "enade-2008-computing-q35.md",
+      "markdown_sha256": "093390944d2e32cc4afbe64d0482de1027170031ddccfc208a62c7984edcd03b",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q36",
+      "markdown_path": "enade-2008-computing-q36.md",
+      "markdown_sha256": "581600ae1ac5693d13201f00e6b75e7e5489c7f1a1ad2b5dc121c6145a49a6e5",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q37",
+      "markdown_path": "enade-2008-computing-q37.md",
+      "markdown_sha256": "2e8d72e9620bdaba6bea0ef28a577ed296ac09f8527ee8e152e47acc7e5a870e",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q41",
+      "markdown_path": "enade-2008-computing-q41.md",
+      "markdown_sha256": "15d555506ba25a971f7e8abcad083f7f685131912958f0e1584af1a125edc63b",
+      "extraction_status": "needs_review",
+      "automatic_validation": "passed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q41/figure-01.png",
+          "sha256": "40ea4729a9f7bf63b5adea38a84b32f91f869d3e5b3207c3ce83335b9281d1d5"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q42",
+      "markdown_path": "enade-2008-computing-q42.md",
+      "markdown_sha256": "2a28f7aa97120a05efe410b290615448970d6b8d2da32f0ff7126ebd4f0e5288",
+      "extraction_status": "needs_review",
+      "automatic_validation": "failed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q43",
+      "markdown_path": "enade-2008-computing-q43.md",
+      "markdown_sha256": "5acbf64c020a2217436af9dac6306b292421ba2ff656cbb62f778ad01e9fbe62",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q44",
+      "markdown_path": "enade-2008-computing-q44.md",
+      "markdown_sha256": "b471feef7aa2bd05c3f8ea20b8ba5d9451817cf5ff1921893d7ca83873734bf1",
+      "extraction_status": "needs_review",
+      "automatic_validation": "passed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q44/figure-01.png",
+          "sha256": "f08c4e82648202822655a8d06b9ba09742139b0082538cf2cf2990a77a1bb114"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q45",
+      "markdown_path": "enade-2008-computing-q45.md",
+      "markdown_sha256": "2ee1b4bacb21cfd8492aeffadfc75379f052cc989f803cca098b5e4f86662e33",
+      "extraction_status": "needs_review",
+      "automatic_validation": "failed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q45/figure-01.png",
+          "sha256": "f08c4e82648202822655a8d06b9ba09742139b0082538cf2cf2990a77a1bb114"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q46",
+      "markdown_path": "enade-2008-computing-q46.md",
+      "markdown_sha256": "94c799e05664294f6afd78aa20e17cbe2e7f601d44a38b058fa89ed5afd3ca19",
+      "extraction_status": "verified",
+      "automatic_validation": "passed",
+      "visual_validation": "passed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q46/figure-01.png",
+          "sha256": "27a16b4c513912ba9d6b859a602b8a7fd0527c401fed151ae89fa7808c9e8aa3"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q47",
+      "markdown_path": "enade-2008-computing-q47.md",
+      "markdown_sha256": "0650273b60a644781c6aff366438179166ab3aa2cfaa0c627e0380d9c0016ea3",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q48",
+      "markdown_path": "enade-2008-computing-q48.md",
+      "markdown_sha256": "dc6c944d6951dc04d72dd9a01c41c183ff9df1f2ebb6bed7b44c2351a6d23b81",
+      "extraction_status": "verified",
+      "automatic_validation": "passed",
+      "visual_validation": "passed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q49",
+      "markdown_path": "enade-2008-computing-q49.md",
+      "markdown_sha256": "d50098e000324eb241855849d6ad5aa977ad6df4e48f3491380dee888c21522f",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q50",
+      "markdown_path": "enade-2008-computing-q50.md",
+      "markdown_sha256": "14efa0de2702920d56c6544cae09ecc6deaef9075e5041bcf2146359787c29d1",
+      "extraction_status": "needs_review",
+      "automatic_validation": "failed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q50/figure-01.png",
+          "sha256": "fd2472a6e255352bf3ec42902fcd6bb1c6d7416fb9c0251c296a303a423f6a21"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q51",
+      "markdown_path": "enade-2008-computing-q51.md",
+      "markdown_sha256": "ff01b713a1a64db76f1b5f0c329779a495cba6d4a18e3023f9c54001c7a41535",
+      "extraction_status": "needs_review",
+      "automatic_validation": "passed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q51/figure-01.png",
+          "sha256": "786ff8d07c673a33ca002fe5df9d6a69e72b7b8beb3d2a53248c45f0a19093f8"
+        },
+        {
+          "id": "figure-02",
+          "path": "enade-2008-computing-q51/figure-02.png",
+          "sha256": "47cafcad88f13696a0c4e67ac5d4bcd91ad7d225430e981d76674174ac887e6d"
+        },
+        {
+          "id": "figure-03",
+          "path": "enade-2008-computing-q51/figure-03.png",
+          "sha256": "5be18846057a966b63eb7d121a8642f72c9f9adf73b84b7efb30d096c7a23511"
+        },
+        {
+          "id": "figure-04",
+          "path": "enade-2008-computing-q51/figure-04.png",
+          "sha256": "9d5c7ff6d19d8429dfbdc4280477f1ef35ccbb3483278d0587c31f75bdff377b"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q52",
+      "markdown_path": "enade-2008-computing-q52.md",
+      "markdown_sha256": "95b55def77382182d627de87a97c5d0d50c5131676a27c86c44152c4fadf38aa",
+      "extraction_status": "needs_review",
+      "automatic_validation": "passed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q52/figure-01.png",
+          "sha256": "786ff8d07c673a33ca002fe5df9d6a69e72b7b8beb3d2a53248c45f0a19093f8"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q53",
+      "markdown_path": "enade-2008-computing-q53.md",
+      "markdown_sha256": "fde7eb881ec3df33849f19236eabf3cf055b43bd36372fe95aefd51ecc471fe4",
+      "extraction_status": "needs_review",
+      "automatic_validation": "passed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q53/figure-01.png",
+          "sha256": "80d09a2f7d4d2baf57bad5b8874e56d2de6ea8d79806ebb10a39e3dae9634084"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q54",
+      "markdown_path": "enade-2008-computing-q54.md",
+      "markdown_sha256": "a5798892ecbb7707335d7b1df0e06f14530f2d2e943eab3166c663b964d7bd97",
+      "extraction_status": "needs_review",
+      "automatic_validation": "failed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q54/figure-01.png",
+          "sha256": "7f1efb1b51d402b340b295bb07edd7484167225da027e7b05391692a69ccd87e"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q56",
+      "markdown_path": "enade-2008-computing-q56.md",
+      "markdown_sha256": "052cb15d9d816b062788baad806d8a6401f139f834dfed8ad4afeda8ac663c0f",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q57",
+      "markdown_path": "enade-2008-computing-q57.md",
+      "markdown_sha256": "f50fad917d16635dd4821044568c72aa8f6422680c0375f897c4b87016e7f9e8",
+      "extraction_status": "verified",
+      "automatic_validation": "passed",
+      "visual_validation": "passed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q57/figure-01.png",
+          "sha256": "ea11d071f41cc6bc1431df8bca7e324f119ea26430a968a1ff159805dad0f458"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q58",
+      "markdown_path": "enade-2008-computing-q58.md",
+      "markdown_sha256": "18fb38c588cca0b0df182918a4b9ddee72b243f0770f1a5ad0f28046d535fefa",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q61",
+      "markdown_path": "enade-2008-computing-q61.md",
+      "markdown_sha256": "ac1a67814a10fd56f2bfcc6334562cda1c457da8bf12ab44b47e8ecdac8984d1",
+      "extraction_status": "needs_review",
+      "automatic_validation": "passed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q61/figure-01.png",
+          "sha256": "5bc9ce34c0c7d192695f008786f33d2a3e6ff9da4fe0f5e0a1acadd164b6d967"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q62",
+      "markdown_path": "enade-2008-computing-q62.md",
+      "markdown_sha256": "92067c3369fcf6bcb771d9df84f13a55e736a5c7498d6abf37460e97f4655170",
+      "extraction_status": "needs_review",
+      "automatic_validation": "passed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q62/figure-01.png",
+          "sha256": "5bc9ce34c0c7d192695f008786f33d2a3e6ff9da4fe0f5e0a1acadd164b6d967"
+        },
+        {
+          "id": "figure-02",
+          "path": "enade-2008-computing-q62/figure-02.png",
+          "sha256": "b7771d3c777c8fc44beae1306609a658a7b2c7d732a1603d68bedb7940446932"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q63",
+      "markdown_path": "enade-2008-computing-q63.md",
+      "markdown_sha256": "8232fa69edc23f89bf62785ac38955a8ac84af796a603f3adeefaf122f8166ae",
+      "extraction_status": "needs_review",
+      "automatic_validation": "passed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q63/figure-01.png",
+          "sha256": "5bc9ce34c0c7d192695f008786f33d2a3e6ff9da4fe0f5e0a1acadd164b6d967"
+        },
+        {
+          "id": "figure-02",
+          "path": "enade-2008-computing-q63/figure-02.png",
+          "sha256": "b7771d3c777c8fc44beae1306609a658a7b2c7d732a1603d68bedb7940446932"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q64",
+      "markdown_path": "enade-2008-computing-q64.md",
+      "markdown_sha256": "ddc9c88f5232b32b79d336136a348f3fbd574da95c0ab38e63b7a3f49a945794",
+      "extraction_status": "needs_review",
+      "automatic_validation": "passed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q64/figure-01.png",
+          "sha256": "bfeb1fe8f5f107f5d3fb7494deaac67d63e691615acb9f69e318f1ff03fd25c8"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q65",
+      "markdown_path": "enade-2008-computing-q65.md",
+      "markdown_sha256": "82906aac7ab1923adb85bec22498c32a12f9fdfe1815abc6937c6857e0e1d9d3",
+      "extraction_status": "verified",
+      "automatic_validation": "passed",
+      "visual_validation": "passed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q66",
+      "markdown_path": "enade-2008-computing-q66.md",
+      "markdown_sha256": "e34a941ae5c4aa02fdfcefe3bec8f47651b87d5aabdf1cdf33f66651b2a1f944",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q67",
+      "markdown_path": "enade-2008-computing-q67.md",
+      "markdown_sha256": "9ee356062240698e28758c486a16aaf04fd03d4efd6484b0b1587bbc38aa6ba6",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q68",
+      "markdown_path": "enade-2008-computing-q68.md",
+      "markdown_sha256": "4579d936ef5955c2cb36b437e2ea9e6638e1b66a1a4cfdd756f3f6e9fbf26ef5",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q69",
+      "markdown_path": "enade-2008-computing-q69.md",
+      "markdown_sha256": "16ee30b291c317c4ca3de0fc54cc87c2c69e1028b98091763a3ecccd45507d54",
+      "extraction_status": "needs_review",
+      "automatic_validation": "failed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q69/figure-01.png",
+          "sha256": "cc8d0a7571a38ac55fc0f440015c9fa884c3c001c2e3ca892eff1a07a78cdf4e"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q70",
+      "markdown_path": "enade-2008-computing-q70.md",
+      "markdown_sha256": "66bd6075b0b59b3d99b2200ab570555aa1a8592948df5ec848c1060ca26ad1b4",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q71",
+      "markdown_path": "enade-2008-computing-q71.md",
+      "markdown_sha256": "3094bfcbc530de13598dd765ee15f36281e4364be1d6e3c9ed652706ce0dd8d4",
+      "extraction_status": "needs_review",
+      "automatic_validation": "passed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q71/figure-01.png",
+          "sha256": "58a975335856d241524dc2f14664311f57f9607e1182c4d2b16bdc97509078f2"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q72",
+      "markdown_path": "enade-2008-computing-q72.md",
+      "markdown_sha256": "f59a2bc7b2b8c13197e1947322c21c4762381bc1d6f2ebf80de18355c3bde0a9",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q73",
+      "markdown_path": "enade-2008-computing-q73.md",
+      "markdown_sha256": "e9528db435a8b7d3f057710453c0ba66b928b1933f3069247d894a04a9b4b789",
+      "extraction_status": "needs_review",
+      "automatic_validation": "failed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q73/figure-01.png",
+          "sha256": "00eb68b5cdc49222e6270838806b4c8c1a47d297a37c22493ba7cae2e3a3adf6"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q74",
+      "markdown_path": "enade-2008-computing-q74.md",
+      "markdown_sha256": "010e38310638b8c5ee6d15ffabc8550e9de5d7c7e6e24616c2ec9e167c9c10db",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q75",
+      "markdown_path": "enade-2008-computing-q75.md",
+      "markdown_sha256": "78c5532b161f5b9e09879349dab9bf0bc1e7d92c4173c8dcc9bac5f08c4bcfb7",
+      "extraction_status": "needs_review",
+      "automatic_validation": "failed",
+      "visual_validation": "failed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q75/figure-01.png",
+          "sha256": "11242a8b8b41ef235ad51526349cc1c288ee4a40f6d978e58ff3b00aded628d4"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q76",
+      "markdown_path": "enade-2008-computing-q76.md",
+      "markdown_sha256": "731595059776c3205f6224c30fc4d341a3f78ba9279876eea15b5fa7f8eef85a",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q77",
+      "markdown_path": "enade-2008-computing-q77.md",
+      "markdown_sha256": "96b7efa147e5d7cc02aa40d3291784e8316e62a3817d85385f4a67e196634ca1",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    },
+    {
+      "id": "enade-2008-computing-q78",
+      "markdown_path": "enade-2008-computing-q78.md",
+      "markdown_sha256": "08511f7d4adce3cf040cb9997938bc0bd88e19e38c4ac4b5d060d63584ba62fd",
+      "extraction_status": "extracted",
+      "automatic_validation": "passed",
+      "visual_validation": "not_performed",
+      "assets": []
+    }
+  ],
+  "answer_standards": [
+    {
+      "question_id": "enade-2008-computing-d20",
+      "source_path": "2008/b3_padrao.pdf",
+      "pdf_sha256": "7021d115731ddcbad3c227da50f6d8c9c2c7f8a5a4b4d7dabce4b3726d0d35ef",
+      "pages": [
+        1
+      ],
+      "text_sha256": "a6a668a22128d2aaf37a88a00aaa6644e99a708c4b78d4e229383ac137273d52",
+      "assets": [
+        {
+          "id": "padrao-01",
+          "path": "enade-2008-computing-d20/answer-standard/padrao-01.png",
+          "sha256": "da3895e08c98dc818371326f73e44198af203adce1b50dec62921a5123cab6a0"
+        }
+      ]
+    },
+    {
+      "question_id": "enade-2008-computing-d39",
+      "source_path": "2008/b3_padrao.pdf",
+      "pdf_sha256": "7021d115731ddcbad3c227da50f6d8c9c2c7f8a5a4b4d7dabce4b3726d0d35ef",
+      "pages": [
+        1
+      ],
+      "text_sha256": "42c7d4e0ba7b185574a36a49fe299424ea6be8edccea2ed5fb3813f43a23bb72",
+      "assets": [
+        {
+          "id": "padrao-01",
+          "path": "enade-2008-computing-d39/answer-standard/padrao-01.png",
+          "sha256": "093af7d31238d2484a74986c08d5649e094465f168e645679a69d8d1c2f22fe5"
+        }
+      ]
+    },
+    {
+      "question_id": "enade-2008-computing-d40",
+      "source_path": "2008/b3_padrao.pdf",
+      "pdf_sha256": "7021d115731ddcbad3c227da50f6d8c9c2c7f8a5a4b4d7dabce4b3726d0d35ef",
+      "pages": [
+        1,
+        2,
+        3
+      ],
+      "text_sha256": "8cb542ff51b8c00f26c2f920f571b951a49dfcea1ed68d4cce1aef0cb72263cb",
+      "assets": [
+        {
+          "id": "padrao-01",
+          "path": "enade-2008-computing-d40/answer-standard/padrao-01.png",
+          "sha256": "c19c512cb567bec505aea4ab87747d7bae2795e132ea4c3cb1290942dec8b699"
+        },
+        {
+          "id": "padrao-02",
+          "path": "enade-2008-computing-d40/answer-standard/padrao-02.png",
+          "sha256": "5016c651ac2ddb8996234891c5ab4efe11f7e8bf9e144b8cc7a2739d797f067a"
+        },
+        {
+          "id": "padrao-03",
+          "path": "enade-2008-computing-d40/answer-standard/padrao-03.png",
+          "sha256": "a8aed9f217fdb837f5864a3fedd2bd82298be8562a787013afb89a478685d54d"
+        }
+      ]
+    },
+    {
+      "question_id": "enade-2008-computing-d60",
+      "source_path": "2008/b3_padrao.pdf",
+      "pdf_sha256": "7021d115731ddcbad3c227da50f6d8c9c2c7f8a5a4b4d7dabce4b3726d0d35ef",
+      "pages": [
+        4
+      ],
+      "text_sha256": "22d24f48e766f18a914319b527fefe57e4d2692c6b5f891afdcddc03d425ee37",
+      "assets": []
+    },
+    {
+      "question_id": "enade-2008-computing-d79",
+      "source_path": "2008/b3_padrao.pdf",
+      "pdf_sha256": "7021d115731ddcbad3c227da50f6d8c9c2c7f8a5a4b4d7dabce4b3726d0d35ef",
+      "pages": [
+        4,
+        5
+      ],
+      "text_sha256": "0e290d8f5e2d24cf4d260baa622181e677b82f9dee6c9b7760cc4486ad9cb5b9",
+      "assets": []
+    },
+    {
+      "question_id": "enade-2008-computing-d80",
+      "source_path": "2008/b3_padrao.pdf",
+      "pdf_sha256": "7021d115731ddcbad3c227da50f6d8c9c2c7f8a5a4b4d7dabce4b3726d0d35ef",
+      "pages": [
+        5,
+        6
+      ],
+      "text_sha256": "cc75cb9d903ce12d2c1b9870cdbff3aaf76a3485c9caca66b1d9bf31ee22be8f",
+      "assets": [
+        {
+          "id": "padrao-01",
+          "path": "enade-2008-computing-d80/answer-standard/padrao-01.png",
+          "sha256": "f8b14ab4a873806b799ded1f5c4e681df63ace4262d4f7e25bdb595657814d3a"
+        },
+        {
+          "id": "padrao-02",
+          "path": "enade-2008-computing-d80/answer-standard/padrao-02.png",
+          "sha256": "ce084189c96bbf415a5c34790c96630047809a7a73d470d5da4b01a98921b829"
+        },
+        {
+          "id": "padrao-03",
+          "path": "enade-2008-computing-d80/answer-standard/padrao-03.png",
+          "sha256": "a1b3268e2a7755a8385728279c4e2fec9ed08e149b407e48a757ad26401859b1"
+        }
+      ]
+    }
+  ]
+}

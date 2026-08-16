@@ -22,7 +22,11 @@ from enade.extraction.boundaries import QuestionKind
 
 _ENTRY_MARKER_RE = re.compile(r"(?i)^quest[aã]o\s+(discursiva\s+)?0*(\d+)$")
 _LETTER_RE = re.compile(r"^[A-E]$")
-_BARE_ITEM_RE = re.compile(r"^0*(\d{1,3})$")
+#: 2011's flat gabarito prints a bare number ("1"); 2008-b's own flat
+#: gabarito instead prints "1 -" (PROMPT Phase 3A, confirmed by direct
+#: token inspection of 2008/b2_gabarito.pdf) - the trailing dash is
+#: optional so both shapes match without a second, near-duplicate pattern.
+_BARE_ITEM_RE = re.compile(r"^0*(\d{1,3})\s*-?$")
 
 
 class AnswerKeyValueKind(StrEnum):
@@ -95,15 +99,23 @@ def parse_flat_item_gabarito(doc: pymupdf.Document) -> AnswerKeyParseResult:
 
     Structure confirmed empirically for the 2011 unified booklet gabarito
     (``2011/2_gabarito.pdf``, a single page): a bare ``<number>`` / ``<value>``
-    sequence with no "QUESTAO" prefix at all - every entry is implicitly
-    objective (the unified booklet's gabarito only ever lists the 50
-    multiple-choice items; discursive answers come from the padrao de
-    resposta, never a machine-checkable letter, so there is nothing for a
-    "DISCURSIVA" marker to disambiguate here). This is a genuinely
-    different document shape from ``parse_answer_key``'s "QUESTAO
-    [DISCURSIVA] N" marker format used by every other year in this corpus
-    (see docs/corpus.md) - a separate function, not a year-specific branch
+    sequence with no "QUESTAO" prefix at all. This is a genuinely different
+    document shape from ``parse_answer_key``'s "QUESTAO [DISCURSIVA] N"
+    marker format used by every other year in this corpus (see
+    docs/corpus.md) - a separate function, not a year-specific branch
     bolted onto the same one.
+
+    2011's own flat gabarito only ever lists its 50 multiple-choice items
+    (discursive answers come from the padrao de resposta, never a
+    machine-checkable letter, so its own table never prints a "Discursiva"
+    value) - every entry there is implicitly objective. 2008-b's own flat
+    gabarito (PROMPT Phase 3A) instead lists all 80 items in one printed
+    sequence, discursive ones interleaved with a literal "Discursiva" value
+    in place of a letter (e.g. "9 - / Discursiva"): an entry is only
+    classified discursive when the gabarito's own printed value says so,
+    never guessed from the item number - see ``_classify``, which already
+    recognizes "Discursiva" as ``NOT_MACHINE_GRADED`` (the same value kind
+    as ``***``).
 
     Any non-numeric token between pairs (running headers repeated
     mid-table, observed between items 22 and 23) is simply skipped rather
@@ -132,14 +144,24 @@ def parse_flat_item_gabarito(doc: pymupdf.Document) -> AnswerKeyParseResult:
             warnings.append(f"gabarito: item {number} has no following value")
             break
         raw_value = tokens[i + 1]
-        entries.append(_classify(QuestionKind.OBJECTIVE, number, raw_value, warnings))
+        entry = _classify(QuestionKind.OBJECTIVE, number, raw_value, warnings)
+        if entry.value_kind == AnswerKeyValueKind.NOT_MACHINE_GRADED:
+            entry = AnswerKeyEntry(
+                kind=QuestionKind.DISCURSIVE,
+                number=entry.number,
+                value_kind=entry.value_kind,
+                raw_value=entry.raw_value,
+                letter=entry.letter,
+            )
+        entries.append(entry)
         i += 2
 
-    seen: set[int] = set()
+    seen: set[tuple[QuestionKind, int]] = set()
     for entry in entries:
-        if entry.number in seen:
+        key = (entry.kind, entry.number)
+        if key in seen:
             warnings.append(f"gabarito: duplicate entry for item {entry.number}")
-        seen.add(entry.number)
+        seen.add(key)
 
     return AnswerKeyParseResult(entries=entries, warnings=warnings)
 
@@ -160,7 +182,11 @@ def _classify(
         return AnswerKeyEntry(
             kind=kind, number=number, value_kind=AnswerKeyValueKind.ANNULLED, raw_value=raw_value
         )
-    if normalized in ("***", "*"):
+    # "***"/"*" (parse_answer_key's own booklets) and the literal word
+    # "Discursiva" (2008-b's flat gabarito, PROMPT Phase 3A - confirmed
+    # against the real PDF: "9 - / Discursiva") both mean the same thing -
+    # not machine-graded, the real answer lives in the padrao de resposta.
+    if normalized in ("***", "*", "DISCURSIVA"):
         return AnswerKeyEntry(
             kind=kind,
             number=number,

@@ -8,6 +8,7 @@ from pydantic import ValidationError
 
 from enade.extraction.boundaries import QuestionKind
 from enade.extraction.exam_profile import (
+    _RANGE_PATTERNS_2008_B,
     ExamStructureProfile,
     load_exam_structure_profile,
     verify_declared_profile,
@@ -155,3 +156,47 @@ def test_verify_declared_profile_notes_missing_ranges():
     notes = verify_declared_profile(doc)
     assert len(notes) == 9
     assert all("could not confirm" in n for n in notes)
+
+
+def test_source_letter_defaults_to_none():
+    profile = ExamStructureProfile.model_validate(_profile_data())
+    assert profile.source_letter is None
+
+
+def test_source_letter_can_be_declared():
+    profile = ExamStructureProfile.model_validate(_profile_data(source_letter="b"))
+    assert profile.source_letter == "b"
+
+
+def test_combined_numbering_defaults_to_false():
+    profile = ExamStructureProfile.model_validate(_profile_data())
+    assert profile.combined_numbering is False
+
+
+def test_combined_numbering_can_be_declared_true():
+    profile = ExamStructureProfile.model_validate(_profile_data(combined_numbering=True))
+    assert profile.combined_numbering is True
+
+
+def test_verify_declared_profile_accepts_an_explicit_pattern_set():
+    """PROMPT Phase 3A: a booklet whose instructions page uses different
+    wording (2008-b) passes its own pattern set rather than being checked
+    against 2011's - see ``_RANGE_PATTERNS_2008_B``'s own docstring.
+    """
+    text = "Bacharelado em Ciencia da Computacao\n21 a 38\n39 e 40\n"
+    doc = pymupdf.open(stream=build_minimal_pdf([text]), filetype="pdf")
+    notes = verify_declared_profile(doc, patterns=_RANGE_PATTERNS_2008_B)
+    # Only the CC-Bacharelado pair is present in this fixture text - the
+    # Engenharia/SI ranges are legitimately still unconfirmed.
+    assert len(notes) == 4
+    assert not any("Ciencia da Computacao" in n for n in notes)
+
+
+def test_verify_declared_profile_2008_b_pattern_set_confirms_the_real_pdf():
+    """The 2008-b prova's own Componente Especifico transition page (11,
+    plain selectable text - unlike page 1's image-only cover) really does
+    print all three course-specific ranges this pattern set checks for.
+    """
+    doc = pymupdf.open("data/raw/geacc-enade/2008/b1_prova.pdf")
+    notes = verify_declared_profile(doc, instructions_page=11, patterns=_RANGE_PATTERNS_2008_B)
+    assert notes == []

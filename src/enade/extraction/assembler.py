@@ -30,7 +30,19 @@ from enade.extraction.ownership import QuestionRegion
 from enade.extraction.spacing import SpacingCorrection
 from enade.extraction.tables import DetectedTable, detect_tables
 
-_ALTERNATIVE_LINE_RE = re.compile(r"^([A-E])[\t ](.*)$")
+#: The trailing "[\t ](.*)" text is optional (PROMPT Phase 3A) - 2008-b's
+#: own formula-image alternatives (e.g. Q38, Q55: a whole-alternative
+#: boolean-algebra expression image, the same shape as 2011 Q14) print a
+#: completely bare letter with *nothing* following on the same line, not
+#: even a trailing space - unlike every alternative marker previously seen
+#: in this corpus, which always has at least a tab/space before its own
+#: text (however short). Group 2 is therefore ``None``, not "", when the
+#: marker is bare - callers use ``match.group(2) or ""`` accordingly. Safe
+#: to loosen generally: ``_find_alternative_starts`` already requires a
+#: full, strictly-ordered A..E sequence before treating anything as a real
+#: alternative-marker run, so an incidental bare letter elsewhere in prose
+#: cannot be mistaken for one on its own.
+_ALTERNATIVE_LINE_RE = re.compile(r"^([A-E])(?:[\t ](.*))?$")
 #: A word ending in a common ligature-prone digraph, then a stray space, then
 #: a lowercase continuation - the observed signature of a ligature-splitting
 #: extraction artifact (see docs/decisions.md, "ligature-space artifacts").
@@ -56,11 +68,17 @@ REGION_X_PADDING = 5.0
 #: Approximate width (points) of one monospace character, used only to
 #: reconstruct relative indentation for preserved code/pseudocode blocks.
 CODE_CHAR_WIDTH = 6.0
-#: Matches the same "QUESTAO [DISCURSIVA] N" marker boundaries.py uses to
-#: find a span's start - kept as its own pattern (rather than imported)
-#: because it is applied differently here: stripped as a *prefix* from the
-#: span's own first line, not searched for across a whole document.
-_MARKER_PREFIX_RE = re.compile(r"(?i)^quest[aã]o\s+(discursiva\s+)?0*\d+\b[.:\s]*")
+#: Matches the same "QUESTAO [DISCURSIVA] N" / "QUESTAO N [-] DISCURSIVA"
+#: marker boundaries.py uses to find a span's start - kept as its own
+#: pattern (rather than imported) because it is applied differently here:
+#: stripped as a *prefix* from the span's own first line, not searched for
+#: across a whole document. The trailing "- DISCURSIVA" form (PROMPT Phase
+#: 3A - 2008-b's own shape) must be stripped here too, or its own bare
+#: leftover text ("- DISCURSIVA") is wrongly kept and prepended to the
+#: statement's real first line as if it were content.
+_MARKER_PREFIX_RE = re.compile(
+    r"(?i)^quest[aã]o\s+(discursiva\s+)?0*\d+\b(\s*[-–—]\s*discursiva)?[.:\s]*"
+)
 
 
 @dataclass
@@ -750,7 +768,7 @@ def _attach_alternative_inline_segments(
                 raw = item.text
                 if index == 0:
                     match = _ALTERNATIVE_LINE_RE.match(raw)
-                    raw = match.group(2).strip() if match is not None else raw.strip()
+                    raw = (match.group(2) or "").strip() if match is not None else raw.strip()
                 else:
                     raw = raw.strip()
                 if raw:
@@ -934,7 +952,7 @@ def assemble_question(
                     continue
                 first_match = _ALTERNATIVE_LINE_RE.match(group[0].text)
                 assert first_match is not None  # guaranteed by _find_alternative_starts
-                first_text = first_match.group(2).strip()
+                first_text = (first_match.group(2) or "").strip()
                 rest_text = " ".join(ln.text.strip() for ln in group[1:])
                 full_text = f"{first_text} {rest_text}".strip() if rest_text else first_text
                 alternatives.append(ExtractedAlternative(letter=letter, text=full_text))

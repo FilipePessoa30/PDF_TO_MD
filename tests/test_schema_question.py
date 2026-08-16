@@ -562,3 +562,83 @@ def test_alternative_markdown_asset_reference_with_no_matching_asset_resolves_to
     assert alt_a["content_blocks"] is not None
     asset_blocks = [b for b in alt_a["content_blocks"] if b["type"] == "asset"]
     assert asset_blocks == []
+
+
+# --- Phase 3A: Alternative with genuinely empty text (see docs/decisions.md,
+# "Phase 3A" ADR - 2008-b's Q38/Q55, whose printed alternatives leave behind
+# no text at all, not even 2011 Q14's own trailing punctuation) -----------
+
+
+def test_alternative_empty_text_is_valid_when_asset_is_set():
+    q = _question(
+        assets=[_asset_dict("q38-a-formula")],
+        alternatives=[
+            Alternative(letter="A", text="", asset=_asset_dict("q38-a-formula")),
+            Alternative(letter="B", text="b"),
+        ],
+    )
+    assert q.alternatives[0].text == ""
+    assert q.alternatives[0].asset is not None
+
+
+def test_alternative_empty_text_is_valid_when_content_blocks_has_an_asset():
+    q = _question(
+        assets=[_asset_dict("q38-a-formula")],
+        alternatives=[
+            Alternative(
+                letter="A",
+                text="",
+                content_blocks=[AssetBlock(asset_id="q38-a-formula")],
+            ),
+            Alternative(letter="B", text="b"),
+        ],
+    )
+    assert q.alternatives[0].text == ""
+
+
+def test_alternative_empty_text_without_any_asset_is_rejected():
+    with pytest.raises(ValidationError, match="text is empty and no asset is set"):
+        _question(
+            alternatives=[
+                Alternative(letter="A", text=""),
+                Alternative(letter="B", text="b"),
+            ],
+        )
+
+
+def test_alternative_empty_text_with_only_paragraph_content_blocks_is_rejected():
+    # content_blocks is set (and has real paragraph text of its own), but
+    # no asset block anywhere - the alternative's own flattened `text` is
+    # still empty and unjustified.
+    with pytest.raises(ValidationError, match="text is empty and no asset is set"):
+        _question(
+            alternatives=[
+                Alternative(
+                    letter="A",
+                    text="",
+                    content_blocks=[ParagraphBlock(text="algo")],
+                ),
+                Alternative(letter="B", text="b"),
+            ],
+        )
+
+
+def test_alternative_empty_text_with_asset_round_trips_through_markdown_without_fabricating_a_period():
+    from enade.markdown_format import parse_question_markdown, render_question_markdown
+
+    asset = _asset_dict("q38-a-formula", "enade-2008-computing-q38/figure-01.png")
+    q = _question(
+        assets=[asset],
+        alternatives=[
+            Alternative(letter="A", text="", asset=asset),
+            Alternative(letter="B", text="b"),
+        ],
+    )
+    rendered = render_question_markdown(q)
+    # No trailing space/invented punctuation after the image link.
+    assert "![Alternativa A](enade-2008-computing-q38/figure-01.png)\n" in rendered
+    data = parse_question_markdown(rendered)
+    assert data["alternatives"][0]["text"] == ""
+    round_tripped = Question.model_validate(data)
+    assert round_tripped.alternatives[0].text == ""
+    assert round_tripped.alternatives[0].asset is not None

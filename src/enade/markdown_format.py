@@ -117,10 +117,16 @@ def _parse_body(body: str) -> tuple[str, list[dict[str, Any]]]:
             if len(matches) == 1 and matches[0].start() == 0:
                 # Phase 2E's own single-asset rendering: the image is the
                 # very first token, with only trailing punctuation (if
-                # anything) after it - e.g. 2011 Q14's own alternatives.
+                # anything) after it - e.g. 2011 Q14's own alternatives -
+                # or nothing at all (PROMPT Phase 3A - 2008-b's Q38/Q55),
+                # in which case ``remaining`` is genuinely "" - never
+                # padded with an invented "." (see Alternative's own
+                # ``_text_or_asset_required`` validator, which allows an
+                # empty ``text`` exactly when ``asset`` is set, as it
+                # always is on this branch).
                 m = matches[0]
                 remaining = (joined[: m.start()] + joined[m.end() :]).strip()
-                entry["text"] = remaining or "."
+                entry["text"] = remaining
                 entry["asset_path"] = m.group(1)
             elif matches:
                 # Phase 2F's own interleaved rendering: one or more images
@@ -136,9 +142,10 @@ def _parse_body(body: str) -> tuple[str, list[dict[str, Any]]]:
                 tail = joined[cursor:].strip()
                 if tail:
                     blocks.append({"type": "paragraph", "text": tail})
-                entry["text"] = (
-                    " ".join(b["text"] for b in blocks if b["type"] == "paragraph") or "."
-                )
+                # Never padded with an invented "." either - ``blocks``
+                # always has at least one asset block on this branch, so
+                # Alternative's own validator permits genuinely empty text.
+                entry["text"] = " ".join(b["text"] for b in blocks if b["type"] == "paragraph")
                 entry["content_blocks_raw"] = blocks
             else:
                 entry["text"] = joined
@@ -219,9 +226,12 @@ def render_question_markdown(question: Question) -> str:
                             rendered_segments.append(f"![Alternativa {alt.letter}]({asset.path})")
                 parts.append(f"{alt.letter}. {' '.join(rendered_segments)}")
             elif alt.asset is not None:
-                parts.append(
-                    f"{alt.letter}. ![Alternativa {alt.letter}]({alt.asset.path}) {alt.text}"
-                )
+                image = f"![Alternativa {alt.letter}]({alt.asset.path})"
+                # No trailing space when text is genuinely empty (PROMPT
+                # Phase 3A - 2008-b's Q38/Q55) - never pad the file with
+                # invisible whitespace just to keep a fixed template shape.
+                line = f"{image} {alt.text}" if alt.text else image
+                parts.append(f"{alt.letter}. {line}")
             else:
                 parts.append(f"{alt.letter}. {alt.text}")
     return "\n".join(parts) + "\n"

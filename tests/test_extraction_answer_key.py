@@ -117,3 +117,54 @@ def test_parse_flat_item_gabarito_every_entry_is_objective():
     result = parse_flat_item_gabarito(doc)
     assert result.lookup(QuestionKind.DISCURSIVE, 1) is None
     assert result.lookup(QuestionKind.OBJECTIVE, 1) is not None
+
+
+def test_parse_flat_item_gabarito_tolerates_a_trailing_dash_after_the_number():
+    # 2008-b's own flat gabarito shape (PROMPT Phase 3A, confirmed against
+    # the real PDF): "1 -" / "C" pairs, not 2011's bare "1" / "D".
+    doc = _gabarito_pdf(["COMPUTACAO", "1 -", "C", "2 -", "E"])
+    result = parse_flat_item_gabarito(doc)
+    assert result.warnings == []
+    entry = result.lookup(QuestionKind.OBJECTIVE, 1)
+    assert entry is not None
+    assert entry.letter == "C"
+    assert result.lookup(QuestionKind.OBJECTIVE, 2).letter == "E"  # type: ignore[union-attr]
+
+
+def test_parse_flat_item_gabarito_a_discursiva_value_reclassifies_the_entry_as_discursive():
+    # 2008-b interleaves discursive items in the same flat sequence, marked
+    # only by the printed value "Discursiva" (never a letter) - PROMPT
+    # Phase 3A. Never guessed from the item number; only the gabarito's own
+    # printed value decides.
+    doc = _gabarito_pdf(["8 -", "C", "9 -", "Discursiva", "10 -", "Discursiva", "11 -", "C"])
+    result = parse_flat_item_gabarito(doc)
+    assert result.warnings == []
+    assert result.lookup(QuestionKind.OBJECTIVE, 9) is None
+    d9 = result.lookup(QuestionKind.DISCURSIVE, 9)
+    assert d9 is not None
+    assert d9.value_kind == AnswerKeyValueKind.NOT_MACHINE_GRADED
+    d10 = result.lookup(QuestionKind.DISCURSIVE, 10)
+    assert d10 is not None
+    assert result.lookup(QuestionKind.OBJECTIVE, 8) is not None
+    assert result.lookup(QuestionKind.OBJECTIVE, 11) is not None
+
+
+def test_parse_flat_item_gabarito_duplicate_detection_is_kind_aware():
+    # An objective 9 and a discursive 9 are two different real questions in
+    # 2008-b's combined numbering (PROMPT Phase 3A) - never a duplicate.
+    doc = _gabarito_pdf(["9 -", "Discursiva"])
+    result = parse_flat_item_gabarito(doc)
+    assert result.warnings == []
+
+
+def test_parse_flat_item_gabarito_reads_the_real_2008_b_gabarito():
+    doc = pymupdf.open("data/raw/geacc-enade/2008/b2_gabarito.pdf")
+    result = parse_flat_item_gabarito(doc)
+    assert result.warnings == []
+    assert len(result.entries) == 80
+    discursive_numbers = sorted(
+        e.number for e in result.entries if e.kind == QuestionKind.DISCURSIVE
+    )
+    assert discursive_numbers == [9, 10, 20, 39, 40, 59, 60, 79, 80]
+    annulled = [e.number for e in result.entries if e.value_kind == AnswerKeyValueKind.ANNULLED]
+    assert annulled == [44]

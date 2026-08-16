@@ -1,0 +1,77 @@
+# Declarative structure profile for the 2008 unified "COMPUTACAO" booklet,
+# course letter "b" (PROMPT Phase 3A - the legacy-layout pilot booklet).
+#
+# Confirmed directly against the real PDF, not assumed from the brief:
+#   - data/raw/geacc-enade/2008/b1_prova.pdf page 1's own cover ("PROVA DE
+#     COMPUTACAO", instruction table) - the cover is a single embedded
+#     raster image with *no* extractable text layer at all, so the ranges
+#     below were read visually from the rendered page, then independently
+#     cross-checked against two other, textual sources:
+#       - page 11's own "Componente Especifico" transition paragraph, which
+#         repeats the three course-specific ranges in real selectable text
+#         (see enade.extraction.exam_profile._RANGE_PATTERNS_2008_B, and
+#         verify_declared_profile(doc, instructions_page=11, ...), run
+#         automatically on every extraction of this booklet);
+#       - the gabarito (b2_gabarito.pdf), whose own 80 numbered entries
+#         (1..80, "Discursiva" in place of a letter for every discursive
+#         item) independently confirm both the total range and exactly
+#         which numbers are discursive: 9, 10, 20, 39, 40, 59, 60, 79, 80 -
+#         precisely the nine discursive numbers the ranges below produce.
+#
+# Two structural differences from 2011's own profile (see
+# docs/decisions.md and docs/phase-3a-report.md for the full narrative):
+#   1. This booklet's own discursive markers ("QUESTAO N - DISCURSIVA")
+#      reuse the *same* printed number stream as its objectives, unlike
+#      2011's independent "QUESTAO DISCURSIVA 1".."5" run - hence
+#      `combined_numbering: true` (see boundaries.detect_question_boundaries).
+#   2. Every specific-course discursive pair (39/40, 59/60, 79/80) belongs
+#      to that course alone, unlike 2011 where all discursives are shared
+#      Componente Comum content - there is no cross-course discursive
+#      sharing in this booklet.
+year: 2008
+exam_type: unified
+exam_id: enade-2008-b-computacao
+id_shorthand: computing
+source_letter: b
+combined_numbering: true
+sections:
+  - id: formacao-geral-objetiva
+    kind: objective
+    range: [1, 8]
+    applicable_courses: [all-computing]
+  - id: formacao-geral-discursiva
+    kind: discursive
+    range: [9, 10]
+    applicable_courses: [all-computing]
+  - id: nucleo-comum-objetiva
+    kind: objective
+    range: [11, 19]
+    applicable_courses: [all-computing]
+  - id: nucleo-comum-discursiva
+    kind: discursive
+    range: [20, 20]
+    applicable_courses: [all-computing]
+  - id: cc-bacharelado-objetiva
+    kind: objective
+    range: [21, 38]
+    applicable_courses: [ciencia-da-computacao-bacharelado]
+  - id: cc-bacharelado-discursiva
+    kind: discursive
+    range: [39, 40]
+    applicable_courses: [ciencia-da-computacao-bacharelado]
+  - id: engenharia-computacao-objetiva
+    kind: objective
+    range: [41, 58]
+    applicable_courses: [engenharia-da-computacao]
+  - id: engenharia-computacao-discursiva
+    kind: discursive
+    range: [59, 60]
+    applicable_courses: [engenharia-da-computacao]
+  - id: sistemas-informacao-objetiva
+    kind: objective
+    range: [61, 78]
+    applicable_courses: [sistemas-de-informacao]
+  - id: sistemas-informacao-discursiva
+    kind: discursive
+    range: [79, 80]
+    applicable_courses: [sistemas-de-informacao]

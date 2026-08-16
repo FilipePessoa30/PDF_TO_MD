@@ -20,7 +20,11 @@ import typer
 from enade import __version__
 from enade.extraction.answer_key import parse_answer_key, parse_flat_item_gabarito
 from enade.extraction.audit import build_audit_row, write_audit_csv, write_audit_json
-from enade.extraction.exam_profile import ExamStructureProfile, load_exam_structure_profile
+from enade.extraction.exam_profile import (
+    _RANGE_PATTERNS_2008_B,
+    ExamStructureProfile,
+    load_exam_structure_profile,
+)
 from enade.extraction.expected_structure import (
     compare_with_expected as compare_extraction_with_expected,
 )
@@ -345,9 +349,17 @@ def _resolve_booklet_location(year: int, course: str, corpus_root: Path) -> Book
     naming = _resolve_booklet_naming(year, course)
     year_dir = corpus_root / str(year)
     if naming.is_unified:
-        prova_path = year_dir / "1_prova.pdf"
-        gabarito_path = year_dir / "2_gabarito.pdf"
-        padrao_path = year_dir / "3_padrao.pdf"
+        assert naming.structure_profile is not None
+        # Not every unified booklet's source files omit a course letter
+        # (PROMPT Phase 3A): 2011's is plain "1_prova.pdf", but 2008 has
+        # *two* unified booklets sharing the same year directory
+        # ("b1_prova.pdf" for computing, "e1_prova.pdf" for the pooled
+        # engineering-group booklet) - the letter comes from the profile,
+        # never guessed from the year.
+        letter_prefix = naming.structure_profile.source_letter or ""
+        prova_path = year_dir / f"{letter_prefix}1_prova.pdf"
+        gabarito_path = year_dir / f"{letter_prefix}2_gabarito.pdf"
+        padrao_path = year_dir / f"{letter_prefix}3_padrao.pdf"
     else:
         letter = naming.file_slug
         prova_path = year_dir / f"{letter}1_prova.pdf"
@@ -429,6 +441,19 @@ def extract(
     table_cells_verified_ids = load_table_cell_verified_question_ids(resolved_visual_audit_file)
     layout_overrides = load_layout_overrides(DEFAULT_AUDIT_DIR / "layout-overrides.yaml")
 
+    # This is the one place that decides which shape a given unified
+    # booklet's own instructions page is in (PROMPT Phase 3A) - 2008-b's
+    # cover has no text layer at all, so its range table is instead
+    # cross-checked against its Componente Especifico transition page (11),
+    # using that page's own wording (see exam_profile._RANGE_PATTERNS_2008_B).
+    # 2011 keeps using verify_declared_profile's own defaults (page 1, its
+    # own pattern set) by passing nothing extra.
+    verification_page = 1
+    verification_patterns = None
+    if structure_profile is not None and structure_profile.year == 2008:
+        verification_page = 11
+        verification_patterns = _RANGE_PATTERNS_2008_B
+
     result = extract_exam(
         prova_path=prova_path,
         gabarito_path=gabarito_path,
@@ -441,6 +466,8 @@ def extract(
         visual_audit=visual_audit,
         table_cells_verified_ids=table_cells_verified_ids,
         structure_profile=structure_profile,
+        structure_verification_page=verification_page,
+        structure_verification_patterns=verification_patterns,
         output_dir_name=course_code.value if is_unified else None,
         answer_key_parser=parse_flat_item_gabarito if is_unified else parse_answer_key,
         layout_overrides=layout_overrides,
