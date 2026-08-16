@@ -19,7 +19,15 @@ correct_answer: C
 official_answer_source: 2008/b2_gabarito.pdf
 answer_validation_status: validated
 answer_standard: null
-assets: []
+assets:
+- id: figure-01
+  type: diagram
+  path: enade-2008-computing-q12/figure-01.png
+  source_page: 8
+  extraction_method: raster_crop
+  sha256: edd04b77c8960841940b96ab6ca456a6e0f8b3b145270020a438378df325d8fd
+  alt_text: null
+  caption: null
 subjects: []
 topics: []
 concepts: []
@@ -30,15 +38,19 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: verified
+extraction_status: needs_review
 automatic_validation: passed
-visual_validation: passed
+visual_validation: failed
 taxonomy_review_status: pending
 ---
 
 # Questão 12
 
-Ao longo de todo o desenvolvimento do software, devem ser aplicadas atividades de garantia de qualidade de software (GQS), entre as quais se encontra a atividade de teste. Um dos critérios de teste utilizados para gerar casos de teste é o denominado critério dos caminhos básicos, cujo número de caminhos pode ser determinado com base na complexidade ciclomática. Considerando-se o grafo de fluxo de controle apresentado na figura ao lado, no qual os nós representam os blocos de comandos e as arestas representam a transferência de controle, qual a quantidade de caminhos básicos que devem ser testados no programa associado a esse grafo de fluxo de controle, sabendo-se que essa quantidade é igual à complexidade ciclomática mais um?
+![Figura da questão](enade-2008-computing-q12/figure-01.png)
+
+base na
+
+devem ser testados no programa associado a esse grafo de fluxo de controle, sabendo-se que essa quantidade é igual à complexidade ciclomática mais um?
 
 ## Alternativas
 

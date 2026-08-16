@@ -19,7 +19,15 @@ correct_answer: D
 official_answer_source: 2008/b2_gabarito.pdf
 answer_validation_status: validated
 answer_standard: null
-assets: []
+assets:
+- id: figure-01
+  type: diagram
+  path: enade-2008-computing-q29/figure-01.png
+  source_page: 13
+  extraction_method: raster_crop
+  sha256: 577c0a630c7621e37f42d8c62548ef6b442189c151d306cc22f5f964460ebe9d
+  alt_text: null
+  caption: null
 subjects: []
 topics: []
 concepts: []
@@ -30,15 +38,17 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: extracted
+extraction_status: needs_review
 automatic_validation: passed
-visual_validation: not_performed
+visual_validation: failed
 taxonomy_review_status: pending
 ---
 
 # Questão 29
 
-Considere a gramática G definida pelas S ÷ AB regras de produção ao lado, em que os AB ÷ AAB símbolos não-terminais são S, A e B, e os A ÷ a B ÷ b símbolos terminais são a e b. Com relação a essa gramática, é correto afirmar que
+![Figura da questão](enade-2008-computing-q29/figure-01.png)
+
+Considere a gramática G definida pelas regras de produção ao lado, em que os símbolos não-terminais são S, A e B, e os A ÷ a B ÷ b símbolos terminais são a e b. Com relação a essa gramática, é correto afirmar que
 
 ## Alternativas
 

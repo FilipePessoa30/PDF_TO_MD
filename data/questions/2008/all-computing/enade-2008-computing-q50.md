@@ -25,7 +25,7 @@ assets:
   path: enade-2008-computing-q50/figure-01.png
   source_page: 21
   extraction_method: raster_crop
-  sha256: fd2472a6e255352bf3ec42902fcd6bb1c6d7416fb9c0251c296a303a423f6a21
+  sha256: cd0c3d675eb9a5cfc5fa8183ede21f9072643c23f50d43017cad82c6f537897b
   alt_text: null
   caption: null
 subjects: []
@@ -40,13 +40,17 @@ extraction_method: text_layer
 ocr_confidence: null
 extraction_status: needs_review
 automatic_validation: failed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 50
 
+Considere, a seguir, o circuito combinatório, a tensão analógica VA definida pela tabela I, e a tabela lógica definida pela tabela II.
+
 ![Figura da questão](enade-2008-computing-q50/figure-01.png)
+
+Analise o circuito, os dados das tabelas I e II e as seguintes asserções. O circuito apresentado converte a tensão analógica vA em uma palavra de três bits cujo valor binário é uma representação quantizada da tensão vA, conforme apresentado na tabela I
 
 ## Alternativas
 

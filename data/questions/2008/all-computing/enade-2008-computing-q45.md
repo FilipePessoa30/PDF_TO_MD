@@ -25,7 +25,7 @@ assets:
   path: enade-2008-computing-q45/figure-01.png
   source_page: 19
   extraction_method: raster_crop
-  sha256: f08c4e82648202822655a8d06b9ba09742139b0082538cf2cf2990a77a1bb114
+  sha256: 21515cc73060aabcb9491e1db7002ceecbc2ecbd553a3be8333bf195aca9d3b7
   alt_text: null
   caption: null
 subjects: []
@@ -39,14 +39,22 @@ alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
 extraction_status: needs_review
-automatic_validation: failed
+automatic_validation: passed
 visual_validation: failed
 taxonomy_review_status: pending
 ---
 
 # Questão 45
 
+Considere y = f(x) uma função contínua e não-negativa (f $ 0), definida em um intervalo [a, b], e R a região delimitada pelo eixo x, o gráfico de f e as retas x = a e x = b. Considere S o sólido obtido pela rotação do conjunto R em torno do eixo das abscissas, conforme ilustram as figuras a seguir. O volume V do sólido S pode ser obtido
+
 ![Figura da questão](enade-2008-computing-q45/figure-01.png)
+
+I
+
+II
+
+Assinale a opção correta.
 
 ## Alternativas
 

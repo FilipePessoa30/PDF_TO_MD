@@ -25,7 +25,7 @@ assets:
   path: enade-2008-computing-q64/figure-01.png
   source_page: 28
   extraction_method: raster_crop
-  sha256: bfeb1fe8f5f107f5d3fb7494deaac67d63e691615acb9f69e318f1ff03fd25c8
+  sha256: 2ee16d4e633ad05b51e3b610fef6bdf7c687b86ef213b6012fc23646f40b183b
   alt_text: null
   caption: null
 subjects: []
@@ -38,19 +38,19 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 64
 
+A figura abaixo apresenta uma proposta de classificação de sistemas de informação, organizada tanto no que se refere ao nível hierárquico, no qual atuam os sistemas no âmbito de uma organização, quanto no que se refere às áreas funcionais nas quais esses sistemas são aplicados.
+
 ![Figura da questão](enade-2008-computing-q64/figure-01.png)
 
-A figura abaixo apresenta uma proposta de classificação de
-
-A decisão envolve substituir o sistema atual, que emprega
+Considere a situação hipotética em que uma rede de supermercados deverá tomar uma decisão com relação à substituição do sistema de automação de “frente de loja”, que apóia as atividades dos caixas nos check-outs. A decisão envolve substituir o sistema atual, que emprega tecnologia de terminais “burros”, por um que emprega computadores pessoais e redes sem fio. Nesse sentido e considerando a proposta de classificação apresentada, qual das opções a seguir apresenta uma classificação adequada de nível hierárquico, área funcional e grupo atendido pelo sistema de informações, que oferece apoio direto à referida tomada de decisão?
 
 ## Alternativas
 

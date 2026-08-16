@@ -56,7 +56,7 @@ assets:
   path: enade-2008-computing-d60/figure-01.png
   source_page: 26
   extraction_method: raster_crop
-  sha256: d6dcde209e1c2ae27ca0060e4aeda9be12a23163fe973913d1b2e7274cf9277b
+  sha256: 3efbe945187e5054d286793a6992e9930b266e2c5a03d00488dea5ede5ac651c
   alt_text: null
   caption: null
 - id: figure-02
@@ -64,7 +64,7 @@ assets:
   path: enade-2008-computing-d60/figure-02.png
   source_page: 26
   extraction_method: raster_crop
-  sha256: ebf9b4c11d15ba0d016f77884d142620011901d63f7687b383fe5691d3c3efd4
+  sha256: 510f07289ef6cfdf70b41d384755863daecbbf1b5a032a6c0e7a1e1c0f5c7aaa
   alt_text: null
   caption: null
 - id: figure-03
@@ -72,23 +72,7 @@ assets:
   path: enade-2008-computing-d60/figure-03.png
   source_page: 26
   extraction_method: raster_crop
-  sha256: 510f07289ef6cfdf70b41d384755863daecbbf1b5a032a6c0e7a1e1c0f5c7aaa
-  alt_text: null
-  caption: null
-- id: figure-04
-  type: diagram
-  path: enade-2008-computing-d60/figure-04.png
-  source_page: 26
-  extraction_method: raster_crop
-  sha256: 4331aa937ac88f5102e609ab13f0e861e535332f2640651001c46a98717ec9e1
-  alt_text: null
-  caption: null
-- id: figure-05
-  type: diagram
-  path: enade-2008-computing-d60/figure-05.png
-  source_page: 27
-  extraction_method: raster_crop
-  sha256: 5bc9ce34c0c7d192695f008786f33d2a3e6ff9da4fe0f5e0a1acadd164b6d967
+  sha256: 04ff38b4fa8f6f6b1f1cf5993993e1772512fcd808ffc884e3a94bcbb5d17e52
   alt_text: null
   caption: null
 subjects: []
@@ -109,7 +93,7 @@ taxonomy_review_status: pending
 
 # Questão 60
 
-![Figura da questão](enade-2008-computing-d60/figure-03.png)
+![Figura da questão](enade-2008-computing-d60/figure-02.png)
 
 C = 2 × W bauds
 
@@ -121,18 +105,16 @@ A Na ausência de ruído, de acordo com o teorema de Nyquist, qual a taxa de tra
 
 ![Figura da questão](enade-2008-computing-d60/figure-01.png)
 
-B Na presença de ruído térmico, de acordo com a lei de Shannon, qual a taxa de transmissão máxima do canal, em bits
+B Na presença de ruído térmico, de acordo com a lei de Shannon, qual a taxa de transmissão máxima do canal, em bits por segundo? Apresente os cálculos necessário e considere que log10 (1.023) = 3,01.
 
-![Figura da questão](enade-2008-computing-d60/figure-02.png)
+![Figura da questão](enade-2008-computing-d60/figure-03.png)
 
-C Na presença de ruído térmico, é possível adotar mais de 16 níveis de sinalização no referido canal? Justifique.
+C Na presença de ruído térmico, é possível adotar mais de 16 níveis de sinalização no referido canal? Justifique. (valor: 3,0 pontos)
 
-![Figura da questão](enade-2008-computing-d60/figure-04.png)
+(valor: 4,0 pontos)
 
-As questões de 61 a 80, a seguir, são específicas para os estudantes de cursos com perfis profissionais de BACHARELADO EM SISTEMAS DE INFORMAÇÃO. Figura para a questão 61 Estágios do ciclo de vida de um serviço de TI Gerenciamento de aplicações Gerente do desenvolvimento de aplicações Negócios Entrega de serviços Gerente de serviços Cliente Usuário
+Figura para a questão 61 Estágios do ciclo de vida de um serviço de TI Gerenciamento de aplicações Gerente do desenvolvimento de aplicações Negócios Entrega de serviços Gerente de serviços Cliente Usuário
 
 Estratégias, planos e requisitos Soluções de negócios
 
 Definir Planejar Implantar Validar Estabelecer políticas serviços serviços serviços estratégias Desenho e planejamento Implantação Suporte técnico Administração
-
-![Figura da questão](enade-2008-computing-d60/figure-05.png)

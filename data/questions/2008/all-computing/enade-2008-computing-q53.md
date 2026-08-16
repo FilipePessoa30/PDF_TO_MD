@@ -19,15 +19,7 @@ correct_answer: A
 official_answer_source: 2008/b2_gabarito.pdf
 answer_validation_status: validated
 answer_standard: null
-assets:
-- id: figure-01
-  type: diagram
-  path: enade-2008-computing-q53/figure-01.png
-  source_page: 23
-  extraction_method: raster_crop
-  sha256: 80d09a2f7d4d2baf57bad5b8874e56d2de6ea8d79806ebb10a39e3dae9634084
-  alt_text: null
-  caption: null
+assets: []
 subjects: []
 topics: []
 concepts: []
@@ -38,19 +30,15 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 53
 
-![Figura da questão](enade-2008-computing-q53/figure-01.png)
-
-A = Xt ! 1 ! Xt < 0 e Xt ! Xt + 1 > 0 B = Xt ! 1 ! Xt > 0 e Xt ! Xt + 1 < 0
-
-itens. I A probabilidade de ocorrer o evento A em uma subseqüência II
+Um sinal a ser registrado por um dispositivo, em intervalos regulares de tempo t = 1, 2, 3, ..., n, resultará em uma seqüência de variáveis aleatórias contínuas X1, X2, ..., Xn. Considere, nessa seqüência, os eventos A e B apresentados a seguir, em que t = 2, 3, ..., n – 1. A = Xt ! 1 ! Xt < 0 e Xt ! Xt + 1 > 0 B = Xt ! 1 ! Xt > 0 e Xt ! Xt + 1 < 0 Na hipótese de a seqüência X1, X2, ..., Xn ser independente e que seja impossível que Xt = Xt – 1 (t = 2, 3, ..., n), julgue os seguintes itens. I A probabilidade de ocorrer o evento A em uma subseqüência {Xt – 1, Xt, Xt + 1} é inferior a 0,3. II O número esperado das ocorrências dos eventos A ou B na seqüência X1, X2, ..., Xn é igual a . III Os eventos A e B são mutuamente exclusivos e, por isso, são independentes. Assinale a opção correta.
 
 ## Alternativas
 

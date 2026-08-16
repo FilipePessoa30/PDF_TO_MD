@@ -1,7 +1,8 @@
-# Blocker ledger for the 2008-b legacy-layout pilot (PROMPT Phase 3A).
+# Blocker ledger for the 2008-b legacy-layout pilot (PROMPT Phase 3A/3B).
 # Independent from data/manifests/blocker-ledger-2011.yaml - no 2011 blockers were
 # copied; every entry below reflects a real defect actually observed in this booklet.
-# See docs/phase-3a-report.md for the full narrative and root-cause evidence.
+# See docs/phase-3a-report.md and docs/phase-3b-report.md for the full narrative and
+# root-cause evidence.
 baseline_count: 0
 blockers:
 - affected_assets: []
@@ -41,16 +42,24 @@ blockers:
     section M for why no fix was attempted this session.'
   description: Statement severely truncated and reordered ('tratamento A Escreva, no espaco reservado...')
     - the real hash-table-collision scenario is largely missing/scrambled.
-  evidence: null
+  evidence: docs/phase-3b-report.md section G/H; data/manifests/visual-audit-2008-computing.json (status=passed,
+    updated Phase 3B); tests/test_extraction_pipeline_2008.py (Q21/Q22/Q23-specific); tests/test_extraction_figures.py::test_is_rule_line_*;
+    tests/test_extraction_chrome.py::test_2008_b_transition_table_lines_are_chrome
   id: d20-region-merge-content-loss
   question_id: enade-2008-computing-d20
-  regression_tests: []
-  resolution: null
+  regression_tests: &id001
+  - tests/test_extraction_pipeline_2008.py
+  - tests/test_extraction_figures.py
+  - tests/test_extraction_chrome.py
+  resolution: 'RESOLVED (Phase 3B): fixed by (1) recognizing 2008-b''s own section-transition prose/table
+    as chrome and (2) a general aspect-ratio rule-line filter in figures.py (vertical column-separator
+    and horizontal divider hairlines were dominating the height/width of any region they merged with).
+    D20''s own statement is now complete and coherent, re-inspected against page 10.'
   source_pages:
   - 10
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets: []
   category: region-merge-content-loss
   cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
@@ -114,16 +123,22 @@ blockers:
     re-opened, it shows Q21''s own statement plus the entirety of the unrelated Q22 and part of Q23 merged
     into one crop - the most severe confirmed instance, cross-question content contamination, not just
     loss.'
-  evidence: null
+  evidence: docs/phase-3b-report.md section G/H; data/manifests/visual-audit-2008-computing.json (status=passed,
+    updated Phase 3B); tests/test_extraction_pipeline_2008.py (Q21/Q22/Q23-specific); tests/test_extraction_figures.py::test_is_rule_line_*;
+    tests/test_extraction_chrome.py::test_2008_b_transition_table_lines_are_chrome
   id: q21-region-merge-content-loss
   question_id: enade-2008-computing-q21
-  regression_tests: []
-  resolution: null
+  regression_tests: *id001
+  resolution: 'RESOLVED (Phase 3B): the flagship case. Root cause was two-fold - Q22''s own QuestionRegion
+    was corrupted by a scattered instructions-table fragment (fixed by chrome recognition), and a column-separator
+    hairline was not filtered as decorative (fixed by the new rule-line filter). Q21''s own figure-01.png
+    asset - previously shown to contain Q21+Q22+Q23''s combined content by direct re-inspection - is gone
+    entirely; the statement is now pure text, complete, uncontaminated.'
   source_pages:
   - 11
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets: []
   category: region-merge-content-loss
   cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
@@ -139,16 +154,19 @@ blockers:
   description: Statement replaced by garbled instructions-table fragments ('Multipla Escolha Discursivas
     21 a 38 39 e 40 41 a 58 59 e 60 61 a 78 79 e 80') with 2 misplaced images - the real SQL/relational-algebra
     statement is entirely lost.
-  evidence: null
+  evidence: docs/phase-3b-report.md section G/H; data/manifests/visual-audit-2008-computing.json (status=passed,
+    updated Phase 3B); tests/test_extraction_pipeline_2008.py (Q21/Q22/Q23-specific); tests/test_extraction_figures.py::test_is_rule_line_*;
+    tests/test_extraction_chrome.py::test_2008_b_transition_table_lines_are_chrome
   id: q22-region-merge-content-loss
   question_id: enade-2008-computing-q22
-  regression_tests: []
-  resolution: null
+  regression_tests: *id001
+  resolution: 'RESOLVED (Phase 3B): see q21-region-merge-content-loss for the shared root cause and fix.
+    Statement now reads exactly as printed, no table fragments.'
   source_pages:
   - 11
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets: []
   category: region-merge-content-loss
   cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
@@ -163,16 +181,19 @@ blockers:
     section M for why no fix was attempted this session.'
   description: Empty statement - the same contaminated merged region documented for Q21 spans into Q23's
     own page/column too.
-  evidence: null
+  evidence: docs/phase-3b-report.md section G/H; data/manifests/visual-audit-2008-computing.json (status=passed,
+    updated Phase 3B); tests/test_extraction_pipeline_2008.py (Q21/Q22/Q23-specific); tests/test_extraction_figures.py::test_is_rule_line_*;
+    tests/test_extraction_chrome.py::test_2008_b_transition_table_lines_are_chrome
   id: q23-region-merge-content-loss
   question_id: enade-2008-computing-q23
-  regression_tests: []
-  resolution: null
+  regression_tests: *id001
+  resolution: 'RESOLVED (Phase 3B): see q21-region-merge-content-loss for the shared root cause and fix.
+    Statement complete; own figure-01.png (relational schema) correctly scoped to Q23 alone.'
   source_pages:
   - 11
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets: []
   category: region-merge-content-loss
   cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
@@ -209,16 +230,18 @@ blockers:
     mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
     section M for why no fix was attempted this session.'
   description: Statement truncated to a bare fragment ('imagens I e II acima?') with 3 misplaced images.
-  evidence: null
+  evidence: docs/phase-3b-report.md section G/H; data/manifests/visual-audit-2008-computing.json (status=passed,
+    updated Phase 3B); tests/test_extraction_pipeline_2008.py (Q21/Q22/Q23-specific); tests/test_extraction_figures.py::test_is_rule_line_*;
+    tests/test_extraction_chrome.py::test_2008_b_transition_table_lines_are_chrome
   id: q26-region-merge-content-loss
   question_id: enade-2008-computing-q26
-  regression_tests: []
-  resolution: null
+  regression_tests: *id001
+  resolution: 'RESOLVED (Phase 3B): chrome + rule-line fixes. Statement now complete.'
   source_pages:
   - 13
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets: []
   category: region-merge-content-loss
   cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
@@ -233,16 +256,18 @@ blockers:
     section M for why no fix was attempted this session.'
   description: Statement severely scrambled/truncated around one image ('...um controlador de um robo
     e um controlador [image] planta inteira de manufatura sistematica...').
-  evidence: null
+  evidence: docs/phase-3b-report.md section G/H; data/manifests/visual-audit-2008-computing.json (status=passed,
+    updated Phase 3B); tests/test_extraction_pipeline_2008.py (Q21/Q22/Q23-specific); tests/test_extraction_figures.py::test_is_rule_line_*;
+    tests/test_extraction_chrome.py::test_2008_b_transition_table_lines_are_chrome
   id: q41-region-merge-content-loss
   question_id: enade-2008-computing-q41
-  regression_tests: []
-  resolution: null
+  regression_tests: *id001
+  resolution: 'RESOLVED (Phase 3B): chrome + rule-line fixes. Statement now complete, all 3 items intact.'
   source_pages:
   - 18
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets: []
   category: region-merge-content-loss
   cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
@@ -256,16 +281,18 @@ blockers:
     mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
     section M for why no fix was attempted this session.'
   description: Statement severely scrambled/truncated around otherwise-correct SQL code blocks.
-  evidence: null
+  evidence: docs/phase-3b-report.md section G/H; data/manifests/visual-audit-2008-computing.json (status=passed,
+    updated Phase 3B); tests/test_extraction_pipeline_2008.py (Q21/Q22/Q23-specific); tests/test_extraction_figures.py::test_is_rule_line_*;
+    tests/test_extraction_chrome.py::test_2008_b_transition_table_lines_are_chrome
   id: q44-region-merge-content-loss
   question_id: enade-2008-computing-q44
-  regression_tests: []
-  resolution: null
+  regression_tests: *id001
+  resolution: 'RESOLVED (Phase 3B): chrome + rule-line fixes. Statement complete, both SQL blocks intact.'
   source_pages:
   - 19
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets: []
   category: region-merge-content-loss
   cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
@@ -306,16 +333,18 @@ blockers:
     section M for why no fix was attempted this session.'
   description: Empty statement; a detected table also fell after the alternatives cutoff and was excluded
     rather than mis-attached.
-  evidence: null
+  evidence: docs/phase-3b-report.md section G/H; data/manifests/visual-audit-2008-computing.json (status=passed,
+    updated Phase 3B); tests/test_extraction_pipeline_2008.py (Q21/Q22/Q23-specific); tests/test_extraction_figures.py::test_is_rule_line_*;
+    tests/test_extraction_chrome.py::test_2008_b_transition_table_lines_are_chrome
   id: q50-region-merge-content-loss
   question_id: enade-2008-computing-q50
-  regression_tests: []
-  resolution: null
+  regression_tests: *id001
+  resolution: 'RESOLVED (Phase 3B): chrome + rule-line fixes. Statement and figure-01.png complete.'
   source_pages:
   - 21
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets: []
   category: region-merge-content-loss
   cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
@@ -330,16 +359,19 @@ blockers:
     section M for why no fix was attempted this session.'
   description: Statement fragmented across 4 separate images with disconnected text shards ('o seguinte
     estado final.' / 'tenha o estado E0 a seguir.' / ...).
-  evidence: null
+  evidence: docs/phase-3b-report.md section G/H; data/manifests/visual-audit-2008-computing.json (status=passed,
+    updated Phase 3B); tests/test_extraction_pipeline_2008.py (Q21/Q22/Q23-specific); tests/test_extraction_figures.py::test_is_rule_line_*;
+    tests/test_extraction_chrome.py::test_2008_b_transition_table_lines_are_chrome
   id: q51-region-merge-content-loss
   question_id: enade-2008-computing-q51
-  regression_tests: []
-  resolution: null
+  regression_tests: *id001
+  resolution: 'RESOLVED (Phase 3B): chrome + rule-line fixes. All 4 images correctly interleaved with
+    complete prose.'
   source_pages:
   - 22
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets: []
   category: region-merge-content-loss
   cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
@@ -353,16 +385,18 @@ blockers:
     mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
     section M for why no fix was attempted this session.'
   description: Statement replaced by a nonsense fragment ('D ÷ TL; | TL; D').
-  evidence: null
+  evidence: docs/phase-3b-report.md section G/H; data/manifests/visual-audit-2008-computing.json (status=passed,
+    updated Phase 3B); tests/test_extraction_pipeline_2008.py (Q21/Q22/Q23-specific); tests/test_extraction_figures.py::test_is_rule_line_*;
+    tests/test_extraction_chrome.py::test_2008_b_transition_table_lines_are_chrome
   id: q52-region-merge-content-loss
   question_id: enade-2008-computing-q52
-  regression_tests: []
-  resolution: null
+  regression_tests: *id001
+  resolution: 'RESOLVED (Phase 3B): chrome + rule-line fixes. Statement now complete and coherent.'
   source_pages:
   - 22
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets: []
   category: region-merge-content-loss
   cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
@@ -376,16 +410,18 @@ blockers:
     mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
     section M for why no fix was attempted this session.'
   description: Statement reduced to formula/label fragments with reordered item text.
-  evidence: null
+  evidence: docs/phase-3b-report.md section G/H; data/manifests/visual-audit-2008-computing.json (status=passed,
+    updated Phase 3B); tests/test_extraction_pipeline_2008.py (Q21/Q22/Q23-specific); tests/test_extraction_figures.py::test_is_rule_line_*;
+    tests/test_extraction_chrome.py::test_2008_b_transition_table_lines_are_chrome
   id: q53-region-merge-content-loss
   question_id: enade-2008-computing-q53
-  regression_tests: []
-  resolution: null
+  regression_tests: *id001
+  resolution: 'RESOLVED (Phase 3B): chrome + rule-line fixes. Statement now complete and coherent.'
   source_pages:
   - 23
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets: []
   category: region-merge-content-loss
   cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
@@ -422,16 +458,18 @@ blockers:
     mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
     section M for why no fix was attempted this session.'
   description: Statement truncated mid-sentence ('A figura acima, adaptada do documento que descreve o').
-  evidence: null
+  evidence: docs/phase-3b-report.md section G/H; data/manifests/visual-audit-2008-computing.json (status=passed,
+    updated Phase 3B); tests/test_extraction_pipeline_2008.py (Q21/Q22/Q23-specific); tests/test_extraction_figures.py::test_is_rule_line_*;
+    tests/test_extraction_chrome.py::test_2008_b_transition_table_lines_are_chrome
   id: q61-region-merge-content-loss
   question_id: enade-2008-computing-q61
-  regression_tests: []
-  resolution: null
+  regression_tests: *id001
+  resolution: 'RESOLVED (Phase 3B): chrome + rule-line fixes. Statement now complete.'
   source_pages:
   - 27
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets: []
   category: region-merge-content-loss
   cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
@@ -491,16 +529,18 @@ blockers:
     mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
     section M for why no fix was attempted this session.'
   description: Statement truncated mid-sentence ('A decisao envolve substituir o sistema atual, que emprega').
-  evidence: null
+  evidence: docs/phase-3b-report.md section G/H; data/manifests/visual-audit-2008-computing.json (status=passed,
+    updated Phase 3B); tests/test_extraction_pipeline_2008.py (Q21/Q22/Q23-specific); tests/test_extraction_figures.py::test_is_rule_line_*;
+    tests/test_extraction_chrome.py::test_2008_b_transition_table_lines_are_chrome
   id: q64-region-merge-content-loss
   question_id: enade-2008-computing-q64
-  regression_tests: []
-  resolution: null
+  regression_tests: *id001
+  resolution: 'RESOLVED (Phase 3B): chrome + rule-line fixes. Statement and figure-01.png complete.'
   source_pages:
   - 28
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets: []
   category: region-merge-content-loss
   cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
@@ -514,16 +554,18 @@ blockers:
     mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
     section M for why no fix was attempted this session.'
   description: Empty statement - only figure-01.png remains.
-  evidence: null
+  evidence: docs/phase-3b-report.md section G/H; data/manifests/visual-audit-2008-computing.json (status=passed,
+    updated Phase 3B); tests/test_extraction_pipeline_2008.py (Q21/Q22/Q23-specific); tests/test_extraction_figures.py::test_is_rule_line_*;
+    tests/test_extraction_chrome.py::test_2008_b_transition_table_lines_are_chrome
   id: q69-region-merge-content-loss
   question_id: enade-2008-computing-q69
-  regression_tests: []
-  resolution: null
+  regression_tests: *id001
+  resolution: 'RESOLVED (Phase 3B): chrome + rule-line fixes. Statement and figure-01.png complete.'
   source_pages:
   - 29
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets: []
   category: region-merge-content-loss
   cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
@@ -537,16 +579,18 @@ blockers:
     mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
     section M for why no fix was attempted this session.'
   description: Statement replaced by garbled diagram-label fragments.
-  evidence: null
+  evidence: docs/phase-3b-report.md section G/H; data/manifests/visual-audit-2008-computing.json (status=passed,
+    updated Phase 3B); tests/test_extraction_pipeline_2008.py (Q21/Q22/Q23-specific); tests/test_extraction_figures.py::test_is_rule_line_*;
+    tests/test_extraction_chrome.py::test_2008_b_transition_table_lines_are_chrome
   id: q71-region-merge-content-loss
   question_id: enade-2008-computing-q71
-  regression_tests: []
-  resolution: null
+  regression_tests: *id001
+  resolution: 'RESOLVED (Phase 3B): chrome + rule-line fixes. Statement and figure-01.png complete.'
   source_pages:
   - 30
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets: []
   category: region-merge-content-loss
   cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
@@ -560,16 +604,18 @@ blockers:
     mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
     section M for why no fix was attempted this session.'
   description: Empty statement - only figure-01.png remains.
-  evidence: null
+  evidence: docs/phase-3b-report.md section G/H; data/manifests/visual-audit-2008-computing.json (status=passed,
+    updated Phase 3B); tests/test_extraction_pipeline_2008.py (Q21/Q22/Q23-specific); tests/test_extraction_figures.py::test_is_rule_line_*;
+    tests/test_extraction_chrome.py::test_2008_b_transition_table_lines_are_chrome
   id: q73-region-merge-content-loss
   question_id: enade-2008-computing-q73
-  regression_tests: []
-  resolution: null
+  regression_tests: *id001
+  resolution: 'RESOLVED (Phase 3B): chrome + rule-line fixes. Statement and figure-01.png complete.'
   source_pages:
   - 31
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets: []
   category: region-merge-content-loss
   cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
@@ -605,16 +651,19 @@ blockers:
   description: Statement ends with the page-8 Nucleo Comum -> course-specific transition paragraph wrongly
     appended as if it were D10's own content. D10's own real statement text is present but the trailing
     contamination makes this a real defect.
-  evidence: null
+  evidence: docs/phase-3b-report.md section G/H; data/manifests/visual-audit-2008-computing.json (status=passed,
+    updated Phase 3B); tests/test_extraction_pipeline_2008.py (Q21/Q22/Q23-specific); tests/test_extraction_figures.py::test_is_rule_line_*;
+    tests/test_extraction_chrome.py::test_2008_b_transition_table_lines_are_chrome
   id: d10-section-transition-chrome-bleed
   question_id: enade-2008-computing-d10
-  regression_tests: []
-  resolution: null
+  regression_tests: *id001
+  resolution: 'RESOLVED (Phase 3B): the page-8 transition paragraph is now recognized as chrome (chrome.py)
+    and correctly excluded from D10''s own span. Statement ends cleanly with its own citation lines.'
   source_pages:
   - 8
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets: []
   category: section-transition-chrome-bleed
   cause: The section-transition instructional paragraph printed between Componente Especifico Comum and
@@ -626,16 +675,21 @@ blockers:
     preceding question.
   description: Statement ends with the page-17 CC-Bacharelado -> Engenharia de Computacao transition paragraph
     wrongly appended.
-  evidence: null
+  evidence: docs/phase-3b-report.md section G/H; data/manifests/visual-audit-2008-computing.json (status=passed,
+    updated Phase 3B); tests/test_extraction_pipeline_2008.py (Q21/Q22/Q23-specific); tests/test_extraction_figures.py::test_is_rule_line_*;
+    tests/test_extraction_chrome.py::test_2008_b_transition_table_lines_are_chrome
   id: d40-section-transition-chrome-bleed
   question_id: enade-2008-computing-d40
-  regression_tests: []
-  resolution: null
+  regression_tests: *id001
+  resolution: 'RESOLVED (Phase 3B), narrowly: the page-18 EngComp transition text itself no longer leaks
+    into D40''s statement (confirmed: no longer ends with ''ENGENHARIA DE COMPUTACAO''). D40''s statement
+    remains scrambled for a separate, unrelated reason - see the new blocker d40-table-reading-order-scramble,
+    opened this same phase.'
   source_pages:
   - 17
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets: []
   category: unstructured-image-alternatives
   cause: This question could not be built into a valid Question at all (Alternative requires real text,
@@ -761,6 +815,124 @@ blockers:
   resolution: null
   source_pages:
   - 1
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: table-reading-order-scramble
+  cause: Not yet root-caused precisely - suspected to be the same general reading-order class as the page-11
+    instructions table (PROMPT Phase 3B section D), but for a table embedded within D40's own statement
+    rather than the shared section transition. Left open for a future phase.
+  description: Statement scrambled around a SQL/relational scenario ('B nome,endereco Considerando a situacao
+    apresentada...') - not resolved by the Phase 3B chrome/rule-line fixes, which only removed the section-transition
+    text that used to additionally trail this same statement (see the superseded d40-section-transition-chrome-bleed).
+  evidence: null
+  id: d40-table-reading-order-scramble
+  question_id: enade-2008-computing-d40
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 17
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: cross-question-contamination
+  cause: Same general class as the Q21/Q22/Q23 contamination (a neighboring question's own diagram-label
+    text geometrically close enough to be captured), but not resolved by this phase's specific chrome/rule-line
+    fixes - the labels themselves are real diagram content (not chrome, not a hairline), so a different,
+    more targeted ownership check would be needed. Left open.
+  description: Q62's own real statement (INTOSAI audit ethics question) is complete and correct, but is
+    followed by trailing contamination from Q61's own ITIL diagram labels ('Suporte a servicos Operador
+    de suporte tecnico / Gerenciamento de infra-estrutura de TIC / Tratar Operar obsolescencia servicos
+    Operacoes').
+  evidence: null
+  id: q62-cross-question-diagram-label-bleed
+  question_id: enade-2008-computing-q62
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 27
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: table-reading-order-scramble
+  cause: Not yet root-caused precisely - a code/table reading-order defect. Left open.
+  description: Two SQL queries and their connecting prose are present but reordered/interleaved incorrectly
+    (query II's own WHERE clause split across two disconnected fragments).
+  evidence: null
+  id: q68-sql-code-block-reordering
+  question_id: enade-2008-computing-q68
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 29
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: Not individually root-caused this phase - likely the same unresolved label-absorption-over-reach
+    pattern documented for D09/Q02/Q07/Q54/Q75 (a short statement sitting close to a large embedded figure).
+    Left open.
+  description: Statement missing its own opening/middle content (the 'atividade de teste' / 'complexidade
+    ciclomatica' framing) - only 'base na' and the closing clause survive, plus figure-01.png (the control-flow
+    graph).
+  evidence: null
+  id: q12-partial-content-loss
+  question_id: enade-2008-computing-q12
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 8
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: content-duplication
+  cause: Not yet root-caused precisely. Left open.
+  description: Alternative E's own text ('E {{1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}}') is duplicated -
+    appearing both appended to the statement and correctly under Alternativas. Not a content loss, but
+    confusing to a reader.
+  evidence: null
+  id: q13-duplicated-alternative-text
+  question_id: enade-2008-computing-q13
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 9
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: table-reading-order-scramble
+  cause: Not yet root-caused precisely - a side-panel/inline reading-order defect. Left open.
+  description: A side-panel grammar-production fragment ('A -> a B -> b') is inserted mid-sentence in
+    the statement instead of staying visually separate next to the text ('ao lado').
+  evidence: null
+  id: q29-inline-sidebar-fragment
+  question_id: enade-2008-computing-q29
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 13
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: table-reading-order-scramble
+  cause: Not yet root-caused precisely - a multi-column item-list reading-order defect. Left open.
+  description: The four judged items' own roman-numeral markers (I/II/III/IV) and the words 'top-down'/'bottom-up'
+    are displaced from their correct positions within the statement's own sentences. Full wording is present,
+    order is not.
+  evidence: null
+  id: q33-item-marker-displacement
+  question_id: enade-2008-computing-q33
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 14
   status: open
   superseded_by: null
   visual_validation: failed

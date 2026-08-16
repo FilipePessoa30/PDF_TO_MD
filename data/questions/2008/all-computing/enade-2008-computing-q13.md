@@ -19,7 +19,15 @@ correct_answer: A
 official_answer_source: 2008/b2_gabarito.pdf
 answer_validation_status: validated
 answer_standard: null
-assets: []
+assets:
+- id: figure-01
+  type: diagram
+  path: enade-2008-computing-q13/figure-01.png
+  source_page: 8
+  extraction_method: raster_crop
+  sha256: edd04b77c8960841940b96ab6ca456a6e0f8b3b145270020a438378df325d8fd
+  alt_text: null
+  caption: null
 subjects: []
 topics: []
 concepts: []
@@ -30,13 +38,15 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: extracted
+extraction_status: needs_review
 automatic_validation: passed
-visual_validation: not_performed
+visual_validation: failed
 taxonomy_review_status: pending
 ---
 
 # Questão 13
+
+![Figura da questão](enade-2008-computing-q13/figure-01.png)
 
 Considerando o conjunto A = {1, 2, 3, 4, 5, 6}, qual opção corresponde a uma partição desse conjunto? E	{{1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}}
 

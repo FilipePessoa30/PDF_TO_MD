@@ -19,23 +19,7 @@ correct_answer: A
 official_answer_source: 2008/b2_gabarito.pdf
 answer_validation_status: validated
 answer_standard: null
-assets:
-- id: figure-01
-  type: diagram
-  path: enade-2008-computing-q22/figure-01.png
-  source_page: 11
-  extraction_method: raster_crop
-  sha256: ba3b2af0056e56e1603a8c180749c9ed8a7be0358a349f5a5ed874543aefac68
-  alt_text: null
-  caption: null
-- id: figure-02
-  type: diagram
-  path: enade-2008-computing-q22/figure-02.png
-  source_page: 11
-  extraction_method: raster_crop
-  sha256: 54d4c7766146ac13f8d5e5f37bd09928f8ecde74d1421190d5c2e8bcd2ac2fb5
-  alt_text: null
-  caption: null
+assets: []
 subjects: []
 topics: []
 concepts: []
@@ -46,19 +30,15 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 22
 
-![Figura da questão](enade-2008-computing-q22/figure-01.png)
-
-![Figura da questão](enade-2008-computing-q22/figure-02.png)
-
-Múltipla Escolha Discursivas 21 a 38 39 e 40 41 a 58 59 e 60 61 a 78 79 e 80
+Qual tipo de software tradutor deve ser utilizado para programas em geral, quando a velocidade de execução é uma exigência de alta prioridade?
 
 ## Alternativas
 
@@ -66,4 +46,4 @@ A. compiladores
 B. interpretadores
 C. tradutores híbridos
 D. macroprocessadores
-E. interpretadores de macroinstruções Múltipla Escolha Discursivas 21 a 38 39 e 40 41 a 58 59 e 60 61 a 78 79 e 80
+E. interpretadores de macroinstruções

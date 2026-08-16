@@ -25,7 +25,7 @@ assets:
   path: enade-2008-computing-q73/figure-01.png
   source_page: 31
   extraction_method: raster_crop
-  sha256: 00eb68b5cdc49222e6270838806b4c8c1a47d297a37c22493ba7cae2e3a3adf6
+  sha256: 948b0fb94ab9b618d574d31d1ff673e4555d9ab980ec2de9949a3b5fb8be45b2
   alt_text: null
   caption: null
 subjects: []
@@ -38,15 +38,17 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
-automatic_validation: failed
-visual_validation: failed
+extraction_status: verified
+automatic_validation: passed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 73
 
 ![Figura da questão](enade-2008-computing-q73/figure-01.png)
+
+Considerando-se o gráfico de atividades acima e a tabela de custo de aceleração das atividades da rede que podem ser aceleradas, qual(is) atividade(s) deve(m) ser acelerada(s) para que o tempo do projeto associado a esse gráfico seja reduzido em uma unidade de tempo e para que o custo total de aceleração seja o menor possível?
 
 ## Alternativas
 

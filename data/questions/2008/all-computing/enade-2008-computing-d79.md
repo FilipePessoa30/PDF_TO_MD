@@ -68,7 +68,7 @@ assets:
   path: enade-2008-computing-d79/figure-01.png
   source_page: 33
   extraction_method: raster_crop
-  sha256: d9a74b07d5ad828ac66d1d4addc7f7f185af61ab5c6ed103ecbbb1e46c89af3d
+  sha256: 83a2ee3720a997eb3adeea1f238102d4a3b9af14625841b45df923b3b627542a
   alt_text: null
   caption: null
 subjects: []

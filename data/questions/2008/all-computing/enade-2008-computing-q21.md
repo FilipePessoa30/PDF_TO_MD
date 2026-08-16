@@ -19,15 +19,7 @@ correct_answer: D
 official_answer_source: 2008/b2_gabarito.pdf
 answer_validation_status: validated
 answer_standard: null
-assets:
-- id: figure-01
-  type: diagram
-  path: enade-2008-computing-q21/figure-01.png
-  source_page: 11
-  extraction_method: raster_crop
-  sha256: ba3b2af0056e56e1603a8c180749c9ed8a7be0358a349f5a5ed874543aefac68
-  alt_text: null
-  caption: null
+assets: []
 subjects: []
 topics: []
 concepts: []
@@ -38,15 +30,15 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
-automatic_validation: failed
-visual_validation: failed
+extraction_status: verified
+automatic_validation: passed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 21
 
-![Figura da questão](enade-2008-computing-q21/figure-01.png)
+Considere a relação EMPREGADO (NumeroEmp, RG, nome, sobrenome, salario, endereco), em que o atributo grifado corresponde à chave primária da relação. Suponha que se deseje realizar as seguintes consultas: Listar o nome dos empregados com sobrenome Silva; Listar o nome dos empregados em ordem crescente de seus sobrenomes. Em relação à definição de um índice sobre o atributo sobrenome para melhorar o desempenho das consultas acima, julgue os itens a seguir. I Um índice que implemente Árvore-B+ será adequado para melhorar o desempenho da consulta 1. II Um índice que implemente Árvore-B+ será adequado para melhorar o desempenho da consulta 2. III Um índice que implemente uma função hash será adequado para melhorar o desempenho da consulta 1. IV Um índice que implemente uma função hash será adequado para melhorar o desempenho da consulta 2. Assinale a opção correta.
 
 ## Alternativas
 

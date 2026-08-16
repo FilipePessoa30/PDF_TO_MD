@@ -8,6 +8,7 @@ from enade.extraction.figures import (
     _expand_with_labels,
     _is_marker_at_margin,
     _is_paragraph_continuation,
+    _is_rule_line,
     _is_two_column_body_text,
     _merge_by_vertical_proximity,
     _merge_overlapping_regions,
@@ -306,3 +307,32 @@ def test_merge_overlapping_regions_unions_owner_x_bounds_for_same_owner():
     )
     merged = _merge_overlapping_regions([a, b])
     assert merged[0].owner_x_bounds == (90.0, 330.0)
+
+
+# --- Phase 3B: _is_rule_line (see docs/phase-3b-report.md) ------------------
+
+
+def test_is_rule_line_true_for_a_tall_thin_column_separator():
+    # 2008-b's own vertical column-divider bar: ~1pt wide, ~500pt tall.
+    assert _is_rule_line((300.8, 267.5, 301.8, 763.9)) is True
+
+
+def test_is_rule_line_true_for_a_wide_thin_horizontal_divider():
+    # 2008-b's own section-divider rule between the transition block and
+    # the questions below it: ~522pt wide, ~1pt tall.
+    assert _is_rule_line((36.8, 263.8, 559.2, 264.7)) is True
+
+
+def test_is_rule_line_false_for_a_short_thin_underline():
+    # A primary-key underline in relational-schema notation (2008-b Q21's
+    # own "EMPREGADO" attribute list) is thin but short - legitimate
+    # content-adjacent decoration, never a rule spanning the page/column.
+    assert _is_rule_line((196.7, 297.6, 245.3, 298.3)) is False
+
+
+def test_is_rule_line_false_for_a_real_diagram_sized_rect():
+    assert _is_rule_line((40.0, 100.0, 300.0, 350.0)) is False
+
+
+def test_is_rule_line_false_for_a_small_formula_image():
+    assert _is_rule_line((100.0, 100.0, 130.0, 115.0)) is False

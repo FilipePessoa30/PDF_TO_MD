@@ -25,7 +25,7 @@ assets:
   path: enade-2008-computing-q69/figure-01.png
   source_page: 30
   extraction_method: raster_crop
-  sha256: cc8d0a7571a38ac55fc0f440015c9fa884c3c001c2e3ca892eff1a07a78cdf4e
+  sha256: b8db54d49fcda154cafce7218c17f567d2f481dac08278add1dc5ab3a8ee1e09
   alt_text: null
   caption: null
 subjects: []
@@ -38,15 +38,19 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
-automatic_validation: failed
-visual_validation: failed
+extraction_status: verified
+automatic_validation: passed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 69
 
+Um ponto crítico para as organizações é a gerência de seus sistemas legados. Quanto a esses sistemas, é importante decidir se eles devem sofrer uma reengenharia, sendo reimplementados, ou não. Essa decisão é tomada após se avaliarem os sistemas legados com base em dois parâmetros: valor estratégico para a organização, ou seja, o valor que ele agrega para os serviços e produtos da organização; e qualidade do sistema, ou seja, o custo de manutenção uma vez que sistemas de baixa qualidade possuem alto custo de manutenção. Essa avaliação classifica esses sistemas de acordo com as situações de I a IV indicadas abaixo.
+
 ![Figura da questão](enade-2008-computing-q69/figure-01.png)
+
+Em qual(ais) dessas situações um sistema legado deve ser classificado para ser indicado a uma reengenharia?
 
 ## Alternativas
 

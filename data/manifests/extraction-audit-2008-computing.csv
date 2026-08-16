@@ -1,76 +1,76 @@
 id,exam_year,kind,number,section,start_page,end_page,num_alternatives,has_assets,num_assets,answer,answer_validation_status,answer_standard_available,extraction_method,extraction_status,warning_count,warnings
 enade-2008-computing-d09,2008,discursive,9,formacao-geral-discursiva,6,6,0,True,1,,not_applicable,False,text_layer,needs_review,3,empty statement after chrome/figure filtering; empty statement after chrome/figure filtering; no corresponding answer-key/answer-standard entry found
-enade-2008-computing-d10,2008,discursive,10,formacao-geral-discursiva,7,8,0,True,3,,not_applicable,False,text_layer,needs_review,1,no corresponding answer-key/answer-standard entry found
-enade-2008-computing-d20,2008,discursive,20,nucleo-comum-discursiva,10,11,0,True,3,,not_applicable,True,text_layer,needs_review,0,
+enade-2008-computing-d10,2008,discursive,10,formacao-geral-discursiva,7,7,0,True,2,,not_applicable,False,text_layer,needs_review,1,no corresponding answer-key/answer-standard entry found
+enade-2008-computing-d20,2008,discursive,20,nucleo-comum-discursiva,10,10,0,True,1,,not_applicable,True,text_layer,verified,0,
 enade-2008-computing-d39,2008,discursive,39,cc-bacharelado-discursiva,16,16,0,True,1,,not_applicable,True,text_layer,verified,0,
-enade-2008-computing-d40,2008,discursive,40,cc-bacharelado-discursiva,17,18,0,True,1,,not_applicable,True,text_layer,needs_review,0,
-enade-2008-computing-d59,2008,discursive,59,engenharia-computacao-discursiva,25,25,0,True,1,,not_applicable,False,text_layer,needs_review,1,no corresponding answer-key/answer-standard entry found
-enade-2008-computing-d60,2008,discursive,60,engenharia-computacao-discursiva,26,27,0,True,5,,not_applicable,True,text_layer,extracted,0,
+enade-2008-computing-d40,2008,discursive,40,cc-bacharelado-discursiva,17,17,0,True,2,,not_applicable,True,text_layer,needs_review,0,
+enade-2008-computing-d59,2008,discursive,59,engenharia-computacao-discursiva,25,25,0,False,0,,not_applicable,False,text_layer,needs_review,1,no corresponding answer-key/answer-standard entry found
+enade-2008-computing-d60,2008,discursive,60,engenharia-computacao-discursiva,26,27,0,True,3,,not_applicable,True,text_layer,extracted,0,
 enade-2008-computing-d79,2008,discursive,79,sistemas-informacao-discursiva,33,33,0,True,1,,not_applicable,True,text_layer,extracted,0,
-enade-2008-computing-d80,2008,discursive,80,sistemas-informacao-discursiva,34,35,0,True,2,,not_applicable,True,text_layer,verified,0,
+enade-2008-computing-d80,2008,discursive,80,sistemas-informacao-discursiva,34,35,0,True,3,,not_applicable,True,text_layer,verified,0,
 enade-2008-computing-q01,2008,multiple_choice,1,formacao-geral-objetiva,2,2,5,True,2,C,validated,False,text_layer,verified,0,
-enade-2008-computing-q02,2008,multiple_choice,2,formacao-geral-objetiva,3,3,5,True,2,E,validated,False,text_layer,needs_review,2,empty statement after chrome/figure filtering; empty statement after chrome/figure filtering
+enade-2008-computing-q02,2008,multiple_choice,2,formacao-geral-objetiva,3,3,5,True,1,E,validated,False,text_layer,needs_review,2,empty statement after chrome/figure filtering; empty statement after chrome/figure filtering
 enade-2008-computing-q03,2008,multiple_choice,3,formacao-geral-objetiva,3,3,5,False,0,D,validated,False,text_layer,extracted,0,
-enade-2008-computing-q04,2008,multiple_choice,4,formacao-geral-objetiva,3,3,5,False,0,A,validated,False,text_layer,needs_review,1,1 figure region(s) fell after the alternatives cutoff and were excluded from the statement (unexpected layout - needs review)
-enade-2008-computing-q05,2008,multiple_choice,5,formacao-geral-objetiva,3,3,5,False,0,D,validated,False,text_layer,extracted,0,
+enade-2008-computing-q04,2008,multiple_choice,4,formacao-geral-objetiva,3,3,5,False,0,A,validated,False,text_layer,verified,0,
+enade-2008-computing-q05,2008,multiple_choice,5,formacao-geral-objetiva,3,3,5,True,1,D,validated,False,text_layer,extracted,0,
 enade-2008-computing-q06,2008,multiple_choice,6,formacao-geral-objetiva,4,4,5,True,1,B,validated,False,text_layer,verified,0,
 enade-2008-computing-q07,2008,multiple_choice,7,formacao-geral-objetiva,4,4,5,True,1,D,validated,False,text_layer,needs_review,0,
 enade-2008-computing-q11,2008,multiple_choice,11,nucleo-comum-objetiva,8,8,5,False,0,C,validated,False,text_layer,extracted,0,
-enade-2008-computing-q12,2008,multiple_choice,12,nucleo-comum-objetiva,8,8,5,False,0,C,validated,False,text_layer,verified,0,
-enade-2008-computing-q13,2008,multiple_choice,13,nucleo-comum-objetiva,8,8,5,False,0,A,validated,False,text_layer,extracted,0,
+enade-2008-computing-q12,2008,multiple_choice,12,nucleo-comum-objetiva,8,8,5,True,1,C,validated,False,text_layer,needs_review,0,
+enade-2008-computing-q13,2008,multiple_choice,13,nucleo-comum-objetiva,8,8,5,True,1,A,validated,False,text_layer,needs_review,0,
 enade-2008-computing-q14,2008,multiple_choice,14,nucleo-comum-objetiva,8,9,5,False,0,E,validated,False,text_layer,extracted,0,
 enade-2008-computing-q15,2008,multiple_choice,15,nucleo-comum-objetiva,9,9,5,False,0,B,validated,False,text_layer,extracted,0,
 enade-2008-computing-q16,2008,multiple_choice,16,nucleo-comum-objetiva,9,9,5,False,0,B,validated,False,text_layer,extracted,0,
 enade-2008-computing-q17,2008,multiple_choice,17,nucleo-comum-objetiva,9,9,5,False,0,D,validated,False,text_layer,extracted,0,
 enade-2008-computing-q18,2008,multiple_choice,18,nucleo-comum-objetiva,9,9,5,False,0,C,validated,False,text_layer,extracted,0,
-enade-2008-computing-q19,2008,multiple_choice,19,nucleo-comum-objetiva,10,10,5,False,0,A,validated,False,text_layer,needs_review,1,1 figure region(s) fell after the alternatives cutoff and were excluded from the statement (unexpected layout - needs review)
-enade-2008-computing-q21,2008,multiple_choice,21,cc-bacharelado-objetiva,11,11,5,True,1,D,validated,False,text_layer,needs_review,2,empty statement after chrome/figure filtering; empty statement after chrome/figure filtering
-enade-2008-computing-q22,2008,multiple_choice,22,cc-bacharelado-objetiva,11,11,5,True,2,A,validated,False,text_layer,needs_review,0,
-enade-2008-computing-q23,2008,multiple_choice,23,cc-bacharelado-objetiva,11,11,5,True,2,E,validated,False,text_layer,needs_review,2,empty statement after chrome/figure filtering; empty statement after chrome/figure filtering
+enade-2008-computing-q19,2008,multiple_choice,19,nucleo-comum-objetiva,10,10,5,False,0,A,validated,False,text_layer,extracted,0,
+enade-2008-computing-q21,2008,multiple_choice,21,cc-bacharelado-objetiva,11,11,5,False,0,D,validated,False,text_layer,verified,0,
+enade-2008-computing-q22,2008,multiple_choice,22,cc-bacharelado-objetiva,11,11,5,False,0,A,validated,False,text_layer,verified,0,
+enade-2008-computing-q23,2008,multiple_choice,23,cc-bacharelado-objetiva,11,11,5,True,1,E,validated,False,text_layer,verified,0,
 enade-2008-computing-q24,2008,multiple_choice,24,cc-bacharelado-objetiva,12,12,5,True,1,E,validated,False,text_layer,needs_review,0,
 enade-2008-computing-q25,2008,multiple_choice,25,cc-bacharelado-objetiva,12,12,5,True,1,E,validated,False,text_layer,verified,0,
-enade-2008-computing-q26,2008,multiple_choice,26,cc-bacharelado-objetiva,13,13,5,True,3,B,validated,False,text_layer,needs_review,0,
+enade-2008-computing-q26,2008,multiple_choice,26,cc-bacharelado-objetiva,13,13,5,True,2,B,validated,False,text_layer,verified,0,
 enade-2008-computing-q27,2008,multiple_choice,27,cc-bacharelado-objetiva,13,13,5,False,0,D,validated,False,text_layer,extracted,0,
-enade-2008-computing-q28,2008,multiple_choice,28,cc-bacharelado-objetiva,13,13,5,True,2,A,validated,False,text_layer,needs_review,1,1 figure region(s) fell after the alternatives cutoff and were excluded from the statement (unexpected layout - needs review)
-enade-2008-computing-q29,2008,multiple_choice,29,cc-bacharelado-objetiva,13,13,5,False,0,D,validated,False,text_layer,extracted,0,
+enade-2008-computing-q28,2008,multiple_choice,28,cc-bacharelado-objetiva,13,13,5,True,2,A,validated,False,text_layer,verified,0,
+enade-2008-computing-q29,2008,multiple_choice,29,cc-bacharelado-objetiva,13,13,5,True,1,D,validated,False,text_layer,needs_review,0,
 enade-2008-computing-q30,2008,multiple_choice,30,cc-bacharelado-objetiva,13,13,5,False,0,D,validated,False,text_layer,verified,0,
 enade-2008-computing-q31,2008,multiple_choice,31,cc-bacharelado-objetiva,14,14,5,False,0,B,validated,False,text_layer,extracted,0,
 enade-2008-computing-q32,2008,multiple_choice,32,cc-bacharelado-objetiva,14,14,5,False,0,C,validated,False,text_layer,extracted,0,
-enade-2008-computing-q33,2008,multiple_choice,33,cc-bacharelado-objetiva,14,14,5,False,0,C,validated,False,text_layer,extracted,0,
+enade-2008-computing-q33,2008,multiple_choice,33,cc-bacharelado-objetiva,14,14,5,False,0,C,validated,False,text_layer,needs_review,0,
 enade-2008-computing-q34,2008,multiple_choice,34,cc-bacharelado-objetiva,14,14,5,False,0,A,validated,False,text_layer,extracted,0,
 enade-2008-computing-q35,2008,multiple_choice,35,cc-bacharelado-objetiva,15,15,5,False,0,B,validated,False,text_layer,extracted,0,
 enade-2008-computing-q36,2008,multiple_choice,36,cc-bacharelado-objetiva,15,15,5,False,0,A,validated,False,text_layer,extracted,0,
 enade-2008-computing-q37,2008,multiple_choice,37,cc-bacharelado-objetiva,15,15,5,False,0,C,validated,False,text_layer,extracted,0,
-enade-2008-computing-q41,2008,multiple_choice,41,engenharia-computacao-objetiva,18,18,5,True,1,C,validated,False,text_layer,needs_review,0,
-enade-2008-computing-q42,2008,multiple_choice,42,engenharia-computacao-objetiva,18,18,5,False,0,D,validated,False,text_layer,needs_review,1,1 figure region(s) fell after the alternatives cutoff and were excluded from the statement (unexpected layout - needs review)
-enade-2008-computing-q43,2008,multiple_choice,43,engenharia-computacao-objetiva,18,18,5,False,0,B,validated,False,text_layer,extracted,0,
-enade-2008-computing-q44,2008,multiple_choice,44,engenharia-computacao-objetiva,19,19,5,True,1,,annulled,False,text_layer,needs_review,0,
-enade-2008-computing-q45,2008,multiple_choice,45,engenharia-computacao-objetiva,19,19,5,True,1,E,validated,False,text_layer,needs_review,2,empty statement after chrome/figure filtering; empty statement after chrome/figure filtering
+enade-2008-computing-q41,2008,multiple_choice,41,engenharia-computacao-objetiva,18,18,5,False,0,C,validated,False,text_layer,verified,0,
+enade-2008-computing-q42,2008,multiple_choice,42,engenharia-computacao-objetiva,18,18,5,False,0,D,validated,False,text_layer,extracted,0,
+enade-2008-computing-q43,2008,multiple_choice,43,engenharia-computacao-objetiva,18,18,5,True,1,B,validated,False,text_layer,extracted,0,
+enade-2008-computing-q44,2008,multiple_choice,44,engenharia-computacao-objetiva,19,19,5,False,0,,annulled,False,text_layer,verified,0,
+enade-2008-computing-q45,2008,multiple_choice,45,engenharia-computacao-objetiva,19,19,5,True,1,E,validated,False,text_layer,needs_review,0,
 enade-2008-computing-q46,2008,multiple_choice,46,engenharia-computacao-objetiva,20,20,5,True,1,D,validated,False,text_layer,verified,0,
 enade-2008-computing-q47,2008,multiple_choice,47,engenharia-computacao-objetiva,20,20,5,False,0,C,validated,False,text_layer,extracted,0,
 enade-2008-computing-q48,2008,multiple_choice,48,engenharia-computacao-objetiva,20,20,5,False,0,D,validated,False,text_layer,verified,0,
 enade-2008-computing-q49,2008,multiple_choice,49,engenharia-computacao-objetiva,20,20,5,False,0,D,validated,False,text_layer,extracted,0,
-enade-2008-computing-q50,2008,multiple_choice,50,engenharia-computacao-objetiva,21,21,5,True,1,A,validated,False,text_layer,needs_review,3,empty statement after chrome/figure filtering; 1 detected table(s) fell after the alternatives cutoff and were excluded from the statement (unexpected layout - needs review); empty statement after chrome/figure filtering
-enade-2008-computing-q51,2008,multiple_choice,51,engenharia-computacao-objetiva,22,22,5,True,4,A,validated,False,text_layer,needs_review,0,
-enade-2008-computing-q52,2008,multiple_choice,52,engenharia-computacao-objetiva,22,22,5,True,1,E,validated,False,text_layer,needs_review,0,
-enade-2008-computing-q53,2008,multiple_choice,53,engenharia-computacao-objetiva,23,23,5,True,1,A,validated,False,text_layer,needs_review,0,
+enade-2008-computing-q50,2008,multiple_choice,50,engenharia-computacao-objetiva,21,21,5,True,1,A,validated,False,text_layer,needs_review,1,1 detected table(s) fell after the alternatives cutoff and were excluded from the statement (unexpected layout - needs review)
+enade-2008-computing-q51,2008,multiple_choice,51,engenharia-computacao-objetiva,22,22,5,True,3,A,validated,False,text_layer,verified,0,
+enade-2008-computing-q52,2008,multiple_choice,52,engenharia-computacao-objetiva,22,22,5,False,0,E,validated,False,text_layer,verified,0,
+enade-2008-computing-q53,2008,multiple_choice,53,engenharia-computacao-objetiva,23,23,5,False,0,A,validated,False,text_layer,verified,0,
 enade-2008-computing-q54,2008,multiple_choice,54,engenharia-computacao-objetiva,23,23,5,True,1,C,validated,False,text_layer,needs_review,2,empty statement after chrome/figure filtering; empty statement after chrome/figure filtering
 enade-2008-computing-q56,2008,multiple_choice,56,engenharia-computacao-objetiva,24,24,5,False,0,B,validated,False,text_layer,extracted,0,
 enade-2008-computing-q57,2008,multiple_choice,57,engenharia-computacao-objetiva,24,24,5,True,1,B,validated,False,text_layer,verified,0,
 enade-2008-computing-q58,2008,multiple_choice,58,engenharia-computacao-objetiva,24,24,5,False,0,A,validated,False,text_layer,extracted,0,
-enade-2008-computing-q61,2008,multiple_choice,61,sistemas-informacao-objetiva,27,27,5,True,1,B,validated,False,text_layer,needs_review,0,
-enade-2008-computing-q62,2008,multiple_choice,62,sistemas-informacao-objetiva,27,27,5,True,2,B,validated,False,text_layer,needs_review,0,
-enade-2008-computing-q63,2008,multiple_choice,63,sistemas-informacao-objetiva,27,27,5,True,2,C,validated,False,text_layer,needs_review,0,
-enade-2008-computing-q64,2008,multiple_choice,64,sistemas-informacao-objetiva,28,28,5,True,1,A,validated,False,text_layer,needs_review,0,
+enade-2008-computing-q61,2008,multiple_choice,61,sistemas-informacao-objetiva,27,27,5,False,0,B,validated,False,text_layer,verified,0,
+enade-2008-computing-q62,2008,multiple_choice,62,sistemas-informacao-objetiva,27,27,5,True,1,B,validated,False,text_layer,needs_review,0,
+enade-2008-computing-q63,2008,multiple_choice,63,sistemas-informacao-objetiva,27,27,5,True,1,C,validated,False,text_layer,needs_review,0,
+enade-2008-computing-q64,2008,multiple_choice,64,sistemas-informacao-objetiva,28,28,5,True,1,A,validated,False,text_layer,verified,0,
 enade-2008-computing-q65,2008,multiple_choice,65,sistemas-informacao-objetiva,28,28,5,False,0,C,validated,False,text_layer,verified,0,
 enade-2008-computing-q66,2008,multiple_choice,66,sistemas-informacao-objetiva,28,28,5,False,0,E,validated,False,text_layer,extracted,0,
 enade-2008-computing-q67,2008,multiple_choice,67,sistemas-informacao-objetiva,28,28,5,False,0,B,validated,False,text_layer,extracted,0,
-enade-2008-computing-q68,2008,multiple_choice,68,sistemas-informacao-objetiva,29,29,5,False,0,A,validated,False,text_layer,extracted,0,
-enade-2008-computing-q69,2008,multiple_choice,69,sistemas-informacao-objetiva,30,30,5,True,1,A,validated,False,text_layer,needs_review,2,empty statement after chrome/figure filtering; empty statement after chrome/figure filtering
+enade-2008-computing-q68,2008,multiple_choice,68,sistemas-informacao-objetiva,29,29,5,False,0,A,validated,False,text_layer,needs_review,0,
+enade-2008-computing-q69,2008,multiple_choice,69,sistemas-informacao-objetiva,30,30,5,True,1,A,validated,False,text_layer,verified,0,
 enade-2008-computing-q70,2008,multiple_choice,70,sistemas-informacao-objetiva,30,30,5,False,0,C,validated,False,text_layer,extracted,0,
-enade-2008-computing-q71,2008,multiple_choice,71,sistemas-informacao-objetiva,30,30,5,True,1,B,validated,False,text_layer,needs_review,0,
+enade-2008-computing-q71,2008,multiple_choice,71,sistemas-informacao-objetiva,30,30,5,True,1,B,validated,False,text_layer,verified,0,
 enade-2008-computing-q72,2008,multiple_choice,72,sistemas-informacao-objetiva,30,30,5,False,0,D,validated,False,text_layer,extracted,0,
-enade-2008-computing-q73,2008,multiple_choice,73,sistemas-informacao-objetiva,31,31,5,True,1,D,validated,False,text_layer,needs_review,2,empty statement after chrome/figure filtering; empty statement after chrome/figure filtering
+enade-2008-computing-q73,2008,multiple_choice,73,sistemas-informacao-objetiva,31,31,5,True,1,D,validated,False,text_layer,verified,0,
 enade-2008-computing-q74,2008,multiple_choice,74,sistemas-informacao-objetiva,31,31,5,False,0,A,validated,False,text_layer,extracted,0,
 enade-2008-computing-q75,2008,multiple_choice,75,sistemas-informacao-objetiva,32,32,5,True,1,C,validated,False,text_layer,needs_review,2,empty statement after chrome/figure filtering; empty statement after chrome/figure filtering
 enade-2008-computing-q76,2008,multiple_choice,76,sistemas-informacao-objetiva,32,32,5,False,0,D,validated,False,text_layer,extracted,0,

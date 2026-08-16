@@ -47,7 +47,7 @@ assets:
   path: enade-2008-computing-d39/figure-01.png
   source_page: 16
   extraction_method: raster_crop
-  sha256: b07518d14b462a042e4127eb8731a2121fcf355da6f5cc7bb63d7fd1492f0cb6
+  sha256: ac6a73426c436a2d90c8707e7a0a242cdc2036d72e2e11426e4d91f537ae50b7
   alt_text: null
   caption: null
 subjects: []
@@ -68,10 +68,8 @@ taxonomy_review_status: pending
 
 # Questão 39
 
-Qualquer expressão aritmética binária pode ser convertida em uma expressão totalmente parentizada, bastando reescrever cada subexpressão binária a q b como (a q b), em que q denota um operador binário. Expressões nesse formato podem ser definidas por regras de uma gramática livre de contexto, conforme apresentado a seguir. Nessa gramática, os símbolos não-terminais E, S, O e L representam expressões, subexpressões, operadores e literais, respectivamente, e os demais símbolos das regras são terminais. E 6 ( S O S ) S 6 L | E O 6 + | - | * | / L 6 a | b | c | d | e
-
-![Figura da questão](enade-2008-computing-d39/figure-01.png)
-
-A Mostre que a expressão (a * (b / c)) pode ser obtida por derivações das regras acima. Para isso, desenhe a
+Qualquer expressão aritmética binária pode ser convertida em uma expressão totalmente parentizada, bastando reescrever cada subexpressão binária a q b como (a q b), em que q denota um operador binário. Expressões nesse formato podem ser definidas por regras de uma gramática livre de contexto, conforme apresentado a seguir. Nessa gramática, os símbolos não-terminais E, S, O e L representam expressões, subexpressões, operadores e literais, respectivamente, e os demais símbolos das regras são terminais. E 6 ( S O S ) S 6 L | E O 6 + | - | * | / L 6 a | b | c | d | e Tendo como referência as informações acima, faça o que se pede a seguir. A Mostre que a expressão (a * (b / c)) pode ser obtida por derivações das regras acima. Para isso, desenhe a árvore de análise sintática correspondente. (valor: 5,0 pontos)
 
 B Existem diferentes derivações para a expressão (((a + b) * c) + (d * e)). É correto, então, afirmar que a
+
+![Figura da questão](enade-2008-computing-d39/figure-01.png)

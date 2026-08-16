@@ -25,14 +25,6 @@ assets:
   path: enade-2008-computing-q63/figure-01.png
   source_page: 27
   extraction_method: raster_crop
-  sha256: 5bc9ce34c0c7d192695f008786f33d2a3e6ff9da4fe0f5e0a1acadd164b6d967
-  alt_text: null
-  caption: null
-- id: figure-02
-  type: diagram
-  path: enade-2008-computing-q63/figure-02.png
-  source_page: 27
-  extraction_method: raster_crop
   sha256: b7771d3c777c8fc44beae1306609a658a7b2c7d732a1603d68bedb7940446932
   alt_text: null
   caption: null
@@ -55,8 +47,6 @@ taxonomy_review_status: pending
 # Questão 63
 
 ![Figura da questão](enade-2008-computing-q63/figure-01.png)
-
-![Figura da questão](enade-2008-computing-q63/figure-02.png)
 
 A	atrA
 

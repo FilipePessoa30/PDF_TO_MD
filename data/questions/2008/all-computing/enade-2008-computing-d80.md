@@ -79,15 +79,23 @@ assets:
   path: enade-2008-computing-d80/figure-01.png
   source_page: 34
   extraction_method: raster_crop
-  sha256: fe93d0fa30aa13c1c0a23fa89791b705dbcaa88c12c0618cc366047a53f6cab3
+  sha256: e4dc51222447c27c172c834d9356ac47de31ad37e0549098f8f44bbd4cc72c9d
   alt_text: null
   caption: null
 - id: figure-02
-  type: diagram
+  type: image
   path: enade-2008-computing-d80/figure-02.png
+  source_page: 34
+  extraction_method: raster_crop
+  sha256: b5f82546b9d97ecd3a6059056943c2262f4a1f6f3774c25776a0a12e35b1bbde
+  alt_text: null
+  caption: null
+- id: figure-03
+  type: diagram
+  path: enade-2008-computing-d80/figure-03.png
   source_page: 35
   extraction_method: raster_crop
-  sha256: c444faf3a925b2bef45f7aba07222da6352d18ac81588dda0ee12350768b1b44
+  sha256: b102cd7a95cc6ee8375e10c95caae405bde6e8d8e872dbfcabb657878ad87a12
   alt_text: null
   caption: null
 subjects: []
@@ -110,10 +118,14 @@ taxonomy_review_status: pending
 
 ![Figura da questão](enade-2008-computing-d80/figure-01.png)
 
+Durante a análise de um sistema de controle de contas bancárias (SCCB), um analista elaborou o diagrama de classes acima, em que são especificados os objetos de negócio da aplicação, por meio do qual foram distribuídas as responsabilidades e colaborações entre os elementos do modelo. Foi atribuída a outro analista a tarefa de elaborar o diagrama de seqüência do caso de uso chamado DUPLA_CONTA, que apresenta o seguinte comportamento: cria um banco, cria uma agência bancária, cria um cliente e duas contas bancárias associadas ao cliente e agência bancária anteriormente criados, e, por fim, realiza uma transferência de valores entre essas duas contas bancárias. O diagrama de seqüência em UML apresentado abaixo foi elaborado com o intuito de corresponder ao caso de uso em questão.
+
+![Figura da questão](enade-2008-computing-d80/figure-02.png)
+
 No diagrama de seqüência apresentado, há problemas conceituais, relativos à especificação do diagrama de classes e à descrição textual do caso de uso DUPLA-CONTA. Com relação a essa situação, faça o que se pede a seguir.
 
 A Descreva, textualmente, três falhas de tipos distintos presentes no diagrama de seqüência apresentado, relativas ao
 
-![Figura da questão](enade-2008-computing-d80/figure-02.png)
+![Figura da questão](enade-2008-computing-d80/figure-03.png)
 
 B Descreva, textualmente, três falhas distintas presentes no diagrama de seqüência apresentado, relativas à

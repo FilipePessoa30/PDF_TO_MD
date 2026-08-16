@@ -19,7 +19,15 @@ correct_answer: D
 official_answer_source: 2008/b2_gabarito.pdf
 answer_validation_status: validated
 answer_standard: null
-assets: []
+assets:
+- id: figure-01
+  type: image
+  path: enade-2008-computing-q05/figure-01.png
+  source_page: 3
+  extraction_method: raster_crop
+  sha256: 9b1eb6e8ce6e6dca65a069aab945abfd5ab31e25435c72f46e28e762284bd36a
+  alt_text: null
+  caption: null
 subjects: []
 topics: []
 concepts: []
@@ -40,7 +48,9 @@ taxonomy_review_status: pending
 
 A foto a seguir, da americana Margaret Bourke-White (1904-71), apresenta desempregados na fila de alimentos durante a Grande Depressão, que se iniciou em 1929.
 
-STRICKLAND, Carol; BOSWELL, John. Arte Comentada: da pré-história ao pós-moderno. Rio de Janeiro: Ediouro [s.d.]. Além da preocupação com a perfeita composição, a artista, nessa foto, revela
+![Figura da questão](enade-2008-computing-q05/figure-01.png)
+
+Além da preocupação com a perfeita composição, a artista, nessa foto, revela
 
 ## Alternativas
 

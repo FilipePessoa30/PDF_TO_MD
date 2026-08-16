@@ -25,7 +25,7 @@ assets:
   path: enade-2008-computing-q24/figure-01.png
   source_page: 12
   extraction_method: raster_crop
-  sha256: 8ecfc2acbe7a95d013f00db62eeee1d200f4d93949d9fddf176be599ded44749
+  sha256: 664c40e14e3e440f867e1b6122793d361bdf4a744987778c6d295a2250231c99
   alt_text: null
   caption: null
 subjects: []
@@ -53,6 +53,8 @@ A	0 B	S0
 A	II B	1
 
 A	0 B	S0
+
+Assinale a opção correta.
 
 ## Alternativas
 

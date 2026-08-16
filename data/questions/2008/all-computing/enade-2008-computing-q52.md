@@ -19,15 +19,7 @@ correct_answer: E
 official_answer_source: 2008/b2_gabarito.pdf
 answer_validation_status: validated
 answer_standard: null
-assets:
-- id: figure-01
-  type: diagram
-  path: enade-2008-computing-q52/figure-01.png
-  source_page: 22
-  extraction_method: raster_crop
-  sha256: 786ff8d07c673a33ca002fe5df9d6a69e72b7b8beb3d2a53248c45f0a19093f8
-  alt_text: null
-  caption: null
+assets: []
 subjects: []
 topics: []
 concepts: []
@@ -38,21 +30,15 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 52
 
-![Figura da questão](enade-2008-computing-q52/figure-01.png)
-
-A identificação e o tratamento de erros em
-
-D ÷ TL; | TL; D
-
-A partir dessas informações, assinale a opção correta.
+A identificação e o tratamento de erros em programas de computador estão entre as tarefas dos compiladores. Os erros de um programa podem ter variados tipos e precisam ser identificados e tratados em diferentes fases da compilação. Considere uma linguagem de programação que exige que as variáveis manipuladas por seus programas sejam previamente declaradas, não podendo haver duplicidade de identificadores para variáveis em um mesmo escopo. Considere, ainda, que a sintaxe dessa linguagem tenha sido definida por meio de uma gramática livre de contexto e as produções seguintes definam a forma das declarações de variáveis em seus programas. D ÷ TL; | TL; D T ÷ int | real | char L ÷ id | id,L Considere os exemplos de sentenças — I e II — a seguir, com a indicação — entre os delimitadores /* e */ — de diferentes tipos de erros. int: a, b; /* dois pontos após a palavra I int */ int a,b; real a; /* declaração dupla da II variável a */ A partir dessas informações, assinale a opção correta.
 
 ## Alternativas
 

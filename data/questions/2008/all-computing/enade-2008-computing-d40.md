@@ -7,7 +7,6 @@ source_occurrences:
   source_path: 2008/b1_prova.pdf
   pages:
   - 17
-  - 18
   question_number: 40
   section: cc-bacharelado-discursiva
 applicable_courses:
@@ -83,7 +82,15 @@ assets:
   path: enade-2008-computing-d40/figure-01.png
   source_page: 17
   extraction_method: raster_crop
-  sha256: 4f1207f96e62da13c5736416d2ce35039f319b92cb7b5f8dbbdc77ca50e09045
+  sha256: c80629620e32faf4ba9b4f3e0569a11894f2f6978f1df3f1565df6141f29c6b8
+  alt_text: null
+  caption: null
+- id: figure-02
+  type: diagram
+  path: enade-2008-computing-d40/figure-02.png
+  source_page: 17
+  extraction_method: raster_crop
+  sha256: 8d42f99b5b59676a61e00c78f958d45158fe2b8346a476d708808f245d061c2c
   alt_text: null
   caption: null
 subjects: []
@@ -104,10 +111,10 @@ taxonomy_review_status: pending
 
 # Questão 40
 
+![Figura da questão](enade-2008-computing-d40/figure-02.png)
+
 ![Figura da questão](enade-2008-computing-d40/figure-01.png)
 
-B	nome,endereco A Escreva o código de uma consulta em SQL que
+B	nome,endereco Considerando a situação apresentada, faça o que se pede a seguir. A Escreva o código de uma consulta em SQL que
 
 B Desenhe a árvore de consulta para essa solução.
-
-As questões de 41 a 60, a seguir, são específicas para os estudantes de cursos com perfis profissionais de ENGENHARIA DE COMPUTAÇÃO.

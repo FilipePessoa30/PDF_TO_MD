@@ -21,24 +21,16 @@ answer_validation_status: validated
 answer_standard: null
 assets:
 - id: figure-01
-  type: diagram
-  path: enade-2008-computing-q26/figure-01.png
-  source_page: 13
-  extraction_method: raster_crop
-  sha256: 90748bdb51951a78ef37febb13cd7f710eae126d386631e1d42d54f8960284f7
-  alt_text: null
-  caption: null
-- id: figure-02
   type: image
-  path: enade-2008-computing-q26/figure-02.png
+  path: enade-2008-computing-q26/figure-01.png
   source_page: 13
   extraction_method: raster_crop
   sha256: 5f787a87aff2b0544cf1058a2b4812b4997fae27d1451b9426e970e94fce88a3
   alt_text: null
   caption: null
-- id: figure-03
+- id: figure-02
   type: image
-  path: enade-2008-computing-q26/figure-03.png
+  path: enade-2008-computing-q26/figure-02.png
   source_page: 13
   extraction_method: raster_crop
   sha256: 132bced3481a55b8dc447d9f972e31d145cb72e278df21354ea93f4146e3cbcc
@@ -54,21 +46,19 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 26
 
-![Figura da questão](enade-2008-computing-q26/figure-02.png)
-
-![Figura da questão](enade-2008-computing-q26/figure-03.png)
-
 ![Figura da questão](enade-2008-computing-q26/figure-01.png)
 
-imagens I e II acima?
+![Figura da questão](enade-2008-computing-q26/figure-02.png)
+
+As figuras I e II apresentam duas imagens, ambas com resolução de 246 pixels × 300 pixels, sendo que a figura I apresenta 256 níveis de cinza e a figura II, 4 níveis de cinza. Considere que a imagem da figura I seja a original, tendo sido manipulada em um único atributo para gerar a imagem da figura II. Nessa situação, em qual atributo se diferenciam as imagens I e II acima?
 
 ## Alternativas
 

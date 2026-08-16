@@ -130,6 +130,30 @@ SMALL_IMAGE_Y_MERGE_TOLERANCE = 16.0
 #: small and is real content, not noise.
 MIN_FORMULA_WIDTH = 4.0
 MIN_FORMULA_HEIGHT = 4.0
+#: A drawn rect this thin in its shorter dimension, *and* this long in its
+#: longer dimension, is a rule/divider line (a column separator, a section
+#: divider, a table border) - never real figure content - regardless of
+#: whether it happens to recur often enough across pages to also match the
+#: decorative baseline (PROMPT Phase 3B). Both conditions are required
+#: together: a short thin stroke (a table cell's own border segment, a
+#: primary-key underline in relational-schema notation, ~1-50pt long in
+#: this corpus's own evidence) is very common *legitimate* fine content and
+#: must not be discarded just for being thin; only when a hairline is also
+#: long enough to visually span most of a column or page - something no
+#: single genuine diagram element in this corpus's own evidence is shaped
+#: like - is it unambiguously a rule, never a diagram's own edge or stroke.
+#: Root cause this targets: 2008-b's own two-column pages carry a vertical
+#: column-separator line (~1pt wide, ~500pt tall) and horizontal section
+#: dividers (~1pt tall, 400-550pt wide) whose exact extent varies slightly
+#: page to page (never identical often enough to reach
+#: DECORATIVE_PAGE_FRACTION) - left uncaught, ``_merge_by_vertical_proximity``
+#: has no per-candidate width/height gate of its own, so a hairline this
+#: long dominates the height (or width) of whatever it merges with,
+#: producing a region that spans nearly an entire column or page (see
+#: docs/phase-3b-report.md for the full causal chain - Q21's own statement
+#: text was being excluded as "inside a figure" for exactly this reason).
+RULE_LINE_MAX_THICKNESS = 3.0
+RULE_LINE_MIN_LENGTH = 150.0
 #: A line matching this is an alternative marker (A-E) - absorbing one into
 #: a figure region would corrupt alternative-boundary detection downstream,
 #: so these are never absorbed regardless of distance.
@@ -579,6 +603,17 @@ def _is_two_column_body_text(line: Line, column_margins: tuple[float, float] | N
     )
 
 
+def _is_rule_line(rect: Rect) -> bool:
+    """True if ``rect`` is a hairline rule/divider, never real figure content
+    - see ``RULE_LINE_MAX_THICKNESS``/``RULE_LINE_MIN_LENGTH``.
+    """
+    width = rect[2] - rect[0]
+    height = rect[3] - rect[1]
+    thickness = min(width, height)
+    length = max(width, height)
+    return thickness < RULE_LINE_MAX_THICKNESS and length >= RULE_LINE_MIN_LENGTH
+
+
 def _is_small_formula_candidate(rect: Rect, is_image: bool) -> bool:
     if not is_image:
         return False
@@ -652,6 +687,8 @@ def detect_visual_regions(
             continue
         rect_tuple = (rect.x0, rect.y0, rect.x1, rect.y1)
         if _excluded(rect_tuple):
+            continue
+        if _is_rule_line(rect_tuple):
             continue
         candidates.append((rect_tuple, False))
 

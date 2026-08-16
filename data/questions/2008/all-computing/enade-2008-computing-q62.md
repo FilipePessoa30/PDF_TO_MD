@@ -25,14 +25,6 @@ assets:
   path: enade-2008-computing-q62/figure-01.png
   source_page: 27
   extraction_method: raster_crop
-  sha256: 5bc9ce34c0c7d192695f008786f33d2a3e6ff9da4fe0f5e0a1acadd164b6d967
-  alt_text: null
-  caption: null
-- id: figure-02
-  type: diagram
-  path: enade-2008-computing-q62/figure-02.png
-  source_page: 27
-  extraction_method: raster_crop
   sha256: b7771d3c777c8fc44beae1306609a658a7b2c7d732a1603d68bedb7940446932
   alt_text: null
   caption: null
@@ -56,9 +48,7 @@ taxonomy_review_status: pending
 
 ![Figura da questão](enade-2008-computing-q62/figure-01.png)
 
-![Figura da questão](enade-2008-computing-q62/figure-02.png)
-
-Suporte a serviços Operador de suporte técnico
+O código de ética da Organização Internacional de Instituições Supremas de Auditoria (INTOSAI) define como valores e princípios básicos da atuação da auditoria a independência, a objetividade, a imparcialidade, o segredo profissional e a competência. Ao iniciar um trabalho de auditoria sem definir claramente a finalidade da auditoria e o modelo de conformidade no qual a auditoria se apóia, qual valor ou princípio um auditor estaria primariamente falhando em atender? Suporte a serviços Operador de suporte técnico
 
 Gerenciamento de infra-estrutura de TIC
 

@@ -7,7 +7,6 @@ source_occurrences:
   source_path: 2008/b1_prova.pdf
   pages:
   - 10
-  - 11
   question_number: 20
   section: nucleo-comum-discursiva
 applicable_courses:
@@ -47,23 +46,7 @@ assets:
   path: enade-2008-computing-d20/figure-01.png
   source_page: 10
   extraction_method: raster_crop
-  sha256: 8af3937b73b7b04f6de9d6136de8ec3bf1b62d6b3bc1fc3e10d56e5c89725977
-  alt_text: null
-  caption: null
-- id: figure-02
-  type: diagram
-  path: enade-2008-computing-d20/figure-02.png
-  source_page: 11
-  extraction_method: raster_crop
-  sha256: ba3b2af0056e56e1603a8c180749c9ed8a7be0358a349f5a5ed874543aefac68
-  alt_text: null
-  caption: null
-- id: figure-03
-  type: image
-  path: enade-2008-computing-d20/figure-03.png
-  source_page: 11
-  extraction_method: raster_crop
-  sha256: 4708f4a348165f48e36a7ae06dfe8f3375262043f45698a05a49059daaba529c
+  sha256: 387cf7485170eab59f1f3ffa7e5a23a856de1e1723d32f8b3954834554cdaa9b
   alt_text: null
   caption: null
 subjects: []
@@ -76,20 +59,18 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 20
 
+Tabelas de dispersão (tabelas
+
 ![Figura da questão](enade-2008-computing-d20/figure-01.png)
 
-tratamento A Escreva, no espaço reservado, o conjunto das chaves envolvidas em
+hash) armazenam elementos com base no valor absoluto de suas chaves e em técnicas de tratamento de colisões. As funções de dispersão transformam chaves em endereços- base da tabela, ao passo que o tratamento de colisões resolve conflitos em casos em que mais de uma chave é mapeada para um mesmo endereço-base da tabela. Suponha que uma aplicação utilize uma tabela de dispersão com 23 endereços-base (índices de 0 a 22) e empregue h(x) = x mod 23 como função de dispersão, em que x representa a chave do elemento cujo endereço-base deseja-se computar. Inicialmente, essa tabela de dispersão encontra-se vazia. Em seguida, a aplicação solicita uma seqüência de inserções de elementos cujas chaves aparecem na seguinte ordem: 44, 46, 49, 70, 27, 71, 90, 97, 95. Com relação à aplicação descrita, faça o que se pede a seguir. A Escreva, no espaço reservado, o conjunto das chaves envolvidas em
 
 B Assuma que a tabela de dispersão trate colisões por meio de
-
-![Figura da questão](enade-2008-computing-d20/figure-03.png)
-
-![Figura da questão](enade-2008-computing-d20/figure-02.png)

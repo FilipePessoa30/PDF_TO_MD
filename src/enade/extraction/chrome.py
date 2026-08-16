@@ -108,6 +108,55 @@ _EXACT_CHROME_LINES: frozenset[str] = frozenset(
         "conforme consta no caderno de respostas.",
         "3 - observe atentamente os números das questões de múltipla escolha correspondentes ao curso",
         "no qual você está inscrito para assinalar corretamente no caderno de respostas.",
+        # 2008-b's own section-transition blocks (PROMPT Phase 3B) - own
+        # wording, own dash character (en dash "–", not the hyphen "-" 2011
+        # uses), printed once before each course-specific block begins
+        # (pages 8, 11, 18, 27 of 2008/b1_prova.pdf). Left unrecognized,
+        # this transition text does not just leak into the *preceding*
+        # question's own trailing content (the same class of bug already
+        # covered by the "componente específico"/"1 - a seguir..." 2011
+        # entries above) - on page 11 specifically, its own instructions
+        # table is wide enough to span both of the page's real column
+        # margins, so its right-hand cells ("Número das Questões" /
+        # "Múltipla Escolha" / "Discursivas" / the six course-range pairs)
+        # get sorted into the *right* column's own reading-order bucket by
+        # extract_page_lines (column-based reordering, not a bug in that
+        # function itself - the table is just not text that belongs to
+        # either real column). That misplaces them between Q22's own marker
+        # and Q23's own marker, corrupting Q22's own QuestionRegion (grown
+        # to cover most of the page) and, through the ownership model,
+        # dragging Q21's and Q23's own legitimate content into a single
+        # contaminated merged visual region - see docs/phase-3b-report.md
+        # for the full causal chain. Recognizing this table (and the prose
+        # around it) as chrome is what keeps it out of
+        # ``compute_question_regions`` entirely, fixing the corruption at
+        # its actual source rather than patching the merge/ownership
+        # mechanism that only inherited the bad input.
+        "as questões de 11 a 20, a seguir, são comuns para os estudantes de cursos com perfis profissionais de",
+        "bacharelado em ciência da computação, engenharia de computação e",
+        "bacharelado em sistemas de informação.",
+        "1 – a seguir serão apresentadas questões de múltipla escolha e discursivas específicas",
+        "para as modalidades dos cursos de computação, assim distribuídas:",
+        "perfil do curso",
+        "bacharelado em ciência da computação",
+        "bacharelado em sistemas de informação",
+        "2 – você deve responder apenas às questões referentes ao perfil profissional do curso em",
+        "que você está inscrito, de acordo com o estabelecido no cartão de informação do estudante.",
+        "3 – observe atentamente os números das questões correspondentes à modalidade do curso na qual você está inscrito",
+        "para preencher corretamente o caderno de respostas.",
+        "as questões de 21 a 40, a seguir, são específicas para os estudantes de cursos com perfis profissionais de",
+        "bacharelado em ciência da computação.",
+        "múltipla escolha",
+        "discursivas",
+        "21 a 38",
+        "39 e 40",
+        "41 a 58",
+        "59 e 60",
+        "61 a 78",
+        "79 e 80",
+        "as questões de 41 a 60, a seguir, são específicas para os estudantes de cursos com perfis profissionais de",
+        "engenharia de computação.",
+        "as questões de 61 a 80, a seguir, são específicas para os estudantes de cursos com perfis profissionais de",
     }
 )
 
@@ -118,6 +167,16 @@ _CHROME_REGEXES: tuple[re.Pattern[str], ...] = (
     re.compile(r"(?i)^novembro\s*\|\s*\d{2}$"),  # cover date mark
     re.compile(r"(?i)^enade\s*20\d{2}$"),  # "enade2021" logo text
     re.compile(r"(?i)^qu[ea]st[iï]on[aá]rio\s+de\s+percep[cç][aã]o(\s+da\s+prova)?$"),
+    # 2008-b's own scratch-paper section header (PROMPT Phase 3B), printed
+    # once per blank "RASCUNHO" page reserved after a discursive's own
+    # content - "RASCUNHO - QUESTAO N" for a single-part discursive, or
+    # "RASCUNHO - QUESTAO N - A"/"- B"/"- C" repeated once per lettered
+    # sub-item for a multi-part one (confirmed against the real PDF: D20,
+    # D39, D40, D59, D60, D79, D80 each have 1-3 of these). Left
+    # unrecognized, it is real (non-chrome-matching) text sitting inside
+    # the discursive's own still-open span, appended as a trailing
+    # fragment to its last sub-item's own text.
+    re.compile(r"(?i)^rascunho\s*[-–—]\s*quest[aã]o\s+0*\d+(\s*[-–—]\s*[a-c])?$"),
 )
 
 

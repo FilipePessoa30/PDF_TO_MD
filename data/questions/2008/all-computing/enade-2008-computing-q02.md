@@ -25,14 +25,6 @@ assets:
   path: enade-2008-computing-q02/figure-01.png
   source_page: 3
   extraction_method: raster_crop
-  sha256: 539aa18ee257af20e15d41528fff1aa28670d1531bf5af58c58bf496e00b6ae4
-  alt_text: null
-  caption: null
-- id: figure-02
-  type: image
-  path: enade-2008-computing-q02/figure-02.png
-  source_page: 3
-  extraction_method: raster_crop
   sha256: ad2c450dc92f42d28599864da6b206f494faa9e22910b1c1ac39eb0e82144dd7
   alt_text: null
   caption: null
@@ -53,8 +45,6 @@ taxonomy_review_status: pending
 ---
 
 # Questão 2
-
-![Figura da questão](enade-2008-computing-q02/figure-02.png)
 
 ![Figura da questão](enade-2008-computing-q02/figure-01.png)
 

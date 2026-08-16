@@ -7,7 +7,6 @@ source_occurrences:
   source_path: 2008/b1_prova.pdf
   pages:
   - 7
-  - 8
   question_number: 10
   section: formacao-geral-discursiva
 applicable_courses:
@@ -34,15 +33,7 @@ assets:
   path: enade-2008-computing-d10/figure-02.png
   source_page: 7
   extraction_method: raster_crop
-  sha256: e528f05b85480ae4dd0daa7cf3e67665e315322d1073135521641c6e96326a15
-  alt_text: null
-  caption: null
-- id: figure-03
-  type: image
-  path: enade-2008-computing-d10/figure-03.png
-  source_page: 8
-  extraction_method: raster_crop
-  sha256: 82b4d63840b1f1ec8fe558183f41fee328d681884a2d1dd4a44114fcb49f8c1d
+  sha256: f055789159f13de10027b9d7be53cc076ea00eb71740878322ce3363e1b175c5
   alt_text: null
   caption: null
 subjects: []
@@ -57,7 +48,7 @@ extraction_method: text_layer
 ocr_confidence: null
 extraction_status: needs_review
 automatic_validation: failed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
@@ -76,7 +67,3 @@ GOIS, Antonio. Folha de S.Paulo, 11 jun. 2008 (Fragmento).
 WEBER, Demétrio. Jornal O Globo, 5 dez. 2007, p. 14 (Fragmento).
 
 GOIS, Antonio; PINHO, Angela. Folha de S.Paulo, 12 jun. 2008 (Fragmento).
-
-As questões de 11 a 20, a seguir, são comuns para os estudantes de cursos com perfis profissionais de BACHARELADO EM CIÊNCIA DA COMPUTAÇÃO, ENGENHARIA DE COMPUTAÇÃO e BACHARELADO EM SISTEMAS DE INFORMAÇÃO.
-
-![Figura da questão](enade-2008-computing-d10/figure-03.png)

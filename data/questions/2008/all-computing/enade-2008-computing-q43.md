@@ -19,7 +19,15 @@ correct_answer: B
 official_answer_source: 2008/b2_gabarito.pdf
 answer_validation_status: validated
 answer_standard: null
-assets: []
+assets:
+- id: figure-01
+  type: image
+  path: enade-2008-computing-q43/figure-01.png
+  source_page: 18
+  extraction_method: raster_crop
+  sha256: a03cd1523a14211411b73821148512010a177e7c610a39dee36582c1358897f4
+  alt_text: null
+  caption: null
 subjects: []
 topics: []
 concepts: []
@@ -38,11 +46,9 @@ taxonomy_review_status: pending
 
 # Questão 43
 
-Considere que seja necessário escrever um código para um microcontrolador capaz de identificar teclas acionadas em um teclado conectado como mostrado abaixo. O microcontrolador atribui valores lógicos às linhas X3, X2, X1 e X0 de uma porta de saída do tipo coletor aberto, e lê os valores lógicos das linhas Y3, Y2, Y1 e Y0 em uma porta de entrada. +5 V +5 V +5 V +5 V teclado microcontrolador
+Considere que seja necessário escrever um código para um microcontrolador capaz de identificar teclas acionadas em um teclado conectado como mostrado abaixo. O microcontrolador atribui valores lógicos às linhas X3, X2, X1 e X0 de uma porta de saída do tipo coletor aberto, e lê os valores lógicos das linhas Y3, Y2, Y1 e Y0 em uma porta de entrada.
 
-porta de saída
-
-porta de entrada
+![Figura da questão](enade-2008-computing-q43/figure-01.png)
 
 Caso apenas a tecla 9 do teclado esteja pressionada e o microcontrolador esteja atribuindo os valores lógicos 1011 às linhas X3, X2, X1e X0, respectivamente, qual o padrão binário que deverá ser lido nas linhas Y3, Y2, Y1 e Y0, respectivamente?
 

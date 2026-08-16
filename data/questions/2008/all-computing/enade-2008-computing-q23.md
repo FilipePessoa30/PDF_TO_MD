@@ -14,7 +14,26 @@ applicable_courses:
 section: cc-bacharelado-objetiva
 question_number: 23
 question_type: multiple_choice
-content_blocks: null
+content_blocks:
+- type: paragraph
+  text: Considere o esquema de banco de dados relacional apresentado a seguir, formado
+    por 4 relações, que representa o conjunto de estudantes de uma universidade que
+    podem, ou não, morar em repúblicas (moradias compartilhadas por estudantes). A
+    relação Estudante foi modelada como um subconjunto da relação Pessoa. Considere
+    que os atributos grifados correspondam à chave primária da respectiva relação
+    e os atributos que são seguidos da palavra referencia sejam chaves estrangeiras.
+- type: asset
+  asset_id: figure-01
+- type: paragraph
+  text: 'Suponha que existam as seguintes tuplas no banco de dados:'
+- type: code
+  text: 'Pessoa(1, ‘José Silva’, ‘Rua 1, 20’);
+
+    Republica(20, ‘Várzea’, ‘Rua Chaves, 2001’)'
+  language: null
+- type: paragraph
+  text: Qual opção apresenta apenas tuplas válidas para esse esquema de banco de dados
+    relacional?
 correct_answer: E
 official_answer_source: 2008/b2_gabarito.pdf
 answer_validation_status: validated
@@ -23,14 +42,6 @@ assets:
 - id: figure-01
   type: diagram
   path: enade-2008-computing-q23/figure-01.png
-  source_page: 11
-  extraction_method: raster_crop
-  sha256: ba3b2af0056e56e1603a8c180749c9ed8a7be0358a349f5a5ed874543aefac68
-  alt_text: null
-  caption: null
-- id: figure-02
-  type: diagram
-  path: enade-2008-computing-q23/figure-02.png
   source_page: 11
   extraction_method: raster_crop
   sha256: 54d4c7766146ac13f8d5e5f37bd09928f8ecde74d1421190d5c2e8bcd2ac2fb5
@@ -46,17 +57,26 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
-automatic_validation: failed
-visual_validation: failed
+extraction_status: verified
+automatic_validation: passed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 23
 
+Considere o esquema de banco de dados relacional apresentado a seguir, formado por 4 relações, que representa o conjunto de estudantes de uma universidade que podem, ou não, morar em repúblicas (moradias compartilhadas por estudantes). A relação Estudante foi modelada como um subconjunto da relação Pessoa. Considere que os atributos grifados correspondam à chave primária da respectiva relação e os atributos que são seguidos da palavra referencia sejam chaves estrangeiras.
+
 ![Figura da questão](enade-2008-computing-q23/figure-01.png)
 
-![Figura da questão](enade-2008-computing-q23/figure-02.png)
+Suponha que existam as seguintes tuplas no banco de dados:
+
+```
+Pessoa(1, ‘José Silva’, ‘Rua 1, 20’);
+Republica(20, ‘Várzea’, ‘Rua Chaves, 2001’)
+```
+
+Qual opção apresenta apenas tuplas válidas para esse esquema de banco de dados relacional?
 
 ## Alternativas
 

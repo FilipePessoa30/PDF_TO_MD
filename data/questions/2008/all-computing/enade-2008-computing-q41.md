@@ -19,15 +19,7 @@ correct_answer: C
 official_answer_source: 2008/b2_gabarito.pdf
 answer_validation_status: validated
 answer_standard: null
-assets:
-- id: figure-01
-  type: image
-  path: enade-2008-computing-q41/figure-01.png
-  source_page: 18
-  extraction_method: raster_crop
-  sha256: 40ea4729a9f7bf63b5adea38a84b32f91f869d3e5b3207c3ce83335b9281d1d5
-  alt_text: null
-  caption: null
+assets: []
 subjects: []
 topics: []
 concepts: []
@@ -38,27 +30,15 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 41
 
-Em ambientes de manufatura integrada, utilizam- se computadores para conectar processos concorrentes separados fisicamente, isto é, um sistema integrado requer dois ou mais computadores conectados para trocar informações. Quando integrados, os processos podem compartilhar informações e iniciar ações, permitindo decisões mais rápidas com menos erros. A automação também permite a execução de processos de manufatura sem necessidade de intervenções. Um exemplo simples pode ser um controlador de um robô e um controlador
-
-![Figura da questão](enade-2008-computing-q41/figure-01.png)
-
-planta inteira de manufatura
-
-sistemática pelo uso de ferramentas manipulação matemática, decomposição, concorrência etc. contexto, julgue os seguintes itens. I computadores para processamento
-
-utilizados como sub-rotinas. II
-
-mínimo, 9 bits.
-
-tokens permitindo que ou recursos em uma mesma sub-rede. Assinale a opção correta.
+Em ambientes de manufatura integrada, utilizam- se computadores para conectar processos concorrentes separados fisicamente, isto é, um sistema integrado requer dois ou mais computadores conectados para trocar informações. Quando integrados, os processos podem compartilhar informações e iniciar ações, permitindo decisões mais rápidas com menos erros. A automação também permite a execução de processos de manufatura sem necessidade de intervenções. Um exemplo simples pode ser um controlador de um robô e um controlador lógico programável trabalhando juntos em uma única máquina. Um exemplo complexo é uma planta inteira de manufatura envolvendo centenas de estações conectadas a bancos de dados com instruções e planejamento de operações e tarefas em tempo real, envolvendo sensores, atuadores, transdutores, conversores etc. Entender, projetar e construir esses sistemas é um grande desafio que impõe uma abordagem sistemática pelo uso de ferramentas e conhecimento conceitual de modelagem lógica, manipulação matemática, abstração, decomposição, concorrência etc. Nesse contexto, julgue os seguintes itens. I Controladores lógicos programáveis são computadores para processamento de entradas e saídas, sendo que a maioria permite múltiplos programas que podem ser utilizados como sub-rotinas. II Para leituras de um sinal analógico que varia entre ± 10 volts, com precisão de ± 0,05 volts, é necessário um conversor AD com, no mínimo, 9 bits. III O principal objetivo das redes de Petri Coloridas é a redução do tamanho do modelo, tokens permitindo que individualizados (coloridos) representem diferentes processos ou recursos em uma mesma sub-rede. Assinale a opção correta.
 
 ## Alternativas
 

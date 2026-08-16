@@ -25,7 +25,7 @@ assets:
   path: enade-2008-computing-q75/figure-01.png
   source_page: 32
   extraction_method: raster_crop
-  sha256: 11242a8b8b41ef235ad51526349cc1c288ee4a40f6d978e58ff3b00aded628d4
+  sha256: 0861d5111f93dd0ec4d46aa4578b3310536ac98930d7cd26e67028e07745462c
   alt_text: null
   caption: null
 subjects: []
