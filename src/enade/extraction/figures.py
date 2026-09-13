@@ -18,6 +18,7 @@ this booklet are vector graphics with zero embedded raster images.
 
 from __future__ import annotations
 
+import math
 import re
 from collections import Counter
 from dataclasses import dataclass
@@ -280,16 +281,84 @@ def compute_decorative_baseline(doc: pymupdf.Document) -> frozenset[tuple[int, i
     return frozenset(key for key, count in counts.items() if count >= threshold)
 
 
+#: Two rects merging in ``_merge_by_vertical_proximity`` must also have
+#: X-ranges within this many points of touching/overlapping - a real
+#: diagram's own constituent paths (a tree's circles + connecting arrows, a
+#: DER diagram's boxes + lines) always overlap or nearly overlap in X, since
+#: they are drawn as one continuous visual figure; two genuinely unrelated
+#: vector structures that merely happen to sit close in Y do not (PROMPT
+#: Phase 3C, "Classe A"). Root cause this targets: 2008-b's own per-question
+#: RASCUNHO (scratch-answer) ruled grid is drawn as many short row-border
+#: segments whose *left*-column segments (x0~37-60) and *right*-column
+#: segments (x0~558-559, ~500pt further right) recur at the same Y pitch -
+#: within ``DEFAULT_Y_MERGE_TOLERANCE`` of each other vertically, but never
+#: within any plausible "same drawing" distance horizontally. Without an
+#: X-check, this function's own Y-only sweep (sorted by y0, oblivious to X)
+#: merges every one of those left/right segments into a single cluster
+#: spanning nearly the full page width - confirmed by direct instrumentation
+#: against 2008/b1_prova.pdf page 6 (Discursiva 9): 41 grid segments collapse
+#: into one (36.8, 587.3, 559.2, 760.1) bbox, which then trivially X-overlaps
+#: every real text line on the page for the label-absorption pass below,
+#: letting it cascade all the way up through D09's own real statement
+#: (empty-statement defect, blocker ``d09-region-merge-content-loss``).
+#:
+#: NOT applied unconditionally (PROMPT Phase 3C section 23/24): a first
+#: attempt at making this the new *default* for every booklet was confirmed,
+#: by direct full regeneration, to change already-validated output for two
+#: different protected corpora - 2011's own Q23/Q38 (their own legitimate
+#: per-alternative small-formula rows, which can legitimately span 200pt+ of
+#: a shared row before being correctly re-split downstream by
+#: ``assembler._attach_alternative_formula_regions``) and 2021's own Q34
+#: (whose own Dijkstra-graph diagram has genuine constituent paths more than
+#: 150pt apart in X, shrinking its rendered crop by 12px). Per this
+#: project's own "preserve reverted regression" precedent (PROMPT Phase 3B
+#: section 5/S), a general mechanism that would alter a protected corpus is
+#: gated declaratively instead of applied everywhere - see
+#: ``ExamStructureProfile.region_merge_x_tolerance`` (``None``/unset means
+#: exactly this constant's own default of unbounded, i.e. the original,
+#: pre-Phase-3C behavior every existing booklet keeps) and
+#: ``assemble_question``'s own ``region_merge_x_tolerance`` parameter, which
+#: this value is threaded through from. 150pt itself is generous relative to
+#: 2008-b's own widest confirmed legitimate single-cluster figure footprint
+#: (~250pt on this booklet's own single-column pages) while still well short
+#: of the ~500pt gap the pathological rascunho-grid case exhibits.
+MERGE_X_TOLERANCE = 150.0
+#: The default/original behavior: no X-check at all (only Y-proximity, as
+#: before this phase) - every call site keeps this unless a caller opts in.
+UNBOUNDED_MERGE_X_TOLERANCE = math.inf
+
+
+def _x_ranges_close(a: Rect, b: Rect, tolerance: float) -> bool:
+    if tolerance == math.inf:
+        return True
+    return not (a[2] + tolerance < b[0] or b[2] + tolerance < a[0])
+
+
 def _merge_by_vertical_proximity(
-    rects: list[tuple[Rect, bool]], y_tolerance: float
+    rects: list[tuple[Rect, bool]],
+    y_tolerance: float,
+    x_tolerance: float = UNBOUNDED_MERGE_X_TOLERANCE,
 ) -> list[tuple[Rect, int, bool]]:
-    """Sweep-line merge of (rect, is_image) into vertically-clustered groups."""
+    """Sweep-line merge of (rect, is_image) into vertically-clustered groups.
+
+    Two rects merge when they are Y-adjacent (``y_tolerance``, original
+    behavior); ``x_tolerance`` additionally requires X-closeness (PROMPT
+    Phase 3C - see ``MERGE_X_TOLERANCE``) only when a caller opts in to a
+    finite value - the default (unbounded) is exactly the original,
+    Y-only behavior every existing caller keeps.
+    """
     ordered = sorted(rects, key=lambda item: item[0][1])
     merged: list[list[float]] = []
     counts: list[int] = []
     has_image: list[bool] = []
     for rect, is_image in ordered:
-        if merged and rect[1] <= merged[-1][3] + y_tolerance:
+        if (
+            merged
+            and rect[1] <= merged[-1][3] + y_tolerance
+            and _x_ranges_close(
+                (merged[-1][0], merged[-1][1], merged[-1][2], merged[-1][3]), rect, x_tolerance
+            )
+        ):
             merged[-1][0] = min(merged[-1][0], rect[0])
             merged[-1][1] = min(merged[-1][1], rect[1])
             merged[-1][2] = max(merged[-1][2], rect[2])
@@ -639,6 +708,7 @@ def detect_visual_regions(
     decorative_baseline: frozenset[tuple[int, int, int, int]],
     *,
     y_merge_tolerance: float = DEFAULT_Y_MERGE_TOLERANCE,
+    region_merge_x_tolerance: float = UNBOUNDED_MERGE_X_TOLERANCE,
     overrides: LayoutOverrideSet | None = None,
     pdf_sha256: str = "",
     question_regions: list[QuestionRegion] | None = None,
@@ -649,6 +719,14 @@ def detect_visual_regions(
     any region already determined, by direct visual inspection, to be a
     false positive of the label-absorption chain-growth this function
     relies on (see ``layout_overrides.py`` and docs/decisions.md).
+
+    ``region_merge_x_tolerance`` (PROMPT Phase 3C, default unbounded - see
+    ``MERGE_X_TOLERANCE``/``UNBOUNDED_MERGE_X_TOLERANCE``): opt-in cap on
+    how far apart (points) two large-candidate vector/image rects may sit in
+    X and still be treated as one drawing during the Y-proximity merge
+    below. Threaded through from ``ExamStructureProfile.region_merge_x_tolerance``
+    by ``assemble_question``/``pipeline.py`` - every booklet without that
+    profile field set keeps the exact original, unbounded behavior.
 
     ``question_regions`` (PROMPT Phase 2C section 6-11), when given, is
     every question's own claimed territory on *this* page (see
@@ -750,7 +828,9 @@ def detect_visual_regions(
         owner_labels = _labels_for_owner(owner)
         owner_key = owner.question_key if owner is not None else None
         owner_x_bounds = render_bounds_for_owner(owner, column_margins)
-        for bbox, count, has_image in _merge_by_vertical_proximity(group, y_merge_tolerance):
+        for bbox, count, has_image in _merge_by_vertical_proximity(
+            group, y_merge_tolerance, x_tolerance=region_merge_x_tolerance
+        ):
             width = bbox[2] - bbox[0]
             height = bbox[3] - bbox[1]
             if width < MIN_REGION_WIDTH or height < MIN_REGION_HEIGHT:
@@ -776,8 +856,21 @@ def detect_visual_regions(
     for owner, group in _group_by_owner(small_candidates).items():
         owner_key = owner.question_key if owner is not None else None
         owner_x_bounds = render_bounds_for_owner(owner, column_margins)
+        # No X-tolerance cap here (PROMPT Phase 3C): unlike the large-candidate
+        # pool above, this merge's own safety already comes from its far
+        # tighter Y-tolerance (16pt vs. 18pt) - and several of this corpus's
+        # own legitimate per-alternative formula rows genuinely span a wide
+        # X range at shared Y (2011 Q14/Q23: 3-5 separate small formula
+        # images, one per alternative, laid out side by side across ~230pt+
+        # of a single row) before being correctly re-split per-alternative
+        # downstream by _attach_alternative_formula_regions/
+        # _attach_alternative_inline_segments (Y-row overlap, not this
+        # clustering). Applying MERGE_X_TOLERANCE here was confirmed by
+        # direct regeneration to fragment that legitimate wide grouping and
+        # change 2011's own already-validated asset count for Q23/Q38. Always
+        # unbounded here, regardless of region_merge_x_tolerance above.
         for bbox, count, has_image in _merge_by_vertical_proximity(
-            group, SMALL_IMAGE_Y_MERGE_TOLERANCE
+            group, SMALL_IMAGE_Y_MERGE_TOLERANCE, x_tolerance=UNBOUNDED_MERGE_X_TOLERANCE
         ):
             width = bbox[2] - bbox[0]
             height = bbox[3] - bbox[1]

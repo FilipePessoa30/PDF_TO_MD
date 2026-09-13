@@ -121,3 +121,47 @@ def test_q23_statement_is_complete_and_uncontaminated(extraction_result):
     # Never contains Q21's own content.
     assert "EMPREGADO" not in q23.statement
     assert "sobrenome" not in q23.statement
+
+
+def _discursive_by_number(result):
+    return {
+        q.question_number: q for q in result.questions if q.question_type == QuestionType.DISCURSIVE
+    }
+
+
+def test_d09_statement_is_no_longer_empty(extraction_result):
+    """PROMPT Phase 3C, region-merge X-axis fix (see docs/phase-3c-report.md
+    section E): D09's own page-6 RASCUNHO ruled grid was collapsing (via a
+    Y-only merge) into a nearly-full-page-width region, absorbing the
+    entire statement (blocker d09-region-merge-content-loss). Still not a
+    full fix - a real headline/caption-absorption defect remains, so this
+    only asserts the statement is no longer empty, not that it is complete.
+    """
+    result, _ = extraction_result
+    d09 = _discursive_by_number(result)[9]
+    assert d09.statement.strip() != ""
+
+
+def test_d20_statement_is_complete_and_has_no_spurious_figure(extraction_result):
+    """PROMPT Phase 3C: D20's own page-10 RASCUNHO grid was previously
+    producing a spurious figure that split the statement mid-word
+    ('Tabelas de dispersao (tabelas' / [image] / 'hash) armazenam...') -
+    not caught by Phase 3B's own re-inspection, which had claimed this
+    question was already fully resolved. Regression test for the corrected
+    claim: the statement must be one coherent, unsplit passage with no
+    figure asset at all.
+    """
+    result, _ = extraction_result
+    d20 = _discursive_by_number(result)[20]
+    assert "Tabelas de dispersão (tabelas hash) armazenam" in d20.statement
+    assert not d20.assets
+
+
+def test_d39_statement_is_complete_and_has_no_spurious_figure(extraction_result):
+    """Same RASCUNHO-grid-figure-split defect as D20 (see
+    test_d20_statement_is_complete_and_has_no_spurious_figure), found for
+    the first time in Phase 3C on D39's own item B."""
+    result, _ = extraction_result
+    d39 = _discursive_by_number(result)[39]
+    assert "gramática acima é ambígua" in d39.statement
+    assert not d39.assets

@@ -77,6 +77,17 @@ class ExamStructureProfile(BaseModel):
     #: ``boundaries.detect_question_boundaries``'s own ``combined_numbering``
     #: parameter, which this value is threaded into.
     combined_numbering: bool = False
+    #: Opt-in cap (points) on how far apart two large visual-content
+    #: candidates may sit in X and still be merged into one region during
+    #: figure detection (PROMPT Phase 3C - see
+    #: ``figures.MERGE_X_TOLERANCE``/``UNBOUNDED_MERGE_X_TOLERANCE``).
+    #: ``None`` (default) means unbounded - the exact, unchanged behavior
+    #: every booklet without this field set already has. Set only for a
+    #: booklet whose own layout is confirmed (by direct instrumentation) to
+    #: need it - never a blanket default, since a finite value was found by
+    #: full regeneration to alter 2011's own Q23/Q38 and would very likely
+    #: alter other already-validated corpora too if applied unconditionally.
+    region_merge_x_tolerance: float | None = None
 
     @model_validator(mode="after")
     def _validate_sections(self) -> ExamStructureProfile:

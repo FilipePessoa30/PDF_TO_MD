@@ -61,6 +61,30 @@ COLUMN_BUCKET_SIZE = 5.0
 #: just enough to absorb the margin's own rounding, not a general-purpose
 #: fuzziness margin.
 COLUMN_RIGHT_MARGIN_TOLERANCE = 5.0
+#: PROMPT Phase 3C, "Classe B" - two attempts at a general fix for 2008-b's
+#: own Questao 68 (a 3-line nested-SQL-subquery continuation mistaken for a
+#: genuine second page column, scrambling its own WHERE clause - blocker
+#: ``q68-sql-code-block-reordering``) were tried here and reverted; both
+#: are recorded in full (evidence + diffs) under
+#: ``scratchpad/experiment-column-height-ratio.diff`` and
+#: ``scratchpad/experiment-q68-vs-q50-evidence.md``:
+#: 1. A bare column-height-ratio gate (reject a candidate column whose own
+#:    Y-extent is a small fraction of the other's) fixed Q68 but also
+#:    rejected Questao 50's own genuine two-column page, whose left column
+#:    is an equally short but entirely legitimate 3-line prose intro -
+#:    height ratio alone does not reliably tell the two apart (0.05 vs.
+#:    0.14, on the very same booklet).
+#: 2. Requiring the short column's own lines to *also* be monospace (code
+#:    is never a real second column's own shape in this corpus) would have
+#:    distinguished them correctly in principle, but 2008-b's own PDF tags
+#:    this exact SQL code with an arbitrary embedded-subset font name
+#:    ("TT2F7Bo00") that ``Line.is_monospace``'s font-name-substring
+#:    heuristic (courier/mono/consolas) does not recognize - the signal
+#:    itself is not available for this booklet's own fonts, not just
+#:    unused.
+#: Not reintroduced under another name. Q68's own scramble remains an open,
+#: honestly-diagnosed blocker - a future attempt would need a different
+#: signal entirely (e.g. SQL/code keyword shape, not geometry or font name).
 
 
 #: Font-name substrings (case-insensitive) that mark a line as monospaced -

@@ -22,7 +22,11 @@ import pymupdf
 
 from enade.extraction.boundaries import QuestionKind, QuestionSpan
 from enade.extraction.chrome import is_chrome_line
-from enade.extraction.figures import VisualRegion, detect_visual_regions
+from enade.extraction.figures import (
+    UNBOUNDED_MERGE_X_TOLERANCE,
+    VisualRegion,
+    detect_visual_regions,
+)
 from enade.extraction.label_normalization import LabelCorrection
 from enade.extraction.layout import Line
 from enade.extraction.layout_overrides import LayoutOverrideSet
@@ -787,6 +791,7 @@ def assemble_question(
     overrides: LayoutOverrideSet | None = None,
     pdf_sha256: str = "",
     question_regions_by_page: dict[int, list[QuestionRegion]] | None = None,
+    region_merge_x_tolerance: float = UNBOUNDED_MERGE_X_TOLERANCE,
 ) -> ExtractedQuestion:
     warnings: list[str] = []
 
@@ -838,6 +843,7 @@ def assemble_question(
             doc,
             page_number,
             decorative_baseline,
+            region_merge_x_tolerance=region_merge_x_tolerance,
             overrides=overrides,
             pdf_sha256=pdf_sha256,
             question_regions=(question_regions_by_page or {}).get(page_number),

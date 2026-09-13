@@ -14,7 +14,42 @@ applicable_courses:
 section: cc-bacharelado-discursiva
 question_number: 40
 question_type: discursive
-content_blocks: null
+content_blocks:
+- type: asset
+  asset_id: figure-01
+- type: paragraph
+  text: 'secundários: IndiceIdade, para o atributo idade, e IndiceRenda, para o atributo
+    renda. Existe um tipo de serviço nesse banco cujo alvo são tanto os clientes que
+    possuem menos de 40 anos de idade quanto aqueles que possuem renda mensal superior
+    a 30.000 reais. Para recuperar esses clientes, a seguinte expressão de consulta
+    em SQL foi utilizada:'
+- type: code
+  text: 'SELECT nome, endereco
+
+    FROM Cliente
+
+    WHERE idade < 40 OR renda > 30000;'
+  language: null
+- type: paragraph
+  text: "Com o aumento do número de clientes desse banco, essa consulta passou a apresentar\
+    \ problemas de desempenho. Verificou-se, então, que o otimizador de consultas\
+    \ não considerava os índices existentes para idade e renda, e a consulta era realizada\
+    \ mediante varredura seqüencial na relação Cliente, tornando essa consulta onerosa.\
+    \ O plano de execução da consulta, usado pelo otimizador, é apresentado na árvore\
+    \ de consulta abaixo, na qual B e F representam as operações de projeção e de\
+    \ seleção, respectivamente. B\tnome,endereco"
+- type: asset
+  asset_id: figure-02
+- type: paragraph
+  text: utilizar os índices, a solução encontrada foi elaborar a consulta em dois
+    blocos separados — um que recupera os clientes com idade inferior a 40 anos, e
+    outro que recupera os clientes com renda mensal superior a 30.000 reais — para,
+    então, juntar as tuplas das duas relações geradas. Considerando a situação apresentada,
+    faça o que se pede a seguir. A Escreva o código de uma consulta em SQL que
+- type: paragraph
+  text: '(valor: 5,0 pontos)'
+- type: paragraph
+  text: 'B Desenhe a árvore de consulta para essa solução. (valor: 5,0 pontos)'
 correct_answer: null
 official_answer_source: null
 answer_validation_status: not_applicable
@@ -82,7 +117,7 @@ assets:
   path: enade-2008-computing-d40/figure-01.png
   source_page: 17
   extraction_method: raster_crop
-  sha256: c80629620e32faf4ba9b4f3e0569a11894f2f6978f1df3f1565df6141f29c6b8
+  sha256: e7870885d02a001c3e6841c19c5dd03090f796bb9d32bcd6228f5d024492bb2c
   alt_text: null
   caption: null
 - id: figure-02
@@ -90,7 +125,7 @@ assets:
   path: enade-2008-computing-d40/figure-02.png
   source_page: 17
   extraction_method: raster_crop
-  sha256: 8d42f99b5b59676a61e00c78f958d45158fe2b8346a476d708808f245d061c2c
+  sha256: a6074f3f8fba48fab23fa7ec746eb053a8972e93562c2eee634aa26cc3066827
   alt_text: null
   caption: null
 subjects: []
@@ -111,10 +146,22 @@ taxonomy_review_status: pending
 
 # Questão 40
 
-![Figura da questão](enade-2008-computing-d40/figure-02.png)
-
 ![Figura da questão](enade-2008-computing-d40/figure-01.png)
 
-B	nome,endereco Considerando a situação apresentada, faça o que se pede a seguir. A Escreva o código de uma consulta em SQL que
+secundários: IndiceIdade, para o atributo idade, e IndiceRenda, para o atributo renda. Existe um tipo de serviço nesse banco cujo alvo são tanto os clientes que possuem menos de 40 anos de idade quanto aqueles que possuem renda mensal superior a 30.000 reais. Para recuperar esses clientes, a seguinte expressão de consulta em SQL foi utilizada:
 
-B Desenhe a árvore de consulta para essa solução.
+```
+SELECT nome, endereco
+FROM Cliente
+WHERE idade < 40 OR renda > 30000;
+```
+
+Com o aumento do número de clientes desse banco, essa consulta passou a apresentar problemas de desempenho. Verificou-se, então, que o otimizador de consultas não considerava os índices existentes para idade e renda, e a consulta era realizada mediante varredura seqüencial na relação Cliente, tornando essa consulta onerosa. O plano de execução da consulta, usado pelo otimizador, é apresentado na árvore de consulta abaixo, na qual B e F representam as operações de projeção e de seleção, respectivamente. B	nome,endereco
+
+![Figura da questão](enade-2008-computing-d40/figure-02.png)
+
+utilizar os índices, a solução encontrada foi elaborar a consulta em dois blocos separados — um que recupera os clientes com idade inferior a 40 anos, e outro que recupera os clientes com renda mensal superior a 30.000 reais — para, então, juntar as tuplas das duas relações geradas. Considerando a situação apresentada, faça o que se pede a seguir. A Escreva o código de uma consulta em SQL que
+
+(valor: 5,0 pontos)
+
+B Desenhe a árvore de consulta para essa solução. (valor: 5,0 pontos)

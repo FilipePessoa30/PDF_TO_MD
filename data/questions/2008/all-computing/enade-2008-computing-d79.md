@@ -62,15 +62,7 @@ answer_standard:
     inviabilizar o uso dos computadores que apóiam o funcionamento dos serviços. Outros
     riscos poderão ser descritos. 7.1'
   assets: []
-assets:
-- id: figure-01
-  type: diagram
-  path: enade-2008-computing-d79/figure-01.png
-  source_page: 33
-  extraction_method: raster_crop
-  sha256: 83a2ee3720a997eb3adeea1f238102d4a3b9af14625841b45df923b3b627542a
-  alt_text: null
-  caption: null
+assets: []
 subjects: []
 topics: []
 concepts: []
@@ -81,16 +73,14 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: extracted
+extraction_status: verified
 automatic_validation: passed
-visual_validation: not_performed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 79
 
-Considerando as informações apresentadas no texto e considerando ainda que entre os principais benefícios de um projeto de melhoria de sistema de informação destacam-se o aumento da: (I) eficiência; (II) eficácia; (III) integridade; e (IV) disponibilidade, faça o que se pede a seguir. A Cite 4 vantagens da solução proposta, frente à
+Considerando as informações apresentadas no texto e considerando ainda que entre os principais benefícios de um projeto de melhoria de sistema de informação destacam-se o aumento da: (I) eficiência; (II) eficácia; (III) integridade; e (IV) disponibilidade, faça o que se pede a seguir. A Cite 4 vantagens da solução proposta, frente à atual, para tratar a interação entre pacientes e os serviços de saúde, sendo duas delas relativas à eficiência e duas relativas à eficácia. (valor: 5,0 pontos)
 
-![Figura da questão](enade-2008-computing-d79/figure-01.png)
-
-B Descreva 2 riscos de segurança da informação
+B Descreva 2 riscos de segurança da informação que aumentam quando se substitui o sistema atual pelo sistema proposto, e que são relativos à interação entre pacientes e os serviços da referida secretaria de saúde. Um dos riscos deve ser relativo à perda de disponibilidade e o outro, à perda de integridade. (valor: 5,0 pontos)

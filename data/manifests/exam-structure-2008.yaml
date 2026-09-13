@@ -28,12 +28,25 @@
 #      to that course alone, unlike 2011 where all discursives are shared
 #      Componente Comum content - there is no cross-course discursive
 #      sharing in this booklet.
+#
+# `region_merge_x_tolerance` (PROMPT Phase 3C): this booklet's own per-question
+# RASCUNHO (scratch-answer) ruled grid is drawn as many short vector row-border
+# segments whose left- and right-column segments recur at the same Y pitch
+# ~500pt apart in X - confirmed by direct instrumentation against
+# b1_prova.pdf page 6 (Discursiva 9) to collapse into one nearly-full-page-width
+# region under the general (unbounded) merge, which then absorbs the real
+# statement text via label-absorption (blocker d09-region-merge-content-loss).
+# 150pt rejects that ~500pt gap while staying generous relative to this
+# booklet's own widest confirmed legitimate single-cluster figure footprint
+# (~250pt). Confirmed by full regeneration to leave 2011 and 2021 unaffected
+# (neither sets this field, so both keep the original unbounded behavior).
 year: 2008
 exam_type: unified
 exam_id: enade-2008-b-computacao
 id_shorthand: computing
 source_letter: b
 combined_numbering: true
+region_merge_x_tolerance: 150.0
 sections:
   - id: formacao-geral-objetiva
     kind: objective

@@ -90,14 +90,6 @@ assets:
   sha256: b5f82546b9d97ecd3a6059056943c2262f4a1f6f3774c25776a0a12e35b1bbde
   alt_text: null
   caption: null
-- id: figure-03
-  type: diagram
-  path: enade-2008-computing-d80/figure-03.png
-  source_page: 35
-  extraction_method: raster_crop
-  sha256: b102cd7a95cc6ee8375e10c95caae405bde6e8d8e872dbfcabb657878ad87a12
-  alt_text: null
-  caption: null
 subjects: []
 topics: []
 concepts: []
@@ -124,8 +116,8 @@ Durante a análise de um sistema de controle de contas bancárias (SCCB), um ana
 
 No diagrama de seqüência apresentado, há problemas conceituais, relativos à especificação do diagrama de classes e à descrição textual do caso de uso DUPLA-CONTA. Com relação a essa situação, faça o que se pede a seguir.
 
-A Descreva, textualmente, três falhas de tipos distintos presentes no diagrama de seqüência apresentado, relativas ao
+A Descreva, textualmente, três falhas de tipos distintos presentes no diagrama de seqüência apresentado, relativas ao uso da sintaxe e(ou) da semântica da UML. (valor: 4,0 pontos)
 
-![Figura da questão](enade-2008-computing-d80/figure-03.png)
+B Descreva, textualmente, três falhas distintas presentes no diagrama de seqüência apresentado, relativas à especificação das classes, responsabilidades e colaborações propostas no diagrama de classe mostrado.
 
-B Descreva, textualmente, três falhas distintas presentes no diagrama de seqüência apresentado, relativas à
+(valor: 6,0 pontos)

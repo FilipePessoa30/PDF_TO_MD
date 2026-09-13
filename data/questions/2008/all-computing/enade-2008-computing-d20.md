@@ -40,15 +40,7 @@ answer_standard:
     sha256: da3895e08c98dc818371326f73e44198af203adce1b50dec62921a5123cab6a0
     alt_text: null
     caption: null
-assets:
-- id: figure-01
-  type: diagram
-  path: enade-2008-computing-d20/figure-01.png
-  source_page: 10
-  extraction_method: raster_crop
-  sha256: 387cf7485170eab59f1f3ffa7e5a23a856de1e1723d32f8b3954834554cdaa9b
-  alt_text: null
-  caption: null
+assets: []
 subjects: []
 topics: []
 concepts: []
@@ -67,10 +59,6 @@ taxonomy_review_status: pending
 
 # Questão 20
 
-Tabelas de dispersão (tabelas
+Tabelas de dispersão (tabelas hash) armazenam elementos com base no valor absoluto de suas chaves e em técnicas de tratamento de colisões. As funções de dispersão transformam chaves em endereços- base da tabela, ao passo que o tratamento de colisões resolve conflitos em casos em que mais de uma chave é mapeada para um mesmo endereço-base da tabela. Suponha que uma aplicação utilize uma tabela de dispersão com 23 endereços-base (índices de 0 a 22) e empregue h(x) = x mod 23 como função de dispersão, em que x representa a chave do elemento cujo endereço-base deseja-se computar. Inicialmente, essa tabela de dispersão encontra-se vazia. Em seguida, a aplicação solicita uma seqüência de inserções de elementos cujas chaves aparecem na seguinte ordem: 44, 46, 49, 70, 27, 71, 90, 97, 95. Com relação à aplicação descrita, faça o que se pede a seguir. A Escreva, no espaço reservado, o conjunto das chaves envolvidas em colisões. (valor: 4,0 pontos)
 
-![Figura da questão](enade-2008-computing-d20/figure-01.png)
-
-hash) armazenam elementos com base no valor absoluto de suas chaves e em técnicas de tratamento de colisões. As funções de dispersão transformam chaves em endereços- base da tabela, ao passo que o tratamento de colisões resolve conflitos em casos em que mais de uma chave é mapeada para um mesmo endereço-base da tabela. Suponha que uma aplicação utilize uma tabela de dispersão com 23 endereços-base (índices de 0 a 22) e empregue h(x) = x mod 23 como função de dispersão, em que x representa a chave do elemento cujo endereço-base deseja-se computar. Inicialmente, essa tabela de dispersão encontra-se vazia. Em seguida, a aplicação solicita uma seqüência de inserções de elementos cujas chaves aparecem na seguinte ordem: 44, 46, 49, 70, 27, 71, 90, 97, 95. Com relação à aplicação descrita, faça o que se pede a seguir. A Escreva, no espaço reservado, o conjunto das chaves envolvidas em
-
-B Assuma que a tabela de dispersão trate colisões por meio de
+B Assuma que a tabela de dispersão trate colisões por meio de encadeamento exterior. Esboce a tabela de dispersão para mostrar seu conteúdo após a seqüência de inserções referida. (valor: 6,0 pontos)

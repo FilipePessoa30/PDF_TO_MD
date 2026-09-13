@@ -7,24 +7,36 @@ baseline_count: 0
 blockers:
 - affected_assets: []
   category: region-merge-content-loss
-  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
-    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
-    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
-    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
-    then merges them together with real embedded photos/diagrams into one oversized region that can span
-    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
-    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
-    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
-    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
-    section M for why no fix was attempted this session.'
-  description: Empty statement - only figure-01.png remains, all prose text lost.
-  evidence: null
+  cause: 'PARTIALLY ROOT-CAUSED AND FIXED IN PHASE 3C. The catastrophic part of this defect was a genuine
+    generalization gap in figures.py''s own _merge_by_vertical_proximity: it merged vector-drawing candidates
+    by Y-proximity alone, with no X-axis check. This booklet''s own per-question RASCUNHO (scratch-answer)
+    ruled writing grid is drawn as many short vector row-border segments whose left-column segments (x0~37-60)
+    and right-column segments (x0~558-559, ~500pt further right) recur at the same Y pitch - close enough
+    vertically to merge, never close enough horizontally to plausibly be the same drawing. Confirmed by direct
+    instrumentation against 2008/b1_prova.pdf page 6: 41 such grid segments were collapsing into one
+    (36.8, 587.3, 559.2, 760.1) region, trivially X-overlapping every real text line on the page and
+    (via label absorption) swallowing the entire statement. Fixed by requiring X-closeness too (MERGE_X_TOLERANCE,
+    figures.py), gated to this booklet alone via ExamStructureProfile.region_merge_x_tolerance (2011/2021 do
+    not set this field and are unaffected - confirmed by full regeneration, zero drift on all 288 protected
+    files). A SEPARATE, still-unresolved defect remains after this fix: this page''s own real embedded photo
+    sits directly below a short article headline (''DIREITOS HUMANOS EM QUESTAO'', real content, not a caption)
+    which is itself absorbed into the photo''s region on pass 1 of _expand_with_labels (indistinguishable, by
+    proximity/width alone, from a legitimate diagram label), and most of the accompanying quote/article body
+    is absorbed on subsequent cascading passes. A caption/consumption-separation fix (PROMPT Phase 3C section
+    7-9) was investigated but not attempted this phase - see docs/phase-3c-report.md section E for why it
+    could not be done safely without risking 2011/2021 in the time available.'
+  description: 'IMPROVED IN PHASE 3C: statement is no longer empty, but still real content loss - only 3 stray
+    fragments survive (''Francois JULIEN, filosofo e sociologo.'', ''dos Direitos Humanos, novas'', ''(valor:
+    10,0 pontos)''); the article headline and most of the quoted text remain absorbed into figure-01.png''s
+    own region.'
+  evidence: docs/phase-3c-report.md section E; tests/test_extraction_figures.py (region-merge X-axis tests)
   id: d09-region-merge-content-loss
   question_id: enade-2008-computing-d09
-  regression_tests: []
+  regression_tests:
+  - tests/test_extraction_figures.py
   resolution: null
   source_pages:
-  - 9
+  - 6
   status: open
   superseded_by: null
   visual_validation: failed
@@ -54,7 +66,14 @@ blockers:
   resolution: 'RESOLVED (Phase 3B): fixed by (1) recognizing 2008-b''s own section-transition prose/table
     as chrome and (2) a general aspect-ratio rule-line filter in figures.py (vertical column-separator
     and horizontal divider hairlines were dominating the height/width of any region they merged with).
-    D20''s own statement is now complete and coherent, re-inspected against page 10.'
+    D20''s own statement is now complete and coherent, re-inspected against page 10.
+    CORRECTION (Phase 3C): this "resolved, no residuals found" claim did not match the actual committed
+    file - it still had a SEPARATE, distinct defect Phase 3B''s own re-inspection missed: a RASCUNHO-grid-derived
+    spurious figure-01.png splitting the statement mid-word (''Tabelas de dispersao (tabelas'' / [image] /
+    ''hash) armazenam...''), caused by the same region-merge-without-X-check root cause documented for D09
+    (see d09-region-merge-content-loss). Phase 3C''s region-merge X-axis fix removes this spurious figure
+    entirely (assets: [] again). D20''s statement is now genuinely complete and coherent - the claim above
+    is true as of Phase 3C, not Phase 3B.'
   source_pages:
   - 10
   status: resolved
@@ -820,16 +839,23 @@ blockers:
   visual_validation: failed
 - affected_assets: []
   category: table-reading-order-scramble
-  cause: Not yet root-caused precisely - suspected to be the same general reading-order class as the page-11
-    instructions table (PROMPT Phase 3B section D), but for a table embedded within D40's own statement
-    rather than the shared section transition. Left open for a future phase.
-  description: Statement scrambled around a SQL/relational scenario ('B nome,endereco Considerando a situacao
-    apresentada...') - not resolved by the Phase 3B chrome/rule-line fixes, which only removed the section-transition
-    text that used to additionally trail this same statement (see the superseded d40-section-transition-chrome-bleed).
-  evidence: null
+  cause: 'SUBSTANTIALLY IMPROVED IN PHASE 3C, root cause still not fully isolated. Phase 3C''s region-merge
+    X-axis fix (see d09-region-merge-content-loss) changed which vector candidates merge on this page, and
+    the statement is now built via content_blocks (paragraph/code/asset/paragraph/asset/paragraph) instead of
+    null - the SQL query (''SELECT nome, endereco FROM Cliente WHERE idade < 40 OR renda > 30000;'') now
+    renders as a correct, verbatim fenced code block, and most of the surrounding prose is coherent and in the
+    right order. One residual defect: the query-tree diagram''s own relational-algebra projection label
+    (''B nome,endereco'', almost certainly a mis-rendered pi-symbol projection over name/address) still bleeds
+    in as loose text immediately before figure-02, the same general cross-question/cross-figure label-bleed
+    class as q62-cross-question-diagram-label-bleed - not yet isolated to a specific mechanism fix.'
+  description: 'IMPROVED IN PHASE 3C: statement is coherent and structured (content_blocks with a real fenced
+    SQL code block), not scrambled. One residual defect remains - a diagram label (''B nome,endereco'') bleeds
+    in as loose text before figure-02 instead of staying purely part of that diagram.'
+  evidence: docs/phase-3c-report.md section E
   id: d40-table-reading-order-scramble
   question_id: enade-2008-computing-d40
-  regression_tests: []
+  regression_tests:
+  - tests/test_extraction_figures.py
   resolution: null
   source_pages:
   - 17
@@ -933,6 +959,75 @@ blockers:
   resolution: null
   source_pages:
   - 14
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: 'NEW BLOCKER OPENED IN PHASE 3C, correcting a Phase 3B audit error. D10 was previously marked
+    visual_validation=passed with the note "no residuals found" - that claim did not match the actual
+    committed file, which still had a RASCUNHO-grid-derived spurious figure-02.png splitting the statement
+    mid-sentence (the same region-merge-without-X-check root cause as d09-region-merge-content-loss). Phase
+    3C''s region-merge X-axis fix removes that spurious figure, but re-inspection against the real source
+    (page 7) finds the statement is still genuinely incomplete: D10 reproduces three separate newspaper
+    fragments, each with its own headline+body+citation (GOIS 11 jun / WEBER 5 dez / GOIS+PINHO 12 jun) - the
+    published statement is missing fragments 1 and 2''s own headlines/bodies almost entirely (only their
+    trailing citations survive, misplaced after the essay prompt) and fragment 3''s own headline. Root cause
+    not yet isolated to a specific mechanism, but the shape (short headline-like lines near other content)
+    matches the same label-absorption-over-reach pattern documented for D09 and Q02/Q07/Q12/Q45/Q54/Q75.'
+  description: Statement missing fragments 1 and 2's own headlines/bodies almost entirely, and fragment 3's
+    own headline - only 2 of 3 fragments' own trailing citations survive, misplaced after the essay prompt.
+  evidence: docs/phase-3c-report.md section E
+  id: d10-label-absorption-newspaper-fragments
+  question_id: enade-2008-computing-d10
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 7
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets: []
+  category: region-merge-content-loss
+  cause: 'FOUND AND RESOLVED IN THE SAME PHASE (3C). D39 was previously marked visual_validation=passed - that
+    claim did not match the actual committed file, which had a RASCUNHO-grid-derived spurious figure-01.png
+    splitting item B''s own sentence (''...que a'' / [image] / ''gramatica acima e ambigua?...''), the same
+    region-merge-without-X-check root cause as d09-region-merge-content-loss. Phase 3C''s region-merge X-axis
+    fix (figures.py MERGE_X_TOLERANCE, gated to this booklet via ExamStructureProfile.region_merge_x_tolerance)
+    removes the spurious figure entirely.'
+  description: 'RESOLVED (Phase 3C): re-inspected word-for-word against page 16''s own raw PyMuPDF text
+    extraction - intro paragraph, all four grammar-rule lines, item A, item B, and both "(valor: 5,0 pontos)"
+    lines all present, complete, and in order. No residuals found.'
+  evidence: docs/phase-3c-report.md section E
+  id: d39-region-merge-content-loss
+  question_id: enade-2008-computing-d39
+  regression_tests:
+  - tests/test_extraction_figures.py
+  resolution: 'RESOLVED (Phase 3C): see cause above.'
+  source_pages:
+  - 16
+  status: resolved
+  superseded_by: null
+  visual_validation: passed
+- affected_assets: []
+  category: cross-question-contamination
+  cause: Same general class as q62-cross-question-diagram-label-bleed and the original Q21/Q22/Q23
+    contamination (a neighboring question's own diagram-label text geometrically close enough to be
+    captured) - D60 sits immediately before Q61's own ITIL service-lifecycle diagram on the page-26/27
+    boundary. Not resolved by Phase 3C's region-merge fix, which targeted a different mechanism (the
+    RASCUNHO-grid X-check) and, incidentally, made this pre-existing contamination visible for the first
+    time by removing the more severe fragmentation that used to obscure it. Left open.
+  description: D60's own statement (Nyquist/Shannon channel-capacity question) is otherwise complete and
+    coherent, but is followed by trailing contamination from Q61's own ITIL diagram caption/labels ('Figura
+    para a questao 61 Estagios do ciclo de vida de um servico de TI...').
+  evidence: docs/phase-3c-report.md section E
+  id: d60-cross-question-diagram-label-bleed
+  question_id: enade-2008-computing-d60
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 26
+  - 27
   status: open
   superseded_by: null
   visual_validation: failed

@@ -34,7 +34,7 @@ from enade.extraction.assets import (
 from enade.extraction.boundaries import QuestionKind, detect_question_boundaries
 from enade.extraction.declared_structure import parse_declared_structure
 from enade.extraction.exam_profile import ExamStructureProfile, verify_declared_profile
-from enade.extraction.figures import compute_decorative_baseline
+from enade.extraction.figures import UNBOUNDED_MERGE_X_TOLERANCE, compute_decorative_baseline
 from enade.extraction.layout import (
     detect_column_margins,
     extract_document_lines,
@@ -192,6 +192,12 @@ def extract_exam(
                 )
 
             baseline = compute_decorative_baseline(prova.raw)
+            region_merge_x_tolerance = (
+                structure_profile.region_merge_x_tolerance
+                if structure_profile is not None
+                and structure_profile.region_merge_x_tolerance is not None
+                else UNBOUNDED_MERGE_X_TOLERANCE
+            )
 
             answer_key_result = answer_key_parser(gabarito_doc)
             structural_warnings.extend(answer_key_result.warnings)
@@ -239,6 +245,7 @@ def extract_exam(
                     overrides=layout_overrides,
                     pdf_sha256=prova.identity.sha256,
                     question_regions_by_page=question_regions_by_page,
+                    region_merge_x_tolerance=region_merge_x_tolerance,
                 )
 
                 suffix = "q" if span.kind == QuestionKind.OBJECTIVE else "d"

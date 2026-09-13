@@ -25,7 +25,7 @@ assets:
   path: enade-2008-computing-d09/figure-01.png
   source_page: 6
   extraction_method: raster_crop
-  sha256: e258bee85fe2a9dbfb2b22cb62449d4d3b01856f7faa38be5ed24109904c3836
+  sha256: 40388e21eb8d5648b05a74aec7647292f79faa65f7ebc2630a2392f5b84147f2
   alt_text: null
   caption: null
 subjects: []
@@ -47,3 +47,9 @@ taxonomy_review_status: pending
 # Questão 9
 
 ![Figura da questão](enade-2008-computing-d09/figure-01.png)
+
+François JULIEN, filósofo e sociólogo.
+
+dos Direitos Humanos, novas
+
+(valor: 10,0 pontos)

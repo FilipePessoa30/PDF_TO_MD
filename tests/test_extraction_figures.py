@@ -64,6 +64,45 @@ def test_merge_tracks_has_raster_image():
     assert merged[0][2] is True
 
 
+def test_merge_by_vertical_proximity_defaults_to_unbounded_x_tolerance():
+    """The original, pre-Phase-3C behavior (Y-proximity only, no X check) is
+    the default every existing caller keeps unless it opts in - a real
+    2011/2021 regression (Q23/Q38's own legitimate per-alternative formula
+    rows, spanning 200pt+ of a shared row) was found by full regeneration
+    when this was tried as the new unconditional default (see
+    figures.py, MERGE_X_TOLERANCE's own docstring).
+    """
+    far_apart_in_x = [((0, 0, 10, 10), False), ((500, 5, 510, 15), False)]
+    merged = _merge_by_vertical_proximity(far_apart_in_x, y_tolerance=18.0)
+    assert len(merged) == 1
+
+
+def test_merge_by_vertical_proximity_x_tolerance_rejects_far_apart_rects():
+    """PROMPT Phase 3C, 'Classe A': two rects far apart in X must not merge
+    just because they are Y-adjacent, when a finite x_tolerance is given -
+    the 2008-b RASCUNHO-grid regression this exists to prevent (see
+    docs/phase-3c-report.md section E): the grid's own left- and
+    right-column row-border segments recur ~500pt apart in X at the same Y
+    pitch, and were collapsing into one nearly-full-page-width region.
+    """
+    left_column_segment = (36.8, 401.4, 37.8, 475.4)
+    right_column_segment = (558.2, 401.4, 559.2, 475.4)
+    rects = [(left_column_segment, False), (right_column_segment, False)]
+    merged = _merge_by_vertical_proximity(rects, y_tolerance=18.0, x_tolerance=150.0)
+    assert len(merged) == 2
+
+
+def test_merge_by_vertical_proximity_x_tolerance_still_merges_close_rects():
+    """A genuine single diagram's own constituent paths (which overlap or
+    nearly overlap in X) must still merge under a finite x_tolerance - the
+    X check only rejects rects that are *also* far apart in X, never a
+    normal same-drawing cluster.
+    """
+    rects = [((100, 0, 200, 10), False), ((110, 15, 210, 25), False)]
+    merged = _merge_by_vertical_proximity(rects, y_tolerance=18.0, x_tolerance=150.0)
+    assert len(merged) == 1
+
+
 def test_expand_with_labels_grows_bbox_to_include_nearby_label():
     bbox = (100, 100, 200, 200)
     labels = [((50, 100, 95, 115), "Rótulo próximo")]  # 5pt gap to the left

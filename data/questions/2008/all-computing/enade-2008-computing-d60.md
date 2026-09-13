@@ -50,31 +50,7 @@ answer_standard:
     log2(L) # 30.000 log2(L) # 5 L # 32 Logo, na presença de ruído térmico, é possível
     adotar mais de 16 níveis de sinalização.'
   assets: []
-assets:
-- id: figure-01
-  type: diagram
-  path: enade-2008-computing-d60/figure-01.png
-  source_page: 26
-  extraction_method: raster_crop
-  sha256: 3efbe945187e5054d286793a6992e9930b266e2c5a03d00488dea5ede5ac651c
-  alt_text: null
-  caption: null
-- id: figure-02
-  type: diagram
-  path: enade-2008-computing-d60/figure-02.png
-  source_page: 26
-  extraction_method: raster_crop
-  sha256: 510f07289ef6cfdf70b41d384755863daecbbf1b5a032a6c0e7a1e1c0f5c7aaa
-  alt_text: null
-  caption: null
-- id: figure-03
-  type: diagram
-  path: enade-2008-computing-d60/figure-03.png
-  source_page: 26
-  extraction_method: raster_crop
-  sha256: 04ff38b4fa8f6f6b1f1cf5993993e1772512fcd808ffc884e3a94bcbb5d17e52
-  alt_text: null
-  caption: null
+assets: []
 subjects: []
 topics: []
 concepts: []
@@ -85,31 +61,25 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: extracted
+extraction_status: needs_review
 automatic_validation: passed
-visual_validation: not_performed
+visual_validation: failed
 taxonomy_review_status: pending
 ---
 
 # Questão 60
 
-![Figura da questão](enade-2008-computing-d60/figure-02.png)
-
-C = 2 × W bauds
-
-C = W × log2 (1 +
+Para transmissões de sinais em banda base, a largura de banda do canal limita a taxa de transmissão máxima. Como resultado do teorema de Nyquist, na ausência de ruído, a taxa de transmissão máxima C de um canal que possui largura de banda W, em hertz, é dada pela equação a seguir. C = 2 × W bauds No entanto, em qualquer transmissão, o ruído térmico está presente nos dispositivos eletrônicos e meios de transmissão. Esse ruído, causado pela agitação dos elétrons nos condutores, é caracterizado pela potência de ruído N. De acordo com a lei de Shannon, na presença de ruído térmico, a taxa de transmissão máxima de um canal que possui largura de banda W, em hertz, e apresenta uma relação sinal-ruído S/N, expressa em decibel (dB), é definida pela equação abaixo. C = W × log2 (1 + ) bps
 
 Tendo como referência inicial as informações acima, considere que seja necessário determinar a taxa de transmissão máxima de um canal de comunicação que possui largura de banda de 3 kHz, relação sinal-ruído de 30,1 dB e adota 16 diferentes níveis de sinalização. Nessa situação, responda aos seguintes questionamentos.
 
-A Na ausência de ruído, de acordo com o teorema de Nyquist, qual a taxa de transmissão máxima do referido canal, em
-
-![Figura da questão](enade-2008-computing-d60/figure-01.png)
+A Na ausência de ruído, de acordo com o teorema de Nyquist, qual a taxa de transmissão máxima do referido canal, em bits por segundo. Apresente os cálculos necessários.
 
 B Na presença de ruído térmico, de acordo com a lei de Shannon, qual a taxa de transmissão máxima do canal, em bits por segundo? Apresente os cálculos necessário e considere que log10 (1.023) = 3,01.
 
-![Figura da questão](enade-2008-computing-d60/figure-03.png)
-
 C Na presença de ruído térmico, é possível adotar mais de 16 níveis de sinalização no referido canal? Justifique. (valor: 3,0 pontos)
+
+(valor: 3,0 pontos)
 
 (valor: 4,0 pontos)
 
