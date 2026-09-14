@@ -68,6 +68,33 @@ REGION_Y_PADDING = 2.0
 #: check swallowed unrelated same-Y-band content from a *different* column
 #: on a two-column page (D5's heapify() code sharing a Y-band with the
 #: left column's tree diagram - see docs/decisions.md, "Phase 1C" ADR).
+#:
+#: EXPERIMENT (PROMPT Phase 3F, "Cluster A", reverted): several 2008-b
+#: pages have a real inter-column/inter-figure gutter narrower than this
+#: fixed padding (as little as ~4.3pt on D10's page, ~1.6pt on Q07's,
+#: before any growth), letting a whole neighboring column's own unrelated
+#: body text satisfy "touches" and get silently dropped as if it were
+#: figure content (D10/Q02/Q07/Q12/Q45/Q54/Q63/Q75 - root-caused precisely
+#: by direct instrumentation, see docs/phase-3f-report.md). Replacing the
+#: fixed padding with a ratio requirement (touch only when the genuine,
+#: unpadded X-overlap reaches >= 50% of the narrower of the line's own
+#: width or the region's own width) fixed D10 and Q07 completely and Q12
+#: partially, confirmed safe for 2011/2021 when gated - but broke two
+#: *already-passing* 2008-b questions the same way: Q61's own real
+#: "Figura para a questao 61" caption sits at the page's left margin
+#: (x0=36.0-153.3), genuinely but only PARTIALLY overlapping its own wide
+#: diagram (x0=121.2-474.3) by 32.1pt - a 27.4% ratio, LOWER than Q07's
+#: own bad line's 37.8% ratio (108.4pt overlap against a much wider,
+#: unrelated 286.8pt-wide line) that the same threshold needed to reject.
+#: No single global ratio can correctly separate these two cases: Q61's
+#: genuine, partially-offset caption must be *kept*, while Q07's
+#: coincidental, high-absolute-overlap touch from an unrelated column must
+#: be *rejected*, and Q61's own ratio is numerically smaller than Q07's.
+#: A more targeted fix (test the ratio against each region's own
+#: *pre-growth* raw bbox, only trusting growth's own extension within a
+#: small, absorption-specific allowance, rather than the fully-grown
+#: bbox) was reasoned through but not implemented/verified this phase -
+#: recorded as the concrete next step rather than shipped half-verified.
 REGION_X_PADDING = 5.0
 #: Approximate width (points) of one monospace character, used only to
 #: reconstruct relative indentation for preserved code/pseudocode blocks.
@@ -806,6 +833,7 @@ def assemble_question(
     region_merge_x_tolerance: float = UNBOUNDED_MERGE_X_TOLERANCE,
     caption_font_size_gate: bool = False,
     reference_transfer_target_keys: frozenset[str] = frozenset(),
+    owner_exclusion_gate: bool = False,
 ) -> ExtractedQuestion:
     warnings: list[str] = []
 
@@ -931,10 +959,38 @@ def assemble_question(
                 r for r in page_regions if r.owner_key == own_key and _overlaps_own_region(r.bbox)
             )
         else:
+            # The y/x tolerance alone has no concept of ownership - it was
+            # never reconciled with ``owner_key`` because a span's own
+            # coarse bounding box rarely grew wide enough to spuriously
+            # reach a genuinely different question's own owned region. It
+            # can: a real alternative that overflows into the next page
+            # column (2008-b Q13's own alternative E, printed at the very
+            # top of the right column because it did not fit below D in
+            # the left column) widens this span's own page_y_bounds/
+            # page_x_bounds enough to trivially satisfy the old tolerance
+            # for a neighboring question's own owned region (Q12's own
+            # control-flow-graph diagram, `owner=objective-12`, published
+            # as Q13's own figure-01.png - confirmed byte-identical to
+            # Q12's - despite the two questions sharing nothing).
+            #
+            # ``owner_exclusion_gate`` (PROMPT Phase 3F, opt-in - see
+            # ``ExamStructureProfile``) rejects a region explicitly owned
+            # by a *different* question outright, regardless of
+            # bounding-box overlap - this can only ever remove a
+            # previously wrongly-admitted region, never add one, since it
+            # is purely an additional restriction on top of the tolerance
+            # below. It is not the unconditional default because enabling
+            # it for every booklet changed 2011's own Q34 (a genuinely
+            # unowned region was, before this gate, counted as Q34's own
+            # candidate by y/x proximity alone, changing which structural
+            # warning fires) - see ``ExamStructureProfile.owner_exclusion_gate``.
             regions.extend(
                 r
                 for r in page_regions
-                if y_min <= r.bbox[1] <= y_max and r.bbox[0] <= x_max and r.bbox[2] >= x_min
+                if (not owner_exclusion_gate or r.owner_key is None or r.owner_key == own_key)
+                and y_min <= r.bbox[1] <= y_max
+                and r.bbox[0] <= x_max
+                and r.bbox[2] >= x_min
             )
 
     # A figure region can grow (via label absorption, see figures.py) far

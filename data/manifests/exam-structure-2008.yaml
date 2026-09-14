@@ -51,6 +51,24 @@
 # here (an earlier, unconditional-default attempt changed 2011's own
 # Q05/Q33/Q34/Q35 - crop-boundary/structural-warning shifts, no statement
 # text change - and was reverted in favor of this declarative gate).
+#
+# `owner_exclusion_gate` (PROMPT Phase 3F): this booklet's own layout can
+# legitimately overflow a single alternative into the top of the next page
+# column (Q13's own alternative E, printed above Q14's own text because it
+# did not fit below D in Q13's own column) - widening that question's own
+# coarse bounding box enough to trivially satisfy the ownership-agnostic
+# y/x tolerance for a neighboring question's own owned visual region
+# (Q12's own control-flow-graph diagram was being published as Q13's own
+# figure-01.png, byte-identical to Q12's, despite the two sharing nothing -
+# blocker q13-cross-question-image-contamination). Rejecting a region
+# explicitly owned by a different question closes this regardless of
+# bounding-box overlap. Confirmed by full regeneration to leave 2011/2021
+# unaffected only when gated here (an unconditional-default attempt changed
+# 2011's own Q34 - a structural-warning/frontmatter-status shift with a
+# documented false-positive precedent, no statement text or asset change -
+# but a byte-for-byte change to a protected corpus is never accepted
+# regardless of characterization, so it was reverted in favor of this
+# declarative gate).
 year: 2008
 exam_type: unified
 exam_id: enade-2008-b-computacao
@@ -59,6 +77,7 @@ source_letter: b
 combined_numbering: true
 region_merge_x_tolerance: 150.0
 caption_font_size_gate: true
+owner_exclusion_gate: true
 sections:
   - id: formacao-geral-objetiva
     kind: objective

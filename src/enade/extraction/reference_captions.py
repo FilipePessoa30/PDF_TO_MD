@@ -61,8 +61,8 @@ _REFERENCE_CAPTION_RE = re.compile(
 )
 #: Padding (points) used when testing whether a line genuinely sits inside
 #: the anchored region's own bbox - matches assembler.py's own
-#: REGION_Y_PADDING/REGION_X_PADDING (a tight tolerance for rounding noise,
-#: not a general-purpose fuzziness margin).
+#: REGION_Y_PADDING (a tight tolerance for rounding noise, not a
+#: general-purpose fuzziness margin).
 _ANCHOR_CONTAINMENT_PADDING = 3.0
 #: Maximum vertical gap (points) between a caption line and the visual
 #: region it anchors - generous enough for a caption sitting a full line

@@ -281,17 +281,11 @@
     {
       "id": "enade-2008-computing-q13",
       "markdown_path": "enade-2008-computing-q13.md",
-      "markdown_sha256": "85c79cd2324706dc5fec2f9098ad8bf2ecb592e32d8788c71e296acd26a77640",
+      "markdown_sha256": "8cd4d00df42156f24ce614b2ab215e757a49f5d0e6d836f2b0268b5edcac6d21",
       "extraction_status": "needs_review",
       "automatic_validation": "passed",
       "visual_validation": "failed",
-      "assets": [
-        {
-          "id": "figure-01",
-          "path": "enade-2008-computing-q13/figure-01.png",
-          "sha256": "edd04b77c8960841940b96ab6ca456a6e0f8b3b145270020a438378df325d8fd"
-        }
-      ]
+      "assets": []
     },
     {
       "id": "enade-2008-computing-q14",

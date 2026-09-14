@@ -509,6 +509,94 @@ def test_assemble_question_does_not_attach_a_region_across_a_narrow_column_gap()
     assert result.figure_regions == []
 
 
+# --- Phase 3F: owner_exclusion_gate rejects a region owned by another span ---
+
+
+def test_owner_exclusion_gate_rejects_a_foreign_owned_region_when_enabled():
+    """PROMPT Phase 3F ("Cluster A"/Q12-Q13): a span whose own content
+    happens to overflow into a distant position (2008-b's own Q13, whose
+    alternative E overflows into the top of the next page column) can
+    widen its own coarse y/x bounding box enough to trivially satisfy the
+    old, ownership-agnostic tolerance for a *different* question's own
+    owned region. ``owner_exclusion_gate`` closes this generally (never a
+    question-ID check): a region whose owner_key names a different span is
+    never admitted, regardless of bounding-box overlap. Off by default
+    (matches every booklet without this field set); this test constructs
+    a synthetic, question-ID-free scenario with the same *shape* as the
+    real case, not the real coordinates or text.
+    """
+    import pymupdf
+
+    from enade.extraction.assembler import assemble_question
+    from enade.extraction.boundaries import QuestionKind, QuestionSpan
+    from enade.extraction.figures import compute_decorative_baseline
+    from enade.extraction.ownership import compute_question_regions
+
+    doc = pymupdf.open()
+    page = doc.new_page()
+    # A drawing that genuinely belongs to span A (nearest to its own
+    # column, same column tolerance) - positioned so it also satisfies
+    # span B's own coarse y/x tolerance once B's own bounding box widens
+    # below (the whole point of this test).
+    page.draw_rect(pymupdf.Rect(30, 290, 150, 350), color=(0, 0, 0), fill=(0, 0, 0))
+
+    span_a_lines = [
+        Line(page_number=1, text="Enunciado da questao A.", x0=30, y0=200, x1=200, y1=212),
+        Line(page_number=1, text="Continuacao de A.", x0=30, y0=278, x1=200, y1=290),
+    ]
+    span_a = QuestionSpan(
+        kind=QuestionKind.OBJECTIVE, number=1, lines=tuple(span_a_lines), start_page=1, end_page=1
+    )
+
+    # Span B's own real content sits far away, except for one line (its
+    # own last alternative, spilling into the next column - Q13's own
+    # real shape) whose position widens B's own coarse bounding box enough
+    # to reach the drawing above, purely by y/x proximity.
+    span_b_lines = [
+        Line(page_number=1, text="Enunciado da questao B.", x0=300, y0=500, x1=500, y1=512),
+        Line(page_number=1, text="A\t alternativa a", x0=300, y0=520, x1=500, y1=532),
+        Line(page_number=1, text="B\t alternativa b", x0=300, y0=535, x1=500, y1=547),
+        # The overflowing line: far from B's own paragraph in Y, and only
+        # a few points past the drawing's own right edge in X.
+        Line(page_number=1, text="C\t alternativa c", x0=155, y0=300, x1=350, y1=312),
+    ]
+    span_b = QuestionSpan(
+        kind=QuestionKind.OBJECTIVE, number=2, lines=tuple(span_b_lines), start_page=1, end_page=1
+    )
+
+    baseline = compute_decorative_baseline(doc)
+    question_regions_by_page = compute_question_regions([span_a, span_b])
+
+    # Default (gate off): matches every booklet that never sets this field
+    # - the old tolerance alone admits the drawing into B's own candidates.
+    result_default = assemble_question(
+        span_b, doc, baseline, question_regions_by_page=question_regions_by_page
+    )
+    assert len(result_default.figure_regions) == 1
+
+    # Gate on: the drawing's own owner_key (span A's) never matches B's,
+    # so it is rejected regardless of the bounding-box overlap above.
+    result_gated = assemble_question(
+        span_b,
+        doc,
+        baseline,
+        question_regions_by_page=question_regions_by_page,
+        owner_exclusion_gate=True,
+    )
+    assert result_gated.figure_regions == []
+
+    # Span A itself is unaffected either way - it still gets its own,
+    # genuinely-owned drawing.
+    result_a = assemble_question(
+        span_a,
+        doc,
+        baseline,
+        question_regions_by_page=question_regions_by_page,
+        owner_exclusion_gate=True,
+    )
+    assert len(result_a.figure_regions) == 1
+
+
 def test_assemble_question_indexes_an_inline_alternative_asset_correctly_alongside_a_statement_figure():
     """Regression test (PROMPT Phase 2F section 8, "multiplos segmentos
     intercalados" + index integrity): a first implementation of the

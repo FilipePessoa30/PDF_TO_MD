@@ -98,6 +98,29 @@ class ExamStructureProfile(BaseModel):
     #: default, since enabling it unconditionally was found by full
     #: regeneration to alter 2011's own Q05/Q33/Q34/Q35.
     caption_font_size_gate: bool = False
+    #: Opt-in requirement (PROMPT Phase 3F) that a visual region explicitly
+    #: owned by a *different* question (``VisualRegion.owner_key``, computed
+    #: by ``figures.py`` from the same ``QuestionRegion`` geometry - see
+    #: ownership.py) is never admitted into a span's own candidate set,
+    #: even when it satisfies the older, ownership-agnostic y/x bounding-box
+    #: tolerance in ``assembler.assemble_question``. Only ever *removes* a
+    #: previously wrongly-admitted region - it can never add one, since it
+    #: is purely an additional restriction layered on top of the existing
+    #: tolerance, so it can only fix a false cross-question attribution,
+    #: never miss a genuine one. ``False`` (default) means exactly the
+    #: original, unchanged behavior every booklet without this field set
+    #: already has. Set only for a booklet confirmed (by direct
+    #: instrumentation) to need it - enabling it unconditionally was found
+    #: by full regeneration to change 2011's own Q34 (a region genuinely
+    #: unowned by either Q34 or its neighbor Q35 was, before this gate,
+    #: geometrically counted as Q34's own candidate purely by y/x
+    #: proximity, tripping a conservative "region fell after the
+    #: alternatives cutoff" structural warning that already has a
+    #: documented false-positive precedent for this exact question - see
+    #: ``blocker_ledger.py``'s own ``accepted_non_material_difference``
+    #: docstring - but a byte-for-byte change to a protected corpus is
+    #: never accepted regardless of how the change is characterized).
+    owner_exclusion_gate: bool = False
 
     @model_validator(mode="after")
     def _validate_sections(self) -> ExamStructureProfile:

@@ -1168,26 +1168,39 @@ blockers:
   status: open
   superseded_by: null
   visual_validation: failed
-- affected_assets:
-  - figure-01
+- affected_assets: []
   category: cross-question-contamination
-  cause: 'NEWLY FOUND IN PHASE 3E (previously flagged only for the alternative-E text-duplication
-    defect - the image-level contamination was not checked at that time). Root cause not isolated this
-    phase (budget spent on the Q61/Q62/D60 forward-reference mechanism); likely a region-detection or
-    ownership-assignment issue specific to this page''s own geometry, not yet investigated in enough
-    depth to root-cause safely without risking a rushed fix.'
-  description: 'Q13''s own figure-01.png is byte-identical (SHA-256
-    edd04b77c8960841940b96ab6ca456a6e0f8b3b145270020a438378df325d8fd, confirmed by direct hash
-    comparison) to Q12''s own control-flow-graph diagram. Q13 is a pure set-partition question with no
-    diagram anywhere on its own source page - this is a cross-question IMAGE-asset contamination,
-    independent of the pre-existing q13-duplicated-alternative-text text defect.'
-  evidence: docs/phase-3e-report.md
+  cause: 'RESOLVED IN PHASE 3F. Root-caused precisely by direct instrumentation: Q13''s own
+    alternative E genuinely overflows into the top of the next page column (printed above Q14''s
+    own text at (304.8, 142.9) because it did not fit below alternative D in Q13''s own left-
+    column position) - a real, legitimate layout feature, not a bug in itself. This widens Q13''s
+    own coarse bounding box (assembler.py''s page_y_bounds/page_x_bounds, derived from all of a
+    span''s own lines) enough to trivially satisfy the older, ownership-agnostic y/x tolerance for
+    Q12''s own control-flow-graph diagram (owner=objective-12), which sits well within that
+    widened box despite the two questions sharing nothing. Fixed via a new, general, declaratively
+    -gated ``owner_exclusion_gate`` (ExamStructureProfile/assembler.py): a visual region explicitly
+    owned by a *different* question is never admitted, regardless of bounding-box overlap - this
+    can only ever remove a previously wrongly-admitted region, never add one. Confirmed by full
+    regeneration to leave 2011/2021 unaffected only when gated here (an unconditional-default
+    attempt changed 2011''s own Q34 - a structural-warning/frontmatter-status shift, no statement
+    text or asset change - reverted in favor of this declarative gate; see
+    docs/phase-3f-report.md).'
+  description: 'RESOLVED (Phase 3F): Q13''s own figure-01.png (previously byte-identical to Q12''s
+    own control-flow-graph diagram, SHA-256
+    edd04b77c8960841940b96ab6ca456a6e0f8b3b145270020a438378df325d8fd) is gone - Q13 now correctly
+    has assets: [] (a pure set-partition question with no diagram on its own source page). Q12''s
+    own asset is unaffected. The separate, pre-existing q13-duplicated-alternative-text defect
+    (unrelated mechanism) remains open.'
+  evidence: docs/phase-3f-report.md; tests/test_extraction_assembler.py (owner_exclusion_gate);
+    data/manifests/exam-structure-2008.yaml
   id: q13-cross-question-image-contamination
   question_id: enade-2008-computing-q13
-  regression_tests: []
-  resolution: null
+  regression_tests:
+  - tests/test_extraction_assembler.py
+  - tests/test_extraction_pipeline_2008.py
+  resolution: 'RESOLVED (Phase 3F): see cause above.'
   source_pages:
   - 8
-  status: open
+  status: resolved
   superseded_by: null
   visual_validation: failed

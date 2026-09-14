@@ -336,3 +336,25 @@ def test_d60_no_longer_contaminated_by_q61_diagram(extraction_result):
     assert "Figura para a questão 61" not in d60.statement
     assert "Estágios do ciclo de vida" not in d60.statement
     assert d60.statement.rstrip().endswith("(valor: 4,0 pontos)")
+
+
+def test_q13_no_longer_receives_q12_own_diagram(extraction_result):
+    """Regression test for ``q13-cross-question-image-contamination``
+    (RESOLVED Phase 3F, ``owner_exclusion_gate``): Q13's own alternative E
+    overflows into the top of the next page column (page 8), widening
+    Q13's own coarse bounding box enough to previously satisfy the
+    ownership-agnostic y/x tolerance for Q12's own control-flow-graph
+    diagram. Q13 is a pure set-partition question with no diagram of its
+    own; Q12 must keep its own asset unaffected.
+    """
+    result, _ = extraction_result
+    questions_by_number = {
+        q.question_number: q
+        for q in result.questions
+        if q.question_type == QuestionType.MULTIPLE_CHOICE
+    }
+    q12 = questions_by_number[12]
+    q13 = questions_by_number[13]
+    assert not q13.assets
+    assert len(q12.assets) == 1
+    assert q12.assets[0].sha256 != (q13.assets[0].sha256 if q13.assets else None)

@@ -210,6 +210,9 @@ def extract_exam(
             caption_font_size_gate = (
                 structure_profile.caption_font_size_gate if structure_profile is not None else False
             )
+            owner_exclusion_gate = (
+                structure_profile.owner_exclusion_gate if structure_profile is not None else False
+            )
 
             # PROMPT Phase 3E: applied once, in original document order,
             # before any region detection, merge, or text consumption -
@@ -286,6 +289,7 @@ def extract_exam(
                     region_merge_x_tolerance=region_merge_x_tolerance,
                     caption_font_size_gate=caption_font_size_gate,
                     reference_transfer_target_keys=reference_transfer_target_keys,
+                    owner_exclusion_gate=owner_exclusion_gate,
                 )
 
                 suffix = "q" if span.kind == QuestionKind.OBJECTIVE else "d"
