@@ -7,7 +7,6 @@ source_occurrences:
   source_path: 2008/b1_prova.pdf
   pages:
   - 26
-  - 27
   question_number: 60
   section: engenharia-computacao-discursiva
 applicable_courses:
@@ -82,9 +81,3 @@ C Na presença de ruído térmico, é possível adotar mais de 16 níveis de sin
 (valor: 3,0 pontos)
 
 (valor: 4,0 pontos)
-
-Figura para a questão 61 Estágios do ciclo de vida de um serviço de TI Gerenciamento de aplicações Gerente do desenvolvimento de aplicações Negócios Entrega de serviços Gerente de serviços Cliente Usuário
-
-Estratégias, planos e requisitos Soluções de negócios
-
-Definir Planejar Implantar Validar Estabelecer políticas serviços serviços serviços estratégias Desenho e planejamento Implantação Suporte técnico Administração

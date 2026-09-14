@@ -262,6 +262,28 @@ def _round_rect(rect: Rect) -> tuple[int, int, int, int]:
     return tuple(round(c / COORD_ROUNDING) * COORD_ROUNDING for c in rect)  # type: ignore[return-value]
 
 
+def _is_valid_rect(rect: Rect) -> bool:
+    """``False`` for a zero/negative-area rect - never a real visual asset.
+
+    ``QuestionRegion.clip()`` (ownership.py) clamps a candidate's own raw
+    bbox to its owner's claimed territory plus a fixed safety margin; when
+    the raw candidate does not overlap that territory *at all* (e.g. a
+    per-page header/logo raster image sitting well above every question's
+    own text, never excluded by ``compute_decorative_baseline`` - that
+    function only tracks recurring vector drawings, not images - and
+    assigned an owner anyway by ``find_owner``'s own nearest-in-column
+    fallback, which has no distance cap), the clamp does not detect "no
+    overlap" and instead produces an inverted rect (``y1 < y0`` or
+    ``x1 < x0``) - confirmed on 2008-b page 11, where a 74-198pt-high logo
+    image was assigned to Q21 (its own claimed territory starts at
+    y0=271) and clipped to (36.84, 251.25, 160.68, 198.12), crashing the
+    PNG renderer downstream. Such a candidate never legitimately belongs to
+    the owner it was nearest-matched to; every clip result is checked here
+    and dropped rather than kept as a broken region.
+    """
+    return rect[2] > rect[0] and rect[3] > rect[1]
+
+
 def compute_decorative_baseline(doc: pymupdf.Document) -> frozenset[tuple[int, int, int, int]]:
     """Find drawing rects that recur across most pages - i.e. booklet decoration."""
     page_count = doc.page_count
@@ -434,6 +456,24 @@ def _dominant_left_margin(lines: list[Line]) -> float | None:
 #: the page's own "QUESTAO 9" marker, not the 6pt of the real caption two
 #: lines below it) - equal size is therefore already disqualifying, no
 #: slack needed.
+#:
+#: EXPERIMENT (PROMPT Phase 3E, reverted): D40's own residual defect (a
+#: query-tree node label, "B\tnome,endereco" at 13.3pt vs. a 9pt body,
+#: leaking as loose text because it is *larger* than body, the opposite of
+#: what this gate screens for) suggested letting a same-or-larger-font
+#: candidate through when its own text is short (< ``_MIN_BODY_TEXT_LENGTH``
+#: chars), on the theory that a real header is always a multi-word phrase
+#: (D09's: 27 chars; D10's three: all 30+) while a diagram's own symbolic
+#: label is characteristically short. Confirmed by full regeneration to
+#: regress a *different* part of this same question: D40's own real prose
+#: contains a short, legitimate standalone fragment ("Cliente," - the
+#: relation's own name, ending a line before a paragraph-style wrap) that
+#: is exactly as short as the tree label and got wrongly swallowed into
+#: figure-01's own crop the same way, splitting a real sentence in two and
+#: losing "Cliente," as visible text. Short length alone cannot tell a
+#: genuine diagram label apart from an ordinary short line of body prose,
+#: so this was reverted rather than kept; D40's own tree-label leak remains
+#: open (see docs/phase-3e-report.md).
 FONT_SIZE_CAPTION_MARGIN = 0.0
 
 
@@ -766,6 +806,51 @@ def _owner_of(rect: Rect, page_regions: list[QuestionRegion] | None) -> Question
     return find_owner(page_regions, x, y)
 
 
+def collect_page_candidates(
+    page: pymupdf.Page,
+    page_number: int,
+    decorative_baseline: frozenset[tuple[int, int, int, int]],
+    overrides: LayoutOverrideSet | None = None,
+    pdf_sha256: str = "",
+) -> list[tuple[Rect, bool]]:
+    """Every non-decorative, non-rule-line drawing/image on ``page``, raw -
+    before any Y-proximity merge, label absorption, or ownership grouping.
+
+    Extracted out of ``detect_visual_regions`` (PROMPT Phase 3E) so a
+    caller that needs just the raw candidate pool - e.g.
+    ``reference_captions._find_anchored_region``, which does its own
+    narrowly-scoped local clustering rather than the general, page-wide
+    pipeline below - does not have to duplicate this filtering logic.
+    """
+    candidates: list[tuple[Rect, bool]] = []
+
+    def _excluded(rect: tuple[float, float, float, float]) -> bool:
+        return overrides is not None and overrides.excludes_from_region_candidates(
+            pdf_sha256, page_number, rect
+        )
+
+    for drawing in page.get_drawings():
+        rect = drawing.get("rect")
+        if rect is None or rect.is_empty:
+            continue
+        key = _round_rect((rect.x0, rect.y0, rect.x1, rect.y1))
+        if key in decorative_baseline:
+            continue
+        rect_tuple = (rect.x0, rect.y0, rect.x1, rect.y1)
+        if _excluded(rect_tuple):
+            continue
+        if _is_rule_line(rect_tuple):
+            continue
+        candidates.append((rect_tuple, False))
+
+    for image_info in page.get_image_info():
+        bbox = image_info.get("bbox")
+        if bbox and not _excluded(tuple(bbox)):
+            candidates.append((tuple(bbox), True))
+
+    return candidates
+
+
 def detect_visual_regions(
     doc: pymupdf.Document,
     page_number: int,
@@ -828,31 +913,9 @@ def detect_visual_regions(
     section 13-18; see docs/decisions.md, Phase 2C ADR).
     """
     page = doc[page_number - 1]
-    candidates: list[tuple[Rect, bool]] = []
-
-    def _excluded(rect: tuple[float, float, float, float]) -> bool:
-        return overrides is not None and overrides.excludes_from_region_candidates(
-            pdf_sha256, page_number, rect
-        )
-
-    for drawing in page.get_drawings():
-        rect = drawing.get("rect")
-        if rect is None or rect.is_empty:
-            continue
-        key = _round_rect((rect.x0, rect.y0, rect.x1, rect.y1))
-        if key in decorative_baseline:
-            continue
-        rect_tuple = (rect.x0, rect.y0, rect.x1, rect.y1)
-        if _excluded(rect_tuple):
-            continue
-        if _is_rule_line(rect_tuple):
-            continue
-        candidates.append((rect_tuple, False))
-
-    for image_info in page.get_image_info():
-        bbox = image_info.get("bbox")
-        if bbox and not _excluded(tuple(bbox)):
-            candidates.append((tuple(bbox), True))
+    candidates = collect_page_candidates(
+        page, page_number, decorative_baseline, overrides=overrides, pdf_sha256=pdf_sha256
+    )
 
     if not candidates:
         return []
@@ -919,6 +982,8 @@ def detect_visual_regions(
             expanded_bbox = _expand_with_labels(bbox, owner_labels, body_margin_x0)
             if owner is not None:
                 expanded_bbox = owner.clip(expanded_bbox)
+                if not _is_valid_rect(expanded_bbox):
+                    continue
             if overrides is not None and overrides.suppresses_region(
                 pdf_sha256, page_number, expanded_bbox
             ):
@@ -958,6 +1023,8 @@ def detect_visual_regions(
             if width < MIN_FORMULA_WIDTH or height < MIN_FORMULA_HEIGHT:
                 continue
             final_bbox = owner.clip(bbox) if owner is not None else bbox
+            if not _is_valid_rect(final_bbox):
+                continue
             if overrides is not None and overrides.suppresses_region(
                 pdf_sha256, page_number, final_bbox
             ):

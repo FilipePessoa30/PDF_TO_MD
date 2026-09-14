@@ -178,10 +178,15 @@ def test_d10_no_longer_loses_its_own_newspaper_fragments(extraction_result):
     """PROMPT Phase 3D: D10's own three newspaper fragments (each with a
     headline+body+citation) were previously missing 2 of 3 headlines/bodies
     almost entirely (docs/phase-3c-report.md section L). The font-size gate
-    recovers all three headlines and bodies - still not in the correct
-    reading order (a distinct, unresolved local-reading-order defect, see
-    docs/phase-3d-report.md), so this only asserts the content is present,
-    not that it is correctly ordered.
+    recovers all three headline titles and all three citations - asserted
+    here. It does NOT recover every body paragraph in full: a Phase 3E
+    re-audit against page 7's own raw text found headline 1's own entire
+    body paragraph, and headline 2's own opening clause, still missing -
+    genuine content loss, not merely a reading-order defect as Phase 3D's
+    own note had claimed (see docs/phase-3e-report.md,
+    d10-label-absorption-newspaper-fragments). Not re-asserted as missing
+    here (this suite documents confirmed-present content, not open
+    defects) - see the blocker ledger for the corrected, complete picture.
     """
     result, _ = extraction_result
     d10 = _discursive_by_number(result)[10]
@@ -267,3 +272,67 @@ def test_q68_where_clause_is_no_longer_split(extraction_result):
         "(SELECT IdDep FROM Empregado GROUP BY IdDep HAVING count(*) > 5) GROUP BY NomeDep;"
         in q68.statement
     )
+
+
+def test_q61_gains_its_own_itil_diagram(extraction_result):
+    """PROMPT Phase 3E: Q61's own ITIL service-lifecycle diagram is printed
+    on page 27 *before* Q61's own "QUESTAO 61" marker (D60's own discursive
+    text fills the space above it, with an explicit "Figura para a questao
+    61" caption documenting the diagram's real owner) - marker-position-based
+    span-slicing therefore attributed it to D60/Q62 instead (see
+    q62-cross-question-diagram-label-bleed / d60-cross-question-diagram-
+    label-bleed). The forward-reference-caption mechanism
+    (reference_captions.py) now moves the caption and its anchored diagram
+    labels to Q61's own span before any region detection/merge runs. Q61 was
+    already ``passed`` before this phase (its own statement text was never
+    truncated) but had no figure of its own at all.
+    """
+    result, _ = extraction_result
+    questions_by_number = {
+        q.question_number: q
+        for q in result.questions
+        if q.question_type == QuestionType.MULTIPLE_CHOICE
+    }
+    q61 = questions_by_number[61]
+    assert len(q61.assets) == 1
+    assert q61.assets[0].type == "image"
+    assert "A figura acima, adaptada do documento" in q61.statement
+    assert q61.statement.index("![Figura") < q61.statement.index("A figura acima")
+    assert "QUESTÃO 61" not in q61.statement
+    assert "Estágios do ciclo de vida" not in q61.statement  # moved into the figure, not loose text
+
+
+def test_q62_no_longer_contaminated_by_q61_diagram(extraction_result):
+    """Regression test for ``q62-cross-question-diagram-label-bleed``
+    (RESOLVED Phase 3E): Q62's own real statement (INTOSAI audit ethics
+    question) must be complete, uncontaminated by Q61's own ITIL diagram
+    labels, and carry no spurious figure of its own.
+    """
+    result, _ = extraction_result
+    questions_by_number = {
+        q.question_number: q
+        for q in result.questions
+        if q.question_type == QuestionType.MULTIPLE_CHOICE
+    }
+    q62 = questions_by_number[62]
+    assert not q62.assets
+    assert q62.statement.endswith(
+        "qual valor ou princípio um auditor estaria primariamente falhando em atender?"
+    )
+    assert "Suporte a serviços" not in q62.statement
+    assert "Gerenciamento de infra-estrutura de TIC" not in q62.statement
+    alternative_e = next(a for a in q62.alternatives if a.letter == "E")
+    assert alternative_e.text == "competência"
+
+
+def test_d60_no_longer_contaminated_by_q61_diagram(extraction_result):
+    """Regression test for ``d60-cross-question-diagram-label-bleed``
+    (RESOLVED Phase 3E): D60's own Nyquist/Shannon statement must end at
+    its own real content (page 26), never spilling onto page 27's own Q61
+    diagram caption/labels.
+    """
+    result, _ = extraction_result
+    d60 = _discursive_by_number(result)[60]
+    assert "Figura para a questão 61" not in d60.statement
+    assert "Estágios do ciclo de vida" not in d60.statement
+    assert d60.statement.rstrip().endswith("(valor: 4,0 pontos)")

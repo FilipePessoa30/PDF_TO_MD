@@ -5,7 +5,7 @@
   },
   "enade-2008-computing-d10": {
     "status": "failed",
-    "notes": "STILL OPEN, but substantially improved in Phase 3D. Phase 3C's region-merge fix removed a RASCUNHO-grid-derived spurious figure-02.png; Phase 3C's own audit still found 2 of the page's 3 newspaper fragments' own headlines/bodies missing (label-absorption-over-reach, same class as D09). Phase 3D's caption_font_size_gate (see enade-2008-computing-d09's own note) now recovers ALL of the missing content: all three headlines ('Alunos dao nota 7,1 para ensino medio', 'Entre os piores tambem em matematica e leitura', 'Ensino fundamental atinge meta de 2009'), all three bodies, and all three citations are present, word for word, against page 7's own raw text extraction. The remaining defect is now purely one of LOCAL READING ORDER, not content loss: this page prints the three clippings scattered across a genuine two-column layout in a non-linear 'collage' arrangement (a clipping's own body can wrap from the right column into the left mid-paragraph, and a citation can sit far below its own body in whichever column had free space) that the existing 'all of left column, then all of right column' page-reading-order model cannot represent - it is not a simple two-question left/right split. Investigated in Phase 3D (see docs/phase-3d-report.md section I) but a general 'clipping-box' local-reading-order mechanism was not implemented this phase given the demonstrated risk of further geometric heuristics to 2011/2021 (see the two reverted Phase 3C experiments) - left as a precisely diagnosed, open defect rather than rushed."
+    "notes": "RE-AUDITED IN PHASE 3E - FINDING CORRECTED, MORE SEVERE THAN PREVIOUSLY DOCUMENTED. Phase 3D's own note claimed all three newspaper headlines/bodies/citations were present, word for word, with only reading ORDER left wrong. Direct re-comparison against page 7's own raw PDF text this phase finds this was inaccurate: the ENTIRE body paragraph of headline 1 ('Apesar das varias avaliacoes que mostram que o ensino medio esta muito aquem do desejado... entre aqueles que foram bem, ela fica em 7,1.') is absent from the rendered Markdown, and headline 2's own opening clause ('O Brasil teve o quarto pior desempenho, entre 57 paises e territorios, no maior teste mundial de matematica, o Programa Internacional de') is also missing - only a disconnected downstream fragment survives, relocated away from its own continuation. This is genuine content LOSS, not merely a reading-order scramble as previously characterized - left open (same font-size/geometry-based label-absorption-over-reach family as D09/D40, collage layout not yet isolated to a specific mechanism fix)."
   },
   "enade-2008-computing-d20": {
     "status": "passed",
@@ -17,7 +17,7 @@
   },
   "enade-2008-computing-d40": {
     "status": "failed",
-    "notes": "STILL OPEN, but further improved in Phase 3D on top of Phase 3C's own gains. Phase 3C's region-merge fix already produced a structured content_blocks statement with a correct, verbatim SQL code block. Phase 3D's caption_font_size_gate additionally recovers the relation-schema definition that used to open the statement ('O banco de dados de um sistema de controle bancario... a chave primaria da relacao e grifada.') as its own text, plus a second CodeSegment for the schema itself ('Cliente(nroCliente, nome, endereco, ...'), and restores the missing opening clause of the closing paragraph ('Para que o otimizador de consultas passasse a utilizar os indices...', previously truncated to just 'utilizar os indices...'). One residual defect remains, unchanged from Phase 3C: the query-tree diagram's own relational-algebra projection label ('B nome,endereco', almost certainly a mis-rendered pi-symbol projection over name/address) bleeds in as loose text immediately before figure-02 instead of staying purely part of that diagram - the same general class as the open q62-cross-question-diagram-label-bleed blocker, not resolved by either phase's fixes (both targeted different mechanisms - RASCUNHO-grid merge and caption font size, neither of which is this diagram-label's own root cause). See docs/phase-3d-report.md section D."
+    "notes": "RE-AUDITED IN PHASE 3E - confirmed still open, one correction to the existing record. The residual query-tree diagram label ('B nome,endereco', likely a mis-rendered relational-algebra projection symbol) still bleeds in as loose text - confirmed it precedes figure-01, not figure-02 as previously written (the schema diagram figure-01 comes first in the statement; the query-tree figure-02 comes second). An experiment this phase (widening caption_font_size_gate's own label filter to admit a same-or-larger-font candidate when its own text is short, on the theory that a real header is always a long phrase) was tried and REVERTED: it fixed this label but caused a new regression on this SAME question - a legitimate short standalone word from D40's own real prose ('Cliente,' - the relation's own name, ending a line before a paragraph wrap) was wrongly swallowed into figure-01's own crop by the same relaxed rule, splitting a real sentence in two. Short text length alone cannot distinguish a genuine diagram label from an ordinary short line of body prose; left open rather than keep an unsafe fix (see docs/phase-3e-report.md, 'Experimentos revertidos')."
   },
   "enade-2008-computing-d59": {
     "status": "passed",
@@ -25,7 +25,7 @@
   },
   "enade-2008-computing-d60": {
     "status": "failed",
-    "notes": "NEWLY AUDITED IN PHASE 3C (was honestly not_performed - the region-merge fix touched this question's own assets, prompting its first real inspection). Phase 3C's fix correctly removed 2 of 3 RASCUNHO-grid-derived spurious figures and restored the missing Nyquist/Shannon intro paragraph and item A's own opening clause. However, a real, pre-existing defect (not caused or worsened by this phase's fix - confirmed present in the prior committed version too, just obscured among the more severe fragmentation) remains: the statement ends with Questao 61's own ITIL service-lifecycle diagram caption/labels ('Figura para a questao 61 Estagios do ciclo de vida de um servico de TI...') bled in as trailing contamination, the same general cross-question label-bleed class as the open q62-cross-question-diagram-label-bleed blocker. A new blocker is opened for this (d60-cross-question-diagram-label-bleed)."
+    "notes": "PARTIALLY RESOLVED IN PHASE 3E, DIFFERENT RESIDUAL DEFECT NOW VISIBLE. The previously-documented trailing contamination from Q61's own ITIL diagram caption/labels ('Figura para a questao 61 Estagios do ciclo de vida...') is confirmed GONE - the forward-reference-caption mechanism (reference_captions.py) now correctly transfers that content to Q61's own span, since the caption explicitly documents Q61 as its owner. D60's own real statement (Nyquist/Shannon channel-capacity question) now ends cleanly at page 26's own last real line, '(valor: 4,0 pontos)', with nothing from page 27 bleeding in. However, re-inspection against page 26 surfaces a DIFFERENT, pre-existing defect that the ITIL contamination had been obscuring (confirmed present in the prior committed version too, not introduced by this phase's fix): the per-item '(valor: X pontos)' scoring annotations are not attached to their own items - item C is immediately followed by '(valor: 3,0 pontos)' (item A's own value, not C's), and two more orphaned valor lines trail at the very end unattached to any item. This is a distinct local-reading-order defect (item/annotation pairing), not a cross-question contamination - left open, not attempted this phase given the remaining budget; see the new blocker d60-valor-annotation-misattachment."
   },
   "enade-2008-computing-d79": {
     "status": "passed",
@@ -41,19 +41,19 @@
   },
   "enade-2008-computing-q02": {
     "status": "failed",
-    "notes": "STILL OPEN, improved in Phase 3D on top of Phase 3A/3B's own partial progress (2 contaminating images down to 1). Phase 3D's caption_font_size_gate recovers the question's own opening epigraph ('Quando o homem nao trata bem a natureza, a natureza nao trata bem o homem.') as real text before the figure, where before the statement was entirely empty. Still genuinely incomplete: the transition sentence introducing the image ('Essa afirmativa reitera a necessaria interacao das diferentes especies, representadas na imagem a seguir.'), the image's own caption ('Disponivel em http://curiosidades.spaceblog.com.br. Acesso em 10 out. 2008.'), and the sentence leading into the alternatives ('Depreende-se dessa imagem a') remain absorbed into figure-01's own region - these are genuinely small-font body text fragmented by their proximity to a large image, not a same-size header like D09/D10/D40's own defect, so the font-size gate does not apply to them. Not resolved this phase."
+    "notes": "RE-AUDITED IN PHASE 3E - confirmed still open, unchanged from Phase 3D. The epigraph is recovered, but the transition sentence ('Essa afirmativa reitera...'), the image's own citation ('Disponivel em http://curiosidades.spaceblog.com.br...'), and the alternatives' own lead-in clause ('Depreende-se dessa imagem a') remain missing against page 2's own raw text. Same unresolved label-absorption-over-reach family as D09/D10/D40, not isolated to a specific mechanism fix this phase."
   },
   "enade-2008-computing-q03": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Statement and all 5 alternatives match page 3's own raw text word for word."
   },
   "enade-2008-computing-q04": {
     "status": "passed",
     "notes": "Statement (mulheres cidadas de segunda classe) compared against page 3 - complete, no image. Alternatives A-E correct. The 'figure region fell after the alternatives cutoff' structural warning refers to a discarded, correctly-excluded spurious region - no content loss (same accepted shape as 2011 Q34/Q11)."
   },
   "enade-2008-computing-q05": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "failed",
+    "notes": "NEWLY AUDITED IN PHASE 3E (previously not_performed). The statement's own real prose is present and correct, but the image's own citation line, printed on page 3 between the intro sentence and 'Alem da preocupacao...' ('STRICKLAND, Carol; BOSWELL, John. Arte Comentada: da pre-historia ao pos-moderno. Rio de Janeiro: Ediouro [s.d.].'), is missing entirely from the rendered Markdown - the asset's own caption/alt_text are also null. Same unresolved label-absorption-over-reach family as D09/D10/D40/Q02 (a real citation dropped rather than kept as body content or asset caption); not isolated to a specific mechanism fix this phase. New blocker opened: q05-image-citation-dropped."
   },
   "enade-2008-computing-q06": {
     "status": "passed",
@@ -61,43 +61,43 @@
   },
   "enade-2008-computing-q07": {
     "status": "failed",
-    "notes": "STILL OPEN (Phase 3A + 3B). Statement still truncated to a bare fragment - same label-absorption-over-reach pattern."
+    "notes": "RE-AUDITED IN PHASE 3E - confirmed still open, with one new detail. The statement remains collapsed to the bare fragment 'aos 20% de maior renda foi,' (the Lorenz-curve framing paragraph is missing), exactly as documented in Phase 3D. New finding this phase: alternative E also carries trailing contamination ('Disponivel em http://www.ipea.gov.br') bled in from the figure's own citation - previously not called out. Same unresolved label-absorption-over-reach family as D09/D10/D40/Q02/Q05."
   },
   "enade-2008-computing-q11": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Items I-IV and the stem match page 7's own raw text exactly."
   },
   "enade-2008-computing-q12": {
     "status": "failed",
-    "notes": "NEWLY FOUND IN PHASE 3B. Statement missing its own opening/middle content (the 'atividade de teste' / 'complexidade ciclomatica' framing) - only 'base na' and the closing clause survive, plus figure-01.png (the control-flow graph). Real content loss, not resolved by this phase's fixes."
+    "notes": "RE-AUDITED IN PHASE 3E - confirmed still open, unchanged from Phase 3B. Only 'base na' and the closing clause survive; the GQS/complexidade-ciclomatica framing paragraph is missing against page 8's own raw text, alongside figure-01.png (the control-flow graph). Same unresolved label-absorption-over-reach family."
   },
   "enade-2008-computing-q13": {
     "status": "failed",
-    "notes": "NEWLY FOUND IN PHASE 3B. Statement's own real content is complete, but alternative E's own text ('E {{1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}}') is duplicated, appearing both appended to the statement and correctly in its own place under Alternativas - confusing, though not a content loss (PROMPT Phase 3B section 10: 'texto duplicado ... deve ser sinalizado')."
+    "notes": "RE-AUDITED IN PHASE 3E - confirmed still open (alternative E's own text is still duplicated into the statement, as documented in Phase 3B), PLUS A NEW, DISTINCT DEFECT FOUND: Q13's own figure-01.png is byte-identical (SHA-256 edd04b77c8960841940b96ab6ca456a6e0f8b3b145270020a438378df325d8fd, confirmed by direct hash comparison) to Q12's own control-flow-graph diagram. Q13 is a pure set-partition question with no diagram anywhere on its own source page - this is a previously undocumented cross-question IMAGE-asset contamination, independent of the known text-duplication issue. New blocker opened: q13-cross-question-image-contamination. Root cause not isolated this phase (budget spent on the Q61/Q62/D60 mechanism); left open."
   },
   "enade-2008-computing-q14": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Full algorithm/pseudocode statement and items I-IV match pages 7-8 exactly."
   },
   "enade-2008-computing-q15": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Statement and alternatives match page 8's own raw text exactly."
   },
   "enade-2008-computing-q16": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Statement (assertion/PORQUE structure) matches page 8's own raw text exactly."
   },
   "enade-2008-computing-q17": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Statement and alternatives match page 8's own raw text exactly."
   },
   "enade-2008-computing-q18": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Fibonacci definition and Haskell code match page 8's own raw text exactly."
   },
   "enade-2008-computing-q19": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Statement and alternatives match page 9's own raw text exactly."
   },
   "enade-2008-computing-q21": {
     "status": "passed",
@@ -113,7 +113,7 @@
   },
   "enade-2008-computing-q24": {
     "status": "failed",
-    "notes": "STILL OPEN (Phase 3A + 3B). Statement still replaced by garbled state-machine transition-table fragments ('A 0 B S0 / A II B 1 / A 0 B S0') - same table-cell bleed pattern as Q63, not resolved by this phase's fixes."
+    "notes": "RE-AUDITED IN PHASE 3E - confirmed still open, unchanged from Phase 3B. Statement still replaced by garbled state-machine/decoder transition-table fragments ('A\\t0 B\\tS0 / A\\tII B\\t1 / A\\t0 B\\tS0') in place of the real decoder-block framing text and its own truth table, against page 12's own raw text. This question's own layout (a main circuit diagram, a truth table, and three separately-diagrammed judged items I/II/III) needs a dedicated multi-diagram/judged-item assembly mechanism beyond a label-absorption fix - not attempted this phase given the scope and risk of a rushed general change; left open."
   },
   "enade-2008-computing-q25": {
     "status": "passed",
@@ -124,8 +124,8 @@
     "notes": "RESOLVED IN PHASE 3B (chrome + rule-line fixes). Previously truncated to a bare fragment. Re-inspected: full statement (256 vs. 4 grey levels comparison) present, both figure-01.png/figure-02.png correctly placed before the question text."
   },
   "enade-2008-computing-q27": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Statement and alternatives match page 13's own raw text exactly."
   },
   "enade-2008-computing-q28": {
     "status": "passed",
@@ -133,51 +133,51 @@
   },
   "enade-2008-computing-q29": {
     "status": "failed",
-    "notes": "NEWLY FOUND IN PHASE 3B. A side-panel grammar-production fragment ('A ÷ a B ÷ b') is inserted mid-sentence in the statement instead of staying visually separate next to the text ('ao lado') - a minor but real scrambling defect."
+    "notes": "RE-AUDITED IN PHASE 3E - confirmed still open, unchanged from Phase 3B. The side-panel grammar-production fragment ('A / a B / b', printed with a mis-rendered arrow glyph) is still inserted mid-sentence ('...os A / a B / b simbolos terminais sao a e b') against page 13's own raw text. Same general diagram-label-bleed class as Q62/D60 (now resolved for those two via the forward-reference-caption mechanism), but this is a same-span (not cross-question) label misplacement, so that mechanism does not apply here; a different, targeted fix would be needed. Left open."
   },
   "enade-2008-computing-q30": {
     "status": "passed",
     "notes": "Statement (espectro de radiofrequencia / multiplo acesso) compared against page 13/14. Complete, no image, alternatives correct."
   },
   "enade-2008-computing-q31": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Items I-IV match page 13's own raw text exactly."
   },
   "enade-2008-computing-q32": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Items I-III match page 13's own raw text exactly."
   },
   "enade-2008-computing-q33": {
     "status": "failed",
-    "notes": "NEWLY FOUND IN PHASE 3B. The four judged items' own roman-numeral markers (I/II/III/IV) and the words 'top-down'/'bottom-up' are displaced from their correct positions within the statement's own sentences - a scrambling defect, though the full wording is present."
+    "notes": "RE-AUDITED IN PHASE 3E - confirmed still open, unchanged from Phase 3B. The four judged items' own roman-numeral markers (I/II/III/IV) and the word 'bottom-up' remain interleaved into the wrong positions relative to the surrounding prose against page 13's own raw text (a local-reading-order defect within a single question's own statement, not a cross-question contamination). Left open."
   },
   "enade-2008-computing-q34": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Items I-V match page 14's own raw text exactly."
   },
   "enade-2008-computing-q35": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). All 5 (long) alternatives match page 14's own raw text verbatim."
   },
   "enade-2008-computing-q36": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Items I-V match page 14's own raw text exactly."
   },
   "enade-2008-computing-q37": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Statement and alternatives match page 14's own raw text exactly."
   },
   "enade-2008-computing-q41": {
     "status": "passed",
     "notes": "RESOLVED IN PHASE 3B. Previously severely scrambled/truncated. Re-inspected against page 18: full statement (manufatura integrada) and all three judged items I/II/III present in correct order and complete."
   },
   "enade-2008-computing-q42": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Statement and alternatives match page 17's own raw text exactly."
   },
   "enade-2008-computing-q43": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Statement and figure-01 match pages 17-18's own raw text exactly."
   },
   "enade-2008-computing-q44": {
     "status": "passed",
@@ -185,23 +185,23 @@
   },
   "enade-2008-computing-q45": {
     "status": "failed",
-    "notes": "STILL OPEN (Phase 3A + 3B). The full statement (integral notation, 2 sub-figures) remains captured as one self-contained whole-question image; bare 'I'/'II' item markers with no content are left in the statement text, unresolved by this phase's fixes. Alternatives remain correctly separate as text."
+    "notes": "RE-AUDITED IN PHASE 3E - confirmed still open, slightly more precisely characterized than before. Items I and II render as bare markers with no content, and item III's own marker is missing entirely (not merely empty) - the full text of all three judged items and the closing integral-notation clause are absent against the source page. Same unresolved label-absorption-over-reach family as D09/D10/D40/Q02/Q05/Q07/Q12."
   },
   "enade-2008-computing-q46": {
     "status": "passed",
     "notes": "Statement (grafico cartesiano y=f(x)) and figure-01.png compared against page 20. Complete, alternatives correct."
   },
   "enade-2008-computing-q47": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Statement and alternatives match pages 19-20's own raw text exactly."
   },
   "enade-2008-computing-q48": {
     "status": "passed",
     "notes": "Statement (metodo da biseccao, raizes de f(x)) compared against page 20/21. Complete, no image, alternatives correct."
   },
   "enade-2008-computing-q49": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Statement and alternatives match pages 19-20's own raw text exactly."
   },
   "enade-2008-computing-q50": {
     "status": "passed",
@@ -221,31 +221,31 @@
   },
   "enade-2008-computing-q54": {
     "status": "failed",
-    "notes": "STILL OPEN (Phase 3A + 3B). Empty statement - same label-absorption-over-reach pattern."
+    "notes": "RE-AUDITED IN PHASE 3E - confirmed still open, unchanged from Phase 3B. Statement remains entirely empty (image + alternatives only), matching the extraction audit's own two 'empty statement after chrome/figure filtering' warnings. Same unresolved label-absorption-over-reach family."
   },
   "enade-2008-computing-q56": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Items I-V match pages 22-23's own raw text exactly."
   },
   "enade-2008-computing-q57": {
     "status": "passed",
     "notes": "Statement (bloco logico look-up table) and figure-01.png compared against page 24. Complete paragraph before and after the image, alternatives correct."
   },
   "enade-2008-computing-q58": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Statement and alternatives match pages 23-24's own raw text exactly."
   },
   "enade-2008-computing-q61": {
     "status": "passed",
-    "notes": "RESOLVED IN PHASE 3B. Previously truncated mid-sentence. Re-inspected against page 27: full statement (ITIL service lifecycle figure caption/question) present."
+    "notes": "RECONFIRMED IN PHASE 3E, IMPROVED. Statement/alternatives were already complete and correct since Phase 3B (no change there). This phase adds the question's own ITIL service-lifecycle diagram, which the source PDF prints *before* Q61's own 'QUESTAO 61' marker (D60's own discursive answer fills the space above it on the shared page 26/27 boundary), with an explicit 'Figura para a questao 61' caption documenting the real owner. Marker-position-based span-slicing had no way to see this, attributing the caption+labels to D60/Q62 instead (see d60-cross-question-diagram-label-bleed/q62-cross-question-diagram-label-bleed). A new pre-processing pass (reference_captions.py) detects this explicit textual reference and transfers the caption plus its geometrically-anchored diagram labels to Q61's own span before any region detection/merge runs. Re-inspected against page 27: Q61 now renders its own figure (figure-01.png, the ITIL diagram) immediately before its own statement text, with no loose label text and no duplicated marker. Confirmed by full regeneration (zero 2011/2021 drift) and by direct comparison against the raw PDF text."
   },
   "enade-2008-computing-q62": {
-    "status": "failed",
-    "notes": "NEWLY FOUND IN PHASE 3B (not flagged in Phase 3A's own audit). Statement's own real content (INTOSAI audit code of ethics question) is present and correct, but is followed by trailing contamination from Q61's own ITIL diagram labels ('Suporte a servicos Operador de suporte tecnico / Gerenciamento de infra-estrutura de TIC / Tratar Operar obsolescencia servicos Operacoes') - a residual cross-question geometric-proximity leak, same general class as the Q21/Q22/Q23 case but not resolved by this phase's specific fixes."
+    "status": "passed",
+    "notes": "RESOLVED IN PHASE 3E (blocker q62-cross-question-diagram-label-bleed). Q62's own real statement (INTOSAI audit code-of-ethics question) was already complete since Phase 3B; the trailing contamination from Q61's own ITIL diagram labels ('Suporte a servicos Operador de suporte tecnico / Gerenciamento de infra-estrutura de TIC / Tratar Operar obsolescencia servicos Operacoes'), previously bleeding into both the statement and alternative E's own text, is now gone - the forward-reference-caption mechanism (reference_captions.py) transfers that content to Q61's own span before any region/label absorption can attach it here. Re-inspected against page 27, word for word: statement ends cleanly at '...falhando em atender?', all 5 alternatives match verbatim (alternative E is now exactly 'competencia', not the previously contaminated longer string), assets: []. No residuals found."
   },
   "enade-2008-computing-q63": {
     "status": "failed",
-    "notes": "STILL OPEN (Phase 3A + 3B). Statement still reduced to garbled table-cell fragments ('A atrA C atrB B atrC') - a different mechanism (table/diagram cell text bleeding in), not resolved by this phase's fixes."
+    "notes": "RE-AUDITED IN PHASE 3E - confirmed still open, unchanged from Phase 3B. Statement still replaced by garbled ER-diagram/relational-generalization fragments ('A\\tatrA / C\\tatrB B\\tatrC') instead of the real generalization/specialization framing text, against page 27's own raw text. Q63's own ER-diagram region (owner=objective-63, 18 merged elements, confirmed correctly excluded from Q61's own figure this phase via the new owner-containment check in assemble_question) is itself intact and correctly owned; the residual defect is a same-span label-absorption gap within Q63's own content, not a cross-question issue - left open."
   },
   "enade-2008-computing-q64": {
     "status": "passed",
@@ -256,12 +256,12 @@
     "notes": "Statement (niveis de abstracao de processos) compared against page 28. Complete, no image, alternatives correct."
   },
   "enade-2008-computing-q66": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Statement and alternatives match pages 27-28's own raw text exactly."
   },
   "enade-2008-computing-q67": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Statement and alternatives match pages 27-28's own raw text exactly."
   },
   "enade-2008-computing-q68": {
     "status": "passed",
@@ -272,39 +272,39 @@
     "notes": "RESOLVED IN PHASE 3B. Previously empty statement. Re-inspected: full statement (legacy-system reengineering criteria) and figure-01.png present."
   },
   "enade-2008-computing-q70": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Statement and alternatives match pages 29-30's own raw text exactly."
   },
   "enade-2008-computing-q71": {
     "status": "passed",
     "notes": "RESOLVED IN PHASE 3B. Previously replaced by garbled diagram-label fragments. Re-inspected: full statement (module architecture alternatives) and figure-01.png present."
   },
   "enade-2008-computing-q72": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Statement and alternatives match pages 30-31's own raw text exactly."
   },
   "enade-2008-computing-q73": {
     "status": "passed",
     "notes": "RESOLVED IN PHASE 3B. Previously empty statement. Re-inspected: full statement (activity graph acceleration cost) and figure-01.png present."
   },
   "enade-2008-computing-q74": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Statement and alternatives match pages 30-31's own raw text exactly."
   },
   "enade-2008-computing-q75": {
     "status": "failed",
-    "notes": "STILL OPEN (Phase 3A + 3B). Empty statement - same label-absorption-over-reach pattern."
+    "notes": "RE-AUDITED IN PHASE 3E - confirmed still open, with one new detail. Statement remains entirely empty, matching the extraction audit's own two 'empty statement after chrome/figure filtering' warnings. New finding this phase: alternative D carries trailing diagram-label contamination ('138.76.28.1 e 138.76.28.2 10.0.0.1 10.0.0.2 10.0.0.10 Computador A Computador B') bled in from the NAPT figure's own labels - previously not called out. Same unresolved label-absorption-over-reach family."
   },
   "enade-2008-computing-q76": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Statement and alternatives match pages 30-31's own raw text exactly."
   },
   "enade-2008-computing-q77": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Statement and alternatives match pages 31-32's own raw text exactly, correctly ending before the shared 'Texto para as questoes 78 e 79' stimulus (same accepted shared-stimulus pattern as D79)."
   },
   "enade-2008-computing-q78": {
-    "status": "not_performed",
-    "notes": "Not individually visually/textually audited in Phase 3A due to the scope of the pilot session - structural checks (marker/boundary detection, gabarito linkage, asset reference integrity) all passed automatically for this question and it has no automated structural warning, but its own statement/alternative text was not independently cross-checked against the source PDF page-by-page. Left honestly not_performed rather than assumed passed - see docs/phase-3a-report.md section L for the audit's real coverage and why gold stays provisional."
+    "status": "passed",
+    "notes": "AUDITED IN PHASE 3E (previously not_performed). Items I-V match pages 32-33's own raw text exactly."
   }
 }

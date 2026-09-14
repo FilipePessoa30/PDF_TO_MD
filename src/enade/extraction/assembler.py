@@ -30,7 +30,7 @@ from enade.extraction.figures import (
 from enade.extraction.label_normalization import LabelCorrection
 from enade.extraction.layout import Line
 from enade.extraction.layout_overrides import LayoutOverrideSet
-from enade.extraction.ownership import QuestionRegion
+from enade.extraction.ownership import QuestionRegion, question_key
 from enade.extraction.spacing import SpacingCorrection
 from enade.extraction.tables import DetectedTable, detect_tables
 
@@ -487,7 +487,8 @@ def detect_broken_words(text: str) -> list[str]:
 
 
 def _strip_leading_marker(lines: list[Line]) -> list[Line]:
-    """Remove the "QUESTAO [DISCURSIVA] N" marker text from a span's first line.
+    """Remove the "QUESTAO [DISCURSIVA] N" marker text from a span's own
+    marker line, wherever it falls in ``lines``.
 
     A ``QuestionSpan`` always starts at its own marker line (that's how
     boundary detection finds it - see boundaries.py), so it is real content,
@@ -495,30 +496,39 @@ def _strip_leading_marker(lines: list[Line]) -> list[Line]:
     the rendered statement as a literal prefix (e.g. "QuEStãO 01 A chance
     de uma criança..."), redundant with both the Markdown "# Questão N"
     heading and the front matter's own ``question_number`` field.
+
+    Normally the marker line is ``lines[0]`` - but a forward-reference
+    transfer (reference_captions.py, PROMPT Phase 3E) can prepend a caption
+    and its own anchored content that was printed *above* the marker on the
+    page (e.g. 2008-b's "Figura para a questao 61", printed before "QUESTAO
+    61" itself), pushing the real marker line past index 0. The marker is
+    therefore searched for across the whole list rather than assumed to be
+    first; ``_MARKER_PREFIX_RE`` is anchored at the start of a line's own
+    text and specific enough (literal "questao" + digits) that no other
+    line in this corpus - a caption included - matches it by coincidence.
     """
-    if not lines:
-        return lines
-    first = lines[0]
-    match = _MARKER_PREFIX_RE.match(first.text)
-    if not match:
-        return lines
-    remainder = first.text[match.end() :].strip()
-    if not remainder:
-        return lines[1:]
-    stripped_first = Line(
-        page_number=first.page_number,
-        text=remainder,
-        x0=first.x0,
-        y0=first.y0,
-        x1=first.x1,
-        y1=first.y1,
-        is_monospace=first.is_monospace,
-        font_size=first.font_size,
-        spacing_corrections=first.spacing_corrections,
-        label_corrections=first.label_corrections,
-        symbol_corrections=first.symbol_corrections,
-    )
-    return [stripped_first, *lines[1:]]
+    for i, line in enumerate(lines):
+        match = _MARKER_PREFIX_RE.match(line.text)
+        if not match:
+            continue
+        remainder = line.text[match.end() :].strip()
+        if not remainder:
+            return lines[:i] + lines[i + 1 :]
+        stripped = Line(
+            page_number=line.page_number,
+            text=remainder,
+            x0=line.x0,
+            y0=line.y0,
+            x1=line.x1,
+            y1=line.y1,
+            is_monospace=line.is_monospace,
+            font_size=line.font_size,
+            spacing_corrections=line.spacing_corrections,
+            label_corrections=line.label_corrections,
+            symbol_corrections=line.symbol_corrections,
+        )
+        return lines[:i] + [stripped] + lines[i + 1 :]
+    return lines
 
 
 #: An alternative's own text is "empty" (nothing but the marker and
@@ -795,6 +805,7 @@ def assemble_question(
     question_regions_by_page: dict[int, list[QuestionRegion]] | None = None,
     region_merge_x_tolerance: float = UNBOUNDED_MERGE_X_TOLERANCE,
     caption_font_size_gate: bool = False,
+    reference_transfer_target_keys: frozenset[str] = frozenset(),
 ) -> ExtractedQuestion:
     warnings: list[str] = []
 
@@ -840,6 +851,7 @@ def assemble_question(
     #: just outside its own span's text lines without reopening that gap.
     x_tolerance = 5.0
 
+    own_key = question_key(span)
     regions: list[VisualRegion] = []
     for page_number in pages_in_span:
         page_regions = detect_visual_regions(
@@ -858,11 +870,72 @@ def assemble_question(
             continue
         y_min, y_max = bounds[0] - y_tolerance, bounds[1] + y_tolerance
         x_min, x_max = x_bounds[0] - x_tolerance, x_bounds[1] + x_tolerance
-        regions.extend(
-            r
-            for r in page_regions
-            if y_min <= r.bbox[1] <= y_max and r.bbox[0] <= x_max and r.bbox[2] >= x_min
-        )
+        # This y/x bounding box is the *only* inclusion test for every span
+        # that never received a forward-reference transfer (every 2011/2021
+        # span, and every 2008-b span except a transfer's own target) -
+        # completely unchanged from before Phase 3E. It was never
+        # reconciled with each region's own ``owner_key`` (computed by
+        # figures.py from the same QuestionRegion geometry - see
+        # ownership.py) because a span's own coarse bounding box never
+        # needed to grow past what this heuristic already tolerates.
+        #
+        # A forward-reference transfer (reference_captions.py) can pull a
+        # caption + its own anchored diagram from *before* a question's own
+        # marker into its span, growing that span's own bounding box far
+        # beyond what a fixed 15pt/5pt tolerance expects in either
+        # direction: wide enough to spuriously overlap a neighboring
+        # question's own owned region (2008-b Q61/Q63, sharing page 27:
+        # Q61's own widened bbox overlapped Q63's own unrelated ER-diagram
+        # region), and tall enough that the transferred diagram's own
+        # region can start a few points above the transferred caption's own
+        # topmost line - just past this tolerance - despite being Q61's own
+        # correctly-owned region. Trusting ``owner_key`` outright would
+        # over-correct: ``find_owner`` also has a nearest-in-column
+        # fallback with no distance cap, which reaches for a span's own key
+        # even when a candidate shares nothing real with it (e.g. a
+        # per-page header/rule fragment invisible to
+        # ``compute_decorative_baseline`` - that function only tracks
+        # recurring *drawings*, never raster images - nearest-matched to
+        # whichever question starts that column, then grown/label-absorbed
+        # into that question's own real statement text - confirmed via
+        # full regeneration on 2011's own Q4/Q25/Q39, previously excluded
+        # by this exact y/x tolerance for reasons unrelated to ownership).
+        # So this relaxation only ever applies to a span that was itself an
+        # accepted transfer's own target - every other span, including
+        # every 2011/2021 span (never a transfer target at all) and every
+        # other 2008-b span, keeps exactly the original heuristic below.
+        if own_key in reference_transfer_target_keys:
+            own_region = next(
+                (
+                    r
+                    for r in (question_regions_by_page or {}).get(page_number, [])
+                    if r.question_key == own_key
+                ),
+                None,
+            )
+
+            def _overlaps_own_region(
+                bbox: tuple[float, float, float, float],
+                _own_region: QuestionRegion | None = own_region,
+            ) -> bool:
+                if _own_region is None:
+                    return False
+                return (
+                    bbox[0] < _own_region.x1
+                    and bbox[2] > _own_region.x0
+                    and bbox[1] < _own_region.y1
+                    and bbox[3] > _own_region.y0
+                )
+
+            regions.extend(
+                r for r in page_regions if r.owner_key == own_key and _overlaps_own_region(r.bbox)
+            )
+        else:
+            regions.extend(
+                r
+                for r in page_regions
+                if y_min <= r.bbox[1] <= y_max and r.bbox[0] <= x_max and r.bbox[2] >= x_min
+            )
 
     # A figure region can grow (via label absorption, see figures.py) far
     # enough to overlap the *start* of the alternatives section below the

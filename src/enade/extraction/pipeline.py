@@ -48,6 +48,10 @@ from enade.extraction.ownership import (
     render_bounds_for_owner,
 )
 from enade.extraction.pdf_source import PdfDocument
+from enade.extraction.reference_captions import (
+    CaptionReferenceTransfer,
+    apply_forward_reference_transfers,
+)
 from enade.extraction.to_question import COURSE_ID_SHORTHAND, _section_for, build_question
 from enade.extraction.transformation_log import TransformationLogEntry
 from enade.extraction.validator import evaluate_extraction
@@ -93,6 +97,11 @@ class ExtractionResult:
     write_results: list[WriteResult] = field(default_factory=list)
     metrics: ExtractionMetrics = field(default_factory=ExtractionMetrics)
     transformation_log: list[TransformationLogEntry] = field(default_factory=list)
+    #: Every "X para a questao N" reference caption found, accepted or
+    #: rejected - PROMPT Phase 3E section 13 (ownership trace). Empty for
+    #: every booklet with no such caption (2011, 2021, and the overwhelming
+    #: majority of 2008-b's own pages).
+    caption_reference_transfers: list[CaptionReferenceTransfer] = field(default_factory=list)
 
 
 def extract_exam(
@@ -202,6 +211,32 @@ def extract_exam(
                 structure_profile.caption_font_size_gate if structure_profile is not None else False
             )
 
+            # PROMPT Phase 3E: applied once, in original document order,
+            # before any region detection, merge, or text consumption -
+            # "a reserva deve ocorrer antes dessas operacoes destrutivas"
+            # (section 10). Every existing booklet without a real "X para a
+            # questao N" caption line is unaffected (the pattern is narrow
+            # enough - anchored start-to-end, no free text after the
+            # number - that it never matches ordinary prose; confirmed by
+            # full 2011/2021 regeneration, zero drift).
+            boundary_result.spans, caption_reference_transfers = apply_forward_reference_transfers(
+                boundary_result.spans,
+                prova.raw,
+                baseline,
+                region_merge_x_tolerance=region_merge_x_tolerance,
+            )
+            for record in caption_reference_transfers:
+                if not record.accepted:
+                    structural_warnings.append(
+                        f"reference caption on page {record.caption.page_number} "
+                        f"({record.caption.text!r}) not transferred: {record.rejection_reason}"
+                    )
+            reference_transfer_target_keys = frozenset(
+                record.target_question_key
+                for record in caption_reference_transfers
+                if record.accepted and record.target_question_key is not None
+            )
+
             answer_key_result = answer_key_parser(gabarito_doc)
             structural_warnings.extend(answer_key_result.warnings)
             answer_standard_result = parse_answer_standard(padrao_doc)
@@ -250,6 +285,7 @@ def extract_exam(
                     question_regions_by_page=question_regions_by_page,
                     region_merge_x_tolerance=region_merge_x_tolerance,
                     caption_font_size_gate=caption_font_size_gate,
+                    reference_transfer_target_keys=reference_transfer_target_keys,
                 )
 
                 suffix = "q" if span.kind == QuestionKind.OBJECTIVE else "d"
@@ -509,4 +545,5 @@ def extract_exam(
         write_results=write_results,
         metrics=metrics,
         transformation_log=transformation_log,
+        caption_reference_transfers=caption_reference_transfers,
     )

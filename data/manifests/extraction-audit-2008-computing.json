@@ -120,7 +120,7 @@
     "number": 60,
     "section": "engenharia-computacao-discursiva",
     "start_page": 26,
-    "end_page": 27,
+    "end_page": 26,
     "num_alternatives": 0,
     "has_assets": false,
     "num_assets": 0,
@@ -223,7 +223,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -261,7 +261,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "needs_review",
     "warning_count": 0,
     "warnings": ""
   },
@@ -318,7 +318,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -375,7 +375,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -394,7 +394,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -413,7 +413,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -432,7 +432,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -451,7 +451,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -470,7 +470,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -603,7 +603,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -679,7 +679,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -698,7 +698,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -736,7 +736,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -755,7 +755,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -774,7 +774,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -793,7 +793,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -831,7 +831,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -850,7 +850,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -926,7 +926,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -964,7 +964,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -1078,7 +1078,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -1116,7 +1116,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -1129,8 +1129,8 @@
     "start_page": 27,
     "end_page": 27,
     "num_alternatives": 5,
-    "has_assets": false,
-    "num_assets": 0,
+    "has_assets": true,
+    "num_assets": 1,
     "answer": "B",
     "answer_validation_status": "validated",
     "answer_standard_available": false,
@@ -1148,13 +1148,13 @@
     "start_page": 27,
     "end_page": 27,
     "num_alternatives": 5,
-    "has_assets": true,
-    "num_assets": 1,
+    "has_assets": false,
+    "num_assets": 0,
     "answer": "B",
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -1230,7 +1230,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -1249,7 +1249,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -1306,7 +1306,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -1344,7 +1344,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -1382,7 +1382,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -1420,7 +1420,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -1439,7 +1439,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -1458,7 +1458,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "extracted",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   }

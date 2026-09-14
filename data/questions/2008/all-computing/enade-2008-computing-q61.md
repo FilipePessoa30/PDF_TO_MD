@@ -19,7 +19,15 @@ correct_answer: B
 official_answer_source: 2008/b2_gabarito.pdf
 answer_validation_status: validated
 answer_standard: null
-assets: []
+assets:
+- id: figure-01
+  type: image
+  path: enade-2008-computing-q61/figure-01.png
+  source_page: 27
+  extraction_method: raster_crop
+  sha256: f50626e8f75a724b1fce06b26485626a5f49def27cfdf5cff8b69792e9384fca
+  alt_text: null
+  caption: null
 subjects: []
 topics: []
 concepts: []
@@ -37,6 +45,8 @@ taxonomy_review_status: pending
 ---
 
 # Questão 61
+
+![Figura da questão](enade-2008-computing-q61/figure-01.png)
 
 A figura acima, adaptada do documento que descreve o gerenciamento de serviços de tecnologia da informação do modelo ITIL (Information Technology Infra-Structure Library), apresenta as relações entre elementos que participam dos estágios do ciclo de vida de um serviço de TI. Com base no modelo acima descrito, qual elemento detém maior responsabilidade por definir as necessidades de informação da organização que utilizará um serviço de TI?
 
