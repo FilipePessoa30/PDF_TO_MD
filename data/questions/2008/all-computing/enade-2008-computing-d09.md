@@ -25,7 +25,7 @@ assets:
   path: enade-2008-computing-d09/figure-01.png
   source_page: 6
   extraction_method: raster_crop
-  sha256: 40388e21eb8d5648b05a74aec7647292f79faa65f7ebc2630a2392f5b84147f2
+  sha256: 21bde78dbe08421de0fd4086593a9193afe373390fef1a95f3e67b366786b46a
   alt_text: null
   caption: null
 subjects: []
@@ -40,16 +40,18 @@ extraction_method: text_layer
 ocr_confidence: null
 extraction_status: needs_review
 automatic_validation: failed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 9
 
+DIREITOS HUMANOS EM QUESTÃO
+
 ![Figura da questão](enade-2008-computing-d09/figure-01.png)
 
-François JULIEN, filósofo e sociólogo.
+O caráter universalizante dos direitos do homem (...) não é da ordem do saber teórico, mas do operatório ou prático: eles são invocados para agir, desde o princípio, em qualquer situação dada. François JULIEN, filósofo e sociólogo. Neste ano, em que são comemorados os 60 anos da Declaração Universal dos Direitos Humanos, novas perspectivas e concepções incorporam-se à agenda pública brasileira. Uma das novas perspectivas em foco é a visão mais integrada dos direitos econômicos, sociais, civis, políticos e, mais recentemente, ambientais, ou seja, trata-se da integralidade ou indivisibilidade dos direitos humanos. Dentre as novas concepções de direitos, destacam-se:
 
-dos Direitos Humanos, novas
+< a habitação como moradia digna e não apenas como necessidade de abrigo e proteção; < a segurança como bem-estar e não apenas como necessidade de vigilância e punição; < o trabalho como ação para a vida e não apenas como necessidade de emprego e renda.
 
-(valor: 10,0 pontos)
+Tendo em vista o exposto acima, selecione uma das concepções destacadas e esclareça por que ela representa um avanço para o exercício pleno da cidadania, na perspectiva da integralidade dos direitos humanos. Seu texto deve ter entre 8 e 10 linhas. (valor: 10,0 pontos)

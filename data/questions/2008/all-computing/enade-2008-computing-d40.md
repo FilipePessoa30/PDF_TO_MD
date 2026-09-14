@@ -15,8 +15,15 @@ section: cc-bacharelado-discursiva
 question_number: 40
 question_type: discursive
 content_blocks:
+- type: paragraph
+  text: O banco de dados de um sistema de controle bancário implementado por meio
+    de um SGBD relacional Cliente, possui a relação com as informações apresentadas
+    a seguir, em que a chave primária da relação é grifada.
+- type: code
+  text: Cliente(nroCliente, nome, endereco,
+  language: null
 - type: asset
-  asset_id: figure-01
+  asset_id: figure-02
 - type: paragraph
   text: 'secundários: IndiceIdade, para o atributo idade, e IndiceRenda, para o atributo
     renda. Existe um tipo de serviço nesse banco cujo alvo são tanto os clientes que
@@ -39,15 +46,15 @@ content_blocks:
     \ de consulta abaixo, na qual B e F representam as operações de projeção e de\
     \ seleção, respectivamente. B\tnome,endereco"
 - type: asset
-  asset_id: figure-02
+  asset_id: figure-01
 - type: paragraph
-  text: utilizar os índices, a solução encontrada foi elaborar a consulta em dois
-    blocos separados — um que recupera os clientes com idade inferior a 40 anos, e
-    outro que recupera os clientes com renda mensal superior a 30.000 reais — para,
-    então, juntar as tuplas das duas relações geradas. Considerando a situação apresentada,
-    faça o que se pede a seguir. A Escreva o código de uma consulta em SQL que
-- type: paragraph
-  text: '(valor: 5,0 pontos)'
+  text: 'Para que o otimizador de consultas passasse a utilizar os índices, a solução
+    encontrada foi elaborar a consulta em dois blocos separados — um que recupera
+    os clientes com idade inferior a 40 anos, e outro que recupera os clientes com
+    renda mensal superior a 30.000 reais — para, então, juntar as tuplas das duas
+    relações geradas. Considerando a situação apresentada, faça o que se pede a seguir.
+    A Escreva o código de uma consulta em SQL que corresponda à solução proposta.
+    (valor: 5,0 pontos)'
 - type: paragraph
   text: 'B Desenhe a árvore de consulta para essa solução. (valor: 5,0 pontos)'
 correct_answer: null
@@ -117,7 +124,7 @@ assets:
   path: enade-2008-computing-d40/figure-01.png
   source_page: 17
   extraction_method: raster_crop
-  sha256: e7870885d02a001c3e6841c19c5dd03090f796bb9d32bcd6228f5d024492bb2c
+  sha256: 1c54ec1c1c8e4f61d0eb726a799973daebca7b0c01fbfe38b9cc50e70789d6cf
   alt_text: null
   caption: null
 - id: figure-02
@@ -125,7 +132,7 @@ assets:
   path: enade-2008-computing-d40/figure-02.png
   source_page: 17
   extraction_method: raster_crop
-  sha256: a6074f3f8fba48fab23fa7ec746eb053a8972e93562c2eee634aa26cc3066827
+  sha256: 0b4d1d61c821db27fd6c03c739d3ac13c6f483b40234b5d7c408b394d9805285
   alt_text: null
   caption: null
 subjects: []
@@ -146,7 +153,13 @@ taxonomy_review_status: pending
 
 # Questão 40
 
-![Figura da questão](enade-2008-computing-d40/figure-01.png)
+O banco de dados de um sistema de controle bancário implementado por meio de um SGBD relacional Cliente, possui a relação com as informações apresentadas a seguir, em que a chave primária da relação é grifada.
+
+```
+Cliente(nroCliente, nome, endereco,
+```
+
+![Figura da questão](enade-2008-computing-d40/figure-02.png)
 
 secundários: IndiceIdade, para o atributo idade, e IndiceRenda, para o atributo renda. Existe um tipo de serviço nesse banco cujo alvo são tanto os clientes que possuem menos de 40 anos de idade quanto aqueles que possuem renda mensal superior a 30.000 reais. Para recuperar esses clientes, a seguinte expressão de consulta em SQL foi utilizada:
 
@@ -158,10 +171,8 @@ WHERE idade < 40 OR renda > 30000;
 
 Com o aumento do número de clientes desse banco, essa consulta passou a apresentar problemas de desempenho. Verificou-se, então, que o otimizador de consultas não considerava os índices existentes para idade e renda, e a consulta era realizada mediante varredura seqüencial na relação Cliente, tornando essa consulta onerosa. O plano de execução da consulta, usado pelo otimizador, é apresentado na árvore de consulta abaixo, na qual B e F representam as operações de projeção e de seleção, respectivamente. B	nome,endereco
 
-![Figura da questão](enade-2008-computing-d40/figure-02.png)
+![Figura da questão](enade-2008-computing-d40/figure-01.png)
 
-utilizar os índices, a solução encontrada foi elaborar a consulta em dois blocos separados — um que recupera os clientes com idade inferior a 40 anos, e outro que recupera os clientes com renda mensal superior a 30.000 reais — para, então, juntar as tuplas das duas relações geradas. Considerando a situação apresentada, faça o que se pede a seguir. A Escreva o código de uma consulta em SQL que
-
-(valor: 5,0 pontos)
+Para que o otimizador de consultas passasse a utilizar os índices, a solução encontrada foi elaborar a consulta em dois blocos separados — um que recupera os clientes com idade inferior a 40 anos, e outro que recupera os clientes com renda mensal superior a 30.000 reais — para, então, juntar as tuplas das duas relações geradas. Considerando a situação apresentada, faça o que se pede a seguir. A Escreva o código de uma consulta em SQL que corresponda à solução proposta. (valor: 5,0 pontos)
 
 B Desenhe a árvore de consulta para essa solução. (valor: 5,0 pontos)

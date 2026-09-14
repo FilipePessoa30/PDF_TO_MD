@@ -64,8 +64,8 @@ COLUMN_RIGHT_MARGIN_TOLERANCE = 5.0
 #: PROMPT Phase 3C, "Classe B" - two attempts at a general fix for 2008-b's
 #: own Questao 68 (a 3-line nested-SQL-subquery continuation mistaken for a
 #: genuine second page column, scrambling its own WHERE clause - blocker
-#: ``q68-sql-code-block-reordering``) were tried here and reverted; both
-#: are recorded in full (evidence + diffs) under
+#: ``q68-sql-code-block-reordering``) were tried and reverted in Phase 3C;
+#: both are recorded in full (evidence + diffs) under
 #: ``scratchpad/experiment-column-height-ratio.diff`` and
 #: ``scratchpad/experiment-q68-vs-q50-evidence.md``:
 #: 1. A bare column-height-ratio gate (reject a candidate column whose own
@@ -82,9 +82,78 @@ COLUMN_RIGHT_MARGIN_TOLERANCE = 5.0
 #:    heuristic (courier/mono/consolas) does not recognize - the signal
 #:    itself is not available for this booklet's own fonts, not just
 #:    unused.
-#: Not reintroduced under another name. Q68's own scramble remains an open,
-#: honestly-diagnosed blocker - a future attempt would need a different
-#: signal entirely (e.g. SQL/code keyword shape, not geometry or font name).
+#: PHASE 3D: a third signal succeeds where (2) failed - font *size*, not
+#: font *name*. Q68's own SQL code is set at 9pt against this page's own
+#: 10pt body (confirmed by direct instrumentation), while Q50's own short
+#: left-column intro is set at the page's own body size (10pt) exactly -
+#: code in this corpus is reliably smaller than body prose even when its
+#: font name gives no monospace signal at all. Combined with the height
+#: ratio from attempt (1) above (required together, not alone - a short
+#: column is not enough on its own, per Q50; a same-size short column, per
+#: attempt (1)'s own finding, is not enough either), this correctly
+#: distinguishes the two: see ``_is_short_off_size_column``.
+#: Height-ratio threshold reused from the Phase 3C attempt (see above) -
+#: unchanged, since it was never the source of that attempt's own false
+#: positive (font size was).
+MIN_COLUMN_HEIGHT_RATIO = 0.2
+#: A line needs at least this many characters to count as evidence of body
+#: prose for font-size purposes - mirrors
+#: ``figures._MIN_BODY_TEXT_LENGTH``, duplicated here (not imported) to
+#: avoid a circular import (``figures.py`` already imports from this
+#: module) - the same accepted pattern already used for
+#: ``_PARAGRAPH_CONTINUATION_GAP`` (see assembler.py's own copy of that
+#: constant, and its docstring's own note on why importing back is
+#: circular).
+_MIN_BODY_TEXT_LENGTH = 20
+#: Same reasoning/duplication as ``_MIN_BODY_TEXT_LENGTH`` above - mirrors
+#: ``figures._MIN_MARGIN_AGREEMENT``.
+_MIN_BODY_FONT_AGREEMENT = 2
+
+
+def _page_dominant_body_font_size(lines: list[Line]) -> float | None:
+    """Local copy of ``figures._dominant_body_font_size`` (see that
+    function's own docstring for the full rationale and the Questao 1
+    regression it exists to avoid) - duplicated rather than imported to
+    avoid a circular import, since ``figures.py`` already imports from
+    this module.
+    """
+    substantial = [ln for ln in lines if len(ln.text.strip()) >= _MIN_BODY_TEXT_LENGTH]
+    if not substantial:
+        return None
+    margin_x0, margin_count = Counter(round(ln.x0) for ln in substantial).most_common(1)[0]
+    if margin_count < _MIN_BODY_FONT_AGREEMENT:
+        return None
+    at_margin = [ln for ln in substantial if round(ln.x0) == margin_x0]
+    size, count = Counter(round(ln.font_size, 1) for ln in at_margin).most_common(1)[0]
+    if count < _MIN_BODY_FONT_AGREEMENT:
+        return None
+    return float(size)
+
+
+def _is_short_off_size_column(
+    lines: list[Line], own_height: float, other_height: float, body_font_size: float | None
+) -> bool:
+    """True if ``lines`` (one candidate column's own lines) are both short
+    relative to the other column (see ``MIN_COLUMN_HEIGHT_RATIO``) *and*
+    set in a font smaller than the page's own dominant body size - PROMPT
+    Phase 3D, "Classe B". Requires both signals together: a short column
+    with body-size font (2008-b's own Questao 50) is a genuine narrow
+    intro, not this pattern; a same-size-as-body short column is never
+    rejected regardless of font. ``body_font_size`` of ``None`` (no
+    reliable body size on this page) means the font signal is unavailable,
+    so this never fires - conservative by construction.
+    """
+    if body_font_size is None or other_height <= 0 or not lines:
+        return False
+    if (own_height / other_height) >= MIN_COLUMN_HEIGHT_RATIO:
+        return False
+    # Rounded to the same precision _page_dominant_body_font_size itself
+    # uses to compute body_font_size - comparing a raw (unrounded) size
+    # against a rounded one let Questao 50's own real 9.96pt body text
+    # (which rounds to the same 10.0pt body size) register as "smaller
+    # than body" by pure floating-point noise, wrongly rejecting its own
+    # genuine two-column page (confirmed by direct regeneration).
+    return all(round(ln.font_size, 1) < body_font_size for ln in lines)
 
 
 #: Font-name substrings (case-insensitive) that mark a line as monospaced -
@@ -129,6 +198,18 @@ class Line:
     x1: float
     y1: float
     is_monospace: bool = False
+    #: The largest font size (points) among this line's own spans - a
+    #: mixed-size line is conservatively treated as "not small" (see
+    #: ``figures._is_smaller_than_body_font``). Used to distinguish a real
+    #: caption/label (PROMPT Phase 3D section 6-7: consistently set smaller
+    #: than the page's own body-prose font in this corpus's own evidence,
+    #: e.g. 2008-b's D9 own photo credit at 6pt against a 10pt body, 2021's
+    #: own Q7 citation at 9pt against a 12pt body) from a real section
+    #: header/headline sharing or exceeding the body's own font size (2008-b
+    #: D9's own "DIREITOS HUMANOS EM QUESTAO" headline is 11pt, the same
+    #: size as the page's own "QUESTAO 9" marker, not the 6pt of its real
+    #: photo credit two lines below it - see docs/decisions.md).
+    font_size: float = 0.0
     #: Geometric spacing corrections applied to this line's text (see
     #: spacing.py) - empty unless a ligature-injected faux space was found
     #: and merged. Carried on the Line so callers can build an auditable
@@ -168,6 +249,7 @@ def _raw_lines(page: pymupdf.Page, page_number: int) -> list[Line]:
             is_monospace = bool(fonts) and all(
                 any(hint in font.lower() for hint in _MONOSPACE_FONT_HINTS) for font in fonts
             )
+            font_size = max((span.get("size", 0.0) for span in spans), default=0.0)
             x0, y0, x1, y1 = line["bbox"]
             final_text = text.strip() if not is_monospace else text.lstrip("\f\v")
             corrections: list[SpacingCorrection] = []
@@ -210,6 +292,7 @@ def _raw_lines(page: pymupdf.Page, page_number: int) -> list[Line]:
                     x1=x1,
                     y1=y1,
                     is_monospace=is_monospace,
+                    font_size=font_size,
                     spacing_corrections=tuple(corrections),
                     label_corrections=tuple(label_corrections),
                     symbol_corrections=tuple(symbol_corrections),
@@ -370,6 +453,7 @@ def _merge_orphan_markers(
                 x1=merge_x1,
                 y1=merge_y1,
                 is_monospace=other.is_monospace,
+                font_size=max(ln.font_size, other.font_size),
                 spacing_corrections=ln.spacing_corrections + other.spacing_corrections,
                 label_corrections=ln.label_corrections + other.label_corrections,
                 symbol_corrections=ln.symbol_corrections + other.symbol_corrections,
@@ -466,6 +550,14 @@ def detect_column_margins(lines: list[Line]) -> tuple[float, float] | None:
     right_y_top = min(ln.y0 for ln in right_lines)
     right_y_bottom = max(ln.y1 for ln in right_lines)
     if min(left_y_bottom, right_y_bottom) <= max(left_y_top, right_y_top):
+        return None
+
+    left_height = left_y_bottom - left_y_top
+    right_height = right_y_bottom - right_y_top
+    body_font_size = _page_dominant_body_font_size(substantial)
+    if _is_short_off_size_column(
+        left_lines, left_height, right_height, body_font_size
+    ) or _is_short_off_size_column(right_lines, right_height, left_height, body_font_size):
         return None
 
     return left_margin, right_margin

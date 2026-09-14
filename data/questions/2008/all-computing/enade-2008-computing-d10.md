@@ -25,7 +25,7 @@ assets:
   path: enade-2008-computing-d10/figure-01.png
   source_page: 7
   extraction_method: raster_crop
-  sha256: bb5d5ee05ca7fa6b515dc698e42816bbf63bc108c735a65cb4462ec95b442b25
+  sha256: cfc99ba2bc41223292d998b4a3013c08fc1f227916cad2c52346e5f0b0c4a582
   alt_text: null
   caption: null
 subjects: []
@@ -48,9 +48,13 @@ taxonomy_review_status: pending
 
 ![Figura da questão](enade-2008-computing-d10/figure-01.png)
 
-2005 para 2007, o país melhorasse os indicadores de qualidade da educação. O avanço foi mais visível no ensino fundamental. No ensino médio, praticamente não houve melhoria. Numa escala de zero a dez, o ensino fundamental em seus anos iniciais (da primeira à quarta série) teve nota 4,2 em 2007. Em 2005, a nota fora 3,8. Nos anos finais (quinta a oitava), a alta foi de 3,5 para 3,8. No ensino médio, de 3,4 para 3,5. Embora tenha comemorado o aumento da nota, ela ainda foi considerada “pior do que regular” pelo ministro da Educação, Fernando Haddad.
+escolas públicas e particulares ficaram na 54.a posição, à frente apenas de Tunísia, Qatar e Quirguistão. Na prova de leitura, que mede a compreensão de textos, o país foi o oitavo pior, entre 56 nações. Os resultados completos do Pisa 2006, que avalia jovens de 15 anos, foram anunciados ontem pela Organização para a Cooperação e o Desenvolvimento (OCDE), entidade que reúne países adeptos da economia de mercado, a maioria do mundo desenvolvido. Ensino fundamental atinge meta de 2009 O aumento das médias dos alunos, especialmente em matemática, e a diminuição da reprovação fizeram com que, de 2005 para 2007, o país melhorasse os indicadores de qualidade da educação. O avanço foi mais visível no ensino fundamental. No ensino médio, praticamente não houve melhoria. Numa escala de zero a dez, o ensino fundamental em seus anos iniciais (da primeira à quarta série) teve nota 4,2 em 2007. Em 2005, a nota fora 3,8. Nos anos finais (quinta a oitava), a alta foi de 3,5 para 3,8. No ensino médio, de 3,4 para 3,5. Embora tenha comemorado o aumento da nota, ela ainda foi considerada “pior do que regular” pelo ministro da Educação, Fernando Haddad.
 
-A partir da leitura dos fragmentos motivadores reproduzidos, redija um texto dissertativo (fundamentado em pelo menos dois argumentos), sobre o seguinte tema: A contradição entre os resultados de avaliações oficiais e a opinião emitida pelos professores, pais e alunos sobre a educação brasileira. No desenvolvimento do tema proposto, utilize os conhecimentos adquiridos ao longo de sua formação. Observações • Seu texto deve ser de cunho dissertativo-argumentativo (não deve, portanto, ser escrito em forma de poema, de narração etc.). • Seu ponto de vista deve estar apoiado em pelo menos dois argumentos. GOIS, Antonio. Folha de S.Paulo, 11 jun. 2008 (Fragmento).
+A partir da leitura dos fragmentos motivadores reproduzidos, redija um texto dissertativo (fundamentado em pelo menos dois argumentos), sobre o seguinte tema: A contradição entre os resultados de avaliações oficiais e a opinião emitida pelos professores, pais e alunos sobre a educação brasileira. No desenvolvimento do tema proposto, utilize os conhecimentos adquiridos ao longo de sua formação. Observações • Seu texto deve ser de cunho dissertativo-argumentativo (não deve, portanto, ser escrito em forma de poema, de narração etc.). • Seu ponto de vista deve estar apoiado em pelo menos dois argumentos. Alunos dão nota 7,1 para ensino médio
+
+GOIS, Antonio. Folha de S.Paulo, 11 jun. 2008 (Fragmento). Entre os piores também em matemática e leitura
+
+Avaliação de Alunos (Pisa) de 2006. Os estudantes brasileiros de
 
 WEBER, Demétrio. Jornal O Globo, 5 dez. 2007, p. 14 (Fragmento).
 

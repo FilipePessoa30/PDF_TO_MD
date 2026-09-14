@@ -4,6 +4,7 @@ from enade.extraction.figures import (
     MAX_ABSORPTION_GROWTH,
     TEXT_ABSORPTION_PADDING,
     VisualRegion,
+    _dominant_body_font_size,
     _dominant_left_margin,
     _expand_with_labels,
     _is_marker_at_margin,
@@ -17,8 +18,12 @@ from enade.extraction.figures import (
 from enade.extraction.layout import Line
 
 
-def _line(page: int, y: float, text: str, x: float = 29.8, width: float = 400.0) -> Line:
-    return Line(page_number=page, text=text, x0=x, y0=y, x1=x + width, y1=y + 12)
+def _line(
+    page: int, y: float, text: str, x: float = 29.8, width: float = 400.0, font_size: float = 10.0
+) -> Line:
+    return Line(
+        page_number=page, text=text, x0=x, y0=y, x1=x + width, y1=y + 12, font_size=font_size
+    )
 
 
 def test_rects_touch_true_within_padding():
@@ -215,6 +220,84 @@ def test_dominant_left_margin_none_with_only_a_single_wide_line():
         _line(1, 700, "Disponível em: https://example.com/some/long/citation/url", x=98.3),
     ]
     assert _dominant_left_margin(lines) is None
+
+
+def test_dominant_body_font_size_finds_common_size_at_the_margin():
+    """PROMPT Phase 3D section 6-7: font size is evidenced by the page's
+    own dominant *left margin*, not by line width - a genuine narrow-column
+    layout (2008-b's own D9: every real body line is well under
+    MAX_LABEL_LINE_WIDTH, so ``_dominant_left_margin``'s own width-based
+    evidence pool finds nothing there) must still yield a body size.
+    """
+    lines = [
+        _line(
+            1,
+            100,
+            "primeira linha de corpo de texto corrido, bem longa",
+            x=36.8,
+            width=120.0,
+            font_size=10.0,
+        ),
+        _line(
+            1,
+            120,
+            "segunda linha de corpo de texto corrido, bem longa",
+            x=36.8,
+            width=120.0,
+            font_size=10.0,
+        ),
+        _line(
+            1,
+            140,
+            "terceira linha de corpo de texto corrido, bem longa",
+            x=36.8,
+            width=120.0,
+            font_size=10.0,
+        ),
+    ]
+    assert _dominant_body_font_size(lines) == 10.0
+
+
+def test_dominant_body_font_size_ignores_off_margin_captions_outnumbering_body():
+    """Questao 1 regression (PROMPT Phase 3D): a page with several small
+    embedded images, each with its own multi-line caption, can have *more*
+    long caption lines (each sitting at its own image's own x0, never the
+    page's real body margin) than real body-paragraph lines. A flat mode
+    over every long line picks the captions' own (smaller) font size as
+    "the body size", which then wrongly lets a same-size index label
+    ("IV") be absorbed as if it were a caption too, fragmenting the region.
+    Restricting to lines at the dominant left margin fixes this.
+    """
+    lines = [
+        _line(
+            1,
+            100,
+            "corpo real do enunciado desta questao, uma frase completa",
+            x=36.8,
+            font_size=10.0,
+        ),
+        _line(1, 120, "continuacao do mesmo paragrafo do enunciado real", x=36.8, font_size=10.0),
+        _line(
+            1, 200, "ERMAKOFF, George. Rio de Janeiro, 1840-1900: cronica", x=222.4, font_size=6.0
+        ),
+        _line(
+            1,
+            210,
+            "fotografica. Rio de Janeiro: G. Ermakoff Casa Editorial",
+            x=222.4,
+            font_size=6.0,
+        ),
+        _line(1, 300, "Disponivel em: www.example.org/alguma-pagina-longa", x=98.6, font_size=6.0),
+        _line(
+            1, 400, "ERMAKOFF, George. 1840-1900: outra cronica fotografica", x=405.6, font_size=6.0
+        ),
+    ]
+    assert _dominant_body_font_size(lines) == 10.0
+
+
+def test_dominant_body_font_size_none_without_enough_agreement():
+    lines = [_line(1, 100, "unica linha longa o suficiente para contar", x=36.8, font_size=10.0)]
+    assert _dominant_body_font_size(lines) is None
 
 
 def test_is_marker_at_margin_true_for_real_alternative():

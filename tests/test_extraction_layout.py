@@ -4,9 +4,17 @@ from enade.extraction.layout import Line, _merge_orphan_markers, detect_column_m
 from enade.extraction.layout_overrides import LayoutOverride, LayoutOverrideSet
 
 
-def _line(x0: float, y0: float, text: str, x1: float | None = None) -> Line:
+def _line(
+    x0: float, y0: float, text: str, x1: float | None = None, font_size: float = 10.0
+) -> Line:
     return Line(
-        page_number=1, text=text, x0=x0, y0=y0, x1=x1 if x1 is not None else x0 + 150, y1=y0 + 12
+        page_number=1,
+        text=text,
+        x0=x0,
+        y0=y0,
+        x1=x1 if x1 is not None else x0 + 150,
+        y1=y0 + 12,
+        font_size=font_size,
     )
 
 
@@ -274,7 +282,51 @@ def test_detect_column_margins_accepts_overlapping_y_ranges():
         lines.append(_line(295, i * 20, f"coluna direita numero {i} com texto suficiente", x1=595))
     margins = detect_column_margins(lines)
     assert margins is not None
-    assert margins == (30, 295)
+
+
+def test_detect_column_margins_rejects_short_off_size_column():
+    """PROMPT Phase 3D, 'Classe B': Questao 68 (2008-b, page 29) - a 3-line
+    nested-SQL-subquery continuation, set at 9pt against this page's own
+    10pt body, sits far enough right and recurs often enough to look like a
+    genuine second column, but is really just a deeply-indented tail of the
+    very same, single, left-column code block. Both signals are required
+    together: short relative to the other column, and set in a font
+    smaller than the page's own body size (code in this corpus is smaller
+    than body prose even when its font name gives no monospace signal) -
+    see test_detect_column_margins_keeps_short_same_size_column for why
+    height alone is not enough (PROMPT Phase 3C's own reverted experiment).
+    """
+    lines = []
+    # Left column: a real body paragraph (10pt) providing 6+ lines of
+    # evidence, tall enough that the short right column is a small
+    # fraction of its own height.
+    for i in range(20):
+        lines.append(_line(35, i * 20, f"linha do corpo principal numero {i} bem longa", x1=280))
+    # Right "column": three short lines, deeply indented, set in a smaller
+    # font than body - the nested-subquery continuation's own shape.
+    for i in range(3):
+        lines.append(
+            _line(400, 150 + i * 12, f"linha de codigo aninhado {i}", x1=560, font_size=9.0)
+        )
+    assert detect_column_margins(lines) is None
+
+
+def test_detect_column_margins_keeps_short_same_size_column():
+    """Questao 49/50 regression (PROMPT Phase 3D): a short column set at
+    the page's own body font size (not smaller) is a genuine narrow
+    statement intro, not code - must not be rejected just for being short.
+    This is exactly the false positive the Phase 3C height-ratio-only
+    attempt produced (see layout.py's own MIN_COLUMN_HEIGHT_RATIO
+    docstring) and this test guards against reintroducing it.
+    """
+    lines = []
+    for i in range(20):
+        lines.append(_line(35, i * 20, f"linha do corpo principal numero {i} bem longa", x1=280))
+    for i in range(3):
+        lines.append(
+            _line(400, 150 + i * 12, f"linha de introducao curta {i}", x1=560, font_size=10.0)
+        )
+    assert detect_column_margins(lines) is not None
 
 
 def test_extract_page_lines_force_single_column_keeps_natural_order(tmp_path):

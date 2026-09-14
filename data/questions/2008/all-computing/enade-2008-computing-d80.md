@@ -79,7 +79,7 @@ assets:
   path: enade-2008-computing-d80/figure-01.png
   source_page: 34
   extraction_method: raster_crop
-  sha256: e4dc51222447c27c172c834d9356ac47de31ad37e0549098f8f44bbd4cc72c9d
+  sha256: c1e8eb20dee6dd089fd86869f6ed59df19cff73e1d7c6b4140a64904ad8c6ba3
   alt_text: null
   caption: null
 - id: figure-02

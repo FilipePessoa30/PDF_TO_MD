@@ -40,6 +40,17 @@
 # booklet's own widest confirmed legitimate single-cluster figure footprint
 # (~250pt). Confirmed by full regeneration to leave 2011 and 2021 unaffected
 # (neither sets this field, so both keep the original unbounded behavior).
+#
+# `caption_font_size_gate` (PROMPT Phase 3D): this booklet's own real
+# captions/citations are consistently set smaller than body text (D9's own
+# photo credit: 6pt vs. a 10pt body), while a real section header/headline
+# shares or exceeds the body's own size (D9's own "DIREITOS HUMANOS EM
+# QUESTAO" headline: 11pt) - requiring strictly-smaller-than-body font size
+# for absorption eligibility keeps real headers out of figure regions.
+# Confirmed by full regeneration to leave 2011 unaffected only when gated
+# here (an earlier, unconditional-default attempt changed 2011's own
+# Q05/Q33/Q34/Q35 - crop-boundary/structural-warning shifts, no statement
+# text change - and was reverted in favor of this declarative gate).
 year: 2008
 exam_type: unified
 exam_id: enade-2008-b-computacao
@@ -47,6 +58,7 @@ id_shorthand: computing
 source_letter: b
 combined_numbering: true
 region_merge_x_tolerance: 150.0
+caption_font_size_gate: true
 sections:
   - id: formacao-geral-objetiva
     kind: objective

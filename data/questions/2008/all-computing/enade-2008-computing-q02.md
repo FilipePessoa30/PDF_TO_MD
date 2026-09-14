@@ -25,7 +25,7 @@ assets:
   path: enade-2008-computing-q02/figure-01.png
   source_page: 3
   extraction_method: raster_crop
-  sha256: ad2c450dc92f42d28599864da6b206f494faa9e22910b1c1ac39eb0e82144dd7
+  sha256: 4406e1f88f68e3135c422a0128c0414963b82fc4fec0163e438f88f7bba3d330
   alt_text: null
   caption: null
 subjects: []
@@ -39,12 +39,14 @@ alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
 extraction_status: needs_review
-automatic_validation: failed
+automatic_validation: passed
 visual_validation: failed
 taxonomy_review_status: pending
 ---
 
 # Questão 2
+
+Quando o homem não trata bem a natureza, a natureza não trata bem o homem.
 
 ![Figura da questão](enade-2008-computing-q02/figure-01.png)
 

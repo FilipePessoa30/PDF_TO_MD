@@ -9,8 +9,8 @@
   "pipeline_version": "0.1.0",
   "data_contract_version": "1.1.0",
   "maturity": "provisional",
-  "verified_count": 28,
-  "needs_review_count": 49,
+  "verified_count": 29,
+  "needs_review_count": 48,
   "unresolved_question_ids": [
     "enade-2008-computing-d09",
     "enade-2008-computing-d10",
@@ -53,7 +53,6 @@
     "enade-2008-computing-q63",
     "enade-2008-computing-q66",
     "enade-2008-computing-q67",
-    "enade-2008-computing-q68",
     "enade-2008-computing-q70",
     "enade-2008-computing-q72",
     "enade-2008-computing-q74",
@@ -75,22 +74,22 @@
     {
       "id": "enade-2008-computing-d09",
       "markdown_path": "enade-2008-computing-d09.md",
-      "markdown_sha256": "0d93793e332f64845cd1d2e3fe8a6f416d255bce7330de74b87fd15eea45338e",
+      "markdown_sha256": "41398d48680abe07ef95793bba5c1b84fcf45657e045f653019c5c70bfac2a68",
       "extraction_status": "needs_review",
       "automatic_validation": "failed",
-      "visual_validation": "failed",
+      "visual_validation": "passed",
       "assets": [
         {
           "id": "figure-01",
           "path": "enade-2008-computing-d09/figure-01.png",
-          "sha256": "40388e21eb8d5648b05a74aec7647292f79faa65f7ebc2630a2392f5b84147f2"
+          "sha256": "21bde78dbe08421de0fd4086593a9193afe373390fef1a95f3e67b366786b46a"
         }
       ]
     },
     {
       "id": "enade-2008-computing-d10",
       "markdown_path": "enade-2008-computing-d10.md",
-      "markdown_sha256": "b6295bb859fd6ea95ea9322a1946cdb2e4018463bfc8d11fa484854cc1b50e32",
+      "markdown_sha256": "644c77b47ef61b5d9c8fe0381327e080b363bd72f64510ec3fef505591742f14",
       "extraction_status": "needs_review",
       "automatic_validation": "failed",
       "visual_validation": "failed",
@@ -98,7 +97,7 @@
         {
           "id": "figure-01",
           "path": "enade-2008-computing-d10/figure-01.png",
-          "sha256": "bb5d5ee05ca7fa6b515dc698e42816bbf63bc108c735a65cb4462ec95b442b25"
+          "sha256": "cfc99ba2bc41223292d998b4a3013c08fc1f227916cad2c52346e5f0b0c4a582"
         }
       ]
     },
@@ -123,7 +122,7 @@
     {
       "id": "enade-2008-computing-d40",
       "markdown_path": "enade-2008-computing-d40.md",
-      "markdown_sha256": "3582217d7e5c4b33abe5322bf2b31efb23c6685a41d9f89f04c499b82327c1b8",
+      "markdown_sha256": "35aec7b60f152802c08592fe7dfb76398e9e4585f390c479180cc4c6fdbc3d41",
       "extraction_status": "needs_review",
       "automatic_validation": "passed",
       "visual_validation": "failed",
@@ -131,12 +130,12 @@
         {
           "id": "figure-01",
           "path": "enade-2008-computing-d40/figure-01.png",
-          "sha256": "e7870885d02a001c3e6841c19c5dd03090f796bb9d32bcd6228f5d024492bb2c"
+          "sha256": "1c54ec1c1c8e4f61d0eb726a799973daebca7b0c01fbfe38b9cc50e70789d6cf"
         },
         {
           "id": "figure-02",
           "path": "enade-2008-computing-d40/figure-02.png",
-          "sha256": "a6074f3f8fba48fab23fa7ec746eb053a8972e93562c2eee634aa26cc3066827"
+          "sha256": "0b4d1d61c821db27fd6c03c739d3ac13c6f483b40234b5d7c408b394d9805285"
         }
       ]
     },
@@ -170,7 +169,7 @@
     {
       "id": "enade-2008-computing-d80",
       "markdown_path": "enade-2008-computing-d80.md",
-      "markdown_sha256": "4c4d572d626deee3140e9360edf532f86bc4ccead07cd38cb54693564f1f8fd2",
+      "markdown_sha256": "292c1099cf35c68390931a8f7172e686df89fc664dc1c1e121a231879a553d97",
       "extraction_status": "verified",
       "automatic_validation": "passed",
       "visual_validation": "passed",
@@ -178,7 +177,7 @@
         {
           "id": "figure-01",
           "path": "enade-2008-computing-d80/figure-01.png",
-          "sha256": "e4dc51222447c27c172c834d9356ac47de31ad37e0549098f8f44bbd4cc72c9d"
+          "sha256": "c1e8eb20dee6dd089fd86869f6ed59df19cff73e1d7c6b4140a64904ad8c6ba3"
         },
         {
           "id": "figure-02",
@@ -190,7 +189,7 @@
     {
       "id": "enade-2008-computing-q01",
       "markdown_path": "enade-2008-computing-q01.md",
-      "markdown_sha256": "fd54dc616c4fc3c497c840d200ec6597df10d2284c5f36474bf5450f43d1a167",
+      "markdown_sha256": "ec1ca5511f928f6583cf3ca339a44a612567c94f0e63b2170cbba8d8163d7df1",
       "extraction_status": "verified",
       "automatic_validation": "passed",
       "visual_validation": "passed",
@@ -198,27 +197,27 @@
         {
           "id": "figure-01",
           "path": "enade-2008-computing-q01/figure-01.png",
-          "sha256": "cd0026965e2d3eaeae124f4f39e9982a7f5256fbc790a57d983df379428b6f6b"
+          "sha256": "f7216f66d400ae088c335e572502d42ef3ece2b0df42c01e47458dccde7956ff"
         },
         {
           "id": "figure-02",
           "path": "enade-2008-computing-q01/figure-02.png",
-          "sha256": "a43cd1b1d843acc3db0dbdd34fd088d1a887a03d300fafb072f604ab605715ed"
+          "sha256": "17e0dc2bc5515e4f4a0421e4a6ae4f966e13940affa2f453a1617f963677d9b4"
         }
       ]
     },
     {
       "id": "enade-2008-computing-q02",
       "markdown_path": "enade-2008-computing-q02.md",
-      "markdown_sha256": "f2efe4fe902deb03d4ffa52ca32d2f56d5bd402deb08927ea4a45e20565d12bd",
+      "markdown_sha256": "1138cf57de965e06dfa04003829f84438f3a5b09c51f9d2f5bba5cb313b7e9e7",
       "extraction_status": "needs_review",
-      "automatic_validation": "failed",
+      "automatic_validation": "passed",
       "visual_validation": "failed",
       "assets": [
         {
           "id": "figure-01",
           "path": "enade-2008-computing-q02/figure-01.png",
-          "sha256": "ad2c450dc92f42d28599864da6b206f494faa9e22910b1c1ac39eb0e82144dd7"
+          "sha256": "4406e1f88f68e3135c422a0128c0414963b82fc4fec0163e438f88f7bba3d330"
         }
       ]
     },
@@ -866,10 +865,10 @@
     {
       "id": "enade-2008-computing-q68",
       "markdown_path": "enade-2008-computing-q68.md",
-      "markdown_sha256": "b19590722104d8b15381d1f56c7913a646da1ca2a43b46a30f99456fb46cfdcb",
-      "extraction_status": "needs_review",
+      "markdown_sha256": "00d3ee6ac122f25d3d4b90b9d29b5a48931e7727406f403d3d9e91977eb9ddca",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "failed",
+      "visual_validation": "passed",
       "assets": []
     },
     {

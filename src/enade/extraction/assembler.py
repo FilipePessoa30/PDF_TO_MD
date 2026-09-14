@@ -331,6 +331,7 @@ def _strip_line_number_gutter(code_lines: list[Line]) -> list[Line]:
                     x1=ln.x1,
                     y1=ln.y1,
                     is_monospace=ln.is_monospace,
+                    font_size=ln.font_size,
                 )
             )
         else:
@@ -512,6 +513,7 @@ def _strip_leading_marker(lines: list[Line]) -> list[Line]:
         x1=first.x1,
         y1=first.y1,
         is_monospace=first.is_monospace,
+        font_size=first.font_size,
         spacing_corrections=first.spacing_corrections,
         label_corrections=first.label_corrections,
         symbol_corrections=first.symbol_corrections,
@@ -792,6 +794,7 @@ def assemble_question(
     pdf_sha256: str = "",
     question_regions_by_page: dict[int, list[QuestionRegion]] | None = None,
     region_merge_x_tolerance: float = UNBOUNDED_MERGE_X_TOLERANCE,
+    caption_font_size_gate: bool = False,
 ) -> ExtractedQuestion:
     warnings: list[str] = []
 
@@ -844,6 +847,7 @@ def assemble_question(
             page_number,
             decorative_baseline,
             region_merge_x_tolerance=region_merge_x_tolerance,
+            caption_font_size_gate=caption_font_size_gate,
             overrides=overrides,
             pdf_sha256=pdf_sha256,
             question_regions=(question_regions_by_page or {}).get(page_number),

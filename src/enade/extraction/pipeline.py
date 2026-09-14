@@ -198,6 +198,9 @@ def extract_exam(
                 and structure_profile.region_merge_x_tolerance is not None
                 else UNBOUNDED_MERGE_X_TOLERANCE
             )
+            caption_font_size_gate = (
+                structure_profile.caption_font_size_gate if structure_profile is not None else False
+            )
 
             answer_key_result = answer_key_parser(gabarito_doc)
             structural_warnings.extend(answer_key_result.warnings)
@@ -246,6 +249,7 @@ def extract_exam(
                     pdf_sha256=prova.identity.sha256,
                     question_regions_by_page=question_regions_by_page,
                     region_merge_x_tolerance=region_merge_x_tolerance,
+                    caption_font_size_gate=caption_font_size_gate,
                 )
 
                 suffix = "q" if span.kind == QuestionKind.OBJECTIVE else "d"

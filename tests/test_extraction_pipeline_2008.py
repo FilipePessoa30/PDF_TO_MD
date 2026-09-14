@@ -129,17 +129,93 @@ def _discursive_by_number(result):
     }
 
 
-def test_d09_statement_is_no_longer_empty(extraction_result):
-    """PROMPT Phase 3C, region-merge X-axis fix (see docs/phase-3c-report.md
-    section E): D09's own page-6 RASCUNHO ruled grid was collapsing (via a
-    Y-only merge) into a nearly-full-page-width region, absorbing the
-    entire statement (blocker d09-region-merge-content-loss). Still not a
-    full fix - a real headline/caption-absorption defect remains, so this
-    only asserts the statement is no longer empty, not that it is complete.
+def test_d09_statement_is_now_complete(extraction_result):
+    """PROMPT Phase 3C, region-merge X-axis fix: D09's own page-6 RASCUNHO
+    ruled grid was collapsing (via a Y-only merge) into a nearly-full-page-
+    width region, absorbing the entire statement (blocker
+    d09-region-merge-content-loss). That alone only stopped the statement
+    from being empty (see docs/phase-3c-report.md section E) - the real
+    article headline ("DIREITOS HUMANOS EM QUESTAO", 11pt) was still being
+    absorbed into the photo's own region on the first label-absorption
+    pass, geometrically indistinguishable from a legitimate diagram label
+    by proximity/width alone. PROMPT Phase 3D's own font-size gate
+    (caption_font_size_gate, ExamStructureProfile) fixes this: a candidate
+    must be strictly smaller than the page's own dominant body font size
+    (10pt here) to be eligible for absorption - the 11pt headline no longer
+    qualifies, and the statement is now genuinely complete, matching the
+    real source (page 6) word for word.
     """
     result, _ = extraction_result
     d09 = _discursive_by_number(result)[9]
-    assert d09.statement.strip() != ""
+    assert "DIREITOS HUMANOS EM QUESTÃO" in d09.statement
+    assert "François JULIEN, filósofo e sociólogo." in d09.statement
+    assert "Neste ano, em que são comemorados os 60 anos da Declaração Universal" in d09.statement
+    assert "a habitação como moradia digna" in d09.statement
+    assert "a segurança como bem-estar" in d09.statement
+    assert "o trabalho como ação para a vida" in d09.statement
+    assert "Tendo em vista o exposto acima" in d09.statement
+    assert "Seu texto deve ter entre 8 e 10 linhas." in d09.statement
+
+
+def test_d40_sql_code_block_is_now_preserved_verbatim(extraction_result):
+    """PROMPT Phase 3D, caption_font_size_gate: combined with the Phase 3C
+    region-merge fix, D40's own statement is now built via content_blocks
+    (paragraph/code/asset/paragraph/asset/paragraph) with a full, verbatim
+    fenced SQL code block, instead of the severely scrambled single blob
+    documented in docs/phase-3c-report.md section E. One residual defect
+    remains (a diagram label bleeding in as loose text - not asserted
+    against here, see docs/phase-3d-report.md).
+    """
+    result, _ = extraction_result
+    d40 = _discursive_by_number(result)[40]
+    assert d40.content_blocks is not None
+    code_blocks = [b for b in d40.content_blocks if b.type == "code"]
+    assert any("SELECT nome, endereco" in b.text for b in code_blocks)
+    assert any("WHERE idade < 40 OR renda > 30000;" in b.text for b in code_blocks)
+
+
+def test_d10_no_longer_loses_its_own_newspaper_fragments(extraction_result):
+    """PROMPT Phase 3D: D10's own three newspaper fragments (each with a
+    headline+body+citation) were previously missing 2 of 3 headlines/bodies
+    almost entirely (docs/phase-3c-report.md section L). The font-size gate
+    recovers all three headlines and bodies - still not in the correct
+    reading order (a distinct, unresolved local-reading-order defect, see
+    docs/phase-3d-report.md), so this only asserts the content is present,
+    not that it is correctly ordered.
+    """
+    result, _ = extraction_result
+    d10 = _discursive_by_number(result)[10]
+    assert "Alunos dão nota 7,1 para ensino médio" in d10.statement
+    assert "Entre os piores também em matemática e leitura" in d10.statement
+    assert "Ensino fundamental atinge meta de 2009" in d10.statement
+    assert "GOIS, Antonio. Folha de S.Paulo, 11 jun. 2008" in d10.statement
+    assert "WEBER, Demétrio. Jornal O Globo, 5 dez. 2007" in d10.statement
+    assert "GOIS, Antonio; PINHO, Angela. Folha de S.Paulo, 12 jun. 2008" in d10.statement
+
+
+def test_q01_multi_caption_page_is_not_regressed_by_font_size_gate(extraction_result):
+    """PROMPT Phase 3D regression guard: Q1's own page has 5 small portrait
+    images, each with its own multi-line caption - together outnumbering
+    Q1's own real body paragraph. An early, flat-mode version of
+    ``figures._dominant_body_font_size`` picked the captions' own (6pt)
+    font size as "the page's body size", which then wrongly excluded a
+    same-size roman-numeral index label ("IV") from absorption, stranding
+    it and fragmenting the region into a spurious extra asset (confirmed by
+    direct regeneration before this was fixed to also require the page's
+    own dominant left margin as evidence). Q1 was already ``passed`` before
+    Phase 3D and must not regress.
+    """
+    result, _ = extraction_result
+    questions_by_number = {
+        q.question_number: q
+        for q in result.questions
+        if q.question_type == QuestionType.MULTIPLE_CHOICE
+    }
+    q01 = questions_by_number[1]
+    assert len(q01.assets) == 2
+    assert "Disponível em" not in q01.statement
+    assert "Ermakoff" not in q01.statement
+    assert "reflete o clima político-social vivido naquela época." in q01.statement
 
 
 def test_d20_statement_is_complete_and_has_no_spurious_figure(extraction_result):
@@ -165,3 +241,29 @@ def test_d39_statement_is_complete_and_has_no_spurious_figure(extraction_result)
     d39 = _discursive_by_number(result)[39]
     assert "gramática acima é ambígua" in d39.statement
     assert not d39.assets
+
+
+def test_q68_where_clause_is_no_longer_split(extraction_result):
+    """PROMPT Phase 3D, 'Classe B': Q68's own page 29 has a 3-line
+    nested-SQL-subquery continuation (query II's own WHERE clause) that
+    ``layout.detect_column_margins`` was mistaking for a genuine second
+    page column (font size 9pt against the page's own 10pt body, short
+    relative to the rest of the page), scrambling query II across two
+    disconnected fragments (blocker q68-sql-code-block-reordering). Fixed
+    by requiring both a short column AND an off-body-size font before
+    rejecting a candidate split (layout.py, MIN_COLUMN_HEIGHT_RATIO/
+    _is_short_off_size_column) - confirmed safe for Q49/Q50's own genuine
+    two-column page and 2011's own D5 by full regeneration (zero drift).
+    """
+    result, _ = extraction_result
+    questions_by_number = {
+        q.question_number: q
+        for q in result.questions
+        if q.question_type == QuestionType.MULTIPLE_CHOICE
+    }
+    q68 = questions_by_number[68]
+    assert (
+        "WHERE D.IdDep=E.IdDep and E.salario >10000 and E.IdDep IN "
+        "(SELECT IdDep FROM Empregado GROUP BY IdDep HAVING count(*) > 5) GROUP BY NomeDep;"
+        in q68.statement
+    )

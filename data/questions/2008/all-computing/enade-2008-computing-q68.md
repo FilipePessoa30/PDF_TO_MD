@@ -29,10 +29,9 @@ content_blocks:
   text: SELECT NomeDep, count(*) FROM Departamento D, Empregado E WHERE D.IdDep=E.IdDep
     and E.salario > 10000 GROUP BY NomeDep HAVING count(*) > 5; II SELECT NomeDep,
     count(*) FROM Departamento D, Empregado E WHERE D.IdDep=E.IdDep and E.salario
-    >10000 and E.IdDep IN (SELECT IdDep
-- type: paragraph
-  text: GROUP BY NomeDep; Quando as consultas acima são realizadas, o que é recuperado
-    em cada uma delas? FROM Empregado GROUP BY IdDep HAVING count(*) > 5)
+    >10000 and E.IdDep IN (SELECT IdDep FROM Empregado GROUP BY IdDep HAVING count(*)
+    > 5) GROUP BY NomeDep; Quando as consultas acima são realizadas, o que é recuperado
+    em cada uma delas?
 correct_answer: A
 official_answer_source: 2008/b2_gabarito.pdf
 answer_validation_status: validated
@@ -48,9 +47,9 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
@@ -62,9 +61,7 @@ Considere as seguintes tabelas: CREATE TABLE Departamento ( IdDep int NOT NULL, 
 I
 ```
 
-SELECT NomeDep, count(*) FROM Departamento D, Empregado E WHERE D.IdDep=E.IdDep and E.salario > 10000 GROUP BY NomeDep HAVING count(*) > 5; II SELECT NomeDep, count(*) FROM Departamento D, Empregado E WHERE D.IdDep=E.IdDep and E.salario >10000 and E.IdDep IN (SELECT IdDep
-
-GROUP BY NomeDep; Quando as consultas acima são realizadas, o que é recuperado em cada uma delas? FROM Empregado GROUP BY IdDep HAVING count(*) > 5)
+SELECT NomeDep, count(*) FROM Departamento D, Empregado E WHERE D.IdDep=E.IdDep and E.salario > 10000 GROUP BY NomeDep HAVING count(*) > 5; II SELECT NomeDep, count(*) FROM Departamento D, Empregado E WHERE D.IdDep=E.IdDep and E.salario >10000 and E.IdDep IN (SELECT IdDep FROM Empregado GROUP BY IdDep HAVING count(*) > 5) GROUP BY NomeDep; Quando as consultas acima são realizadas, o que é recuperado em cada uma delas?
 
 ## Alternativas
 
@@ -72,4 +69,4 @@ A. I: os nomes dos departamentos que possuem mais de 5 empregados que ganham mai
 B. I: os nomes dos departamentos que possuem mais de 5 empregados e o número de empregados que ganham mais de 10.000 reais. II: os nomes dos departamentos que possuem mais de 5 empregados que ganham mais de 10.000 reais e o número de empregados nessa condição.
 C. I: os nomes dos departamentos que possuem mais de 5 empregados que ganham mais de 10.000 reais e o número total de funcionários do departamento. II: os nomes dos departamentos que possuem mais de 5 empregados que ganham mais de 10.000 reais e o número de empregados nessa condição.
 D. I: os nomes dos departamentos que possuem mais de 5 empregados que ganham mais de 10.000 reais e o número de empregados nessa condição. II: os nomes dos departamentos que possuem mais de 5 empregados que ganham mais de 10.000 reais e o número total de funcionários do departamento.
-E. I: os nomes dos departamentos que possuem mais de 5 empregados que ganham mais de 10.000 reais e o número de empregados nessa condição. II: os nomes dos departamentos que possuem mais de 5 empregados que ganham mais de 10.000 reais e o número de empregados nessa condição. FROM Empregado GROUP BY IdDep HAVING count(*) > 5)
+E. I: os nomes dos departamentos que possuem mais de 5 empregados que ganham mais de 10.000 reais e o número de empregados nessa condição. II: os nomes dos departamentos que possuem mais de 5 empregados que ganham mais de 10.000 reais e o número de empregados nessa condição.

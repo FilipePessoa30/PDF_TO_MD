@@ -88,6 +88,16 @@ class ExamStructureProfile(BaseModel):
     #: full regeneration to alter 2011's own Q23/Q38 and would very likely
     #: alter other already-validated corpora too if applied unconditionally.
     region_merge_x_tolerance: float | None = None
+    #: Opt-in requirement (PROMPT Phase 3D section 6-7) that a label/caption
+    #: absorption candidate have a font size strictly smaller than the
+    #: page's own dominant body-prose font size (see
+    #: ``figures._dominant_body_font_size``). ``False`` (default) means
+    #: exactly the original, unchanged behavior every booklet without this
+    #: field set already has. Set only for a booklet whose own layout is
+    #: confirmed (by direct instrumentation) to need it - never a blanket
+    #: default, since enabling it unconditionally was found by full
+    #: regeneration to alter 2011's own Q05/Q33/Q34/Q35.
+    caption_font_size_gate: bool = False
 
     @model_validator(mode="after")
     def _validate_sections(self) -> ExamStructureProfile:

@@ -422,6 +422,70 @@ def _dominant_left_margin(lines: list[Line]) -> float | None:
     return float(x0)
 
 
+#: A candidate label/caption line's own font size must be strictly smaller
+#: than this margin below the page's own dominant body-prose font size to
+#: be eligible for absorption into a figure region at all (PROMPT Phase 3D
+#: section 6-7 - "papel semantico dos spans"). Zero, not a positive margin:
+#: this corpus's own real captions/citations are consistently set several
+#: points smaller than body text (2008-b D9's own photo credit: 6pt vs. a
+#: 10pt body; 2021's own Q7 citation: 9pt vs. a 12pt body), while a real
+#: section header/headline shares or exceeds the body's own size (2008-b
+#: D9's own "DIREITOS HUMANOS EM QUESTAO" headline: 11pt, the same size as
+#: the page's own "QUESTAO 9" marker, not the 6pt of the real caption two
+#: lines below it) - equal size is therefore already disqualifying, no
+#: slack needed.
+FONT_SIZE_CAPTION_MARGIN = 0.0
+
+
+#: A line needs at least this many characters (after stripping) to count as
+#: evidence of "body prose" for font-size purposes - long enough to exclude
+#: a bare alternative marker ("A"), a page number, or a short diagram label,
+#: short enough that a real prose line in a narrow column (2008-b's own
+#: magazine-style layout - e.g. D9's own quote column is only ~200pt wide,
+#: never reaching ``MAX_LABEL_LINE_WIDTH``, which is why body font size is
+#: evidenced by text length here rather than by width like
+#: ``_dominant_left_margin``) still qualifies.
+_MIN_BODY_TEXT_LENGTH = 20
+
+
+def _dominant_body_font_size(lines: list[Line]) -> float | None:
+    """Most common font size among the page's own dominant-left-margin
+    lines, restricted to substantial (body-prose-length) ones.
+
+    Two-step evidence, not a flat mode over every long line: a page with
+    several small embedded images, each with its own multi-line caption
+    (2008-b's own Q1: 5 portrait images, each with a 2-3 line, 6pt credit
+    line, together outnumbering Q1's own real ~10pt body paragraph) can have
+    *more* long caption lines than real body lines, so a flat mode picks the
+    captions' own font size as "the body size" - which then wrongly
+    disqualifies a genuine same-size index label ("IV") from absorption,
+    stranding it and fragmenting the region (confirmed by direct
+    regeneration: an early, flat-mode version of this function did exactly
+    that to Q1, previously ``passed``). Restricting to lines that also share
+    the page's own most common long-line left margin (each of Q1's own 5
+    captions sits at its own image's own x0, never recurring at the same x0
+    as the other 4) fixes this while still working for a genuine narrow
+    column (2008-b's own D9: every real body line shares the same x0, so the
+    margin step still isolates them correctly even though none of them are
+    individually "wide" - see ``_dominant_left_margin``, which requires
+    width instead and returns ``None`` on exactly this shape of page).
+    ``None`` when there isn't enough agreement to trust a margin or a size
+    (see ``_MIN_MARGIN_AGREEMENT``), in which case font size is not used to
+    gate absorption at all.
+    """
+    substantial = [ln for ln in lines if len(ln.text.strip()) >= _MIN_BODY_TEXT_LENGTH]
+    if not substantial:
+        return None
+    margin_x0, margin_count = Counter(round(ln.x0) for ln in substantial).most_common(1)[0]
+    if margin_count < _MIN_MARGIN_AGREEMENT:
+        return None
+    at_margin = [ln for ln in substantial if round(ln.x0) == margin_x0]
+    size, count = Counter(round(ln.font_size, 1) for ln in at_margin).most_common(1)[0]
+    if count < _MIN_MARGIN_AGREEMENT:
+        return None
+    return float(size)
+
+
 def _is_marker_at_margin(text: str, x0: float, body_margin_x0: float | None) -> bool:
     """True if ``text`` looks like an alternative/question marker *and* sits
     at the page's standard body-text margin - see ``_dominant_left_margin``.
@@ -709,6 +773,7 @@ def detect_visual_regions(
     *,
     y_merge_tolerance: float = DEFAULT_Y_MERGE_TOLERANCE,
     region_merge_x_tolerance: float = UNBOUNDED_MERGE_X_TOLERANCE,
+    caption_font_size_gate: bool = False,
     overrides: LayoutOverrideSet | None = None,
     pdf_sha256: str = "",
     question_regions: list[QuestionRegion] | None = None,
@@ -727,6 +792,20 @@ def detect_visual_regions(
     below. Threaded through from ``ExamStructureProfile.region_merge_x_tolerance``
     by ``assemble_question``/``pipeline.py`` - every booklet without that
     profile field set keeps the exact original, unbounded behavior.
+
+    ``caption_font_size_gate`` (PROMPT Phase 3D section 6-7, default
+    ``False``): opt-in requirement that a label/caption absorption candidate
+    have a font size strictly smaller than the page's own dominant
+    body-prose font size (see ``_dominant_body_font_size``,
+    ``FONT_SIZE_CAPTION_MARGIN``) - a real section header/headline sharing
+    or exceeding the body's own size is never eligible for absorption,
+    closing the class of defect documented for 2008-b's own D9/D10/D40
+    (a real headline confused for a figure caption). Threaded through from
+    ``ExamStructureProfile.caption_font_size_gate``; confirmed by full
+    regeneration to change already-validated 2011 output (Q05/Q33/Q34/Q35 -
+    crop-boundary and/or a structural-warning shift, no statement text
+    change) when applied unconditionally, so it is gated the same way as
+    ``region_merge_x_tolerance`` rather than made the new default.
 
     ``question_regions`` (PROMPT Phase 2C section 6-11), when given, is
     every question's own claimed territory on *this* page (see
@@ -780,6 +859,7 @@ def detect_visual_regions(
 
     page_lines = extract_page_lines(page, page_number)
     body_margin_x0 = _dominant_left_margin(page_lines)
+    body_font_size = _dominant_body_font_size(page_lines) if caption_font_size_gate else None
     column_margins = detect_column_margins(page_lines)
     label_candidates = [
         ((ln.x0, ln.y0, ln.x1, ln.y1), ln.text)
@@ -789,6 +869,7 @@ def detect_visual_regions(
         and not is_chrome_line(ln.text)
         and not _is_paragraph_continuation(i, page_lines)
         and not _is_two_column_body_text(ln, column_margins)
+        and (body_font_size is None or ln.font_size < body_font_size - FONT_SIZE_CAPTION_MARGIN)
         and not (
             overrides is not None
             and overrides.protects_from_label_absorption(

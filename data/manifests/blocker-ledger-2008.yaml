@@ -25,21 +25,31 @@ blockers:
     is absorbed on subsequent cascading passes. A caption/consumption-separation fix (PROMPT Phase 3C section
     7-9) was investigated but not attempted this phase - see docs/phase-3c-report.md section E for why it
     could not be done safely without risking 2011/2021 in the time available.'
-  description: 'IMPROVED IN PHASE 3C: statement is no longer empty, but still real content loss - only 3 stray
-    fragments survive (''Francois JULIEN, filosofo e sociologo.'', ''dos Direitos Humanos, novas'', ''(valor:
-    10,0 pontos)''); the article headline and most of the quoted text remain absorbed into figure-01.png''s
-    own region.'
-  evidence: docs/phase-3c-report.md section E; tests/test_extraction_figures.py (region-merge X-axis tests)
+  description: 'RESOLVED IN PHASE 3D: statement is now complete, matching page 6''s own raw PDF text
+    extraction word for word (headline, full quote with inline attribution, all three bulleted items,
+    closing instruction and valor line).'
+  evidence: docs/phase-3c-report.md section E; docs/phase-3d-report.md section D; tests/test_extraction_figures.py
+    (region-merge X-axis and caption-font-size-gate tests); tests/test_extraction_pipeline_2008.py::test_d09_statement_is_now_complete
   id: d09-region-merge-content-loss
   question_id: enade-2008-computing-d09
   regression_tests:
   - tests/test_extraction_figures.py
-  resolution: null
+  - tests/test_extraction_pipeline_2008.py
+  resolution: 'RESOLVED (Phase 3D): root-caused precisely - this booklet''s own real captions/citations are
+    consistently set in a font SMALLER than body prose (this page''s own photo credit: 6pt vs. a 10pt body),
+    while the headline shares the body''s own font-adjacent size (11pt, matching the page''s own ''QUESTAO 9''
+    marker) - font size, not just geometry, is what actually distinguishes a real header from a real caption.
+    Fixed via a new, opt-in caption_font_size_gate (figures.py/exam_profile.py), requiring a label-absorption
+    candidate''s own font size to be strictly smaller than the page''s own dominant body-prose font size
+    (figures._dominant_body_font_size). Gated to 2008-b alone via ExamStructureProfile.caption_font_size_gate
+    (2011/2021 do not set this field and are unaffected - confirmed by full regeneration, zero drift on all
+    288 protected files; an earlier unconditional-default attempt was found to alter 2011''s own Q05/Q33/Q34/Q35
+    and was reverted in favor of this declarative gate - see docs/phase-3d-report.md section E).'
   source_pages:
   - 6
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets: []
   category: region-merge-content-loss
   cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
@@ -81,22 +91,21 @@ blockers:
   visual_validation: passed
 - affected_assets: []
   category: region-merge-content-loss
-  cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
-    compute_decorative_baseline (figures.py) recognizes as chrome (confirmed empirically: 98 vector drawings
-    on one sampled page vs. 47 total baseline entries across the whole document) - the unrecognized fragments
-    get swept into visual-region detection, and the existing Y-merge-tolerance chain-absorption logic
-    then merges them together with real embedded photos/diagrams into one oversized region that can span
-    most of a page, in the most severe confirmed case (Q21) even crossing into two neighboring questions''
-    own columns. Real prose lines whose Y-range falls inside that oversized region are excluded from the
-    statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
-    mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
-    section M for why no fix was attempted this session.'
-  description: Empty statement - only 2 images remain, all prose ('Quando o homem nao trata bem a natureza...')
-    lost.
-  evidence: null
+  cause: 'IMPROVED IN PHASE 3D, not fully resolved. Phase 3D''s caption_font_size_gate (see
+    d09-region-merge-content-loss) recovers the question''s own opening epigraph (a genuine same-size,
+    equal-or-larger-than-body-adjacent short line, the same class of defect as D09/D10/D40) as real text.
+    Still genuinely incomplete: the transition sentence introducing the image, the image''s own caption, and
+    the sentence leading into the alternatives remain absorbed into figure-01''s own region - these are
+    genuinely small-font body text fragmented by proximity to a large image, a DIFFERENT mechanism from the
+    same-size-header pattern the font-size gate targets, and not resolved by it.'
+  description: 'IMPROVED IN PHASE 3D: the opening epigraph (''Quando o homem nao trata bem a natureza, a
+    natureza nao trata bem o homem.'') is now present as real text; the transition sentence, image caption,
+    and alternatives-lead-in sentence remain lost.'
+  evidence: docs/phase-3d-report.md section D
   id: q02-region-merge-content-loss
   question_id: enade-2008-computing-q02
-  regression_tests: []
+  regression_tests:
+  - tests/test_extraction_figures.py
   resolution: null
   source_pages:
   - 3
@@ -501,16 +510,25 @@ blockers:
     statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
     mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
     section M for why no fix was attempted this session.'
-  description: Statement replaced by garbled diagram-label fragments.
-  evidence: null
+  description: 'STALE (superseded in Phase 3D reconciliation, PROMPT Phase 3D section 3). This
+    entry''s own description ("Statement replaced by garbled diagram-label fragments") and
+    source_pages ([28], corrected: Q62 is actually on page 27) date from Phase 3A''s initial,
+    coarse pass and were never updated after Phase 3B''s own deeper investigation (which added
+    q62-cross-question-diagram-label-bleed) found the actual current shape to be different: Q62''s
+    own real statement (INTOSAI audit ethics question) is complete and correct on its own, followed
+    by trailing contamination from Q61''s ITIL diagram labels - not "replaced by garbled fragments"
+    at all. Direct re-inspection of the currently published enade-2008-computing-q62.md confirms
+    q62-cross-question-diagram-label-bleed''s own description is the accurate one. Superseding
+    rather than deleting, so the Phase 3A finding remains in the historical record.'
+  evidence: docs/phase-3d-report.md section F; data/questions/2008/all-computing/enade-2008-computing-q62.md
   id: q62-region-merge-content-loss
   question_id: enade-2008-computing-q62
   regression_tests: []
   resolution: null
   source_pages:
-  - 28
-  status: open
-  superseded_by: null
+  - 27
+  status: superseded
+  superseded_by: q62-cross-question-diagram-label-bleed
   visual_validation: failed
 - affected_assets: []
   category: region-merge-content-loss
@@ -839,23 +857,26 @@ blockers:
   visual_validation: failed
 - affected_assets: []
   category: table-reading-order-scramble
-  cause: 'SUBSTANTIALLY IMPROVED IN PHASE 3C, root cause still not fully isolated. Phase 3C''s region-merge
-    X-axis fix (see d09-region-merge-content-loss) changed which vector candidates merge on this page, and
-    the statement is now built via content_blocks (paragraph/code/asset/paragraph/asset/paragraph) instead of
-    null - the SQL query (''SELECT nome, endereco FROM Cliente WHERE idade < 40 OR renda > 30000;'') now
-    renders as a correct, verbatim fenced code block, and most of the surrounding prose is coherent and in the
-    right order. One residual defect: the query-tree diagram''s own relational-algebra projection label
+  cause: 'FURTHER IMPROVED IN PHASE 3D on top of Phase 3C''s own gains, root cause of the one residual defect
+    still not fully isolated. Phase 3C''s region-merge X-axis fix (see d09-region-merge-content-loss) already
+    produced a structured content_blocks statement with a correct, verbatim SQL code block. Phase 3D''s
+    caption_font_size_gate (see d09-region-merge-content-loss) additionally recovers the relation-schema
+    definition that used to open the statement, plus a second CodeSegment for the schema itself, and restores
+    the missing opening clause of the closing paragraph (previously truncated). One residual defect remains,
+    unchanged by either phase''s fix: the query-tree diagram''s own relational-algebra projection label
     (''B nome,endereco'', almost certainly a mis-rendered pi-symbol projection over name/address) still bleeds
     in as loose text immediately before figure-02, the same general cross-question/cross-figure label-bleed
     class as q62-cross-question-diagram-label-bleed - not yet isolated to a specific mechanism fix.'
-  description: 'IMPROVED IN PHASE 3C: statement is coherent and structured (content_blocks with a real fenced
-    SQL code block), not scrambled. One residual defect remains - a diagram label (''B nome,endereco'') bleeds
-    in as loose text before figure-02 instead of staying purely part of that diagram.'
-  evidence: docs/phase-3c-report.md section E
+  description: 'FURTHER IMPROVED IN PHASE 3D: the relation-schema intro and definition are now present (a new
+    CodeSegment), and the closing paragraph''s own opening clause is restored. One residual defect remains -
+    a diagram label (''B nome,endereco'') bleeds in as loose text before figure-02 instead of staying purely
+    part of that diagram.'
+  evidence: docs/phase-3c-report.md section E; docs/phase-3d-report.md section D; tests/test_extraction_pipeline_2008.py::test_d40_sql_code_block_is_now_preserved_verbatim
   id: d40-table-reading-order-scramble
   question_id: enade-2008-computing-d40
   regression_tests:
   - tests/test_extraction_figures.py
+  - tests/test_extraction_pipeline_2008.py
   resolution: null
   source_pages:
   - 17
@@ -884,19 +905,41 @@ blockers:
   visual_validation: failed
 - affected_assets: []
   category: table-reading-order-scramble
-  cause: Not yet root-caused precisely - a code/table reading-order defect. Left open.
-  description: Two SQL queries and their connecting prose are present but reordered/interleaved incorrectly
-    (query II's own WHERE clause split across two disconnected fragments).
-  evidence: null
+  cause: 'RESOLVED IN PHASE 3D. Root-caused precisely by direct instrumentation against page 29:
+    layout.detect_column_margins was mistaking query II''s own 3-line nested-subquery continuation
+    (font size 9pt, against this page''s own 10pt body; deeply indented, recurring exactly
+    MIN_LINES_PER_COLUMN times; far enough right to clear MIN_COLUMN_SEPARATION) for a genuine second
+    page column, sorting those 3 lines to the very end of the page''s own reading order and splitting
+    query II''s own WHERE clause into two disconnected fragments. Two prior Phase 3C attempts at a
+    general fix (height-ratio alone; height-ratio + monospace) were reverted - see
+    scratchpad/experiment-column-height-ratio.diff/experiment-q68-vs-q50-evidence.md - because height
+    alone also rejected 2008-b''s own genuine Questao 49/50 two-column page, and this booklet''s own SQL
+    font is not recognized as monospace by Line.is_monospace''s font-name heuristic. Phase 3D succeeds by
+    requiring height AND font size together: a candidate column is only rejected when it is both short
+    relative to the other column (MIN_COLUMN_HEIGHT_RATIO) AND set in a font smaller than the page''s own
+    dominant body size (_is_short_off_size_column) - Questao 50''s own short left column is set at the
+    body''s own size (10pt, not smaller), so it is correctly kept. Confirmed by full regeneration: zero
+    drift on all 288 protected 2011/2021 files, 2011''s own D5 (a genuine two-column prose/pseudocode page)
+    unaffected, Questao 49/50 unaffected.'
+  description: 'RESOLVED (Phase 3D): both SQL queries and their connecting prose are now complete and in
+    the correct order, matching page 29''s own raw text word for word. One cosmetic (non-content)
+    residual remains: the roman numeral ''I'' marking query I renders as its own isolated fenced code
+    block instead of inline with the surrounding prose - a minor CodeSegment/TextSegment boundary
+    artifact, not a content or ordering defect.'
+  evidence: docs/phase-3d-report.md section D/J; scratchpad/experiment-column-height-ratio.diff;
+    scratchpad/experiment-q68-vs-q50-evidence.md; tests/test_extraction_layout.py (short-off-size-column
+    tests); tests/test_extraction_pipeline_2008.py::test_q68_where_clause_is_no_longer_split
   id: q68-sql-code-block-reordering
   question_id: enade-2008-computing-q68
-  regression_tests: []
-  resolution: null
+  regression_tests:
+  - tests/test_extraction_layout.py
+  - tests/test_extraction_pipeline_2008.py
+  resolution: 'RESOLVED (Phase 3D): see cause above.'
   source_pages:
   - 29
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets: []
   category: region-merge-content-loss
   cause: Not individually root-caused this phase - likely the same unresolved label-absorption-over-reach
@@ -963,24 +1006,35 @@ blockers:
   superseded_by: null
   visual_validation: failed
 - affected_assets: []
-  category: region-merge-content-loss
-  cause: 'NEW BLOCKER OPENED IN PHASE 3C, correcting a Phase 3B audit error. D10 was previously marked
-    visual_validation=passed with the note "no residuals found" - that claim did not match the actual
-    committed file, which still had a RASCUNHO-grid-derived spurious figure-02.png splitting the statement
-    mid-sentence (the same region-merge-without-X-check root cause as d09-region-merge-content-loss). Phase
-    3C''s region-merge X-axis fix removes that spurious figure, but re-inspection against the real source
-    (page 7) finds the statement is still genuinely incomplete: D10 reproduces three separate newspaper
-    fragments, each with its own headline+body+citation (GOIS 11 jun / WEBER 5 dez / GOIS+PINHO 12 jun) - the
-    published statement is missing fragments 1 and 2''s own headlines/bodies almost entirely (only their
-    trailing citations survive, misplaced after the essay prompt) and fragment 3''s own headline. Root cause
-    not yet isolated to a specific mechanism, but the shape (short headline-like lines near other content)
-    matches the same label-absorption-over-reach pattern documented for D09 and Q02/Q07/Q12/Q45/Q54/Q75.'
-  description: Statement missing fragments 1 and 2's own headlines/bodies almost entirely, and fragment 3's
-    own headline - only 2 of 3 fragments' own trailing citations survive, misplaced after the essay prompt.
-  evidence: docs/phase-3c-report.md section E
+  category: table-reading-order-scramble
+  cause: 'OPENED IN PHASE 3C (as region-merge-content-loss - see below for the re-categorization), root cause
+    fully changed in PHASE 3D. D10 was previously marked visual_validation=passed - that Phase 3B claim did
+    not match the actual committed file, which had a RASCUNHO-grid-derived spurious figure-02.png splitting
+    the statement (the same root cause as d09-region-merge-content-loss, fixed by Phase 3C''s region-merge
+    X-axis fix). Phase 3C''s own re-inspection additionally found 2 of 3 newspaper fragments'' own
+    headlines/bodies missing entirely - genuinely lost content at the time. PHASE 3D''s caption_font_size_gate
+    (see d09-region-merge-content-loss) recovers ALL of the missing content: all three headlines, bodies and
+    citations are now present, word for word, against page 7''s own raw text extraction. RE-CATEGORIZED from
+    region-merge-content-loss to table-reading-order-scramble because the remaining defect is no longer
+    content loss at all - it is now purely one of LOCAL READING ORDER: this page prints its three newspaper
+    clippings scattered across a genuine two-column layout in a non-linear "collage" arrangement (one
+    clipping''s own body wraps from the right column into the left mid-paragraph; a citation can sit far
+    below its own body, in whichever column had free space) that the existing "all of left column, then all
+    of right column" page-reading-order model cannot represent - this is not a simple two-question left/right
+    split, and is architecturally the same class of problem as Q24/Q29/Q33/Q63/Q68''s own local-reading-order
+    defects, not the header-vs-caption confusion the font-size gate targets. Investigated in Phase 3D (see
+    docs/phase-3d-report.md section I) - a general "clipping-box" local-reading-order mechanism was not
+    implemented this phase given the demonstrated risk of further geometric heuristics to 2011/2021 (two
+    reverted Phase 3C experiments, see docs/phase-3c-report.md section E).'
+  description: 'RESOLVED (content): all three newspaper fragments'' own headlines, bodies, and citations are
+    now present, word for word. STILL OPEN (order): the three fragments'' own components are not in the
+    correct reading order - a local-reading-order defect, not content loss.'
+  evidence: docs/phase-3c-report.md section E/L; docs/phase-3d-report.md section D/I; tests/test_extraction_pipeline_2008.py::test_d10_no_longer_loses_its_own_newspaper_fragments
   id: d10-label-absorption-newspaper-fragments
   question_id: enade-2008-computing-d10
-  regression_tests: []
+  regression_tests:
+  - tests/test_extraction_figures.py
+  - tests/test_extraction_pipeline_2008.py
   resolution: null
   source_pages:
   - 7
