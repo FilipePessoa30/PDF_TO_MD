@@ -337,6 +337,103 @@
         "tests/test_fragment_reconstruction.py::test_scale_invariance_of_the_gap_ratio",
         "tests/test_fragment_reconstruction.py::test_font_size_variation_keeps_the_same_classification"
       ]
+    },
+    {
+      "capability_id": "alternative_group",
+      "description": "Replaces the old assembler._find_alternative_starts (an isolated, right-to-left, margin-unaware search for the last capital letter A..E it could find) with a structural evaluation of the whole A-E label sequence as one group (alternative_groups.find_alternative_group). Collects every line matching the marker shape into per-letter AlternativeMarkerCandidate pools, computes a reference_margin (the mode of every candidate's own x0, trusted only when backed by at least _MIN_MARGIN_VOTES=2 real votes), then resolves each letter from E back to A: a letter with a single candidate is trivially accepted; a letter with multiple candidates is narrowed to its on-margin subset only when that subset is a strict, non-empty partition of its own candidates (never all-or-nothing), and the pre-existing last-candidate-before-the-next-letter reading-order rule is always the final tie-break within whichever pool applies. Margin evidence is a refinement layered on top of reading order, never a replacement for it - ordinary body prose beginning with a bare capital letter routinely shares the same left margin as a real marker in this corpus, so margin alone cannot discriminate.",
+      "trigger_features": [
+        "a line's own text exactly matches ^([A-E])(?:[\\t ](.*))?$ (the same shape assembler.py's own alternative-line regex expects)"
+      ],
+      "parameters": {},
+      "scope": "alternative_groups.py: find_alternative_group / _reference_margin; assembler.py: both call sites that previously called _find_alternative_starts (function removed)",
+      "generalization_level": "G2",
+      "positive_fixtures": [
+        "tests/test_alternative_groups.py::test_full_sequence_resolves",
+        "tests/test_alternative_groups.py::test_two_on_margin_candidates_plus_one_off_margin_resolves_via_reading_order",
+        "tests/test_alternative_groups.py::test_all_candidates_sharing_the_body_margin_defer_to_reading_order",
+        "tests/test_alternative_groups.py::test_horizontal_grid_layout_with_no_shared_margin_defers_to_reading_order",
+        "tests/test_alternative_groups.py::test_translation_invariance",
+        "tests/test_alternative_groups.py::test_scale_invariance_of_margin_alignment",
+        "tests/test_extraction_assembler.py::test_find_alternative_group_picks_rightmost_valid_sequence"
+      ],
+      "negative_fixtures": [
+        "tests/test_alternative_groups.py::test_no_e_at_all_returns_none",
+        "tests/test_alternative_groups.py::test_partial_sequence_is_incomplete",
+        "tests/test_alternative_groups.py::test_invalid_order_is_incomplete",
+        "tests/test_alternative_groups.py::test_real_regression_shape_wrapped_prose_mistaken_for_marker",
+        "tests/test_extraction_assembler.py::test_find_alternative_group_ignores_capital_letter_in_prose",
+        "tests/test_extraction_assembler.py::test_find_alternative_group_incomplete_when_sequence_incomplete"
+      ],
+      "real_cases": [
+        "2008-b Q71 (alternative B/C cross-contamination fully resolved - the phase's own obligatory case)",
+        "2008-b Q28 (page 13, horizontal grid layout; a body-prose false 'A' sharing the real marker's own margin correctly loses to the real marker via reading order)",
+        "2008-b Q52 (page 22, same shape as Q28)"
+      ],
+      "protected_cases": [
+        "2011 Q39 (page 25, a fully horizontal, no-shared-margin alternative layout with a judged-item's own false 'A' candidate coincidentally sharing no margin with anything - required _MIN_MARGIN_VOTES to avoid a real regression; confirmed fixed and non-regressing afterwards)",
+        "every other 2011/2021 question (zero byte-level drift confirmed via SHA-256 baseline across every fix iteration this phase)"
+      ],
+      "failure_behavior": "returns None (assembler.py falls back to its own pre-existing generic 'nao foi possivel localizar' warning path, exactly as the old function's own None return did) when letter E has zero candidates; returns a group with status='incomplete' (also treated as unusable via AlternativeGroup.is_usable) when some other letter has zero candidates before the next accepted letter's own line - never fabricates a boundary, never consults the gabarito",
+      "profile_dependency": "none - unconditional replacement of _find_alternative_starts for every corpus, not gated by ExamStructureProfile, because two full regression rounds (the Q28/Q52 re-check, then the 2011 Q39 re-check) confirmed it strictly improves on the old algorithm with zero drift elsewhere once _MIN_MARGIN_VOTES was added, so no backward-compatible opt-out was needed",
+      "runtime_ai_dependency": "none",
+      "introduced_phase": "3I"
+    },
+    {
+      "capability_id": "diagram_internal_label_detection",
+      "description": "Covers the complementary, boundary-selection half of distinguishing a real alternative marker from a diagram-internal or body-prose line that merely shares the same 'single capital letter A-E' text shape - the region-membership half (whether such a line is hidden from a visual region's own bounding box) is the pre-existing diagram_internal_label_margin_check (Phase 3G); this capability is what determines which competing marker-shaped candidate actually anchors an alternative's own start line, inside alternative_groups.find_alternative_group. A false candidate is rejected not by classifying its text semantically (e.g. never by detecting 'this looks like an automaton input label') but purely structurally: it either falls outside the reference_margin's own on-margin subset when that subset is a genuine, non-empty partition of the letter's own candidates, or it loses the final reading-order tie-break to a later, genuine marker on the same margin. No positive catalogue of diagram-label shapes is maintained or matched against.",
+      "trigger_features": [
+        "two or more candidates for the same letter within one question's own alt_section span, where at least one is not the genuine alternative marker"
+      ],
+      "parameters": {},
+      "scope": "alternative_groups.py: find_alternative_group (candidate-pool narrowing step)",
+      "generalization_level": "G2",
+      "positive_fixtures": [
+        "tests/test_alternative_groups.py::test_candidate_far_from_reference_margin_never_wins_over_a_single_aligned_one",
+        "tests/test_alternative_groups.py::test_two_on_margin_candidates_plus_one_off_margin_resolves_via_reading_order"
+      ],
+      "negative_fixtures": [
+        "tests/test_alternative_groups.py::test_real_regression_shape_wrapped_prose_mistaken_for_marker",
+        "tests/test_alternative_groups.py::test_horizontal_grid_layout_with_no_shared_margin_defers_to_reading_order"
+      ],
+      "real_cases": [
+        "2008-b Q71 (a false 'C'/'B'-shaped line inside the alternatives' own wrapped prose no longer wins over the genuine marker)",
+        "2008-b Q28/Q52 (a body-prose sentence beginning with a bare 'A' sharing the real marker's own left margin no longer wins the boundary)"
+      ],
+      "protected_cases": [
+        "2011 Q39 (the judged-item false 'A' candidate that motivated _MIN_MARGIN_VOTES)",
+        "every real alternative marker in 2011/2021/2008-b (the genuine marker is never rejected by this mechanism in any of the 65 currently-passing 2008-b questions or any 2011/2021 question)"
+      ],
+      "failure_behavior": "when no structural signal (margin partition, then reading order) can separate two candidates for the same letter, the later candidate always wins deterministically (last-wins reading order) rather than the group being marked ambiguous - real-corpus evidence this phase never actually produced a genuine, structurally-tied case, so an ambiguous outcome remains architecturally supported (AlternativeGroupStatus) but is not currently reachable by any implemented rule; see docs/phase-3i-report.md",
+      "profile_dependency": "none - shares alternative_group's own unconditional scope",
+      "runtime_ai_dependency": "none",
+      "introduced_phase": "3I"
+    },
+    {
+      "capability_id": "alternative_boundary_assignment",
+      "description": "Once find_alternative_group returns a resolved, usable group, assembler.py slices a question's own text_only_lines into each alternative's own line range directly from AlternativeGroup.accepted (a {letter: line_index} map), in place of the old function's own returned start-index list; the downstream cutoff/statement/table-slicing logic is otherwise unchanged (same code, only the source of each per-letter start index changed). This is the mechanism that actually places Q71's own B/C boundary on the correct line instead of leaking the tail of one alternative's own content into its neighbor.",
+      "trigger_features": [
+        "an alt_section span whose lines produce a resolved, usable AlternativeGroup"
+      ],
+      "parameters": {},
+      "scope": "assembler.py (main alternative-assembly call site and the preliminary alt-section-start detection call site)",
+      "generalization_level": "G2",
+      "positive_fixtures": [
+        "tests/test_extraction_pipeline_2008.py::test_q71_alternative_b_c_boundary_is_now_correct",
+        "tests/test_extraction_pipeline_2008.py::test_q71_statement_is_now_complete"
+      ],
+      "negative_fixtures": [
+        "tests/test_extraction_pipeline_2011.py::test_q39_alternatives_are_not_regressed_by_the_horizontal_grid_shape"
+      ],
+      "real_cases": [
+        "2008-b Q71 (page ~37-38, alternatives B and C - the phase's own obligatory case, verified via exact string equality against the real PDF source text)"
+      ],
+      "protected_cases": [
+        "every other question whose alternatives were already correctly bounded before this phase (Q07/Q12/Q13/Q25/Q29/Q61/Q62/Q63/Q68/Q75, 2011 Q34, all confirmed non-regressed)"
+      ],
+      "failure_behavior": "an unusable AlternativeGroup (None or status != 'resolved') leaves the question's own alternative section unassembled and emits a warning, exactly as the old function's own failure path did - never a partial or guessed boundary",
+      "profile_dependency": "none - shares alternative_group's own unconditional scope",
+      "runtime_ai_dependency": "none",
+      "introduced_phase": "3I"
     }
   ]
 }

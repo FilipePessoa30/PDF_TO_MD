@@ -285,14 +285,11 @@ def test_q63_statement_is_now_complete(extraction_result):
     )
 
 
-def test_q71_statement_is_now_complete_alternative_bc_still_open(extraction_result):
+def test_q71_statement_is_now_complete(extraction_result):
     """Regression test for ``q71-region-merge-content-loss`` (RESOLVED
     Phase 3H, Cluster D): 'e acoplamento são dois conceitos' and 'conceito
     de ocultação de informação.' were their own fragmented same-baseline
-    line entries. The separate, unrelated alternative B/C cross-
-    contamination (``q71-alternative-b-c-cross-contamination``, a
-    _find_alternative_starts boundary-detection bug, not Cluster D) is
-    intentionally NOT asserted against here - it remains open.
+    line entries.
     """
     result, _ = extraction_result
     questions_by_number = {
@@ -306,6 +303,36 @@ def test_q71_statement_is_now_complete_alternative_bc_still_open(extraction_resu
         in q71.statement
     )
     assert "relacionada ao conceito de ocultação de informação." in q71.statement
+
+
+def test_q71_alternative_b_c_boundary_is_now_correct(extraction_result):
+    """Regression test for ``q71-alternative-b-c-cross-contamination``
+    (RESOLVED Phase 3I): assembler._find_alternative_starts's own purely
+    textual, right-to-left search had no margin awareness, so a genuine
+    line-wrap of alternative B's own prose ("...dos módulos B e" / "C é
+    maior e o acoplamento do projeto é maior.") that happened to match the
+    marker shape for 'C' was mistaken for the real C marker, swallowing
+    C's own real opening lines into B. alternative_groups.find_alternative_group
+    prefers the on-margin candidate (the real marker) over the off-margin
+    one (the wrapped continuation line).
+    """
+    result, _ = extraction_result
+    questions_by_number = {
+        q.question_number: q
+        for q in result.questions
+        if q.question_type == QuestionType.MULTIPLE_CHOICE
+    }
+    q71 = questions_by_number[71]
+    alternative_b = next(a for a in q71.alternatives if a.letter == "B")
+    alternative_c = next(a for a in q71.alternatives if a.letter == "C")
+    assert alternative_b.text == (
+        "Em relação à alternativa 1, na alternativa 2, a coesão do módulo A é menor, "
+        "a dos módulos B e C é maior e o acoplamento do projeto é maior."
+    )
+    assert alternative_c.text == (
+        "Em relação à alternativa 1, na alternativa 2, a coesão do módulo A é maior, "
+        "a dos módulos B e C é menor e o acoplamento do projeto é maior."
+    )
 
 
 def test_q25_alternative_b_is_no_longer_word_order_scrambled(extraction_result):

@@ -5,11 +5,11 @@ PROMPT sections 5/6/9/10/11/12: it decides what counts as chrome (dropped),
 what counts as a figure (replaced by an explicit image placeholder at the
 correct position in the text flow, never silently paraphrased from its
 internal labels), and where the statement ends and the alternatives begin -
-using a right-to-left search for the A/B/C/D/E sequence rather than
+using a structural group evaluation of the A/B/C/D/E sequence rather than
 trusting the first capital letter it sees (see
-``_find_alternative_starts`` for why: real statements in this corpus start
-mid-sentence with capital letters like "A chance de uma crianca ...",
-which is not alternative A).
+``alternative_groups.find_alternative_group`` for why: real statements in
+this corpus start mid-sentence with capital letters like "A chance de uma
+crianca ...", which is not alternative A - PROMPT Phase 3I).
 """
 
 from __future__ import annotations
@@ -21,6 +21,7 @@ from typing import Literal
 
 import pymupdf
 
+from enade.extraction.alternative_groups import find_alternative_group
 from enade.extraction.boundaries import QuestionKind, QuestionSpan
 from enade.extraction.chrome import is_chrome_line
 from enade.extraction.figures import (
@@ -47,10 +48,10 @@ from enade.extraction.tables import DetectedTable, detect_tables
 #: in this corpus, which always has at least a tab/space before its own
 #: text (however short). Group 2 is therefore ``None``, not "", when the
 #: marker is bare - callers use ``match.group(2) or ""`` accordingly. Safe
-#: to loosen generally: ``_find_alternative_starts`` already requires a
-#: full, strictly-ordered A..E sequence before treating anything as a real
-#: alternative-marker run, so an incidental bare letter elsewhere in prose
-#: cannot be mistaken for one on its own.
+#: to loosen generally: ``alternative_groups.find_alternative_group`` already
+#: requires a full, strictly-ordered A..E sequence before treating anything
+#: as a real alternative-marker run, so an incidental bare letter elsewhere
+#: in prose cannot be mistaken for one on its own.
 _ALTERNATIVE_LINE_RE = re.compile(r"^([A-E])(?:[\t ](.*))?$")
 #: A word ending in a common ligature-prone digraph, then a stray space, then
 #: a lowercase continuation - the observed signature of a ligature-splitting
@@ -492,35 +493,6 @@ def _line_in_region(
 
 def _position_key(page_number: int, y: float) -> tuple[int, float]:
     return (page_number, y)
-
-
-def _find_alternative_starts(lines: list[Line]) -> dict[str, int] | None:
-    """Right-to-left search for the A/B/C/D/E marker sequence.
-
-    Returns a dict of letter -> index into ``lines``, or None if a full,
-    strictly ordered A..E sequence could not be found (caller must then
-    treat "alternatives not confidently located" as a review case, not
-    guess at a partial split).
-    """
-    positions: dict[str, list[int]] = {letter: [] for letter in "ABCDE"}
-    for index, line in enumerate(lines):
-        match = _ALTERNATIVE_LINE_RE.match(line.text)
-        if match:
-            positions[match.group(1)].append(index)
-
-    if not positions["E"]:
-        return None
-    e_index = positions["E"][-1]
-
-    result: dict[str, int] = {"E": e_index}
-    upper_bound = e_index
-    for letter in ("D", "C", "B", "A"):
-        candidates = [i for i in positions[letter] if i < upper_bound]
-        if not candidates:
-            return None
-        result[letter] = candidates[-1]
-        upper_bound = result[letter]
-    return result
 
 
 def _find_region_insertion_index(lines: list[Line], region: VisualRegion | DetectedTable) -> int:
@@ -1312,9 +1284,9 @@ def assemble_question(
     # region filtering entirely.
     alt_section_start: tuple[int, float] | None = None
     if span.kind == QuestionKind.OBJECTIVE:
-        preliminary_starts = _find_alternative_starts(coarse_lines)
-        if preliminary_starts is not None:
-            a_line = coarse_lines[preliminary_starts["A"]]
+        preliminary_group = find_alternative_group(coarse_lines)
+        if preliminary_group is not None and preliminary_group.is_usable:
+            a_line = coarse_lines[preliminary_group.accepted["A"]]
             alt_section_start = _position_key(a_line.page_number, a_line.y0)
 
     def _in_alternatives_section(ln: Line) -> bool:
@@ -1367,13 +1339,27 @@ def assemble_question(
     consumed_ids: set[int] = set()
 
     if span.kind == QuestionKind.OBJECTIVE:
-        starts = _find_alternative_starts(text_only_lines)
-        if starts is None:
-            warnings.append(
-                "could not locate a complete, strictly ordered A-E alternative sequence; "
-                "treating entire span as statement"
-            )
+        alt_group = find_alternative_group(text_only_lines)
+        if alt_group is None or not alt_group.is_usable:
+            # PROMPT Phase 3I section 12: two or more equally plausible
+            # candidates for the same letter is never resolved by
+            # guessing - treated identically to "no sequence found at
+            # all" (the pre-existing, already-correct fallback), just
+            # with a more specific warning when the reason is a genuine
+            # competing-candidate tie rather than a missing letter.
+            if alt_group is not None and alt_group.status == "ambiguous":
+                warnings.append(
+                    "alternative sequence has two or more equally plausible candidates for "
+                    f"letter(s) {sorted(alt_group.competing)}; treating entire span as statement "
+                    "rather than guessing"
+                )
+            else:
+                warnings.append(
+                    "could not locate a complete, strictly ordered A-E alternative sequence; "
+                    "treating entire span as statement"
+                )
         else:
+            starts = alt_group.accepted
             cutoff_line = text_only_lines[starts["A"]]
             cutoff_key = _position_key(cutoff_line.page_number, cutoff_line.y0)
             statement_lines = [
@@ -1389,14 +1375,14 @@ def assemble_question(
             ordered_letters = ["A", "B", "C", "D", "E"]
             alt_bounds = [starts[letter] for letter in ordered_letters] + [len(text_only_lines)]
             for i, letter in enumerate(ordered_letters):
-                group = text_only_lines[alt_bounds[i] : alt_bounds[i + 1]]
-                if not group:
+                letter_lines = text_only_lines[alt_bounds[i] : alt_bounds[i + 1]]
+                if not letter_lines:
                     warnings.append(f"alternative {letter} has no text")
                     continue
-                first_match = _ALTERNATIVE_LINE_RE.match(group[0].text)
-                assert first_match is not None  # guaranteed by _find_alternative_starts
+                first_match = _ALTERNATIVE_LINE_RE.match(letter_lines[0].text)
+                assert first_match is not None  # guaranteed by find_alternative_group
                 first_text = (first_match.group(2) or "").strip()
-                rest_text = " ".join(ln.text.strip() for ln in group[1:])
+                rest_text = " ".join(ln.text.strip() for ln in letter_lines[1:])
                 full_text = f"{first_text} {rest_text}".strip() if rest_text else first_text
                 alternatives.append(ExtractedAlternative(letter=letter, text=full_text))
 

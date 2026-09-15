@@ -9,8 +9,8 @@
   "pipeline_version": "0.1.0",
   "data_contract_version": "1.1.0",
   "maturity": "provisional",
-  "verified_count": 62,
-  "needs_review_count": 15,
+  "verified_count": 63,
+  "needs_review_count": 14,
   "unresolved_question_ids": [
     "enade-2008-computing-d09",
     "enade-2008-computing-d10",
@@ -25,11 +25,9 @@
     "enade-2008-computing-q33",
     "enade-2008-computing-q45",
     "enade-2008-computing-q54",
-    "enade-2008-computing-q71",
     "enade-2008-computing-q75"
   ],
   "structural_blockers": [
-    "alternative-boundary-misparse",
     "answer-standard-absent-from-source",
     "answer-standard-incomplete",
     "content-duplication",
@@ -860,10 +858,10 @@
     {
       "id": "enade-2008-computing-q71",
       "markdown_path": "enade-2008-computing-q71.md",
-      "markdown_sha256": "3f1f071508c98fe56d5dfe070a7619f52e64e73216f7b829a3ef17b338a3ccb5",
-      "extraction_status": "needs_review",
+      "markdown_sha256": "2b6e3f024efbea0ec2fc4fa8402e70a9339ec3caeeb350e181f9b6e65b71f364",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "failed",
+      "visual_validation": "passed",
       "assets": [
         {
           "id": "figure-01",

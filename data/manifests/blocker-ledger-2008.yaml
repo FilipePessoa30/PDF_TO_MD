@@ -680,10 +680,11 @@ blockers:
     statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
     mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
     section M for why no fix was attempted this session.'
-  description: 'RESOLVED (Phase 3H) - see q71-alternative-b-c-cross-contamination for the separate, still-
-    open defect that keeps this question failed overall. Phase 3G corrected Phase 3B''s own false-positive
-    ''resolved'' verdict and recovered most of the real opening, leaving two small gaps: ''e acoplamento
-    são dois conceitos'' and ''conceito de ocultação de informação.''. Root-caused precisely this phase:
+  description: 'RESOLVED (Phase 3H) - see q71-alternative-b-c-cross-contamination (also RESOLVED, Phase 3I)
+    for the separate defect that used to keep this question failed overall despite this fix. Phase 3G
+    corrected Phase 3B''s own false-positive ''resolved'' verdict and recovered most of the real opening,
+    leaving two small gaps: ''e acoplamento são dois conceitos'' and ''conceito de ocultação de
+    informação.''. Root-caused precisely this phase:
     both were their own separate same-baseline PyMuPDF dict-mode line fragments, absorbed as figure-label
     candidates (same family as q07/q12/q63''s own residuals). fragment_reconstruction_gate (Cluster D)
     rejoins them; the companion label_candidates exclusion keeps the reassembled sentence visible.
@@ -1349,40 +1350,48 @@ blockers:
   visual_validation: failed
 - affected_assets: []
   category: alternative-boundary-misparse
-  cause: 'NEWLY FOUND IN PHASE 3G (previously undetected - masked by q71-region-merge-content-loss''s own
-    false "resolved" status, which meant this question was never re-audited word-for-word until this
-    phase). ROOT-CAUSED PRECISELY IN PHASE 3H (not fixed - see PROMPT Phase 3H section 18''s own explicit
-    permission to leave a correctly-classified, non-Cluster-D blocker open): assembler.py''s own
-    _find_alternative_starts does a purely textual, right-to-left search for the A-E marker sequence
+  cause: 'NEWLY FOUND IN PHASE 3G, ROOT-CAUSED IN PHASE 3H, RESOLVED IN PHASE 3I. assembler.py''s own
+    former _find_alternative_starts did a purely textual, right-to-left search for the A-E marker sequence
     (_ALTERNATIVE_LINE_RE, "^([A-E])(?:[\t ](.*))?$") with no margin/position awareness at all. Alternative
     B''s own real prose genuinely wraps mid-sentence ("...dos módulos B e" / next printed line: "C é maior
-    e o acoplamento do projeto é maior.") - a normal line-wrap, not a fragmentation artifact (confirmed:
-    the two lines sit at different y0, and this is NOT a Cluster D case). Because that wrapped line''s own
-    text happens to start with "C " (grammatically continuing "modulos B e C", not a marker), and
-    _find_alternative_starts blindly takes the LAST text-shape match for each letter before the next
-    letter''s own upper bound, it mistakes this wrapped continuation for alternative C''s own marker -
-    swallowing C''s own real opening two lines into B''s own span instead. A general fix would require
-    _find_alternative_starts to also verify a candidate marker sits at the alternatives'' own established
-    left margin (the same margin-awareness _is_marker_at_margin already brings to Cluster C, but applied to
-    a materially different, higher-blast-radius mechanism - every question''s own alternative-boundary
-    detection, not just label absorption); not attempted this phase, per its own explicit permission to
-    leave a correctly-diagnosed, non-Cluster-D defect open rather than rush a second, untested structural
-    change in the same phase. Left open.'
-  description: "Alternative B's own rendered text runs on into alternative C's own marker and most of its\
-    \ text ('...o acoplamento do projeto é maior. C\\tEm relação à alternativa 1,\
-    \ na alternativa 2, a coesão do módulo A é maior, a dos módulos B e'), leaving\
-    \ alternative C's own entry with only the disconnected tail 'é menor e o acoplamento do projeto\
-    \ é maior.'."
-  evidence: docs/phase-3g-report.md; docs/phase-3h-report.md
+    e o acoplamento do projeto é maior.") - a normal line-wrap, not a fragmentation artifact (the two lines
+    sit at different y0 - not a Cluster D case). Because that wrapped line''s own text happens to start with
+    "C " (grammatically continuing "modulos B e C", not a marker), the old algorithm''s blind "last
+    text-shape match wins" rule mistook this wrapped continuation for alternative C''s own marker,
+    swallowing C''s own real opening two lines into B''s own span instead. RESOLVED by
+    alternative_groups.find_alternative_group (PROMPT Phase 3I): every marker-shaped line for a given
+    letter is now collected as a candidate and evaluated as one A-E group; when a letter has more than one
+    candidate, the one sitting at the same left margin as the question''s own other unambiguous markers is
+    preferred over an off-margin one (reusing the same category of geometric evidence
+    figures._is_marker_at_margin already established for Cluster C, applied here to a different mechanism -
+    alternative-boundary assignment, not label absorption) - reading order still breaks any further tie.
+    Two additional real corpus cases surfaced and were fixed in the same pass, both confirming the general
+    mechanism rather than requiring a second, separate fix: 2008-b Q28 ("A que classes corresponderiam...")
+    and Q52 ("A partir dessas informações, assinale...") each have their own real prose sentence
+    coincidentally sharing the true markers'' own left margin, which an early, over-strict version of the
+    margin-preference rule (treating 2+ on-margin candidates as an unresolvable tie) wrongly excluded both
+    questions entirely - fixed by falling back to reading order within the on-margin subset instead of
+    declaring ambiguity. 2011 Q39 (a horizontal, one-row-per-alternative grid layout with no shared margin
+    at all) additionally required guarding the reference-margin computation itself against a spurious
+    single-vote "mode" - see fragment/margin trace and docs/phase-3i-report.md for the full narrative.'
+  description: 'RESOLVED (Phase 3I): re-inspected against page 30''s own raw text - alternative B now reads
+    "...a dos módulos B e C é maior e o acoplamento do projeto é maior." in full, and alternative C now
+    reads "Em relação à alternativa 1, na alternativa 2, a coesão do módulo A é maior, a dos módulos B e C
+    é menor e o acoplamento do projeto é maior." in full, matching the source word for word. Zero
+    duplication, zero orphaned fragments, gabarito (correct_answer=B) unchanged.'
+  evidence: docs/phase-3g-report.md; docs/phase-3h-report.md; docs/phase-3i-report.md;
+    tests/test_alternative_groups.py; tests/test_extraction_pipeline_2008.py::test_q71_alternative_b_c_boundary_is_now_correct
   id: q71-alternative-b-c-cross-contamination
   question_id: enade-2008-computing-q71
-  regression_tests: []
-  resolution: null
+  regression_tests:
+  - tests/test_alternative_groups.py
+  - tests/test_extraction_pipeline_2008.py::test_q71_alternative_b_c_boundary_is_now_correct
+  resolution: 'RESOLVED (Phase 3I): see cause above.'
   source_pages:
   - 30
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets:
   - figure-01
   category: same-question-diagram-label-bleed

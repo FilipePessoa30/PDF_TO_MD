@@ -38,9 +38,9 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
@@ -53,7 +53,7 @@ Coesão e acoplamento são dois conceitos fundamentais para a qualidade do proje
 ## Alternativas
 
 A. A coesão e o acoplamento de todos os módulos são iguais nas duas alternativas.
-B. Em relação à alternativa 1, na alternativa 2, a coesão do módulo A é menor, a dos módulos B e C é maior e o acoplamento do projeto é maior. C	Em relação à alternativa 1, na alternativa 2, a coesão do módulo A é maior, a dos módulos B e
-C. é menor e o acoplamento do projeto é maior.
+B. Em relação à alternativa 1, na alternativa 2, a coesão do módulo A é menor, a dos módulos B e C é maior e o acoplamento do projeto é maior.
+C. Em relação à alternativa 1, na alternativa 2, a coesão do módulo A é maior, a dos módulos B e C é menor e o acoplamento do projeto é maior.
 D. Em relação à alternativa 1, na alternativa 2, a coesão do módulo A é maior, a dos módulos B e C é maior e o acoplamento do projeto é menor.
 E. Em relação à alternativa 1, na alternativa 2, a coesão do módulo A é menor, a dos módulos B e C é maior e o acoplamento do projeto é menor.

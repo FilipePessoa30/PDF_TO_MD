@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pytest
 
+from enade.extraction.alternative_groups import find_alternative_group
 from enade.extraction.assembler import (
     CodeSegment,
     ExtractedAlternative,
@@ -9,7 +10,6 @@ from enade.extraction.assembler import (
     TextSegment,
     _attach_alternative_formula_regions,
     _build_statement_segments,
-    _find_alternative_starts,
     _line_in_region,
     _render_code_lines,
     _strip_leading_marker,
@@ -29,8 +29,13 @@ def _line(
     return Line(page_number=page, text=text, x0=x, y0=y, x1=x + width, y1=y + 12, is_monospace=mono)
 
 
-def test_find_alternative_starts_ignores_capital_letter_in_prose():
+def test_find_alternative_group_ignores_capital_letter_in_prose():
     # Statement starts with "A chance..." - must not be mistaken for alternative A.
+    # PROMPT Phase 3I: replaces the old _find_alternative_starts, now
+    # superseded by alternative_groups.find_alternative_group - see
+    # tests/test_alternative_groups.py for the module's own dedicated
+    # unit/metamorphic suite. Kept here as an assembler-level regression
+    # guard for this specific, historically important shape.
     lines = [
         _line(1, 10, "A chance de uma criança de baixa renda ter um futuro melhor"),
         _line(1, 25, "que a realidade em que nasceu."),
@@ -40,22 +45,23 @@ def test_find_alternative_starts_ignores_capital_letter_in_prose():
         _line(1, 85, "D\t Texto da alternativa D."),
         _line(1, 100, "E\t Texto da alternativa E."),
     ]
-    starts = _find_alternative_starts(lines)
-    assert starts is not None
-    assert starts["A"] == 2  # not index 0
+    group = find_alternative_group(lines)
+    assert group is not None
+    assert group.is_usable
+    assert group.accepted["A"] == 2  # not index 0
 
 
-def test_find_alternative_starts_returns_none_when_sequence_incomplete():
+def test_find_alternative_group_incomplete_when_sequence_incomplete():
     lines = [
         _line(1, 10, "Enunciado sem alternativas completas."),
         _line(1, 25, "A\t alternativa a"),
         _line(1, 40, "B\t alternativa b"),
         # missing C, D, E
     ]
-    assert _find_alternative_starts(lines) is None
+    assert find_alternative_group(lines) is None
 
 
-def test_find_alternative_starts_picks_rightmost_valid_sequence():
+def test_find_alternative_group_picks_rightmost_valid_sequence():
     # A red herring "B tenta..." style label appears before the real sequence.
     lines = [
         _line(1, 10, "B tenta entrar em algo (rótulo de figura, não alternativa)."),
@@ -66,9 +72,10 @@ def test_find_alternative_starts_picks_rightmost_valid_sequence():
         _line(1, 85, "D\t alternativa d"),
         _line(1, 100, "E\t alternativa e"),
     ]
-    starts = _find_alternative_starts(lines)
-    assert starts is not None
-    assert starts["A"] == 2
+    group = find_alternative_group(lines)
+    assert group is not None
+    assert group.is_usable
+    assert group.accepted["A"] == 2
 
 
 def test_line_in_region_never_swallows_an_alternative_marker():
