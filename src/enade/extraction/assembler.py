@@ -17,6 +17,7 @@ from __future__ import annotations
 import re
 from collections import Counter
 from dataclasses import dataclass, field
+from typing import Literal
 
 import pymupdf
 
@@ -25,10 +26,14 @@ from enade.extraction.chrome import is_chrome_line
 from enade.extraction.figures import (
     UNBOUNDED_MERGE_X_TOLERANCE,
     VisualRegion,
+    _dominant_left_margin,
+    _is_marker_at_margin,
     detect_visual_regions,
+    dominant_left_margin_by_text_length,
 )
+from enade.extraction.fragment_reconstruction import FragmentMergeTrace
 from enade.extraction.label_normalization import LabelCorrection
-from enade.extraction.layout import Line
+from enade.extraction.layout import Line, extract_page_lines
 from enade.extraction.layout_overrides import LayoutOverrideSet
 from enade.extraction.ownership import QuestionRegion, question_key
 from enade.extraction.spacing import SpacingCorrection
@@ -185,6 +190,11 @@ class ExtractedQuestion:
     #: that fed into this question's final text - a distinct transformation
     #: type from both spacing_corrections and label_corrections.
     symbol_corrections: list[LabelCorrection] = field(default_factory=list)
+    #: Every geometric line-fragment reconstruction (see
+    #: fragment_reconstruction.py, PROMPT Phase 3H "Cluster D") that fed
+    #: into this question's final text - a distinct transformation type
+    #: from the three above (line-level rejoining, not word/glyph-level).
+    fragment_merges: list[FragmentMergeTrace] = field(default_factory=list)
 
     @property
     def plain_statement(self) -> str:
@@ -196,36 +206,288 @@ class ExtractedQuestion:
         )
 
 
+#: A line's own geometric relationship to a visual region (PROMPT Phase
+#: 3G): replaces a single boolean with enough information for each
+#: consumer to apply its own policy (Section 8 of the prompt) instead of
+#: one predicate trying to serve every consequence - text consumption,
+#: ownership, reading order - at once. Every field is a plain geometric
+#: observation; no field alone decides anything (see
+#: ``_text_consumption_decision`` for the one policy this module actually
+#: needs today).
+LineRegionState = Literal[
+    "outside",
+    "touching",
+    "partial_overlap",
+    "center_inside",
+    "baseline_inside",
+    "contained",
+    "boundary_crossing",
+    "ambiguous",
+]
+
+
+@dataclass(frozen=True)
+class LineRegionRelation:
+    state: LineRegionState
+    intersection_over_line_area: float
+    intersection_over_region_area: float
+    horizontal_overlap_ratio: float
+    vertical_overlap_ratio: float
+    center_inside: bool
+    baseline_inside: bool
+    left_overflow: float
+    right_overflow: float
+    top_overflow: float
+    bottom_overflow: float
+    #: Genuine (zero-padding) overlap, on both axes, against the region's
+    #: own *raw*, pre-growth extent (``VisualRegion.raw_bbox``) - ``None``
+    #: when the region carries no raw_bbox (built directly by test code,
+    #: never by ``detect_visual_regions``, which always sets it).
+    raw_intersects: bool | None
+    #: True when this exact line was one of the candidates
+    #: ``_expand_with_labels`` itself genuinely absorbed while growing this
+    #: region (``VisualRegion.absorbed_label_bboxes``) - growth's own
+    #: authoritative record, trusted directly rather than re-derived from
+    #: geometry a second time (see ``compute_line_region_relation``'s own
+    #: docstring for why re-deriving it from ``raw_bbox`` alone is not
+    #: enough: a real caption can be absorbed through several incremental
+    #: growth passes, ending up nowhere near the original raw extent).
+    matches_absorbed_label: bool
+    same_owner: bool | None
+
+
+def _axis_overlap(a0: float, a1: float, b0: float, b1: float) -> float:
+    return max(0.0, min(a1, b1) - max(a0, b0))
+
+
+#: Tolerance (points) for matching a line's own bbox against one of a
+#: region's ``absorbed_label_bboxes`` - both come from the exact same
+#: ``Line.bbox``/candidate-rect values (label_candidates are themselves
+#: built from Line coordinates), so this only needs to absorb ordinary
+#: floating-point noise, never a real positional difference.
+_ABSORBED_LABEL_MATCH_TOLERANCE = 0.5
+
+
+def _rect_matches(
+    a: tuple[float, float, float, float], b: tuple[float, float, float, float]
+) -> bool:
+    return all(abs(x - y) <= _ABSORBED_LABEL_MATCH_TOLERANCE for x, y in zip(a, b, strict=True))
+
+
+def compute_line_region_relation(
+    line: Line, region: VisualRegion, own_key: str | None = None
+) -> LineRegionRelation:
+    """The full geometric relationship between ``line`` and ``region``.
+
+    Deliberately reports observations, not a verdict - PROMPT Phase 3G's
+    own central lesson (Section 5/9): the Fase 3F experiment showed that
+    D10/Q07's own bad lines and Q61/Q71's own genuine captions can share
+    almost the same overlap *ratio* against a region's grown bbox (Q61's
+    real caption: 27.4%; Q07's unrelated line: 37.8%) - no single boolean
+    or threshold computed from the grown bbox alone can tell them apart.
+    What does: Q61's caption genuinely overlaps the region's own *raw*,
+    pre-growth extent (the real drawings that make up the figure, before
+    any label-absorption growth or padding); Q07's line does not - its
+    only "overlap" is with growth's own heuristic allowance. ``raw_intersects``
+    carries exactly that distinction; callers combine it with ``state``
+    per their own policy (see ``_text_consumption_decision``) instead of
+    this function collapsing it into one answer for every use.
+    """
+    bbox = region.bbox
+    h_overlap = _axis_overlap(line.x0, line.x1, bbox[0], bbox[2])
+    v_overlap = _axis_overlap(line.y0, line.y1, bbox[1], bbox[3])
+    line_w = max(line.x1 - line.x0, 1e-6)
+    line_h = max(line.y1 - line.y0, 1e-6)
+    region_w = max(bbox[2] - bbox[0], 1e-6)
+    region_h = max(bbox[3] - bbox[1], 1e-6)
+    intersection_area = h_overlap * v_overlap
+    line_area = line_w * line_h
+    region_area = region_w * region_h
+    intersection_over_line = intersection_area / line_area
+    intersection_over_region = intersection_area / region_area
+    h_ratio = h_overlap / min(line_w, region_w)
+    v_ratio = v_overlap / min(line_h, region_h)
+    center_x = (line.x0 + line.x1) / 2
+    center_y = (line.y0 + line.y1) / 2
+    center_inside = bbox[0] <= center_x <= bbox[2] and bbox[1] <= center_y <= bbox[3]
+    baseline_inside = bbox[0] <= line.x0 <= bbox[2] and bbox[1] <= line.y1 <= bbox[3]
+    left_overflow = max(0.0, bbox[0] - line.x0)
+    right_overflow = max(0.0, line.x1 - bbox[2])
+    top_overflow = max(0.0, bbox[1] - line.y0)
+    bottom_overflow = max(0.0, line.y1 - bbox[3])
+
+    raw_intersects: bool | None = None
+    if region.raw_bbox is not None:
+        raw = region.raw_bbox
+        raw_h = _axis_overlap(line.x0, line.x1, raw[0], raw[2])
+        raw_v = _axis_overlap(line.y0, line.y1, raw[1], raw[3])
+        # Require more than a rounding-noise sliver on each axis (the same
+        # floor REGION_Y_PADDING already uses elsewhere as "not a real
+        # measurement, just noise") - a real caption genuinely overlapping
+        # its own diagram (Q61: 32.1pt) clears this trivially; a real body
+        # line whose own bbox happens to graze a *different* region's raw
+        # extent by a point or two (2008-b D40's own SQL schema code line,
+        # 1.6pt into a neighboring diagram's own raw top edge) does not,
+        # and stays visible instead of being wrongly hidden.
+        raw_intersects = raw_h > REGION_Y_PADDING and raw_v > REGION_Y_PADDING
+
+    matches_absorbed_label = any(
+        _rect_matches(line.bbox, absorbed) for absorbed in region.absorbed_label_bboxes
+    )
+
+    same_owner = (
+        None if (own_key is None or region.owner_key is None) else own_key == region.owner_key
+    )
+
+    state: LineRegionState
+    if h_overlap <= 0 or v_overlap <= 0:
+        # No genuine intersection at all - "touching" only within the
+        # small, fixed padding that models rounding/rendering noise
+        # (REGION_X_PADDING/REGION_Y_PADDING), "outside" otherwise.
+        padded_y = (bbox[1] - REGION_Y_PADDING) <= line.y0 <= (bbox[3] + REGION_Y_PADDING)
+        padded_x = line.x0 <= (bbox[2] + REGION_X_PADDING) and line.x1 >= (
+            bbox[0] - REGION_X_PADDING
+        )
+        state = "touching" if (padded_x and padded_y) else "outside"
+    elif intersection_over_line >= 0.98:
+        state = "contained"
+    elif center_inside and baseline_inside:
+        state = "center_inside"
+    elif baseline_inside:
+        state = "baseline_inside"
+    elif h_ratio >= 0.8 or v_ratio >= 0.8:
+        state = "boundary_crossing"
+    elif intersection_over_line > 0:
+        state = "partial_overlap"
+    else:
+        state = "ambiguous"
+
+    return LineRegionRelation(
+        state=state,
+        intersection_over_line_area=intersection_over_line,
+        intersection_over_region_area=intersection_over_region,
+        horizontal_overlap_ratio=h_ratio,
+        vertical_overlap_ratio=v_ratio,
+        center_inside=center_inside,
+        baseline_inside=baseline_inside,
+        left_overflow=left_overflow,
+        right_overflow=right_overflow,
+        top_overflow=top_overflow,
+        bottom_overflow=bottom_overflow,
+        raw_intersects=raw_intersects,
+        matches_absorbed_label=matches_absorbed_label,
+        same_owner=same_owner,
+    )
+
+
+#: PROMPT Phase 3G, Section 8, "Consumo de texto": removing a line from the
+#: rendered Markdown is the one destructive, hard-to-reverse consequence
+#: `_line_in_region` gates - it requires ``contained`` or a documented
+#: equivalent (here: genuine overlap against the region's own *raw*
+#: extent), never mere touching or partial overlap, and never a decision
+#: left ``ambiguous`` (Section 10: ambiguous must never authorize
+#: destructive consumption - the line simply stays visible, the safe
+#: direction, rather than being silently dropped on weak evidence).
+def _text_consumption_decision(
+    relation: LineRegionRelation, is_small_formula: bool = False
+) -> Literal["accepted", "ambiguous"]:
+    if relation.state == "contained":
+        return "accepted"
+    if relation.raw_intersects:
+        return "accepted"
+    # Growth's own authoritative record (PROMPT Phase 3G): a real caption
+    # or label can be absorbed through several incremental growth passes,
+    # ending up nowhere near the region's own raw, pre-growth extent on
+    # its own (2011 Q9/Q14/Q23/Q38's own real citations/labels - confirmed
+    # by full regeneration that ``raw_intersects`` alone wrongly rejected
+    # these, see docs/phase-3g-report.md). Trusting that this exact line
+    # was one of the candidates growth itself chose to absorb, rather than
+    # re-deriving "was this absorbed" from geometry a second time, tells
+    # a genuine multi-hop absorption apart from a wide, unrelated line
+    # that merely brushes the *resulting* bbox's own edge afterwards
+    # without ever being part of growth's own candidate pool at all
+    # (2008-b D10/Q07's own bad lines - neither is ever itself a label
+    # candidate, only short neighboring word-fragments are).
+    if relation.matches_absorbed_label:
+        return "accepted"
+    # A small-formula region (PROMPT Phase 2E/2C: a single inline symbol or
+    # a few merged into one, e.g. 2011 Q38's own grammar-terminal image) is
+    # already a narrow, size-capped class (SMALL_IMAGE_MAX_WIDTH/_HEIGHT) -
+    # a line merely touching one is reliably a stray adjacent fragment of
+    # the same unreadable formula noise, never an unrelated wide statement
+    # line the way a large diagram's own grown bbox can be brushed by one
+    # (the defect this stricter policy exists to fix). Any non-"outside"
+    # relation is accepted here, matching this region class's own original,
+    # already-validated behavior (unchanged for every other region shape).
+    if is_small_formula and relation.state != "outside":
+        return "accepted"
+    return "ambiguous"
+
+
 def _line_in_region(
     line: Line,
     region: VisualRegion,
     overrides: LayoutOverrideSet | None = None,
     pdf_sha256: str = "",
+    own_key: str | None = None,
+    body_margin_x0: float | None = None,
+    contextual_relation_gate: bool = False,
 ) -> bool:
-    # An alternative marker line is never figure-interior, no matter how
-    # tight the vertical spacing is on this particular page (observed: on
-    # a densely-laid-out DER diagram question, alternative A's marker sits
-    # only ~3pt below the diagram's own vector bounding box - well inside
-    # a naive geometric containment test). Alternative-boundary detection
-    # must take precedence over figure-region geometry, or the "A" marker
-    # silently disappears and the whole alternative sequence breaks.
-    if _ALTERNATIVE_LINE_RE.match(line.text):
-        return False
     if line.page_number != region.page_number:
         return False
     if overrides is not None and overrides.protects_from_region_membership(
         pdf_sha256, line.page_number, line.bbox
     ):
         return False
-    y_touches = (
-        (region.bbox[1] - REGION_Y_PADDING) <= line.y0 <= (region.bbox[3] + REGION_Y_PADDING)
-    )
-    if not y_touches:
+
+    if not contextual_relation_gate:
+        # The exact, original behavior every booklet without
+        # ``ExamStructureProfile.contextual_relation_gate`` set keeps -
+        # PROMPT Phase 3G's own relation-based replacement (below) fixes
+        # real 2008-b defects (D10/Q07/Q12/Q24/Q29/Q63) but was found, by
+        # full regeneration, to also change legitimate output on several
+        # already-validated 2011/2021 questions whose own growth/reading-
+        # order shape this project has not yet characterized with the same
+        # precision (Q9/Q12/Q23/Q38 and others - see
+        # docs/phase-3g-report.md, "Experimento" section) - a byte-for-byte
+        # change to a protected corpus is never accepted regardless of how
+        # much of an improvement the new logic is elsewhere, so it is
+        # gated exactly like ``caption_font_size_gate``/``owner_exclusion_gate``
+        # rather than made the new unconditional default.
+        if _ALTERNATIVE_LINE_RE.match(line.text):
+            return False
+        y_touches = (
+            (region.bbox[1] - REGION_Y_PADDING) <= line.y0 <= (region.bbox[3] + REGION_Y_PADDING)
+        )
+        if not y_touches:
+            return False
+        x_touches = line.x0 <= (region.bbox[2] + REGION_X_PADDING) and line.x1 >= (
+            region.bbox[0] - REGION_X_PADDING
+        )
+        return x_touches
+
+    # A genuine alternative marker is never figure-interior, no matter how
+    # tight the vertical spacing is on this particular page (observed: on
+    # a densely-laid-out DER diagram question, alternative A's marker sits
+    # only ~3pt below the diagram's own vector bounding box - well inside
+    # a naive geometric containment test) - but a line merely *shaped*
+    # like a marker ("A\t...") is not automatically one: a diagram's own
+    # internal label (a state-machine input, an ER-diagram entity name)
+    # can share that exact shape (PROMPT Phase 3G, "Cluster C" - 2008-b
+    # Q24/Q29/Q63's own "A"/"B"/"C" labels). ``_is_marker_at_margin``
+    # (figures.py) is the same evidence-based test already used to decide
+    # whether a label-shaped candidate is eligible for growth absorption -
+    # a real marker sits at the page's own established body-text margin;
+    # a diagram-internal label essentially never does. Reusing it here
+    # closes Cluster C without a second, separately-tuned heuristic: a
+    # margin-shaped match is still protected outright (never even
+    # evaluated geometrically against the region); anything else falls
+    # through to the same geometric relation as any other line, which
+    # correctly excludes it when it is genuinely part of the diagram.
+    if _is_marker_at_margin(line.text, line.x0, body_margin_x0):
         return False
-    x_touches = line.x0 <= (region.bbox[2] + REGION_X_PADDING) and line.x1 >= (
-        region.bbox[0] - REGION_X_PADDING
-    )
-    return x_touches
+    relation = compute_line_region_relation(line, region, own_key)
+    return _text_consumption_decision(relation, region.is_small_formula) == "accepted"
 
 
 def _position_key(page_number: int, y: float) -> tuple[int, float]:
@@ -402,6 +664,9 @@ def _build_statement_segments(
     tables: list[DetectedTable] | None = None,
     overrides: LayoutOverrideSet | None = None,
     pdf_sha256: str = "",
+    own_key: str | None = None,
+    body_margin_by_page: dict[int, float | None] | None = None,
+    contextual_relation_gate: bool = False,
 ) -> tuple[list[StatementSegment], list[int], list[int]]:
     """Merge text lines, figure regions and tables into position-ordered segments.
 
@@ -470,8 +735,17 @@ def _build_statement_segments(
         if kind == "line":
             line = payload
             assert isinstance(line, Line)
+            margin = (body_margin_by_page or {}).get(line.page_number)
             if any(
-                _line_in_region(line, regions[i], overrides, pdf_sha256)
+                _line_in_region(
+                    line,
+                    regions[i],
+                    overrides,
+                    pdf_sha256,
+                    own_key,
+                    margin,
+                    contextual_relation_gate,
+                )
                 for i in range(len(regions))
             ):
                 continue
@@ -553,6 +827,7 @@ def _strip_leading_marker(lines: list[Line]) -> list[Line]:
             spacing_corrections=line.spacing_corrections,
             label_corrections=line.label_corrections,
             symbol_corrections=line.symbol_corrections,
+            fragment_merges=line.fragment_merges,
         )
         return lines[:i] + [stripped] + lines[i + 1 :]
     return lines
@@ -834,6 +1109,8 @@ def assemble_question(
     caption_font_size_gate: bool = False,
     reference_transfer_target_keys: frozenset[str] = frozenset(),
     owner_exclusion_gate: bool = False,
+    contextual_relation_gate: bool = False,
+    fragment_reconstruction_gate: bool = False,
 ) -> ExtractedQuestion:
     warnings: list[str] = []
 
@@ -880,6 +1157,32 @@ def assemble_question(
     x_tolerance = 5.0
 
     own_key = question_key(span)
+
+    # Computed once per page, reused by ``_line_in_region`` (via
+    # ``_build_statement_segments``) to tell a genuine alternative marker
+    # (sits at this margin) from a diagram-internal label that merely
+    # looks like one (PROMPT Phase 3G, "Cluster C") - see
+    # ``figures._is_marker_at_margin``, the same evidence already used to
+    # protect a real marker from label-absorption growth. Falls back to
+    # the text-length-based margin (``dominant_left_margin_by_text_length``)
+    # when the width-based one finds nothing - a page whose real body
+    # column is itself narrow (e.g. Q29's own side-panel-grammar-
+    # productions page) has no line wide enough to agree on a margin by
+    # width alone, which would otherwise leave every marker-shaped line
+    # unconditionally protected again (the exact blanket exemption Cluster
+    # C exists to narrow) purely because no margin evidence was available.
+    def _page_body_margin(page_number: int) -> float | None:
+        page_lines = extract_page_lines(
+            doc[page_number - 1],
+            page_number,
+            fragment_reconstruction_gate=fragment_reconstruction_gate,
+        )
+        margin = _dominant_left_margin(page_lines)
+        return margin if margin is not None else dominant_left_margin_by_text_length(page_lines)
+
+    body_margin_by_page: dict[int, float | None] = {
+        page_number: _page_body_margin(page_number) for page_number in pages_in_span
+    }
     regions: list[VisualRegion] = []
     for page_number in pages_in_span:
         page_regions = detect_visual_regions(
@@ -891,6 +1194,7 @@ def assemble_question(
             overrides=overrides,
             pdf_sha256=pdf_sha256,
             question_regions=(question_regions_by_page or {}).get(page_number),
+            fragment_reconstruction_gate=fragment_reconstruction_gate,
         )
         bounds = page_y_bounds.get(page_number)
         x_bounds = page_x_bounds.get(page_number)
@@ -1033,11 +1337,14 @@ def assemble_question(
     # from chrome filtering below; every bare number that is *not* part of
     # a detected table (running page numbers, the rascunho ruler, an
     # isolated stray digit) is filtered exactly as before Phase 1C.
-    raw_candidate_lines = [
-        ln
-        for ln in span.lines
-        if not any(_line_in_region(ln, r, overrides, pdf_sha256) for r in regions)
-    ]
+    def _line_region_excluded(ln: Line) -> bool:
+        margin = body_margin_by_page.get(ln.page_number)
+        return any(
+            _line_in_region(ln, r, overrides, pdf_sha256, own_key, margin, contextual_relation_gate)
+            for r in regions
+        )
+
+    raw_candidate_lines = [ln for ln in span.lines if not _line_region_excluded(ln)]
     detected_tables = detect_tables(raw_candidate_lines)
     table_consumed_lines = frozenset(ln for t in detected_tables for ln in t.consumed_lines)
 
@@ -1049,10 +1356,7 @@ def assemble_question(
         ln
         for ln in content_lines
         if _in_alternatives_section(ln)
-        or (
-            not any(_line_in_region(ln, r, overrides, pdf_sha256) for r in regions)
-            and ln not in table_consumed_lines
-        )
+        or (not _line_region_excluded(ln) and ln not in table_consumed_lines)
     ]
 
     alternatives: list[ExtractedAlternative] = []
@@ -1127,7 +1431,14 @@ def assemble_question(
                 statement_regions = [r for r in statement_regions if id(r) not in consumed_ids]
 
     segments, placed_region_indices, placed_table_indices = _build_statement_segments(
-        statement_lines, statement_regions, statement_tables, overrides, pdf_sha256
+        statement_lines,
+        statement_regions,
+        statement_tables,
+        overrides,
+        pdf_sha256,
+        own_key,
+        body_margin_by_page,
+        contextual_relation_gate,
     )
 
     # Computed against the pre-attachment statement_regions/consumed_ids
@@ -1197,6 +1508,7 @@ def assemble_question(
     spacing_corrections = [c for ln in content_lines for c in ln.spacing_corrections]
     label_corrections = [c for ln in content_lines for c in ln.label_corrections]
     symbol_corrections = [c for ln in content_lines for c in ln.symbol_corrections]
+    fragment_merges = [c for ln in content_lines for c in ln.fragment_merges]
 
     return ExtractedQuestion(
         kind=span.kind,
@@ -1211,4 +1523,5 @@ def assemble_question(
         spacing_corrections=spacing_corrections,
         label_corrections=label_corrections,
         symbol_corrections=symbol_corrections,
+        fragment_merges=fragment_merges,
     )

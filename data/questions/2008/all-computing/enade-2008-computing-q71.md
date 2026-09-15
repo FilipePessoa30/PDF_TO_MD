@@ -25,7 +25,7 @@ assets:
   path: enade-2008-computing-q71/figure-01.png
   source_page: 30
   extraction_method: raster_crop
-  sha256: 58a975335856d241524dc2f14664311f57f9607e1182c4d2b16bdc97509078f2
+  sha256: c31384c67be413f50856e44b3a8f797399f9db5603f5a151148cabeb0e96348f
   alt_text: null
   caption: null
 subjects: []
@@ -38,9 +38,9 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: verified
+extraction_status: needs_review
 automatic_validation: passed
-visual_validation: passed
+visual_validation: failed
 taxonomy_review_status: pending
 ---
 
@@ -48,9 +48,7 @@ taxonomy_review_status: pending
 
 ![Figura da questão](enade-2008-computing-q71/figure-01.png)
 
-A	alternativa 1 A	alternativa 2 B	F D B C D E C E	F
-
-representa a interconexão entre os módulos. Suponha que determinado sistema possa ter a arquitetura de seus módulos projetada por meio das duas alternativas diferentes mostradas na figura acima, sendo a funcionalidade de um módulo a mesma nas duas alternativas. Nessa figura, os retângulos representam os módulos e as arestas representam chamadas a funcionalidades de outros módulos. A partir dessas informações, assinale a opção correta.
+Coesão e acoplamento são dois conceitos fundamentais para a qualidade do projeto modular de um software. A coesão diz respeito à funcionalidade dos módulos que compõem o software e é relacionada ao conceito de ocultação de informação. O acoplamento está relacionado aos dados e representa a interconexão entre os módulos. Suponha que determinado sistema possa ter a arquitetura de seus módulos projetada por meio das duas alternativas diferentes mostradas na figura acima, sendo a funcionalidade de um módulo a mesma nas duas alternativas. Nessa figura, os retângulos representam os módulos e as arestas representam chamadas a funcionalidades de outros módulos. A partir dessas informações, assinale a opção correta.
 
 ## Alternativas
 

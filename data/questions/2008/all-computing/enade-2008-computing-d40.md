@@ -48,6 +48,8 @@ content_blocks:
 - type: asset
   asset_id: figure-01
 - type: paragraph
+  text: F
+- type: paragraph
   text: 'Para que o otimizador de consultas passasse a utilizar os índices, a solução
     encontrada foi elaborar a consulta em dois blocos separados — um que recupera
     os clientes com idade inferior a 40 anos, e outro que recupera os clientes com
@@ -172,6 +174,8 @@ WHERE idade < 40 OR renda > 30000;
 Com o aumento do número de clientes desse banco, essa consulta passou a apresentar problemas de desempenho. Verificou-se, então, que o otimizador de consultas não considerava os índices existentes para idade e renda, e a consulta era realizada mediante varredura seqüencial na relação Cliente, tornando essa consulta onerosa. O plano de execução da consulta, usado pelo otimizador, é apresentado na árvore de consulta abaixo, na qual B e F representam as operações de projeção e de seleção, respectivamente. B	nome,endereco
 
 ![Figura da questão](enade-2008-computing-d40/figure-01.png)
+
+F
 
 Para que o otimizador de consultas passasse a utilizar os índices, a solução encontrada foi elaborar a consulta em dois blocos separados — um que recupera os clientes com idade inferior a 40 anos, e outro que recupera os clientes com renda mensal superior a 30.000 reais — para, então, juntar as tuplas das duas relações geradas. Considerando a situação apresentada, faça o que se pede a seguir. A Escreva o código de uma consulta em SQL que corresponda à solução proposta. (valor: 5,0 pontos)
 

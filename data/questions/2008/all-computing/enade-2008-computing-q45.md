@@ -54,6 +54,8 @@ I
 
 II
 
+III É igual a 2B o volume do sólido gerado pela rotação em
+
 Assinale a opção correta.
 
 ## Alternativas

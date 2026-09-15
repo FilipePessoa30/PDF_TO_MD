@@ -337,7 +337,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -641,7 +641,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -983,9 +983,9 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
-    "warning_count": 1,
-    "warnings": "1 detected table(s) fell after the alternatives cutoff and were excluded from the statement (unexpected layout - needs review)"
+    "extraction_status": "verified",
+    "warning_count": 0,
+    "warnings": ""
   },
   {
     "id": "enade-2008-computing-q51",
@@ -1060,8 +1060,8 @@
     "answer_standard_available": false,
     "extraction_method": "text_layer",
     "extraction_status": "needs_review",
-    "warning_count": 2,
-    "warnings": "empty statement after chrome/figure filtering; empty statement after chrome/figure filtering"
+    "warning_count": 0,
+    "warnings": ""
   },
   {
     "id": "enade-2008-computing-q56",
@@ -1173,7 +1173,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -1325,7 +1325,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "verified",
+    "extraction_status": "needs_review",
     "warning_count": 0,
     "warnings": ""
   },
@@ -1402,8 +1402,8 @@
     "answer_standard_available": false,
     "extraction_method": "text_layer",
     "extraction_status": "needs_review",
-    "warning_count": 2,
-    "warnings": "empty statement after chrome/figure filtering; empty statement after chrome/figure filtering"
+    "warning_count": 0,
+    "warnings": ""
   },
   {
     "id": "enade-2008-computing-q76",

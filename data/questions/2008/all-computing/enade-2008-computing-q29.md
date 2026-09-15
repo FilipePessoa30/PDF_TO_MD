@@ -38,9 +38,9 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
@@ -48,7 +48,7 @@ taxonomy_review_status: pending
 
 ![Figura da questão](enade-2008-computing-q29/figure-01.png)
 
-Considere a gramática G definida pelas regras de produção ao lado, em que os símbolos não-terminais são S, A e B, e os A ÷ a B ÷ b símbolos terminais são a e b. Com relação a essa gramática, é correto afirmar que
+Considere a gramática G definida pelas regras de produção ao lado, em que os símbolos não-terminais são S, A e B, e os símbolos terminais são a e b. Com relação a essa gramática, é correto afirmar que
 
 ## Alternativas
 

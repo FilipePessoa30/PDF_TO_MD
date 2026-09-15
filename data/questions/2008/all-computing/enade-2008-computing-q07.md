@@ -48,7 +48,7 @@ taxonomy_review_status: pending
 
 ![Figura da questão](enade-2008-computing-q07/figure-01.png)
 
-aos 20% de maior renda foi,
+total correspondente aos 20% de maior renda foi,
 
 ## Alternativas
 

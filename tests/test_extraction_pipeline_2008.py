@@ -198,6 +198,135 @@ def test_d10_no_longer_loses_its_own_newspaper_fragments(extraction_result):
     assert "GOIS, Antonio; PINHO, Angela. Folha de S.Paulo, 12 jun. 2008" in d10.statement
 
 
+def test_q29_no_longer_has_sidebar_fragment_inserted_mid_sentence(extraction_result):
+    """Regression test for ``q29-inline-sidebar-fragment`` (RESOLVED Phase
+    3G): the grammar diagram's own 'A'/'B' production labels, previously
+    blanket-protected by the old fixed alternative-marker regex regardless
+    of position, must no longer bleed into the statement - contextual_relation_gate's
+    margin-aware exemption (``_is_marker_at_margin``) correctly absorbs them
+    into figure-01 instead.
+    """
+    result, _ = extraction_result
+    questions_by_number = {
+        q.question_number: q
+        for q in result.questions
+        if q.question_type == QuestionType.MULTIPLE_CHOICE
+    }
+    q29 = questions_by_number[29]
+    assert q29.statement.endswith(
+        "Considere a gramática G definida pelas regras de produção ao lado, em que os "
+        "símbolos não-terminais são S, A e B, e os símbolos terminais são a e b. Com "
+        "relação a essa gramática, é correto afirmar que"
+    )
+    assert "A ÷ a" not in q29.statement
+    assert "B ÷ b" not in q29.statement
+
+
+def test_q75_statement_is_now_complete(extraction_result):
+    """Regression test for ``q75-region-merge-content-loss`` (RESOLVED
+    Phase 3G): the NAPT statement, previously entirely empty, must now be
+    complete and match the source verbatim. The separate, pre-existing
+    alternative-D diagram-label contamination
+    (``q75-alternative-d-diagram-label-bleed``) is intentionally not
+    asserted against here - it remains open.
+    """
+    result, _ = extraction_result
+    questions_by_number = {
+        q.question_number: q
+        for q in result.questions
+        if q.question_type == QuestionType.MULTIPLE_CHOICE
+    }
+    q75 = questions_by_number[75]
+    assert q75.statement.startswith(
+        "Considere que a figura ao lado ilustre o cenário de NAPT em uma empresa"
+    )
+    assert q75.statement.endswith(
+        "quais deverão ser os endereços IP de origem contidos nos pacotes de A e B, "
+        "respectivamente, que chegarão a esse servidor?"
+    )
+    assert "cujos equipamentos de rede interna (LAN) usam endereços IP privados" in q75.statement
+
+
+def test_q12_statement_is_now_complete(extraction_result):
+    """Regression test for ``q12-partial-content-loss`` (RESOLVED Phase
+    3H, Cluster D): 'base', 'na', 'complexidade', 'ciclomatica.' were four
+    separate same-baseline PyMuPDF dict-mode line fragments, individually
+    swallowed as figure-label candidates. fragment_reconstruction_gate
+    rejoins them into one physical line.
+    """
+    result, _ = extraction_result
+    questions_by_number = {
+        q.question_number: q
+        for q in result.questions
+        if q.question_type == QuestionType.MULTIPLE_CHOICE
+    }
+    q12 = questions_by_number[12]
+    assert (
+        "cujo número de caminhos pode ser determinado com base na complexidade ciclomática."
+        in q12.statement
+    )
+
+
+def test_q63_statement_is_now_complete(extraction_result):
+    """Regression test for ``q63-region-merge-content-loss`` (RESOLVED
+    Phase 3H, Cluster D): 'a seguinte representação de' was its own
+    fragmented run of same-baseline line entries, individually swallowed
+    as figure-label candidates.
+    """
+    result, _ = extraction_result
+    questions_by_number = {
+        q.question_number: q
+        for q in result.questions
+        if q.question_type == QuestionType.MULTIPLE_CHOICE
+    }
+    q63 = questions_by_number[63]
+    assert q63.statement.startswith(
+        "Considere a seguinte representação de abstração de generalização/especialização,"
+    )
+
+
+def test_q71_statement_is_now_complete_alternative_bc_still_open(extraction_result):
+    """Regression test for ``q71-region-merge-content-loss`` (RESOLVED
+    Phase 3H, Cluster D): 'e acoplamento são dois conceitos' and 'conceito
+    de ocultação de informação.' were their own fragmented same-baseline
+    line entries. The separate, unrelated alternative B/C cross-
+    contamination (``q71-alternative-b-c-cross-contamination``, a
+    _find_alternative_starts boundary-detection bug, not Cluster D) is
+    intentionally NOT asserted against here - it remains open.
+    """
+    result, _ = extraction_result
+    questions_by_number = {
+        q.question_number: q
+        for q in result.questions
+        if q.question_type == QuestionType.MULTIPLE_CHOICE
+    }
+    q71 = questions_by_number[71]
+    assert (
+        "Coesão e acoplamento são dois conceitos fundamentais para a qualidade do projeto modular"
+        in q71.statement
+    )
+    assert "relacionada ao conceito de ocultação de informação." in q71.statement
+
+
+def test_q25_alternative_b_is_no_longer_word_order_scrambled(extraction_result):
+    """Regression test for ``q25-alternative-b-word-order-scramble``
+    (RESOLVED Phase 3H, Cluster D): PyMuPDF's own content-stream traversal
+    order for two same-baseline fragments ('A' and 'transformada') did not
+    match their own visual x-order - group_line_fragments always sorts by
+    x0 before merging, resolving this as a side effect of the general
+    mechanism (not a per-question fix).
+    """
+    result, _ = extraction_result
+    questions_by_number = {
+        q.question_number: q
+        for q in result.questions
+        if q.question_type == QuestionType.MULTIPLE_CHOICE
+    }
+    q25 = questions_by_number[25]
+    alternative_b = next(a for a in q25.alternatives if a.letter == "B")
+    assert alternative_b.text.startswith("A transformada de Hadamard da imagem apresentada")
+
+
 def test_q01_multi_caption_page_is_not_regressed_by_font_size_gate(extraction_result):
     """PROMPT Phase 3D regression guard: Q1's own page has 5 small portrait
     images, each with its own multi-line caption - together outnumbering

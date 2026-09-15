@@ -25,7 +25,8 @@ content_blocks:
 - type: asset
   asset_id: figure-01
 - type: paragraph
-  text: 'Suponha que existam as seguintes tuplas no banco de dados:'
+  text: 'IdRep:integer referencia Republica) Suponha que existam as seguintes tuplas
+    no banco de dados:'
 - type: code
   text: 'Pessoa(1, ‘José Silva’, ‘Rua 1, 20’);
 
@@ -69,7 +70,7 @@ Considere o esquema de banco de dados relacional apresentado a seguir, formado p
 
 ![Figura da questão](enade-2008-computing-q23/figure-01.png)
 
-Suponha que existam as seguintes tuplas no banco de dados:
+IdRep:integer referencia Republica) Suponha que existam as seguintes tuplas no banco de dados:
 
 ```
 Pessoa(1, ‘José Silva’, ‘Rua 1, 20’);

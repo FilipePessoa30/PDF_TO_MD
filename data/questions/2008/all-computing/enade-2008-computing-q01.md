@@ -33,7 +33,7 @@ assets:
   path: enade-2008-computing-q01/figure-02.png
   source_page: 2
   extraction_method: raster_crop
-  sha256: 17e0dc2bc5515e4f4a0421e4a6ae4f966e13940affa2f453a1617f963677d9b4
+  sha256: ff00e689fc96e4109fc2d180ddf8098836ca3fc172eab0863c65f8957ff17a8d
   alt_text: null
   caption: null
 subjects: []
@@ -59,6 +59,8 @@ O escritor Machado de Assis (1839-1908), cujo centenário de morte está sendo c
 ![Figura da questão](enade-2008-computing-q01/figure-01.png)
 
 ![Figura da questão](enade-2008-computing-q01/figure-02.png)
+
+Das imagens acima, as figuras referidas no fragmento do romance Esaú e Jacó são
 
 ## Alternativas
 

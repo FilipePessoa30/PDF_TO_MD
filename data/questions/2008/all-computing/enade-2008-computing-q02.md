@@ -50,6 +50,8 @@ Quando o homem não trata bem a natureza, a natureza não trata bem o homem.
 
 ![Figura da questão](enade-2008-computing-q02/figure-01.png)
 
+Depreende-se dessa imagem a
+
 ## Alternativas
 
 A. atuação do homem na clonagem de animais pré-históricos.

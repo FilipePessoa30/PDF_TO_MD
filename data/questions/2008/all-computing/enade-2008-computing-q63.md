@@ -25,7 +25,7 @@ assets:
   path: enade-2008-computing-q63/figure-01.png
   source_page: 27
   extraction_method: raster_crop
-  sha256: b7771d3c777c8fc44beae1306609a658a7b2c7d732a1603d68bedb7940446932
+  sha256: 0ced576d80ae42f1962b0549a427e4e0ebedd45943fc62ba5411269ac95fc58a
   alt_text: null
   caption: null
 subjects: []
@@ -38,19 +38,19 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 63
 
+Considere a seguinte representação de abstração de generalização/especialização, com propriedade de cobertura parcial e sobreposta, segundo notação do diagrama entidade- relacionamento estendido.
+
 ![Figura da questão](enade-2008-computing-q63/figure-01.png)
 
-A	atrA
-
-C	atrB B	atrC
+Qual opção apresenta um esquema de banco de dados relacional que representa corretamente a referida abstração?
 
 ## Alternativas
 

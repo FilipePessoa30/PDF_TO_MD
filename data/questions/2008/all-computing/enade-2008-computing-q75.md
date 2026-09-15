@@ -39,14 +39,18 @@ alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
 extraction_status: needs_review
-automatic_validation: failed
+automatic_validation: passed
 visual_validation: failed
 taxonomy_review_status: pending
 ---
 
 # Questão 75
 
+Considere que a figura ao lado ilustre o cenário de NAPT em uma empresa
+
 ![Figura da questão](enade-2008-computing-q75/figure-01.png)
+
+cujos equipamentos de rede interna (LAN) usam endereços IP privados. Considere, ainda, que haja apenas um endereço IP válido nas redes dessa empresa, que é atribuído à interface externa do roteador. Considerando que os computadores A e B façam acessos simultâneos a um servidor WWW externo (www.inep.gov.br, por exemplo), quais deverão ser os endereços IP de origem contidos nos pacotes de A e B, respectivamente, que chegarão a esse servidor?
 
 ## Alternativas
 

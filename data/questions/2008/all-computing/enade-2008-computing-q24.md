@@ -48,11 +48,7 @@ taxonomy_review_status: pending
 
 ![Figura da questão](enade-2008-computing-q24/figure-01.png)
 
-A	0 B	S0
-
-A	II B	1
-
-A	0 B	S0
+III
 
 Assinale a opção correta.
 

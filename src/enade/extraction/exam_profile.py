@@ -121,6 +121,44 @@ class ExamStructureProfile(BaseModel):
     #: docstring - but a byte-for-byte change to a protected corpus is
     #: never accepted regardless of how the change is characterized).
     owner_exclusion_gate: bool = False
+    #: Opt-in (PROMPT Phase 3G) replacement of ``assembler._line_in_region``'s
+    #: original fixed-padding touch test and blanket alternative-marker
+    #: exemption with a richer, contextual relation
+    #: (``assembler.LineRegionRelation``/``compute_line_region_relation``):
+    #: text consumption now requires geometric containment, genuine overlap
+    #: against the region's own raw (pre-growth) extent, or a match against
+    #: growth's own authoritative absorbed-label record - never mere
+    #: touching or partial overlap - and an alternative-shaped line is only
+    #: protected from region membership when it also sits at the page's
+    #: own established body-text margin (``figures._is_marker_at_margin``),
+    #: closing the class of defect where a diagram-internal label (an
+    #: automaton input, an ER-diagram entity name) shares that exact shape.
+    #: ``False`` (default) keeps the exact, original behavior every
+    #: booklet without this field set already has. Set only for a booklet
+    #: confirmed (by full regeneration) to need it: enabling it
+    #: unconditionally was found to change 2011's own Q9/Q12/Q23/Q38 and
+    #: several 2021 questions (own growth/reading-order shapes not yet
+    #: characterized with the same precision as the 2008-b cases this was
+    #: built for - see docs/phase-3g-report.md).
+    contextual_relation_gate: bool = False
+    #: Opt-in (PROMPT Phase 3H, "Cluster D") geometric rejoining of a
+    #: physical line PyMuPDF's own ``get_text("dict")`` reported as several
+    #: separate "line" entries sharing the exact same baseline - see
+    #: ``layout.fragment_reconstruction``/``layout._raw_lines``. Two
+    #: independent, documentary signals (never a dictionary/language
+    #: model) are required together: a literal trailing space in the
+    #: earlier fragment's own raw glyph stream, and a horizontal gap
+    #: within a font-size-relative safety ceiling; a detected column
+    #: boundary is never crossed regardless. ``False`` (default) keeps the
+    #: exact, original per-dict-line behavior every booklet without this
+    #: field set already has. Confirmed by full regeneration that this
+    #: mechanism DOES fix a real, already-documented defect in 2021's own
+    #: corpus (page 19's own "B Escalonamento por taxas monotonicas" split
+    #: into four fragments, see layout.py's own MIN_LINES_PER_COLUMN
+    #: docstring) - gated regardless, since any change to a protected
+    #: corpus is reverted on principle (PROMPT: "nao aceite equivalencia
+    #: semantica"), not only when it is wrong.
+    fragment_reconstruction_gate: bool = False
 
     @model_validator(mode="after")
     def _validate_sections(self) -> ExamStructureProfile:

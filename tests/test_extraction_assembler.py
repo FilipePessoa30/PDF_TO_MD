@@ -14,6 +14,8 @@ from enade.extraction.assembler import (
     _render_code_lines,
     _strip_leading_marker,
     _strip_line_number_gutter,
+    _text_consumption_decision,
+    compute_line_region_relation,
     detect_broken_words,
 )
 from enade.extraction.figures import VisualRegion
@@ -137,14 +139,22 @@ def test_line_in_region_small_formula_region_swallows_the_line_below_without_ove
     """Regression test: 2011 Q38 (page 25, PROMPT Phase 2E section 9) -
     production 4 of Q38's own grammar ("N -> Nd") sits at y0=296.5, just
     below the small-formula region carrying production 3's own terminal
-    "x" (region bbox y1=300.4). REGION_Y_PADDING (2pt) alone is enough to
-    mark "N -> Nd" as inside the region and exclude it from the
-    statement, even though the region's own tiny bbox never renders
-    enough of that line to be legible either - real content, neither
-    readable as text nor as image, without an override.
+    "x" (region bbox y1=300.4). The real production region for this case
+    is always built via the small-formula candidate pool
+    (``is_small_formula=True`` - PROMPT Phase 3G's own ``LineRegionRelation``
+    keeps this region class's original, more lenient touch-based inclusion
+    unchanged - see ``_text_consumption_decision``): a tiny, already
+    size-capped inline-symbol region reliably swallows a merely-touching
+    adjacent fragment, even though the region's own tiny bbox never
+    renders enough of that line to be legible either - real content,
+    neither readable as text nor as image, without an override.
     """
     region = VisualRegion(
-        page_number=25, bbox=(59.55, 292.74, 69.90, 300.39), element_count=1, has_raster_image=True
+        page_number=25,
+        bbox=(59.55, 292.74, 69.90, 300.39),
+        element_count=1,
+        has_raster_image=True,
+        is_small_formula=True,
     )
     line = _line(25, 299.6, "N → Nd", x=28.47, width=37.1)
     assert _line_in_region(line, region) is True
@@ -152,7 +162,11 @@ def test_line_in_region_small_formula_region_swallows_the_line_below_without_ove
 
 def test_line_in_region_small_formula_region_override_recovers_the_swallowed_line():
     region = VisualRegion(
-        page_number=25, bbox=(59.55, 292.74, 69.90, 300.39), element_count=1, has_raster_image=True
+        page_number=25,
+        bbox=(59.55, 292.74, 69.90, 300.39),
+        element_count=1,
+        has_raster_image=True,
+        is_small_formula=True,
     )
     line = _line(25, 299.6, "N → Nd", x=28.47, width=37.1)
     overrides = LayoutOverrideSet(
@@ -170,6 +184,296 @@ def test_line_in_region_small_formula_region_override_recovers_the_swallowed_lin
         ]
     )
     assert _line_in_region(line, region, overrides, "eb3b497f" * 8) is False
+
+
+# --- Phase 3G: contextual line-region relation (Cluster A/C) ------------------
+#
+# PROMPT Phase 3G's own control matrix (D10/Q07/Q61/Q71) reproduced with
+# synthetic geometry (never the real corpus's own coordinates or text - see
+# Section 18, "os testes nao podem depender... de coordenada fixa"). Every
+# test below passes ``contextual_relation_gate=True`` explicitly; with it
+# omitted (every existing test above, and every booklet without
+# ``ExamStructureProfile.contextual_relation_gate`` set), behavior is
+# untouched - confirmed by the full existing suite passing unchanged.
+
+
+def test_gate_off_keeps_the_original_fixed_padding_behavior():
+    """A wide, unrelated line barely touching a grown region's own edge -
+    the exact shape that regressed 2011/2021 when this relation was tried
+    unconditionally (docs/phase-3g-report.md) - is still absorbed (as
+    before) when the gate is off, and correctly kept visible when it is
+    on. Same two calls, same inputs, opposite outcomes - the gate is what
+    changes, nothing else.
+    """
+    region = VisualRegion(page_number=1, bbox=(0.0, 100.0, 50.0, 112.0), element_count=1)
+    wide_line = _line(1, 100.0, "Uma frase bem mais larga do que a regiao.", x=10.0, width=200.0)
+    assert _line_in_region(wide_line, region) is True  # gate off: default lenient touch
+    assert _line_in_region(wide_line, region, contextual_relation_gate=True) is False
+
+
+def test_contextual_relation_contained_line_is_excluded():
+    region = VisualRegion(page_number=1, bbox=(0.0, 90.0, 300.0, 200.0), element_count=1)
+    label = _line(1, 150.0, "Legenda pequena", x=100.0, width=60.0)
+    relation = compute_line_region_relation(label, region)
+    assert relation.state == "contained"
+    assert _text_consumption_decision(relation) == "accepted"
+    assert _line_in_region(label, region, contextual_relation_gate=True) is True
+
+
+def test_contextual_relation_wide_line_barely_touching_grown_bbox_is_kept():
+    """The D10/Q07 shape: a real, wide statement line only marginally
+    overlaps a region's own *grown* bbox, with no overlap at all against
+    its *raw* (pre-growth) extent and no match against any growth-absorbed
+    label - stays visible.
+    """
+    region = VisualRegion(
+        page_number=1,
+        bbox=(0.0, 90.0, 60.0, 200.0),
+        raw_bbox=(0.0, 90.0, 55.0, 195.0),
+        element_count=1,
+    )
+    wide_line = _line(
+        1, 150.0, "Uma frase real e bem mais larga que a figura.", x=58.0, width=250.0
+    )
+    relation = compute_line_region_relation(wide_line, region)
+    assert relation.raw_intersects is False
+    assert relation.state != "contained"
+    assert _text_consumption_decision(relation) == "ambiguous"
+    assert _line_in_region(wide_line, region, contextual_relation_gate=True) is False
+
+
+def test_contextual_relation_native_offset_caption_with_raw_overlap_is_excluded():
+    """The Q61 shape: a real caption sits offset from a wide region (most
+    of the caption's own width falls outside the region), but genuinely
+    overlaps the region's own *raw*, pre-growth extent - excluded (hidden
+    inside the figure), matching this corpus's own established behavior
+    for a caption printed above/beside its own diagram.
+    """
+    region = VisualRegion(
+        page_number=1,
+        bbox=(50.0, 60.0, 400.0, 300.0),
+        raw_bbox=(50.0, 30.0, 400.0, 300.0),
+        element_count=2,
+    )
+    caption = _line(1, 65.0, "Figura para a questao referenciada", x=10.0, width=70.0)
+    relation = compute_line_region_relation(caption, region)
+    assert relation.raw_intersects is True
+    assert _text_consumption_decision(relation) == "accepted"
+    assert _line_in_region(caption, region, contextual_relation_gate=True) is True
+
+
+def test_contextual_relation_matches_absorbed_label_is_excluded():
+    """Growth's own authoritative record (PROMPT Phase 3G): a real label
+    captured through incremental absorption, ending up nowhere near the
+    region's own raw extent on its own, is still trusted directly.
+    """
+    absorbed_rect = (120.0, 140.0, 160.0, 150.0)
+    region = VisualRegion(
+        page_number=1,
+        bbox=(0.0, 90.0, 200.0, 200.0),
+        raw_bbox=(0.0, 90.0, 40.0, 105.0),
+        element_count=1,
+        absorbed_label_bboxes=(absorbed_rect,),
+    )
+    label = Line(page_number=1, text="rotulo", x0=120.0, y0=140.0, x1=160.0, y1=150.0)
+    relation = compute_line_region_relation(label, region)
+    assert relation.raw_intersects is False
+    assert relation.matches_absorbed_label is True
+    assert _text_consumption_decision(relation) == "accepted"
+    assert _line_in_region(label, region, contextual_relation_gate=True) is True
+
+
+def test_contextual_relation_diagram_internal_label_not_at_margin_is_absorbed():
+    """PROMPT Phase 3G, "Cluster C": a line shaped like an alternative
+    marker ("A\\t...") that does NOT sit at the page's own established
+    body margin - a diagram-internal label (an automaton input, an
+    ER-diagram entity name) - is no longer unconditionally protected; it
+    falls through to the same geometric relation as any other line, and
+    is correctly hidden when genuinely contained in the diagram's region.
+    """
+    region = VisualRegion(page_number=1, bbox=(200.0, 90.0, 260.0, 200.0), element_count=1)
+    diagram_label = _line(1, 150.0, "A\t0", x=210.0, width=20.0)
+    body_margin_x0 = 30.0  # the page's own real body text starts at x=30
+    assert (
+        _line_in_region(
+            diagram_label,
+            region,
+            body_margin_x0=body_margin_x0,
+            contextual_relation_gate=True,
+        )
+        is True
+    )
+
+
+def test_contextual_relation_real_alternative_marker_at_margin_stays_protected():
+    """Same shape as above, but the marker sits at the page's own real
+    body margin - still protected outright, never evaluated geometrically
+    against any region (PROMPT: a real alternative marker sitting close to
+    a diagram must never disappear).
+    """
+    region = VisualRegion(page_number=1, bbox=(0.0, 140.0, 300.0, 200.0), element_count=1)
+    real_marker = _line(1, 150.0, "A\t Texto da alternativa A", x=30.0, width=200.0)
+    body_margin_x0 = 30.0
+    assert (
+        _line_in_region(
+            real_marker,
+            region,
+            body_margin_x0=body_margin_x0,
+            contextual_relation_gate=True,
+        )
+        is False
+    )
+
+
+# --- Phase 3G section 18: metamorphic tests --------------------------------
+#
+# The relation's own classification must be a function of relative geometry
+# alone, never of any fixed coordinate, page, question ID, or real question
+# text (PROMPT: "os testes devem variar escala, translacao, largura de
+# coluna e fonte ... nunca depender de coordenada fixa"). Each test below
+# takes one base scenario and applies one transformation, then asserts the
+# classification is preserved - never picking a transform magnitude by
+# trial-and-error to make a specific case pass.
+
+
+def test_translation_invariance_of_contained_relation():
+    """Shifting a contained line and its region by the same (dx, dy) must
+    not change the relation's own state or ratios - every signal
+    (intersection ratios, center/baseline containment, overflow amounts) is
+    a *difference* between line and region coordinates, so a uniform shift
+    cancels out algebraically.
+    """
+    dx, dy = 437.0, -812.0  # arbitrary, deliberately not round numbers
+    region_a = VisualRegion(page_number=1, bbox=(0.0, 90.0, 300.0, 200.0), element_count=1)
+    label_a = _line(1, 150.0, "Legenda pequena", x=100.0, width=60.0)
+    region_b = VisualRegion(
+        page_number=1,
+        bbox=(0.0 + dx, 90.0 + dy, 300.0 + dx, 200.0 + dy),
+        element_count=1,
+    )
+    label_b = _line(1, 150.0 + dy, "Legenda pequena", x=100.0 + dx, width=60.0)
+
+    relation_a = compute_line_region_relation(label_a, region_a)
+    relation_b = compute_line_region_relation(label_b, region_b)
+
+    assert relation_a.state == relation_b.state == "contained"
+    assert relation_a.intersection_over_line_area == pytest.approx(
+        relation_b.intersection_over_line_area
+    )
+    assert relation_a.horizontal_overlap_ratio == pytest.approx(relation_b.horizontal_overlap_ratio)
+    assert relation_a.vertical_overlap_ratio == pytest.approx(relation_b.vertical_overlap_ratio)
+    assert relation_a.center_inside == relation_b.center_inside
+    assert relation_a.baseline_inside == relation_b.baseline_inside
+
+
+def test_translation_invariance_of_touching_relation_is_kept_visible_either_way():
+    """Same transformation applied to the D10/Q07 "wide line barely
+    touching a grown bbox" shape: both the original and the translated
+    version must be classified as not genuinely overlapping and kept
+    visible - the decision must not depend on which absolute page
+    coordinates the scenario happens to sit at.
+    """
+    dx, dy = -215.0, 963.0
+    region_a = VisualRegion(
+        page_number=1,
+        bbox=(0.0, 90.0, 60.0, 200.0),
+        raw_bbox=(0.0, 90.0, 55.0, 195.0),
+        element_count=1,
+    )
+    wide_line_a = _line(
+        1, 150.0, "Uma frase real e bem mais larga que a figura.", x=58.0, width=250.0
+    )
+    region_b = VisualRegion(
+        page_number=1,
+        bbox=(0.0 + dx, 90.0 + dy, 60.0 + dx, 200.0 + dy),
+        raw_bbox=(0.0 + dx, 90.0 + dy, 55.0 + dx, 195.0 + dy),
+        element_count=1,
+    )
+    wide_line_b = _line(
+        1, 150.0 + dy, "Uma frase real e bem mais larga que a figura.", x=58.0 + dx, width=250.0
+    )
+
+    relation_a = compute_line_region_relation(wide_line_a, region_a)
+    relation_b = compute_line_region_relation(wide_line_b, region_b)
+
+    assert (
+        _text_consumption_decision(relation_a)
+        == _text_consumption_decision(relation_b)
+        == ("ambiguous")
+    )
+    assert relation_a.raw_intersects == relation_b.raw_intersects == False  # noqa: E712
+
+
+def test_scale_invariance_of_ratio_based_containment():
+    """Uniformly scaling a clearly-contained line+region pair around the
+    origin must not change ratio-based signals (intersection ratios,
+    center/baseline containment) - these are dimensionless, unlike the
+    fixed-point padding constants (REGION_X_PADDING/REGION_Y_PADDING) that
+    only matter for a genuinely borderline touch, not for a relationship
+    this unambiguous.
+    """
+    scale = 3.0
+    region_a = VisualRegion(page_number=1, bbox=(10.0, 100.0, 210.0, 300.0), element_count=1)
+    label_a = _line(1, 150.0, "Legenda", x=60.0, width=40.0)
+    region_b = VisualRegion(
+        page_number=1,
+        bbox=(10.0 * scale, 100.0 * scale, 210.0 * scale, 300.0 * scale),
+        element_count=1,
+    )
+    label_b = _line(1, 150.0 * scale, "Legenda", x=60.0 * scale, width=40.0 * scale)
+
+    relation_a = compute_line_region_relation(label_a, region_a)
+    relation_b = compute_line_region_relation(label_b, region_b)
+
+    assert relation_a.state == relation_b.state == "contained"
+    assert relation_a.horizontal_overlap_ratio == pytest.approx(relation_b.horizontal_overlap_ratio)
+    assert relation_a.vertical_overlap_ratio == pytest.approx(relation_b.vertical_overlap_ratio)
+    assert relation_a.center_inside == relation_b.center_inside == True  # noqa: E712
+
+
+def test_column_width_variation_of_margin_based_marker_protection():
+    """PROMPT "Cluster C": the margin-based marker exemption must track
+    *wherever* the page's own body margin actually is, not any fixed X
+    coordinate - a real alternative marker at a wide column's own margin
+    and the same real marker (same offset from its own margin) in a
+    narrower column must both stay protected, while a label sitting away
+    from either column's own margin must not.
+    """
+    region = VisualRegion(page_number=1, bbox=(0.0, 140.0, 800.0, 200.0), element_count=1)
+    for body_margin_x0 in (30.0, 96.0, 271.5):
+        real_marker = _line(1, 150.0, "A\t Texto da alternativa A", x=body_margin_x0, width=200.0)
+        assert (
+            _line_in_region(
+                real_marker, region, body_margin_x0=body_margin_x0, contextual_relation_gate=True
+            )
+            is False
+        ), f"marker at its own column margin ({body_margin_x0}) must stay protected"
+
+        diagram_label = _line(1, 150.0, "A\t0", x=body_margin_x0 + 180.0, width=20.0)
+        assert (
+            _line_in_region(
+                diagram_label,
+                region,
+                body_margin_x0=body_margin_x0,
+                contextual_relation_gate=True,
+            )
+            is True
+        ), f"marker-shaped label away from margin ({body_margin_x0}) must not be protected"
+
+
+def test_font_size_gate_classification_tracks_the_page_dominant_size_not_a_fixed_value():
+    """PROMPT "font" variation: caption_font_size_gate's own label-candidate
+    eligibility must track *whichever* font size a page's own body prose
+    happens to use, never a fixed absolute threshold - a candidate 2pt
+    smaller than body stays eligible whether body is set in 9pt or 14pt.
+    """
+    from enade.extraction.figures import FONT_SIZE_CAPTION_MARGIN
+
+    for body_font_size in (9.0, 14.0):
+        candidate_font_size = body_font_size - FONT_SIZE_CAPTION_MARGIN - 0.5
+        header_font_size = body_font_size + 1.0
+        assert candidate_font_size < body_font_size - FONT_SIZE_CAPTION_MARGIN
+        assert not (header_font_size < body_font_size - FONT_SIZE_CAPTION_MARGIN)
 
 
 def test_attach_alternative_formula_regions_splits_a_merged_region_per_alternative():

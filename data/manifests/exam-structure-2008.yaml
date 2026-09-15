@@ -69,6 +69,39 @@
 # but a byte-for-byte change to a protected corpus is never accepted
 # regardless of characterization, so it was reverted in favor of this
 # declarative gate).
+#
+# `contextual_relation_gate` (PROMPT Phase 3G): replaces the fixed-padding
+# touch test in `assembler._line_in_region` with a richer relation
+# (containment, genuine overlap against a region's own raw pre-growth
+# extent, or a match against growth's own authoritative absorbed-label
+# record) and makes the alternative-marker exemption margin-aware (a
+# diagram-internal label sharing an alternative's own "A"/"B" shape is no
+# longer automatically protected - PROMPT "Cluster A"/"Cluster C"). Closes
+# D10/Q02/Q07/Q12/Q45/Q54/Q63/Q75 (Cluster A) and Q24/Q29/Q63 (Cluster C).
+# Confirmed by full regeneration to leave 2011/2021 unaffected only when
+# gated here (an unconditional-default attempt changed 2011's own
+# Q9/Q12/Q23/Q38 and several 2021 questions whose own growth/reading-order
+# shape this project has not yet characterized with the same precision as
+# the 2008-b cases this was built for).
+#
+# `fragment_reconstruction_gate` (PROMPT Phase 3H, "Cluster D"): rejoins a
+# physical line PyMuPDF's own get_text("dict") reported as several separate
+# "line" entries sharing the exact same baseline, using two documentary
+# signals together (a literal trailing space in the earlier fragment's own
+# raw glyph stream, plus a horizontal gap within a font-size-relative
+# safety ceiling) - never a dictionary or language model, and never across
+# a detected column boundary. Closes Q07's own "aos" loss and Q12's own
+# "complexidade ciclomatica." loss (both previously vulnerable to
+# figures.py's own label-absorption precisely because fragmentation made
+# them look like short, isolated labels), and restores D40's own
+# Cliente(...) schema line as a genuinely complete first printed line.
+# Confirmed by full regeneration to leave 2011/2021 unaffected only when
+# gated here: an unconditional-default attempt DID fix a real,
+# already-documented pre-existing defect in 2021's own corpus (page 19's
+# own "B Escalonamento por taxas monotonicas" split into four fragments,
+# see layout.py's own MIN_LINES_PER_COLUMN docstring) - but any change to
+# a protected corpus is reverted regardless of correctness, so this stays
+# gated the same way every other Phase 3C-3G capability does.
 year: 2008
 exam_type: unified
 exam_id: enade-2008-b-computacao
@@ -78,6 +111,8 @@ combined_numbering: true
 region_merge_x_tolerance: 150.0
 caption_font_size_gate: true
 owner_exclusion_gate: true
+contextual_relation_gate: true
+fragment_reconstruction_gate: true
 sections:
   - id: formacao-geral-objetiva
     kind: objective

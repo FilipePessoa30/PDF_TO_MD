@@ -32,6 +32,12 @@ from dataclasses import dataclass
 import pymupdf
 
 from enade.extraction.chrome import is_chrome_line
+from enade.extraction.fragment_reconstruction import (
+    FragmentMergeTrace,
+    RawLineFragment,
+    group_line_fragments,
+    merged_bbox_of,
+)
 from enade.extraction.label_normalization import LabelCorrection, normalize_known_label
 from enade.extraction.layout_overrides import LayoutOverrideSet
 from enade.extraction.spacing import SpacingCorrection, reconstruct_line_text
@@ -226,15 +232,30 @@ class Line:
     #: a mechanically distinct correction (font-glyph identity, not a
     #: whole-line label lookup).
     symbol_corrections: tuple[LabelCorrection, ...] = ()
+    #: Geometric line-fragment reconstructions applied to build this line
+    #: (see fragment_reconstruction.py, PROMPT Phase 3H "Cluster D") - empty
+    #: unless PyMuPDF's own dict-mode reported this physical line as more
+    #: than one separate "line" entry and geometric+documentary evidence
+    #: (matching baseline, compatible font, a safe gap, and a literal
+    #: trailing space in the raw glyph stream) justified rejoining them.
+    #: Same auditability purpose and transformation-log participation as
+    #: spacing_corrections/label_corrections/symbol_corrections.
+    fragment_merges: tuple[FragmentMergeTrace, ...] = ()
 
     @property
     def bbox(self) -> tuple[float, float, float, float]:
         return (self.x0, self.y0, self.x1, self.y1)
 
 
-def _raw_lines(page: pymupdf.Page, page_number: int) -> list[Line]:
+def _collect_raw_fragments(page: pymupdf.Page, page_number: int) -> list[RawLineFragment]:
+    """Every PyMuPDF dict-mode "line" entry on ``page``, before any text
+    correction - the raw material ``group_line_fragments`` (PROMPT Phase
+    3H, "Cluster D") groups into physical lines. ``raw_text`` is kept
+    un-stripped: a trailing space is documentary evidence a fragment
+    continues into its neighbour (see fragment_reconstruction.py).
+    """
     raw = page.get_text("dict")
-    lines: list[Line] = []
+    fragments: list[RawLineFragment] = []
     for block in raw.get("blocks", []):
         if block.get("type") != 0:  # 0 = text block, 1 = image block
             continue
@@ -242,62 +263,166 @@ def _raw_lines(page: pymupdf.Page, page_number: int) -> list[Line]:
             spans = line.get("spans", [])
             if not spans:
                 continue
-            text = "".join(span.get("text", "") for span in spans).rstrip()
-            if not text.strip():
+            raw_text = "".join(span.get("text", "") for span in spans)
+            if not raw_text.strip():
                 continue
-            fonts = [span.get("font", "") for span in spans]
+            fonts = tuple(span.get("font", "") for span in spans)
             is_monospace = bool(fonts) and all(
                 any(hint in font.lower() for hint in _MONOSPACE_FONT_HINTS) for font in fonts
             )
             font_size = max((span.get("size", 0.0) for span in spans), default=0.0)
             x0, y0, x1, y1 = line["bbox"]
-            final_text = text.strip() if not is_monospace else text.lstrip("\f\v")
-            corrections: list[SpacingCorrection] = []
-            if not is_monospace:
-                # Code lines keep their literal dict-mode text (word-geometry
-                # reconstruction is prose-only; see spacing.py) - everything
-                # else is re-derived from glyph geometry, which also happens
-                # to normalize incidental whitespace differences for free.
-                reconstructed, corrections = reconstruct_line_text(
-                    page, page_number, (x0, y0, x1, y1)
-                )
-                if reconstructed:
-                    final_text = reconstructed
-            symbol_corrections: list[LabelCorrection] = []
-            if not is_monospace and any(is_symbol_font(font) for font in fonts):
-                substituted = substitute_symbol_font_text(final_text)
-                if substituted != final_text:
-                    symbol_corrections.append(
-                        LabelCorrection(
-                            page_number=page_number, original=final_text, corrected=substituted
-                        )
-                    )
-                    final_text = substituted
-            label_corrections: list[LabelCorrection] = []
-            if not is_monospace:
-                known_label = normalize_known_label(final_text)
-                if known_label is not None:
-                    label_corrections.append(
-                        LabelCorrection(
-                            page_number=page_number, original=final_text, corrected=known_label
-                        )
-                    )
-                    final_text = known_label
-            lines.append(
-                Line(
+            fragments.append(
+                RawLineFragment(
                     page_number=page_number,
-                    text=final_text,
                     x0=x0,
                     y0=y0,
                     x1=x1,
                     y1=y1,
-                    is_monospace=is_monospace,
+                    raw_text=raw_text,
+                    fonts=fonts,
                     font_size=font_size,
-                    spacing_corrections=tuple(corrections),
-                    label_corrections=tuple(label_corrections),
-                    symbol_corrections=tuple(symbol_corrections),
+                    is_monospace=is_monospace,
                 )
             )
+    return fragments
+
+
+def _build_line_from_group(
+    page: pymupdf.Page, page_number: int, group: list[RawLineFragment]
+) -> Line | None:
+    """Build one corrected ``Line`` from a group of one or more raw
+    fragments that ``group_line_fragments`` determined belong together.
+
+    A singleton group takes exactly the same path this function's own
+    predecessor (pre-Phase-3H ``_raw_lines``) always used - disabled
+    behavior (a page with no fragmentation at all) is byte-identical. A
+    multi-fragment group is corrected from its own *union* bbox, reusing
+    the same ``reconstruct_line_text`` word-geometry mechanism a single
+    line already relies on - it naturally re-derives the joined text from
+    real word positions across the whole merged span, rather than
+    re-stitching each fragment's own already-corrected text by hand.
+    """
+    first = group[0]
+    is_monospace = first.is_monospace
+    font_size = max(f.font_size for f in group)
+    fonts = tuple(f for frag in group for f in frag.fonts)
+    x0, y0, x1, y1 = merged_bbox_of(group)
+    raw_text = (
+        "".join(f.raw_text for f in group)
+        if len(group) == 1
+        else " ".join(f.raw_text.strip() for f in group)
+    )
+    text = raw_text.rstrip()
+    if not text.strip():
+        return None
+
+    final_text = text.strip() if not is_monospace else text.lstrip("\f\v")
+    corrections: list[SpacingCorrection] = []
+    if not is_monospace:
+        # Code lines keep their literal dict-mode text (word-geometry
+        # reconstruction is prose-only; see spacing.py) - everything else
+        # is re-derived from glyph geometry, which also happens to
+        # normalize incidental whitespace differences (and, for a merged
+        # group, the fragmentation itself) for free.
+        reconstructed, corrections = reconstruct_line_text(page, page_number, (x0, y0, x1, y1))
+        if reconstructed:
+            final_text = reconstructed
+    symbol_corrections: list[LabelCorrection] = []
+    if not is_monospace and any(is_symbol_font(font) for font in fonts):
+        substituted = substitute_symbol_font_text(final_text)
+        if substituted != final_text:
+            symbol_corrections.append(
+                LabelCorrection(page_number=page_number, original=final_text, corrected=substituted)
+            )
+            final_text = substituted
+    label_corrections: list[LabelCorrection] = []
+    if not is_monospace:
+        known_label = normalize_known_label(final_text)
+        if known_label is not None:
+            label_corrections.append(
+                LabelCorrection(page_number=page_number, original=final_text, corrected=known_label)
+            )
+            final_text = known_label
+    fragment_merges: tuple[FragmentMergeTrace, ...] = ()
+    if len(group) > 1:
+        fragment_merges = (
+            FragmentMergeTrace(
+                page_number=page_number,
+                fragment_bboxes=tuple(f.bbox for f in group),
+                fragment_texts=tuple(f.raw_text for f in group),
+                merged_bbox=(x0, y0, x1, y1),
+            ),
+        )
+    return Line(
+        page_number=page_number,
+        text=final_text,
+        x0=x0,
+        y0=y0,
+        x1=x1,
+        y1=y1,
+        is_monospace=is_monospace,
+        font_size=font_size,
+        spacing_corrections=tuple(corrections),
+        label_corrections=tuple(label_corrections),
+        symbol_corrections=tuple(symbol_corrections),
+        fragment_merges=fragment_merges,
+    )
+
+
+def _column_boundary_for_fragment_merge(fragments: list[RawLineFragment]) -> float | None:
+    """This page's own right-column left edge, or None on a single-column
+    page - see ``group_line_fragments``'s own docstring for why fragment
+    merging must never cross it. Reuses ``detect_column_margins`` (the
+    same mechanism ``extract_page_lines`` itself relies on for reading
+    order) against lightweight, uncorrected ``Line`` stand-ins built
+    straight from the raw fragments - column detection only ever inspects
+    bbox/text, so an individual fragment's own missing corrections do not
+    matter here, and most of a real page's own lines are not fragmented at
+    all, leaving plenty of "substantial" evidence either way.
+    """
+    pseudo_lines = [
+        Line(page_number=f.page_number, text=f.raw_text.strip(), x0=f.x0, y0=f.y0, x1=f.x1, y1=f.y1)
+        for f in fragments
+    ]
+    margins = detect_column_margins(pseudo_lines)
+    if margins is None:
+        return None
+    # Match extract_page_lines' own right-column membership test exactly
+    # (right_margin - COLUMN_RIGHT_MARGIN_TOLERANCE, not the raw bucketed
+    # margin) - detect_column_margins rounds to COLUMN_BUCKET_SIZE (5pt),
+    # so the raw margin can sit fractionally past the right column's own
+    # real content x0 (confirmed by direct instrumentation: 2021 p.19's
+    # own right column starts at x0=289.465, bucketed to 290.0).
+    _, right_margin = margins
+    return right_margin - COLUMN_RIGHT_MARGIN_TOLERANCE
+
+
+def _raw_lines(
+    page: pymupdf.Page, page_number: int, fragment_reconstruction_gate: bool = False
+) -> list[Line]:
+    fragments = _collect_raw_fragments(page, page_number)
+    if not fragment_reconstruction_gate:
+        # Disabled (every booklet unless its own profile opts in - PROMPT
+        # Phase 3H, see ExamStructureProfile.fragment_reconstruction_gate):
+        # exactly one Line per raw dict-mode "line" entry, byte-identical
+        # to every pre-Phase-3H run. A real, correct fix was confirmed to
+        # fire against 2021's own already-published Q9 (page 19's own
+        # documented "B Escalonamento por taxas monotonicas" split, see
+        # layout.py's own MIN_LINES_PER_COLUMN docstring) - but *any*
+        # change to a protected corpus is reverted regardless of
+        # correctness (PROMPT: "nao aceite equivalencia semantica"), so
+        # this stays gated the same way owner_exclusion_gate/
+        # caption_font_size_gate/contextual_relation_gate already do.
+        groups: list[list[RawLineFragment]] = [[f] for f in fragments]
+    else:
+        column_boundary = _column_boundary_for_fragment_merge(fragments)
+        groups = group_line_fragments(fragments, column_boundary=column_boundary)
+    lines: list[Line] = []
+    for group in groups:
+        built = _build_line_from_group(page, page_number, group)
+        if built is not None:
+            lines.append(built)
     return lines
 
 
@@ -427,6 +552,7 @@ def _merge_orphan_markers(
         partner_text = other.text
         merge_x0, merge_y0 = min(ln.x0, other.x0), min(ln.y0, other.y0)
         merge_x1, merge_y1 = max(ln.x1, other.x1), max(ln.y1, other.y1)
+        fragment_merges = ln.fragment_merges + other.fragment_merges
 
         if numerator_bbox is not None:
             numerator_j = next(
@@ -443,6 +569,7 @@ def _merge_orphan_markers(
                 partner_text = f"{numerator.text}/{other.text}"
                 merge_x0, merge_y0 = min(merge_x0, numerator.x0), min(merge_y0, numerator.y0)
                 merge_x1, merge_y1 = max(merge_x1, numerator.x1), max(merge_y1, numerator.y1)
+                fragment_merges = fragment_merges + numerator.fragment_merges
 
         merged.append(
             Line(
@@ -457,6 +584,7 @@ def _merge_orphan_markers(
                 spacing_corrections=ln.spacing_corrections + other.spacing_corrections,
                 label_corrections=ln.label_corrections + other.label_corrections,
                 symbol_corrections=ln.symbol_corrections + other.symbol_corrections,
+                fragment_merges=fragment_merges,
             )
         )
     return merged
@@ -568,6 +696,7 @@ def extract_page_lines(
     page_number: int,
     overrides: LayoutOverrideSet | None = None,
     pdf_sha256: str = "",
+    fragment_reconstruction_gate: bool = False,
 ) -> list[Line]:
     """Extract every physical line on ``page``, in visual reading order.
 
@@ -579,8 +708,20 @@ def extract_page_lines(
     ``overrides``/``pdf_sha256`` (PROMPT Phase 2B section 6, Level 3) apply
     to the orphan-marker merge below, and can also force naive single-
     column ordering for the whole page - see ``layout_overrides.py``.
+
+    ``fragment_reconstruction_gate`` (PROMPT Phase 3H, "Cluster D", default
+    False): opt-in geometric rejoining of a physical line PyMuPDF's own
+    dict-mode reported as several separate "line" entries - see
+    ``_raw_lines``/``fragment_reconstruction.py``. Threaded from
+    ``ExamStructureProfile.fragment_reconstruction_gate`` by
+    ``pipeline.py`` - every booklet without it keeps the exact original,
+    unfragmented-or-not-reconstructed behavior (confirmed: this mechanism
+    DOES fix a real, previously-documented defect in 2021's own corpus -
+    see the "B Escalonamento" comment below - but is gated regardless,
+    since any change to a protected corpus is reverted on principle, not
+    just when it is wrong).
     """
-    raw = _raw_lines(page, page_number)
+    raw = _raw_lines(page, page_number, fragment_reconstruction_gate)
     if overrides is not None and overrides.forces_single_column(pdf_sha256, page_number):
         lines = _merge_orphan_markers(raw, None, overrides, pdf_sha256)
         lines.sort(key=lambda ln: (round(ln.y0, 1), ln.x0))
@@ -628,6 +769,7 @@ def extract_document_lines(
     doc: pymupdf.Document,
     overrides: LayoutOverrideSet | None = None,
     pdf_sha256: str = "",
+    fragment_reconstruction_gate: bool = False,
 ) -> list[Line]:
     """Extract position-sorted lines for every page, in page order."""
     all_lines: list[Line] = []
@@ -635,7 +777,11 @@ def extract_document_lines(
         page = doc[index]
         all_lines.extend(
             extract_page_lines(
-                page, page_number=index + 1, overrides=overrides, pdf_sha256=pdf_sha256
+                page,
+                page_number=index + 1,
+                overrides=overrides,
+                pdf_sha256=pdf_sha256,
+                fragment_reconstruction_gate=fragment_reconstruction_gate,
             )
         )
     return all_lines

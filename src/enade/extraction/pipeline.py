@@ -175,8 +175,16 @@ def extract_exam(
             gabarito_source_path = gabarito_path.relative_to(corpus_root).as_posix()
             padrao_source_path = padrao_path.relative_to(corpus_root).as_posix()
 
+            fragment_reconstruction_gate = (
+                structure_profile.fragment_reconstruction_gate
+                if structure_profile is not None
+                else False
+            )
             lines = extract_document_lines(
-                prova.raw, overrides=layout_overrides, pdf_sha256=prova.identity.sha256
+                prova.raw,
+                overrides=layout_overrides,
+                pdf_sha256=prova.identity.sha256,
+                fragment_reconstruction_gate=fragment_reconstruction_gate,
             )
             boundary_result = detect_question_boundaries(
                 lines,
@@ -212,6 +220,11 @@ def extract_exam(
             )
             owner_exclusion_gate = (
                 structure_profile.owner_exclusion_gate if structure_profile is not None else False
+            )
+            contextual_relation_gate = (
+                structure_profile.contextual_relation_gate
+                if structure_profile is not None
+                else False
             )
 
             # PROMPT Phase 3E: applied once, in original document order,
@@ -290,6 +303,8 @@ def extract_exam(
                     caption_font_size_gate=caption_font_size_gate,
                     reference_transfer_target_keys=reference_transfer_target_keys,
                     owner_exclusion_gate=owner_exclusion_gate,
+                    contextual_relation_gate=contextual_relation_gate,
+                    fragment_reconstruction_gate=fragment_reconstruction_gate,
                 )
 
                 suffix = "q" if span.kind == QuestionKind.OBJECTIVE else "d"
@@ -327,6 +342,17 @@ def extract_exam(
                         detail=correction.describe(),
                     )
                     for correction in extracted.symbol_corrections
+                )
+                transformation_log.extend(
+                    TransformationLogEntry(
+                        question=question_id,
+                        type="line_fragment_reconstruction",
+                        source_page=correction.page_number,
+                        method="baseline_and_trailing_space_geometry",
+                        automatic=True,
+                        detail=correction.describe(),
+                    )
+                    for correction in extracted.fragment_merges
                 )
 
                 rendered_assets: list[RenderedAsset] = []
@@ -366,7 +392,9 @@ def extract_exam(
                         None,
                     )
                     table_page_lines = extract_page_lines(
-                        prova.raw[table.page_number - 1], table.page_number
+                        prova.raw[table.page_number - 1],
+                        table.page_number,
+                        fragment_reconstruction_gate=fragment_reconstruction_gate,
                     )
                     column_bounds = render_bounds_for_owner(
                         owner_region, detect_column_margins(table_page_lines)

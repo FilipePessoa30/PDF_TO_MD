@@ -1,5 +1,37 @@
 [
   {
+    "question": "enade-2008-computing-d09",
+    "type": "line_fragment_reconstruction",
+    "source_page": 6,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "6 fragments merged on p.6: 'Declaração' + 'Universal' + 'dos' + 'Direitos' + 'Humanos,' + 'novas'"
+  },
+  {
+    "question": "enade-2008-computing-d20",
+    "type": "line_fragment_reconstruction",
+    "source_page": 10,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "4 fragments merged on p.10: 'tratamento' + 'de' + 'colisões' + 'resolve'"
+  },
+  {
+    "question": "enade-2008-computing-d40",
+    "type": "line_fragment_reconstruction",
+    "source_page": 17,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "3 fragments merged on p.17: 'com' + 'as' + 'informações'"
+  },
+  {
+    "question": "enade-2008-computing-d40",
+    "type": "line_fragment_reconstruction",
+    "source_page": 17,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "3 fragments merged on p.17: 'possui' + 'a' + 'relação'"
+  },
+  {
     "question": "enade-2008-computing-q01",
     "type": "glyph_spacing_reconstruction",
     "source_page": 2,
@@ -21,7 +53,55 @@
     "source_page": 2,
     "method": "character_geometry",
     "automatic": true,
+    "detail": "'In'+':' -> 'In:' (gap=0.374pt, p.2)"
+  },
+  {
+    "question": "enade-2008-computing-q01",
+    "type": "glyph_spacing_reconstruction",
+    "source_page": 2,
+    "method": "character_geometry",
+    "automatic": true,
     "detail": "'Jacó'+'.' -> 'Jacó.' (gap=0.147pt, p.2)"
+  },
+  {
+    "question": "enade-2008-computing-q01",
+    "type": "line_fragment_reconstruction",
+    "source_page": 2,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "2 fragments merged on p.2: '.' + ':'"
+  },
+  {
+    "question": "enade-2008-computing-q01",
+    "type": "line_fragment_reconstruction",
+    "source_page": 2,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "2 fragments merged on p.2: 'ERMAKOFF,' + 'George.'"
+  },
+  {
+    "question": "enade-2008-computing-q01",
+    "type": "line_fragment_reconstruction",
+    "source_page": 2,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "3 fragments merged on p.2: 'Rio' + 'de' + 'Janeiro,'"
+  },
+  {
+    "question": "enade-2008-computing-q07",
+    "type": "line_fragment_reconstruction",
+    "source_page": 4,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "8 fragments merged on p.4: 'total' + 'correspondente' + 'aos' + '20%' + 'de' + 'maior' + 'renda' + 'foi,'"
+  },
+  {
+    "question": "enade-2008-computing-q12",
+    "type": "line_fragment_reconstruction",
+    "source_page": 8,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "4 fragments merged on p.8: 'base' + 'na' + 'complexidade' + 'ciclomática.'"
   },
   {
     "question": "enade-2008-computing-q16",
@@ -38,6 +118,38 @@
     "method": "known_font_label_lookup",
     "automatic": true,
     "detail": "'porque' -> 'PORQUE' (p.10)"
+  },
+  {
+    "question": "enade-2008-computing-q25",
+    "type": "line_fragment_reconstruction",
+    "source_page": 12,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "6 fragments merged on p.12: 'A' + 'transformada' + 'de' + 'Hadamard' + 'da' + 'imagem'"
+  },
+  {
+    "question": "enade-2008-computing-q32",
+    "type": "line_fragment_reconstruction",
+    "source_page": 14,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "6 fragments merged on p.14: 'Uma' + 'empresa' + 'realizou' + 'uma' + 'avaliação' + 'de'"
+  },
+  {
+    "question": "enade-2008-computing-q33",
+    "type": "line_fragment_reconstruction",
+    "source_page": 14,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "2 fragments merged on p.14: 'IV A' + 'análise'"
+  },
+  {
+    "question": "enade-2008-computing-q33",
+    "type": "line_fragment_reconstruction",
+    "source_page": 14,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "3 fragments merged on p.14: 'utiliza' + 'ações' + 'comumente'"
   },
   {
     "question": "enade-2008-computing-q38",
@@ -104,6 +216,70 @@
     "detail": "'D'+',' -> 'D,' (gap=0.115pt, p.15)"
   },
   {
+    "question": "enade-2008-computing-q41",
+    "type": "line_fragment_reconstruction",
+    "source_page": 18,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "2 fragments merged on p.18: 'permitindo' + 'que'"
+  },
+  {
+    "question": "enade-2008-computing-q41",
+    "type": "line_fragment_reconstruction",
+    "source_page": 18,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "3 fragments merged on p.18: 'manipulação' + 'matemática,' + 'abstração,'"
+  },
+  {
+    "question": "enade-2008-computing-q41",
+    "type": "line_fragment_reconstruction",
+    "source_page": 18,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "4 fragments merged on p.18: 'computadores' + 'conectados' + 'para' + 'trocar'"
+  },
+  {
+    "question": "enade-2008-computing-q41",
+    "type": "line_fragment_reconstruction",
+    "source_page": 18,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "4 fragments merged on p.18: 'computadores' + 'para' + 'processamento' + 'de'"
+  },
+  {
+    "question": "enade-2008-computing-q41",
+    "type": "line_fragment_reconstruction",
+    "source_page": 18,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "4 fragments merged on p.18: 'decomposição,' + 'concorrência' + 'etc.' + 'Nesse'"
+  },
+  {
+    "question": "enade-2008-computing-q41",
+    "type": "line_fragment_reconstruction",
+    "source_page": 18,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "5 fragments merged on p.18: 'planta' + 'inteira' + 'de' + 'manufatura' + 'envolvendo'"
+  },
+  {
+    "question": "enade-2008-computing-q41",
+    "type": "line_fragment_reconstruction",
+    "source_page": 18,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "6 fragments merged on p.18: 'sistema' + 'integrado' + 'requer' + 'dois' + 'ou' + 'mais'"
+  },
+  {
+    "question": "enade-2008-computing-q41",
+    "type": "line_fragment_reconstruction",
+    "source_page": 18,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "6 fragments merged on p.18: 'sistemática' + 'pelo' + 'uso' + 'de' + 'ferramentas' + 'e'"
+  },
+  {
     "question": "enade-2008-computing-q43",
     "type": "glyph_spacing_reconstruction",
     "source_page": 18,
@@ -128,12 +304,36 @@
     "detail": "'porque' -> 'PORQUE' (p.19)"
   },
   {
+    "question": "enade-2008-computing-q47",
+    "type": "line_fragment_reconstruction",
+    "source_page": 20,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "5 fragments merged on p.20: 'monomodo' + 'refratário,' + 'monomodo' + 'reflexivo' + 'e'"
+  },
+  {
     "question": "enade-2008-computing-q50",
     "type": "label_case_normalization",
     "source_page": 21,
     "method": "known_font_label_lookup",
     "automatic": true,
     "detail": "'porque' -> 'PORQUE' (p.21)"
+  },
+  {
+    "question": "enade-2008-computing-q54",
+    "type": "line_fragment_reconstruction",
+    "source_page": 23,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "6 fragments merged on p.23: 'Diretamente' + 'para' + '192.0.2.50' + 'e' + 'diretamente' + 'para'"
+  },
+  {
+    "question": "enade-2008-computing-q55",
+    "type": "line_fragment_reconstruction",
+    "source_page": 23,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "5 fragments merged on p.23: 'independentemente.' + 'Para' + 'cada' + 'um' + 'desses'"
   },
   {
     "question": "enade-2008-computing-q58",
@@ -144,11 +344,115 @@
     "detail": "'porque' -> 'PORQUE' (p.24)"
   },
   {
+    "question": "enade-2008-computing-q58",
+    "type": "line_fragment_reconstruction",
+    "source_page": 24,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "4 fragments merged on p.24: 'privados' + '(10.0.0.0/8,' + '172.16.0.0/12' + 'e'"
+  },
+  {
+    "question": "enade-2008-computing-q58",
+    "type": "line_fragment_reconstruction",
+    "source_page": 24,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "5 fragments merged on p.24: 'As' + 'duas' + 'asserções' + 'são' + 'proposições'"
+  },
+  {
+    "question": "enade-2008-computing-q58",
+    "type": "line_fragment_reconstruction",
+    "source_page": 24,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "5 fragments merged on p.24: 'As' + 'duas' + 'asserções' + 'são' + 'proposições'"
+  },
+  {
+    "question": "enade-2008-computing-q63",
+    "type": "line_fragment_reconstruction",
+    "source_page": 27,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "5 fragments merged on p.27: 'Considere' + 'a' + 'seguinte' + 'representação' + 'de'"
+  },
+  {
+    "question": "enade-2008-computing-q64",
+    "type": "line_fragment_reconstruction",
+    "source_page": 28,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "3 fragments merged on p.28: 'operacional,' + 'vendas' + 'e'"
+  },
+  {
+    "question": "enade-2008-computing-q64",
+    "type": "line_fragment_reconstruction",
+    "source_page": 28,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "4 fragments merged on p.28: 'conhecimento,' + 'finanças,' + 'trabalhadores' + 'do'"
+  },
+  {
+    "question": "enade-2008-computing-q65",
+    "type": "line_fragment_reconstruction",
+    "source_page": 28,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "6 fragments merged on p.28: 'abstração' + 'de' + 'processos' + 'esses' + 'itens' + 'estão,'"
+  },
+  {
+    "question": "enade-2008-computing-q66",
+    "type": "line_fragment_reconstruction",
+    "source_page": 28,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "5 fragments merged on p.28: 'relevantes;' + '(ii)' + 'avaliação' + 'da' + 'ADEQUABILIDADE'"
+  },
+  {
+    "question": "enade-2008-computing-q66",
+    "type": "line_fragment_reconstruction",
+    "source_page": 28,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "6 fragments merged on p.28: 'Durante' + 'a' + 'etapa' + 'de' + 'COMPREENSÃO,' + 'são'"
+  },
+  {
+    "question": "enade-2008-computing-q66",
+    "type": "line_fragment_reconstruction",
+    "source_page": 28,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "6 fragments merged on p.28: 'Durante' + 'a' + 'etapa' + 'de' + 'CONFORMIDADE,' + 'são'"
+  },
+  {
+    "question": "enade-2008-computing-q66",
+    "type": "line_fragment_reconstruction",
+    "source_page": 28,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "6 fragments merged on p.28: 'evidências' + 'diretas' + 'e' + 'indiretas' + 'aplicáveis' + 'a'"
+  },
+  {
     "question": "enade-2008-computing-q69",
     "type": "glyph_spacing_reconstruction",
     "source_page": 30,
     "method": "character_geometry",
     "automatic": true,
     "detail": "'valor'+'estratégico' -> 'valorestratégico' (gap=-7.309pt, p.30)"
+  },
+  {
+    "question": "enade-2008-computing-q71",
+    "type": "line_fragment_reconstruction",
+    "source_page": 30,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "6 fragments merged on p.30: 'Coesão' + 'e' + 'acoplamento' + 'são' + 'dois' + 'conceitos'"
+  },
+  {
+    "question": "enade-2008-computing-q71",
+    "type": "line_fragment_reconstruction",
+    "source_page": 30,
+    "method": "baseline_and_trailing_space_geometry",
+    "automatic": true,
+    "detail": "6 fragments merged on p.30: 'ao' + 'conceito' + 'de' + 'ocultação' + 'de' + 'informação.'"
   }
 ]

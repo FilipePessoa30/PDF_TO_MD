@@ -256,6 +256,33 @@ class VisualRegion:
     #: is never eligible for per-alternative attachment, regardless of its
     #: own bbox size.
     is_small_formula: bool = False
+    #: This region's own bbox *before* label-absorption growth
+    #: (``_expand_with_labels``) and owner-territory clipping - the raw
+    #: extent of the actual drawings/images merged into it, nothing else
+    #: (PROMPT Phase 3G, "Cluster A"). ``None`` only for a region built by
+    #: test code that constructs ``VisualRegion`` directly without going
+    #: through ``detect_visual_regions`` - every region ``detect_visual_regions``
+    #: itself returns always sets this. Used by ``assembler.py``'s own
+    #: line-region relation to tell a genuinely close (if geometrically
+    #: offset) real caption/label - which already touches this raw extent,
+    #: with no growth or padding needed - apart from a wide, unrelated
+    #: line that merely brushes the *grown* bbox's own edge (root-caused
+    #: precisely for 2008-b D10/Q07/Q12 - see docs/phase-3g-report.md).
+    raw_bbox: Rect | None = None
+    #: The exact rect of every label candidate ``_expand_with_labels``
+    #: itself genuinely absorbed while growing this region (PROMPT Phase
+    #: 3G) - the authoritative record of growth's own decision, as opposed
+    #: to a line merely touching the *resulting* bbox's own edge
+    #: afterwards. A real caption/label can be captured through several
+    #: incremental growth passes, ending up nowhere near ``raw_bbox`` on
+    #: its own (2011 Q9/Q14/Q23/Q38's own real citations/labels) - re-
+    #: deriving "was this a genuine absorption" from ``raw_bbox`` alone
+    #: wrongly rejected these (confirmed by full regeneration - see
+    #: docs/phase-3g-report.md, "Experimento revertido"). Trusting this
+    #: list directly, instead of re-guessing growth's own reach, is what
+    #: fixes that without reopening it. Empty for a region no growth
+    #: touched at all (e.g. an ungrown photo, or a small-formula region).
+    absorbed_label_bboxes: tuple[Rect, ...] = ()
 
 
 def _round_rect(rect: Rect) -> tuple[int, int, int, int]:
@@ -513,17 +540,41 @@ def _dominant_body_font_size(lines: list[Line]) -> float | None:
     (see ``_MIN_MARGIN_AGREEMENT``), in which case font size is not used to
     gate absorption at all.
     """
+    margin_x0 = dominant_left_margin_by_text_length(lines)
+    if margin_x0 is None:
+        return None
+    substantial = [ln for ln in lines if len(ln.text.strip()) >= _MIN_BODY_TEXT_LENGTH]
+    at_margin = [ln for ln in substantial if round(ln.x0) == round(margin_x0)]
+    size, count = Counter(round(ln.font_size, 1) for ln in at_margin).most_common(1)[0]
+    if count < _MIN_MARGIN_AGREEMENT:
+        return None
+    return float(size)
+
+
+def dominant_left_margin_by_text_length(lines: list[Line]) -> float | None:
+    """The page's own most common left margin among *substantial* (body-
+    prose-length, not necessarily wide) lines - a second, independent way
+    to find "where does this page's own real body text start" from
+    ``_dominant_left_margin`` (which requires width instead and returns
+    ``None`` on a narrow-column page - 2008-b's own D9, or a page whose
+    real body sits in one half of a two-column layout, e.g. Q29's own
+    side-panel-grammar-productions page).
+
+    Originally the first step of ``_dominant_body_font_size`` (which needs
+    exactly this - see its own docstring); extracted as its own function
+    (PROMPT Phase 3G, "Cluster C") so ``assembler.py``'s own margin-aware
+    alternative-marker check can use it as a fallback when the width-based
+    ``_dominant_left_margin`` finds no confident margin at all, instead of
+    falling back to "protect every marker-shaped line unconditionally"
+    (the previous, blanket exemption Cluster C exists to narrow).
+    """
     substantial = [ln for ln in lines if len(ln.text.strip()) >= _MIN_BODY_TEXT_LENGTH]
     if not substantial:
         return None
     margin_x0, margin_count = Counter(round(ln.x0) for ln in substantial).most_common(1)[0]
     if margin_count < _MIN_MARGIN_AGREEMENT:
         return None
-    at_margin = [ln for ln in substantial if round(ln.x0) == margin_x0]
-    size, count = Counter(round(ln.font_size, 1) for ln in at_margin).most_common(1)[0]
-    if count < _MIN_MARGIN_AGREEMENT:
-        return None
-    return float(size)
+    return float(margin_x0)
 
 
 def _is_marker_at_margin(text: str, x0: float, body_margin_x0: float | None) -> bool:
@@ -541,7 +592,10 @@ def _is_marker_at_margin(text: str, x0: float, body_margin_x0: float | None) -> 
 
 
 def _expand_with_labels(
-    bbox: Rect, label_candidates: list[tuple[Rect, str]], body_margin_x0: float | None = None
+    bbox: Rect,
+    label_candidates: list[tuple[Rect, str]],
+    body_margin_x0: float | None = None,
+    absorbed_out: list[Rect] | None = None,
 ) -> Rect:
     """Grow ``bbox`` to also cover nearby short text lines (axis labels,
     arrow annotations, row headers, ...) that vector-path detection alone
@@ -557,6 +611,17 @@ def _expand_with_labels(
        flow, never to a figure (see ``_is_marker_at_margin``).
     2. Growth is capped at ``MAX_ABSORPTION_GROWTH`` points beyond the
        original bbox on each edge.
+
+    ``absorbed_out`` (PROMPT Phase 3G, "Cluster A"), when given, is
+    appended in place with the exact rect of every candidate this call
+    genuinely absorbed - the authoritative record of what growth itself
+    decided to include, as opposed to a line merely touching the
+    *resulting* bbox's own edge afterwards (``assembler.py``'s own
+    ``_line_in_region`` uses this list, not a fresh geometric guess, to
+    decide whether a line was a real, deliberate absorption - see
+    ``VisualRegion.absorbed_label_bboxes``). Optional and defaults to
+    ``None`` so every existing caller/test that only needs the grown
+    ``Rect`` itself is completely unaffected.
     """
     original = bbox
     min_x = original[0] - MAX_ABSORPTION_GROWTH
@@ -581,6 +646,8 @@ def _expand_with_labels(
                     min(max_x, max(current[2], rect[2])),
                     min(max_y, max(current[3], rect[3])),
                 )
+                if absorbed_out is not None:
+                    absorbed_out.append(rect)
                 if candidate != current:
                     current = candidate
                     absorbed_any = True
@@ -670,6 +737,18 @@ def _merge_overlapping_regions(regions: list[VisualRegion]) -> list[VisualRegion
                             min(combined.owner_x_bounds[0], b.owner_x_bounds[0]),
                             max(combined.owner_x_bounds[1], b.owner_x_bounds[1]),
                         )
+                    if combined.raw_bbox is None or b.raw_bbox is None:
+                        merged_raw_bbox = combined.raw_bbox or b.raw_bbox
+                    else:
+                        merged_raw_bbox = (
+                            min(combined.raw_bbox[0], b.raw_bbox[0]),
+                            min(combined.raw_bbox[1], b.raw_bbox[1]),
+                            max(combined.raw_bbox[2], b.raw_bbox[2]),
+                            max(combined.raw_bbox[3], b.raw_bbox[3]),
+                        )
+                    merged_absorbed_labels = (
+                        combined.absorbed_label_bboxes + b.absorbed_label_bboxes
+                    )
                     combined = VisualRegion(
                         page_number=combined.page_number,
                         bbox=(
@@ -683,6 +762,8 @@ def _merge_overlapping_regions(regions: list[VisualRegion]) -> list[VisualRegion
                         owner_key=combined.owner_key,
                         owner_x_bounds=merged_owner_x_bounds,
                         is_small_formula=combined.is_small_formula and b.is_small_formula,
+                        raw_bbox=merged_raw_bbox,
+                        absorbed_label_bboxes=merged_absorbed_labels,
                     )
                     used.add(j)
                     changed = True
@@ -862,6 +943,7 @@ def detect_visual_regions(
     overrides: LayoutOverrideSet | None = None,
     pdf_sha256: str = "",
     question_regions: list[QuestionRegion] | None = None,
+    fragment_reconstruction_gate: bool = False,
 ) -> list[VisualRegion]:
     """Detect non-decorative visual content regions on one (1-indexed) page.
 
@@ -911,6 +993,23 @@ def detect_visual_regions(
     in label absorption at all, so a formula's own sub-parts merge into one
     small asset without pulling in surrounding prose (PROMPT Phase 2C
     section 13-18; see docs/decisions.md, Phase 2C ADR).
+
+    A line with a non-empty ``fragment_merges`` (PROMPT Phase 3H, "Cluster
+    D" - ``layout.fragment_reconstruction``) is never eligible as a label
+    candidate, regardless of its own final width. A real diagram label is
+    never split by PyMuPDF into several same-baseline dict-mode "line"
+    entries joined by genuine inter-word spaces - only continuous body
+    prose/alternative text is (confirmed by direct instrumentation: 2008-b
+    Q07's own "total correspondente aos 20% de maior renda foi," and Q12's
+    own "base na complexidade ciclomatica." are both reconstructed,
+    multi-word sentence fragments that still fit under
+    ``MAX_LABEL_LINE_WIDTH`` by coincidence). Without this exclusion, a
+    reconstructed line the fragmentation itself makes narrow enough to
+    *look* like a short label is absorbed as a single unit the moment any
+    part of it touches a region's own growing bbox - worse than the
+    pre-reconstruction fragments, which only an unlucky subset of could
+    ever be individually close enough to absorb (see
+    ``docs/phase-3h-report.md`` for the full regression narrative).
     """
     page = doc[page_number - 1]
     candidates = collect_page_candidates(
@@ -920,7 +1019,9 @@ def detect_visual_regions(
     if not candidates:
         return []
 
-    page_lines = extract_page_lines(page, page_number)
+    page_lines = extract_page_lines(
+        page, page_number, fragment_reconstruction_gate=fragment_reconstruction_gate
+    )
     body_margin_x0 = _dominant_left_margin(page_lines)
     body_font_size = _dominant_body_font_size(page_lines) if caption_font_size_gate else None
     column_margins = detect_column_margins(page_lines)
@@ -932,6 +1033,7 @@ def detect_visual_regions(
         and not is_chrome_line(ln.text)
         and not _is_paragraph_continuation(i, page_lines)
         and not _is_two_column_body_text(ln, column_margins)
+        and not ln.fragment_merges
         and (body_font_size is None or ln.font_size < body_font_size - FONT_SIZE_CAPTION_MARGIN)
         and not (
             overrides is not None
@@ -979,7 +1081,10 @@ def detect_visual_regions(
             height = bbox[3] - bbox[1]
             if width < MIN_REGION_WIDTH or height < MIN_REGION_HEIGHT:
                 continue
-            expanded_bbox = _expand_with_labels(bbox, owner_labels, body_margin_x0)
+            absorbed_labels: list[Rect] = []
+            expanded_bbox = _expand_with_labels(
+                bbox, owner_labels, body_margin_x0, absorbed_out=absorbed_labels
+            )
             if owner is not None:
                 expanded_bbox = owner.clip(expanded_bbox)
                 if not _is_valid_rect(expanded_bbox):
@@ -996,6 +1101,8 @@ def detect_visual_regions(
                     has_raster_image=has_image,
                     owner_key=owner_key,
                     owner_x_bounds=owner_x_bounds,
+                    raw_bbox=bbox,
+                    absorbed_label_bboxes=tuple(absorbed_labels),
                 )
             )
 
@@ -1038,6 +1145,7 @@ def detect_visual_regions(
                     owner_key=owner_key,
                     owner_x_bounds=owner_x_bounds,
                     is_small_formula=True,
+                    raw_bbox=bbox,
                 )
             )
 

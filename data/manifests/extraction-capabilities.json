@@ -5,14 +5,27 @@
     {
       "capability_id": "region_merge_x_tolerance",
       "description": "Caps how far apart (points) two large visual candidates may sit in X and still be merged into one region during figure detection - closes a RASCUNHO scratch-grid's own left/right column segments (X-disjoint, Y-aligned) being merged into one page-spanning region.",
-      "trigger_features": ["two vector/image candidates within DEFAULT_Y_MERGE_TOLERANCE in Y but separated in X by more than the corpus's own typical single-figure width"],
-      "parameters": {"region_merge_x_tolerance": "float, points, unbounded by default"},
+      "trigger_features": [
+        "two vector/image candidates within DEFAULT_Y_MERGE_TOLERANCE in Y but separated in X by more than the corpus's own typical single-figure width"
+      ],
+      "parameters": {
+        "region_merge_x_tolerance": "float, points, unbounded by default"
+      },
       "scope": "figures.py: detect_visual_regions / _merge_by_vertical_proximity",
       "generalization_level": "G2",
-      "positive_fixtures": ["tests/test_extraction_figures.py::test_merge_by_vertical_proximity_x_tolerance_rejects_far_apart_rects"],
-      "negative_fixtures": ["tests/test_extraction_figures.py::test_merge_by_vertical_proximity_x_tolerance_still_merges_close_rects", "tests/test_extraction_figures.py::test_merge_by_vertical_proximity_defaults_to_unbounded_x_tolerance"],
-      "real_cases": ["2008-b D09 (RASCUNHO grid, page 6)"],
-      "protected_cases": ["2011 Q23/Q38 (own regeneration confirmed unaffected when unbounded, the default every booklet without this field set keeps)"],
+      "positive_fixtures": [
+        "tests/test_extraction_figures.py::test_merge_by_vertical_proximity_x_tolerance_rejects_far_apart_rects"
+      ],
+      "negative_fixtures": [
+        "tests/test_extraction_figures.py::test_merge_by_vertical_proximity_x_tolerance_still_merges_close_rects",
+        "tests/test_extraction_figures.py::test_merge_by_vertical_proximity_defaults_to_unbounded_x_tolerance"
+      ],
+      "real_cases": [
+        "2008-b D09 (RASCUNHO grid, page 6)"
+      ],
+      "protected_cases": [
+        "2011 Q23/Q38 (own regeneration confirmed unaffected when unbounded, the default every booklet without this field set keeps)"
+      ],
       "failure_behavior": "unbounded (original behavior) when the profile does not set this field - never a silent per-booklet default change",
       "profile_dependency": "ExamStructureProfile.region_merge_x_tolerance (None = unbounded)",
       "runtime_ai_dependency": "none",
@@ -21,14 +34,28 @@
     {
       "capability_id": "caption_font_size_gate",
       "description": "Requires a label/caption absorption candidate to have a font size strictly smaller than the page's own dominant body-prose font size (measured on the page itself, not a fixed point value) - closes a real section header/headline being absorbed into a nearby figure's region as if it were the figure's own caption.",
-      "trigger_features": ["candidate line font_size >= page's own dominant body font size (measured via _dominant_body_font_size, a relative signal)"],
-      "parameters": {"caption_font_size_gate": "bool, default False"},
+      "trigger_features": [
+        "candidate line font_size >= page's own dominant body font size (measured via _dominant_body_font_size, a relative signal)"
+      ],
+      "parameters": {
+        "caption_font_size_gate": "bool, default False"
+      },
       "scope": "figures.py: detect_visual_regions label_candidates filter",
       "generalization_level": "G2",
-      "positive_fixtures": ["tests/test_extraction_figures.py::test_dominant_body_font_size_finds_common_size_at_the_margin"],
-      "negative_fixtures": ["tests/test_extraction_figures.py::test_dominant_body_font_size_ignores_off_margin_captions_outnumbering_body", "tests/test_extraction_figures.py::test_dominant_body_font_size_none_without_enough_agreement"],
-      "real_cases": ["2008-b D09 (headline vs. photo caption, page 6)", "2008-b D10 (three newspaper headlines, page 7)"],
-      "protected_cases": ["2011 Q05/Q33/Q34/Q35 (confirmed altered when this gate was tried unconditionally in Phase 3D - reverted in favor of the declarative gate)"],
+      "positive_fixtures": [
+        "tests/test_extraction_figures.py::test_dominant_body_font_size_finds_common_size_at_the_margin"
+      ],
+      "negative_fixtures": [
+        "tests/test_extraction_figures.py::test_dominant_body_font_size_ignores_off_margin_captions_outnumbering_body",
+        "tests/test_extraction_figures.py::test_dominant_body_font_size_none_without_enough_agreement"
+      ],
+      "real_cases": [
+        "2008-b D09 (headline vs. photo caption, page 6)",
+        "2008-b D10 (three newspaper headlines, page 7)"
+      ],
+      "protected_cases": [
+        "2011 Q05/Q33/Q34/Q35 (confirmed altered when this gate was tried unconditionally in Phase 3D - reverted in favor of the declarative gate)"
+      ],
       "failure_behavior": "False (original behavior) when the profile does not set this field",
       "profile_dependency": "ExamStructureProfile.caption_font_size_gate (default False)",
       "runtime_ai_dependency": "none",
@@ -37,14 +64,27 @@
     {
       "capability_id": "column_margin_height_font_gate",
       "description": "Rejects a candidate two-column split when the shorter column is BOTH short relative to the other column's own height AND set in a font smaller than the page's own dominant body size - closes a short SQL-subquery continuation being mistaken for a genuine second page column and scrambled to the end of the page's own reading order.",
-      "trigger_features": ["candidate column height ratio < MIN_COLUMN_HEIGHT_RATIO of the other column's height, AND candidate column's own font size < page's own dominant body font size"],
-      "parameters": {"MIN_COLUMN_HEIGHT_RATIO": "float, fixed at 0.2 - not yet profile-exposed, always active"},
+      "trigger_features": [
+        "candidate column height ratio < MIN_COLUMN_HEIGHT_RATIO of the other column's height, AND candidate column's own font size < page's own dominant body font size"
+      ],
+      "parameters": {
+        "MIN_COLUMN_HEIGHT_RATIO": "float, fixed at 0.2 - not yet profile-exposed, always active"
+      },
       "scope": "layout.py: detect_column_margins / _is_short_off_size_column",
       "generalization_level": "G3",
-      "positive_fixtures": ["tests/test_extraction_layout.py (short-off-size-column tests)"],
-      "negative_fixtures": ["tests/test_extraction_layout.py (Q49/Q50-shaped genuine two-column case, same font size as body, kept)"],
-      "real_cases": ["2008-b Q68 (page 29, WHERE clause reordering)"],
-      "protected_cases": ["2008-b Q49/Q50 own genuine two-column page", "2011 D5 (genuine two-column prose/pseudocode page)"],
+      "positive_fixtures": [
+        "tests/test_extraction_layout.py (short-off-size-column tests)"
+      ],
+      "negative_fixtures": [
+        "tests/test_extraction_layout.py (Q49/Q50-shaped genuine two-column case, same font size as body, kept)"
+      ],
+      "real_cases": [
+        "2008-b Q68 (page 29, WHERE clause reordering)"
+      ],
+      "protected_cases": [
+        "2008-b Q49/Q50 own genuine two-column page",
+        "2011 D5 (genuine two-column prose/pseudocode page)"
+      ],
       "failure_behavior": "unconditional (no profile flag) - two REVERTED experiments (height-ratio alone; height-ratio+monospace) preceded this combined signal, both documented in docs/phase-3d-report.md",
       "profile_dependency": "none - always active for every booklet",
       "runtime_ai_dependency": "none",
@@ -53,14 +93,26 @@
     {
       "capability_id": "owner_exclusion_gate",
       "description": "Rejects a visual region explicitly owned by a DIFFERENT question (VisualRegion.owner_key) from a span's own candidate set, even when the older, ownership-agnostic y/x bounding-box tolerance would admit it - closes a legitimate alternative overflowing into the next page column from widening a span's own bounding box enough to reach a neighboring question's own owned diagram.",
-      "trigger_features": ["region.owner_key is set and differs from the current span's own question_key"],
-      "parameters": {"owner_exclusion_gate": "bool, default False"},
+      "trigger_features": [
+        "region.owner_key is set and differs from the current span's own question_key"
+      ],
+      "parameters": {
+        "owner_exclusion_gate": "bool, default False"
+      },
       "scope": "assembler.py: assemble_question region filter",
       "generalization_level": "G2",
-      "positive_fixtures": ["tests/test_extraction_assembler.py::test_owner_exclusion_gate_rejects_a_foreign_owned_region_when_enabled"],
-      "negative_fixtures": ["tests/test_extraction_assembler.py::test_owner_exclusion_gate_rejects_a_foreign_owned_region_when_enabled (span A's own genuinely-owned region unaffected)"],
-      "real_cases": ["2008-b Q13/Q12 (page 8, alternative-E column overflow)"],
-      "protected_cases": ["2011 Q34 (confirmed altered when this gate was tried unconditionally - reverted in favor of the declarative gate; see docs/phase-3f-report.md)"],
+      "positive_fixtures": [
+        "tests/test_extraction_assembler.py::test_owner_exclusion_gate_rejects_a_foreign_owned_region_when_enabled"
+      ],
+      "negative_fixtures": [
+        "tests/test_extraction_assembler.py::test_owner_exclusion_gate_rejects_a_foreign_owned_region_when_enabled (span A's own genuinely-owned region unaffected)"
+      ],
+      "real_cases": [
+        "2008-b Q13/Q12 (page 8, alternative-E column overflow)"
+      ],
+      "protected_cases": [
+        "2011 Q34 (confirmed altered when this gate was tried unconditionally - reverted in favor of the declarative gate; see docs/phase-3f-report.md)"
+      ],
       "failure_behavior": "False (original behavior, purely a restriction that can only remove a wrongly-admitted region, never add one) when the profile does not set this field",
       "profile_dependency": "ExamStructureProfile.owner_exclusion_gate (default False)",
       "runtime_ai_dependency": "none",
@@ -69,14 +121,33 @@
     {
       "capability_id": "forward_reference_caption",
       "description": "Detects an explicit, self-documenting caption (\"Figura/Tabela/Diagrama/Quadro para a questao N\") and transfers it plus its geometrically-anchored visual content to the question it documents, before any region detection/merge/text consumption runs - closes an asset being printed before its own owning question's marker (no room for it after the marker on a shared page).",
-      "trigger_features": ["a line matching the narrow, anchored ^tipo para a questao N$ pattern, resolved against a real span in the document"],
-      "parameters": {"pattern": "fixed regex, never a per-booklet threshold - the pattern's own narrowness (anchored start-to-end, no trailing text) is what keeps it safe unconditionally"},
+      "trigger_features": [
+        "a line matching the narrow, anchored ^tipo para a questao N$ pattern, resolved against a real span in the document"
+      ],
+      "parameters": {
+        "pattern": "fixed regex, never a per-booklet threshold - the pattern's own narrowness (anchored start-to-end, no trailing text) is what keeps it safe unconditionally"
+      },
       "scope": "reference_captions.py: apply_forward_reference_transfers, wired into pipeline.py before boundary post-processing",
       "generalization_level": "G3",
-      "positive_fixtures": ["tests/test_reference_captions.py::test_detects_figura_para_a_questao_caption", "tests/test_reference_captions.py::test_detects_tabela_diagrama_quadro_variants", "tests/test_reference_captions.py::test_forward_reference_transfers_caption_and_anchored_labels_to_target"],
-      "negative_fixtures": ["tests/test_reference_captions.py::test_does_not_match_ordinary_prose_mentioning_a_question_number", "tests/test_reference_captions.py::test_does_not_match_when_trailing_text_follows_the_number", "tests/test_reference_captions.py::test_backward_reference_is_rejected_not_transferred", "tests/test_reference_captions.py::test_nonexistent_referenced_question_is_rejected", "tests/test_reference_captions.py::test_no_anchored_asset_found_is_rejected_not_guessed", "tests/test_reference_captions.py::test_alternative_marker_is_never_swept_into_a_transfer"],
-      "real_cases": ["2008-b Q61/D60/Q62 (page 26/27, ITIL diagram)"],
-      "protected_cases": ["2011/2021 (no booklet has any text matching the pattern - confirmed by full regeneration, zero drift)"],
+      "positive_fixtures": [
+        "tests/test_reference_captions.py::test_detects_figura_para_a_questao_caption",
+        "tests/test_reference_captions.py::test_detects_tabela_diagrama_quadro_variants",
+        "tests/test_reference_captions.py::test_forward_reference_transfers_caption_and_anchored_labels_to_target"
+      ],
+      "negative_fixtures": [
+        "tests/test_reference_captions.py::test_does_not_match_ordinary_prose_mentioning_a_question_number",
+        "tests/test_reference_captions.py::test_does_not_match_when_trailing_text_follows_the_number",
+        "tests/test_reference_captions.py::test_backward_reference_is_rejected_not_transferred",
+        "tests/test_reference_captions.py::test_nonexistent_referenced_question_is_rejected",
+        "tests/test_reference_captions.py::test_no_anchored_asset_found_is_rejected_not_guessed",
+        "tests/test_reference_captions.py::test_alternative_marker_is_never_swept_into_a_transfer"
+      ],
+      "real_cases": [
+        "2008-b Q61/D60/Q62 (page 26/27, ITIL diagram)"
+      ],
+      "protected_cases": [
+        "2011/2021 (no booklet has any text matching the pattern - confirmed by full regeneration, zero drift)"
+      ],
       "failure_behavior": "explicit rejection with a logged reason (referenced_question_not_found / ambiguous_question_kind / backward_reference_not_supported / no_anchored_asset_found) - never a silent fallback to nearest-marker",
       "profile_dependency": "none - always active, safe unconditionally by the pattern's own narrowness",
       "runtime_ai_dependency": "none",
@@ -85,14 +156,26 @@
     {
       "capability_id": "question_ownership",
       "description": "Assigns each visual candidate an owner (the one question whose own claimed territory - QuestionRegion, the tight bbox of that question's own non-chrome lines on a page - contains or is nearest to the candidate's seed) before any region is grown or rendered, then clips growth/rendering to that owner's own territory plus a small, fixed safety margin.",
-      "trigger_features": ["a visual candidate's own center point, checked for containment against every question's own QuestionRegion on that page, falling back to nearest-in-column when no region contains it"],
-      "parameters": {"OWNERSHIP_MARGIN": "float, fixed at 20.0 points"},
+      "trigger_features": [
+        "a visual candidate's own center point, checked for containment against every question's own QuestionRegion on that page, falling back to nearest-in-column when no region contains it"
+      ],
+      "parameters": {
+        "OWNERSHIP_MARGIN": "float, fixed at 20.0 points"
+      },
       "scope": "ownership.py: QuestionRegion / find_owner / compute_question_regions, consumed by figures.py",
       "generalization_level": "G3",
-      "positive_fixtures": ["tests/test_extraction_figures.py::test_merge_overlapping_regions_never_merges_across_different_owners"],
-      "negative_fixtures": ["tests/test_extraction_figures.py::test_merge_overlapping_regions_still_merges_when_both_owners_unknown"],
-      "real_cases": ["2011 Q21/Q22/Q23 (page 11, unified booklet), 2011 Q38/Q40 (page 25)"],
-      "protected_cases": ["every question in every processed booklet - this mechanism is the general cross-question-contamination guard, unconditional since Phase 2C"],
+      "positive_fixtures": [
+        "tests/test_extraction_figures.py::test_merge_overlapping_regions_never_merges_across_different_owners"
+      ],
+      "negative_fixtures": [
+        "tests/test_extraction_figures.py::test_merge_overlapping_regions_still_merges_when_both_owners_unknown"
+      ],
+      "real_cases": [
+        "2011 Q21/Q22/Q23 (page 11, unified booklet), 2011 Q38/Q40 (page 25)"
+      ],
+      "protected_cases": [
+        "every question in every processed booklet - this mechanism is the general cross-question-contamination guard, unconditional since Phase 2C"
+      ],
       "failure_behavior": "unconditional (no profile flag) - a known gap in find_owner's own nearest-in-column fallback (no distance cap) was found and worked around this phase at the assembler.py consumption layer (see owner_exclusion_gate) rather than in find_owner itself, to keep the fix narrowly scoped",
       "profile_dependency": "none - always active",
       "runtime_ai_dependency": "none",
@@ -101,14 +184,24 @@
     {
       "capability_id": "source_coverage_audit",
       "description": "Re-validates every already-extracted question's own schema and source/asset provenance (every asset path resolves relative to its own question file, every source page/hash cross-checks against the real corpus) - the mechanical, always-on check for silent content/asset loss.",
-      "trigger_features": ["n/a - runs unconditionally over every published question, not triggered by a document characteristic"],
+      "trigger_features": [
+        "n/a - runs unconditionally over every published question, not triggered by a document characteristic"
+      ],
       "parameters": {},
       "scope": "audit.py, exposed via `enade audit-extraction`",
       "generalization_level": "G3",
-      "positive_fixtures": ["tests covering audit.py's own schema/provenance checks"],
-      "negative_fixtures": ["a broken asset reference or hash mismatch is expected to fail this audit - never silently pass"],
-      "real_cases": ["run after every regeneration of 2008-b/2011/2021 throughout Phases 3A-3F"],
-      "protected_cases": ["2011/2021 (288 protected files, all pass this audit unchanged)"],
+      "positive_fixtures": [
+        "tests covering audit.py's own schema/provenance checks"
+      ],
+      "negative_fixtures": [
+        "a broken asset reference or hash mismatch is expected to fail this audit - never silently pass"
+      ],
+      "real_cases": [
+        "run after every regeneration of 2008-b/2011/2021 throughout Phases 3A-3F"
+      ],
+      "protected_cases": [
+        "2011/2021 (288 protected files, all pass this audit unchanged)"
+      ],
       "failure_behavior": "non-zero exit / explicit per-file failure report - never a silent pass",
       "profile_dependency": "none",
       "runtime_ai_dependency": "none",
@@ -116,8 +209,10 @@
     },
     {
       "capability_id": "local_reading_order",
-      "description": "NOT YET IMPLEMENTED as a dedicated mechanism. Would reconstruct a page's own true reading order for a non-simple layout (a newspaper-clipping \"collage\", an item/annotation pairing broken by a column jump, a word/marker-level Line fragmented by pymupdf into several near-identical-y0 records) instead of the existing 'all of left column top-to-bottom, then all of right column' model, which several still-open 2008-b defects (D10, Q29, Q33, D60's own valor-annotation misattachment) fall outside of.",
-      "trigger_features": ["proposed: two or more Lines on the same page with near-identical y0 and disjoint X ranges (fragmentation); a paragraph whose own next line, by raw y0, would require a large *negative* jump (collage layout)"],
+      "description": "NOT YET IMPLEMENTED as a dedicated mechanism. Would reconstruct a page's own true reading order for a non-simple layout (a newspaper-clipping \"collage\", an item/annotation pairing broken by a column jump, a word/marker-level Line fragmented by pymupdf into several near-identical-y0 records) instead of the existing 'all of left column top-to-bottom, then all of right column' model, which several still-open 2008-b defects fall outside of. PROMPT Phase 3G note: Q29 (previously attributed to this gap) is now resolved by contextual_line_region_relation/diagram_internal_label_margin_check instead - its own defect was cross-question-label-shape confusion (Cluster C), not reading order. D10, D40, D60 (valor-annotation misattachment), Q33 remain genuinely in this category.",
+      "trigger_features": [
+        "proposed: two or more Lines on the same page with near-identical y0 and disjoint X ranges (fragmentation); a paragraph whose own next line, by raw y0, would require a large *negative* jump (collage layout)"
+      ],
       "parameters": {},
       "scope": "proposed: layout.py (line ordering) - not implemented",
       "generalization_level": "not_implemented",
@@ -129,6 +224,119 @@
       "profile_dependency": "n/a",
       "runtime_ai_dependency": "none",
       "introduced_phase": null
+    },
+    {
+      "capability_id": "contextual_line_region_relation",
+      "description": "Replaces `_line_in_region`'s single fixed-padding touch boolean with a richer relation (LineRegionRelation: intersection ratios, center/baseline containment, overflow per edge, genuine overlap against the region's own raw pre-growth extent, and a match against growth's own authoritative absorbed-label record) and a per-consumer policy (_text_consumption_decision: text removal from the rendered Markdown requires containment, genuine raw-extent overlap, or a matched absorption - never mere touching or partial overlap, and an inconclusive relation is treated as 'ambiguous', which always keeps the line visible rather than risking silent deletion). Closes a whole neighboring column's own unrelated body text (or a real statement's own opening/closing lines) being silently dropped just because a region's *grown* bbox brushes its edge by a few points. `raw_intersects` requires clearing REGION_Y_PADDING (2.0pt, the same noise floor used elsewhere) on both axes, not a bare >0 check - found necessary when a noise-level ~1.6pt raw-bbox graze against a *different*, neighboring region's raw extent (2008-b D40's own SQL schema line) was otherwise treated as decisive evidence.",
+      "trigger_features": [
+        "a text line's own bbox tested for genuine overlap/containment against a region's grown bbox, its raw (pre-growth) bbox, and its own growth-absorbed label list - three independent geometric signals, none of them a single fixed threshold"
+      ],
+      "parameters": {
+        "contextual_relation_gate": "bool, default False"
+      },
+      "scope": "assembler.py: LineRegionRelation / compute_line_region_relation / _text_consumption_decision / _line_in_region; figures.py: VisualRegion.raw_bbox / VisualRegion.absorbed_label_bboxes (populated by _expand_with_labels' own optional absorbed_out parameter)",
+      "generalization_level": "G2",
+      "positive_fixtures": [
+        "tests/test_extraction_assembler.py::test_contextual_relation_contained_line_is_excluded",
+        "tests/test_extraction_assembler.py::test_contextual_relation_native_offset_caption_with_raw_overlap_is_excluded",
+        "tests/test_extraction_assembler.py::test_contextual_relation_matches_absorbed_label_is_excluded"
+      ],
+      "negative_fixtures": [
+        "tests/test_extraction_assembler.py::test_gate_off_keeps_the_original_fixed_padding_behavior",
+        "tests/test_extraction_assembler.py::test_contextual_relation_wide_line_barely_touching_grown_bbox_is_kept",
+        "tests/test_extraction_assembler.py::test_line_in_region_small_formula_region_swallows_the_line_below_without_override"
+      ],
+      "real_cases": [
+        "2008-b D10 (page 7, all three newspaper headlines/bodies/citations fully recovered - a pre-existing reading-order scramble of the same content remains, tracked separately as d10-newspaper-collage-reading-order-scramble)",
+        "Q02/Q12/Q45/Q54/Q63/Q71/Q75 (own real statement text partially-to-substantially recovered; Q75's own statement now fully complete)",
+        "Q01 (alternatives lead-in clause recovered), Q50 (spurious automatic_validation failure cleared, no content change)",
+        "Q24 (garbled diagram-label fragments removed, though the question's own separate merged-region defect remains)",
+        "D40 (Cliente(...) schema code line's own first printed line restored after a brief in-phase regression from the pre-REGION_Y_PADDING-floor version of raw_intersects)"
+      ],
+      "protected_cases": [
+        "2011 Q9/Q12/Q23/Q38 and several 2021 questions (own growth/reading-order shapes not yet characterized with the same precision - confirmed altered when tried unconditionally, reverted in favor of this declarative gate; see docs/phase-3g-report.md, \"Experimento revertido\")"
+      ],
+      "failure_behavior": "False (original fixed-padding behavior, byte-identical) when the profile does not set this field; an inconclusive relation (state other than 'contained', no raw overlap, no absorbed-label match, not a small-formula region) is always 'ambiguous' -> the line stays visible, never silently removed. Two known, documented trade-offs of this fail-safe-visible design (see docs/phase-3g-report.md): Q07 loses one additional already-fragmented word ('aos') that growth's own pre-existing over-absorption chain genuinely records as absorbed (same family as geometric_word_fragment_reconstruction's own open cases); D40's own query-tree 'F' label, previously swallowed by the old unconditional touch tolerance, now leaks as visible text rather than being silently (and here, correctly) hidden, since it is geometrically indistinguishable from the touching-only false positives this mechanism exists to reject.",
+      "profile_dependency": "ExamStructureProfile.contextual_relation_gate (default False)",
+      "runtime_ai_dependency": "none",
+      "introduced_phase": "3G"
+    },
+    {
+      "capability_id": "diagram_internal_label_margin_check",
+      "description": "Narrows `_line_in_region`'s own blanket exemption for any alternative-marker-shaped line (\"A\\t...\") to require that it also sit at the page's own established body-text margin (figures._is_marker_at_margin, with a text-length-based fallback margin - dominant_left_margin_by_text_length - for a page whose real body column is itself too narrow for the width-based margin to find enough evidence) before protecting it from region membership outright. A marker-shaped line that is NOT at that margin (a diagram-internal label - an automaton input, an ER-diagram entity name, a grammar-production metavariable) falls through to the same contextual_line_region_relation as any other line, and is correctly hidden when it is genuinely part of the diagram. This is a narrower, more surgical mechanism than the full alternative_group confidence-scored structure the Phase 3G prompt describes (candidate_labels/expected_sequence/alignment/font_features/spacing_pattern/column/competing_group/confidence) - it achieves the same practical outcome for every real case found this phase (Q24/Q29/Q63) via one relative geometric signal already validated elsewhere in this codebase, rather than a new, larger-surface structure; the fuller alternative_group architecture remains a documented future improvement, not yet needed.",
+      "trigger_features": [
+        "a line matching the alternative/question marker text shape (_ALTERNATIVE_MARKER_RE/_QUESTION_MARKER_RE) AND its own x0 within _MARGIN_TOLERANCE of the page's own dominant left margin (width-based, or text-length-based when width-based finds no confident margin)"
+      ],
+      "parameters": {
+        "contextual_relation_gate": "bool, default False (shares the gate with contextual_line_region_relation - both are part of the same Phase 3G _line_in_region replacement)"
+      },
+      "scope": "assembler.py: _line_in_region (marker check), reusing figures._is_marker_at_margin; figures.py: dominant_left_margin_by_text_length (extracted from _dominant_body_font_size)",
+      "generalization_level": "G2",
+      "positive_fixtures": [
+        "tests/test_extraction_assembler.py::test_contextual_relation_real_alternative_marker_at_margin_stays_protected"
+      ],
+      "negative_fixtures": [
+        "tests/test_extraction_assembler.py::test_contextual_relation_diagram_internal_label_not_at_margin_is_absorbed"
+      ],
+      "real_cases": [
+        "2008-b Q29 (page 13, grammar-production 'A -> a'/'B -> b' fully resolved), Q63 (page 27, ER-diagram entity names 'A'/'B'/'C' no longer leak), Q24 (page 12, decoder input labels 'A'/'B' no longer leak, though the question's own separate merged-region defect remains)"
+      ],
+      "protected_cases": [
+        "every real alternative marker in 2011/2021/2008-b (gate off keeps the exact original blanket exemption); Q8/Q38/Q55's own bare-letter markers remain excluded from the corpus for the same unrelated, pre-existing reason (a whole-alternative-image ValidationError, never reached by this check) - confirmed unaffected, so a future recovery attempt for those three is not foreclosed by this change"
+      ],
+      "failure_behavior": "with the gate on, a marker-shaped line whose own page has no confident margin at all (neither width- nor text-length-based) is still protected unconditionally (figures._is_marker_at_margin returns True when body_margin_x0 is None) - the same fail-safe direction as the original exemption, never a guess",
+      "profile_dependency": "ExamStructureProfile.contextual_relation_gate (default False)",
+      "runtime_ai_dependency": "none",
+      "introduced_phase": "3G"
+    },
+    {
+      "capability_id": "geometric_word_fragment_reconstruction",
+      "description": "IMPLEMENTED IN PHASE 3H (\"Cluster D\"). Rejoins a physical line PyMuPDF's own get_text(\"dict\") reported as several separate same-baseline \"line\" entries, using two documentary signals together (never a dictionary or language model): a literal trailing space in the earlier fragment's own raw glyph stream, and a horizontal gap within a font-size-relative safety ceiling (real fragmentation gaps measured at ~0.84-0.92x the shared font size; real table-cell gaps at ~2.5-4.1x - an order-of-magnitude-class separation). A detected column boundary (the same detect_column_margins already used for reading order) is never crossed, closing a real false positive found against the protected 2021 corpus (two independent, side-by-side objective questions whose own first lines happen to share a baseline). A companion fix in figures.py excludes any fragment-merged line from label_candidates outright, regardless of width - a genuinely fragmented-and-reconstructed line is, by construction, continuous body/alternative prose, never an atomic diagram label; without this, a reconstructed line narrow enough to look like a label by coincidence was absorbed as one unit the moment any part of it touched a growing region's own bbox (found against 2008-b Q07: worse than the pre-merge fragments, which only an unlucky subset of could ever individually reach).",
+      "trigger_features": [
+        "two or more raw PyMuPDF dict-mode line entries on the same page sharing an (almost) identical baseline (y0 and y1 within 0.05pt), both non-monospace, compatible font size (within 0.5pt), separated by a positive horizontal gap within MAX_FRAGMENT_GAP_RATIO (1.5x the shared font size), with the earlier fragment's own raw (pre-normalization) text ending in a literal space character - AND not straddling this page's own detected column boundary"
+      ],
+      "parameters": {
+        "fragment_reconstruction_gate": "bool, default False"
+      },
+      "scope": "layout.py: _raw_lines/_collect_raw_fragments/_build_line_from_group/_column_boundary_for_fragment_merge/Line.fragment_merges; fragment_reconstruction.py: RawLineFragment/LineFragmentRelation/compute_line_fragment_relation/group_line_fragments/FragmentMergeTrace (new module); figures.py: label_candidates excludes any line with non-empty fragment_merges",
+      "generalization_level": "G2",
+      "positive_fixtures": [
+        "tests/test_fragment_reconstruction.py::test_join_with_space_when_trailing_space_and_small_gap",
+        "tests/test_fragment_reconstruction.py::test_chain_of_several_fragments_forms_one_group",
+        "tests/test_fragment_reconstruction.py::test_fragmentation_depth_two_three_four_spans_all_reconstruct_fully",
+        "tests/test_fragment_reconstruction.py::test_content_stream_order_does_not_affect_the_result"
+      ],
+      "negative_fixtures": [
+        "tests/test_fragment_reconstruction.py::test_preserve_separate_when_no_trailing_space",
+        "tests/test_fragment_reconstruction.py::test_preserve_separate_when_gap_too_large_even_with_trailing_space",
+        "tests/test_fragment_reconstruction.py::test_ambiguous_case_baseline_matches_but_no_trailing_space_stays_separate",
+        "tests/test_fragment_reconstruction.py::test_different_baseline_never_merges_even_with_trailing_space_and_small_gap",
+        "tests/test_fragment_reconstruction.py::test_monospace_fragment_never_merges",
+        "tests/test_fragment_reconstruction.py::test_incompatible_font_size_never_merges",
+        "tests/test_fragment_reconstruction.py::test_table_row_cells_never_merge_into_one_group",
+        "tests/test_fragment_reconstruction.py::test_two_column_first_line_at_identical_baseline_never_cross_merges",
+        "tests/test_fragment_reconstruction.py::test_column_boundary_bucketed_past_the_real_margin_still_blocks_the_merge"
+      ],
+      "real_cases": [
+        "2008-b Q07 (page 4, 'total correspondente aos 20% de maior renda foi,' fully rejoined - recovered beyond even the pre-Phase-3G state)",
+        "Q12 (page 8, 'base na complexidade ciclomatica.' rejoined - statement now 100% complete, question flips to passed)",
+        "Q63 (page 27, 'a seguinte representacao de' rejoined - statement now 100% complete, question flips to passed)",
+        "Q71 (page 30, 'e acoplamento sao dois conceitos'/'conceito de ocultacao de informacao.' rejoined - statement now 100% complete; a separate, unrelated alternative-boundary bug keeps the question itself failed)",
+        "Q25 (page 12, alternative B's own word-order scramble - 'transformada A\tde Hadamard...' - resolved as a side effect of x0-sorting before merging, not a dedicated fix)"
+      ],
+      "protected_cases": [
+        "2011/2021 in full (gate off by default - confirmed zero drift across all 288 protected files by full regeneration)",
+        "2021's own page 19 (Q9/Q10 side-by-side objective questions sharing a baseline) - the one real false positive found, closed by the column-boundary guard, re-confirmed safe when the gate is left off for this booklet regardless"
+      ],
+      "failure_behavior": "False (original per-dict-line behavior, byte-identical) when the profile does not set this field. When ambiguous (baseline matches but no trailing space, or a trailing space but the gap exceeds the ceiling, or a detected column boundary is crossed), fragments are preserved exactly as PyMuPDF reported them - never destructively joined on a guess. Confirmed by full regeneration that this mechanism DOES fix an unrelated, already-documented 2021 defect (layout.py's own 'B Escalonamento por taxas monotonicas' MIN_LINES_PER_COLUMN docstring) when tried unconditionally - gated regardless, since any protected-corpus change is reverted on principle, not only when it is wrong.",
+      "profile_dependency": "ExamStructureProfile.fragment_reconstruction_gate (default False)",
+      "runtime_ai_dependency": "none",
+      "introduced_phase": "3H",
+      "metamorphic_tests": [
+        "tests/test_fragment_reconstruction.py::test_translation_invariance_of_a_merge_decision",
+        "tests/test_fragment_reconstruction.py::test_scale_invariance_of_the_gap_ratio",
+        "tests/test_fragment_reconstruction.py::test_font_size_variation_keeps_the_same_classification"
+      ]
     }
   ]
 }
