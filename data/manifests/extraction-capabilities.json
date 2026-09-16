@@ -607,6 +607,36 @@
       "runtime_ai_dependency": "none",
       "introduced_phase": "3K",
       "updated_phase": "3L"
+    },
+    {
+      "capability_id": "alternative_section_region_exemption",
+      "description": "assembler._in_alternatives_section decides which lines at or below the alternative sequence's own first ('A') marker are exempted from the ordinary figure/diagram region-filtering pass (PROMPT Phase 1B: a growing VisualRegion can overlap the start of the alternatives section and silently swallow a genuine multi-line alternative's own unmarked continuation, e.g. 2021 cc-bacharelado Q22's own relational-schema alternatives). Originally an unconditional, purely Y-position-based exemption (every line from the first marker's own y0 onward, regardless of X position or which region claimed it) - narrowed in Phase 3M to three structural signals, any one of which still grants the exemption: (1) the line does not touch any *large* (non-small-formula) region at all; (2) the line's own x0 sits near one of the alternative group's own accepted marker positions (collected from every letter, not just 'A', since a horizontal side-by-side alternative layout places each letter at its own, unrelated x0); (3) a large region does touch the line, but that same region's own bbox contains the sequence's own 'A' marker point - the region *is* the alternative structure itself. A line satisfying none of these - genuinely far, in X, from every marker, and inside a large region that also does not contain 'A' - is real, disjoint figure content, not alternative text, and falls through to ordinary region filtering.",
+      "trigger_features": [
+        "a line at or below the alternative sequence's own first marker's y0, touching a large (non-small-formula) VisualRegion whose own bbox does not contain that marker's own point, and whose own x0 is far from every accepted marker's own x0"
+      ],
+      "parameters": {},
+      "scope": "assembler.py: _in_alternatives_section (feeds text_only_lines construction)",
+      "generalization_level": "G3",
+      "positive_fixtures": [
+        "tests/test_extraction_pipeline_2008.py::test_q75_alternative_d_no_longer_bleeds_diagram_labels"
+      ],
+      "negative_fixtures": [
+        "tests/test_extraction_pipeline_integration.py::test_multiline_alternative_is_not_swallowed_by_a_nearby_figure_region",
+        "tests/test_extraction_pipeline_2011.py::test_q23_alternative_e_trailing_period_after_inline_formula_is_preserved"
+      ],
+      "real_cases": [
+        "2008-b Q75 (page 32): the NAPT diagram's own interior labels ('Computador A'/'Computador B'/IP-address annotations), previously bled into alternative D's own text, are now correctly excluded - alternative D reads exactly '138.76.28.1 e 138.76.28.2'"
+      ],
+      "protected_cases": [
+        "2021 cc-bacharelado Q22 (DER diagram, the original Phase 1B case - multi-line alternative continuation still correctly exempted)",
+        "2011 Q23 (inline formula asset - trailing punctuation after the image still correctly exempted, via signal 1: it never touches a large region, only its own small-formula asset)",
+        "2021 SI Q33 (a hash-table diagram whose own merged region spans the entire alternatives block and legitimately contains the 'A' marker - exempted via signal 3, its own per-alternative cell values kept as literal inline text exactly as before)",
+        "every other 2008-b/2011/2021 question (confirmed by full regeneration: zero byte-level diff across all three corpora except the one intended Q75 change)"
+      ],
+      "failure_behavior": "no usable alternative group at all (find_alternative_group returns None or unusable) leaves alt_section_start unset and the function always returns False - the pre-existing, unchanged fallback",
+      "profile_dependency": "none - unconditional, purely structural",
+      "runtime_ai_dependency": "none",
+      "introduced_phase": "3M"
     }
   ]
 }

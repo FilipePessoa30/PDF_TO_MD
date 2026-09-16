@@ -9,8 +9,8 @@
   "pipeline_version": "0.1.0",
   "data_contract_version": "1.1.0",
   "maturity": "provisional",
-  "verified_count": 65,
-  "needs_review_count": 12,
+  "verified_count": 66,
+  "needs_review_count": 11,
   "unresolved_question_ids": [
     "enade-2008-computing-d09",
     "enade-2008-computing-d10",
@@ -22,15 +22,13 @@
     "enade-2008-computing-q24",
     "enade-2008-computing-q33",
     "enade-2008-computing-q45",
-    "enade-2008-computing-q54",
-    "enade-2008-computing-q75"
+    "enade-2008-computing-q54"
   ],
   "structural_blockers": [
     "answer-standard-absent-from-source",
     "answer-standard-incomplete",
     "content-duplication",
     "region-merge-content-loss",
-    "same-question-diagram-label-bleed",
     "table-reading-order-scramble",
     "unstructured-image-alternatives"
   ],
@@ -904,10 +902,10 @@
     {
       "id": "enade-2008-computing-q75",
       "markdown_path": "enade-2008-computing-q75.md",
-      "markdown_sha256": "502ec3e2f6a844a2b8a6a323f544a190aaebdc90051bb4fb5601d7dadebca9dc",
-      "extraction_status": "needs_review",
+      "markdown_sha256": "1403c2c78152c6d2c67ea53b0ac90c0b3c8b533325f6ae6428ebbf0301fe32d3",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "failed",
+      "visual_validation": "passed",
       "assets": [
         {
           "id": "figure-01",

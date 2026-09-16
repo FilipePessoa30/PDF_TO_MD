@@ -1437,23 +1437,36 @@ blockers:
 - affected_assets:
   - figure-01
   category: same-question-diagram-label-bleed
-  cause: 'RE-AUDITED IN PHASE 3G, unchanged from Phase 3E, confirmed identical at HEAD - not caused by any
-    Phase 3G change and not covered by the Cluster A/C mechanisms built this phase (a different diagram,
-    positioned after the alternatives rather than before the statement). Not root-caused precisely this
-    session. Left open.'
+  cause: 'RESOLVED (Phase 3M). Root-caused to assembler.py''s own _in_alternatives_section: once the
+    alternatives'' own section is known to start (at the first accepted marker''s own y0), the function
+    granted a blanket exemption from all region filtering to every line from that point on, regardless of
+    which X position or which VisualRegion claimed it - a Phase 1B fix for Q22''s own multi-line
+    alternative continuation (2011, a DER diagram genuinely swallowing alternative A''s own text). The
+    NAPT diagram''s own interior labels (the IP-address annotations and "Computador A"/"Computador B" node
+    labels drawn inside the diagram itself) sit at a Y position at/below alternative D and E''s own
+    markers, but their own X position (~350-490pt) is entirely disjoint from the alternatives'' own
+    x0=36.0 column and from the diagram''s own containment of the sequence''s "A" marker - the same
+    blanket rule that correctly protects Q22''s continuation was also, incorrectly, protecting these
+    diagram-interior labels. Narrowed to a structural test (X-proximity to a known alternative marker, OR
+    membership in a region that itself contains the sequence''s own "A" marker) that keeps Q22 and every
+    other real multi-line-alternative/hash-table-alternative case in this corpus (2021 SI Q33''s own
+    per-alternative hash-table diagram, confirmed unaffected) working exactly as before, while a diagram
+    disjoint from the alternative sequence itself no longer receives the exemption. Confirmed by full
+    regeneration: zero drift elsewhere in 2008-b, zero drift in 2011/2021.'
   description: Alternative D carries trailing contamination from the NAPT figure's own labels
     ('138.76.28.1 e 138.76.28.2 10.0.0.1 10.0.0.2 10.0.0.10 Computador A Computador B') bled in after its
     own real answer text.
-  evidence: docs/phase-3e-report.md; docs/phase-3g-report.md
+  evidence: docs/phase-3e-report.md; docs/phase-3g-report.md; docs/phase-3m-report.md
   id: q75-alternative-d-diagram-label-bleed
   question_id: enade-2008-computing-q75
-  regression_tests: []
-  resolution: null
+  regression_tests:
+  - tests/test_extraction_pipeline_2008.py::test_q75_alternative_d_no_longer_bleeds_diagram_labels
+  resolution: 'RESOLVED (Phase 3M): see cause above.'
   source_pages:
   - 32
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets:
   - figure-01
   category: content-duplication

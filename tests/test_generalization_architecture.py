@@ -279,3 +279,87 @@ def test_capability_registry_never_cites_a_question_id_as_a_trigger():
                 f"{entry['capability_id']}: trigger_features mentions a specific "
                 f"question identity, not an observable characteristic: {feature!r}"
             )
+
+
+# --- Phase 3L architecture preservation (PROMPT Phase 3M section 15) --------
+#
+# Phase 3L retired the page/hash-locked ``force_zoned_reading_order_page``
+# override in favor of structural eligibility (reading_zones.assess_
+# eligibility) computed only inside assembler._canonical_content_lines, on
+# one question's own already-sliced span - never a whole page. These tests
+# fail immediately, rather than letting a future edit silently drift, if
+# that page/hash selector or a zoning parameter on a geometric consumer
+# (figures.py/layout.py) is ever reintroduced.
+
+
+def test_layout_overrides_has_no_page_hash_zoning_selector():
+    """``LayoutOverrideSet.forces_zoned_reading_order`` (Phase 3K) was
+    removed entirely in Phase 3L - no method on the override set may ever
+    again select a page/hash for zone-aware reordering; that decision is
+    now made purely from document structure, never a page/hash lookup.
+    """
+    path = EXTRACTION_DIR / "layout_overrides.py"
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    method_names = {
+        node.name
+        for node in ast.walk(tree)
+        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef)
+    }
+    assert "forces_zoned_reading_order" not in method_names
+
+
+def _function_param_names(tree: ast.AST, function_name: str) -> set[str]:
+    params: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.FunctionDef) and node.name == function_name:
+            args = node.args
+            for arg in (*args.posonlyargs, *args.args, *args.kwonlyargs):
+                params.add(arg.arg)
+    return params
+
+
+def test_geometric_consumers_accept_no_zoning_parameter():
+    """``figures.detect_visual_regions`` and ``layout.extract_page_lines``/
+    ``extract_document_lines`` must never again accept a zoning-related
+    parameter (``zoned_reading_order_gate``/``_mode`` or similar) - region/
+    label detection and document-level boundary detection are always fed
+    the stable, page-wide geometric order; the zone-aware reorder is
+    consulted only from ``assembler._canonical_content_lines``, on one
+    question's own already-sliced span (see reading_zones.py's own module
+    docstring, "PageLineViews" separation).
+    """
+    targets = [
+        (EXTRACTION_DIR / "figures.py", "detect_visual_regions"),
+        (EXTRACTION_DIR / "layout.py", "extract_page_lines"),
+        (EXTRACTION_DIR / "layout.py", "extract_document_lines"),
+    ]
+    findings: list[str] = []
+    for path, func_name in targets:
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        params = _function_param_names(tree, func_name)
+        zoning_params = {p for p in params if "zon" in p.lower()}
+        if zoning_params:
+            findings.append(
+                f"{path.name}::{func_name} accepts zoning parameter(s): {zoning_params}"
+            )
+    assert not findings, "\n".join(findings)
+
+
+def test_only_assembler_module_imports_reading_zones():
+    """``reading_zones`` (the zone-aware reorder) is consulted from exactly
+    one module - ``assembler.py`` - never from ``figures.py``/``layout.py``/
+    ``pipeline.py``'s own document-level or table-rendering line extraction,
+    which must always see the stable, page-wide order (PROMPT Phase 3L
+    section D/H's own regression: threading a zone-aware order into any of
+    those regressed dozens of already-correct 2008-b pages, since their own
+    label-absorption/boundary logic uses list *position* as an implicit
+    geometric proxy).
+    """
+    importers: list[str] = []
+    for path in _iter_core_source_files():
+        if path.name == "reading_zones.py":
+            continue
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        if any(module.endswith("reading_zones") for module in _iter_imports(tree)):
+            importers.append(path.name)
+    assert importers == ["assembler.py"], importers

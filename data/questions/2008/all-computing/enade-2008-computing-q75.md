@@ -38,9 +38,9 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
@@ -57,5 +57,5 @@ cujos equipamentos de rede interna (LAN) usam endereços IP privados. Considere,
 A. 10.0.0.1 e 10.0.0.2
 B. 10.0.0.254 e 10.0.0.254
 C. 138.76.28.4 e 138.76.28.4
-D. 138.76.28.1 e 138.76.28.2 10.0.0.1 10.0.0.2 10.0.0.10 Computador A Computador B
+D. 138.76.28.1 e 138.76.28.2
 E. 169.254.1.1 e 169.254.1.2

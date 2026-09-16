@@ -63,6 +63,15 @@ from enade.extraction.tables import DetectedTable, detect_tables
 #: as a real alternative-marker run, so an incidental bare letter elsewhere
 #: in prose cannot be mistaken for one on its own.
 _ALTERNATIVE_LINE_RE = re.compile(r"^([A-E])(?:[\t ](.*))?$")
+#: Maximum X drift (points) between a genuine multi-line alternative's own
+#: continuation (unmarked, wrapped from its own letter's line) and that
+#: letter's own marker - covers the tab-stop indent under a marker letter
+#: (~18pt in this corpus's own evidence, e.g. "A ... Codd (FNBC)." wrapping
+#: to an indented "Codd (FNBC)." at x0 18.4pt greater) with a wide safety
+#: margin, while staying far short of a genuine second column's own gutter
+#: (~250pt+) or a diagram positioned in a different part of the page
+#: (~350pt+ in 2008-b Q75's own NAPT diagram - see ``_in_alternatives_section``).
+_ALTERNATIVE_CONTINUATION_X_TOLERANCE = 60.0
 #: A word ending in a common ligature-prone digraph, then a stray space, then
 #: a lowercase continuation - the observed signature of a ligature-splitting
 #: extraction artifact (see docs/decisions.md, "ligature-space artifacts").
@@ -1491,17 +1500,83 @@ def assemble_question(
     # "inside" a statement figure, so once the alternatives section is
     # known to start (found here on the *unfiltered* lines, before any
     # region exclusion), every line from that point on is exempted from
-    # region filtering entirely.
+    # region filtering entirely - UNLESS (PROMPT Phase 3M) that line is
+    # claimed by a *large* (non-small-formula) region that is itself
+    # disjoint from the alternative sequence's own anchor (its "A" marker's
+    # own point) - see ``_in_alternatives_section`` below for why this is
+    # the one structural signal that tells apart every real case found in
+    # this corpus.
     alt_section_start: tuple[int, float] | None = None
+    alt_a_anchor: tuple[float, float] | None = None
+    alt_marker_x0s: tuple[float, ...] = ()
     if span.kind == QuestionKind.OBJECTIVE:
         preliminary_group = find_alternative_group(coarse_lines)
         if preliminary_group is not None and preliminary_group.is_usable:
             a_line = coarse_lines[preliminary_group.accepted["A"]]
             alt_section_start = _position_key(a_line.page_number, a_line.y0)
+            alt_a_anchor = (a_line.x0, a_line.y0)
+            # Every accepted marker's own x0 - not just "A"'s own - since a
+            # horizontal (side-by-side) alternative layout (2008-b Q1's own
+            # "A I e III.   B I e V.   C II e III. ..." row) places each
+            # letter at its own, unrelated x0 rather than one shared column.
+            alt_marker_x0s = tuple(
+                coarse_lines[index].x0 for index in preliminary_group.accepted.values()
+            )
 
     def _in_alternatives_section(ln: Line) -> bool:
-        return alt_section_start is not None and _position_key(ln.page_number, ln.y0) >= (
-            alt_section_start
+        # PROMPT Phase 3M: the blanket exemption is narrowed to never
+        # protect a line claimed by a *large* region that is both far (in
+        # X) from every accepted marker and does not itself contain the
+        # sequence's own "A" marker - never a specific question, page, or
+        # coordinate. Real shapes found by direct regeneration across all
+        # three corpora, any one of which still grants the exemption:
+        #  - No large region touches this line at all (the ordinary case,
+        #    and 2011 Q23's own alternative E, whose trailing "." sits
+        #    ~150pt right of its own marker but only ever touches its own
+        #    small-formula asset, never a large region).
+        #  - The line's own x0 sits near one of the alternative group's own
+        #    accepted marker positions (a genuine multi-line alternative's
+        #    own continuation, e.g. Q22's relational-schema alternatives -
+        #    the original Phase 1B case this function was built for).
+        #  - A large region touches this line *and* that same region's own
+        #    bbox contains the "A" marker's own point - the region *is* the
+        #    alternative structure itself (2021 SI Q33's own hash-table
+        #    diagram, whose cells are printed as literal per-alternative
+        #    text and whose merged region legitimately spans the entire
+        #    alternatives block, containing every marker).
+        # A line satisfying none of these - genuinely far (in X) from every
+        # marker, inside a large region that does *not* contain "A" either -
+        # is real, disjoint figure content, not alternative text (2008-b
+        # Q75's own NAPT diagram - its own bbox sits entirely to the right
+        # of the alternatives' own x0=36.0 column and never reaches "A" -
+        # whose "Computador A"/"Computador B"/IP-address labels were
+        # bleeding into alternative D's own text; blocker
+        # q75-alternative-d-diagram-label-bleed) - not exempt, so normal
+        # region filtering below correctly excludes it.
+        if alt_section_start is None or alt_a_anchor is None:
+            return False
+        if _position_key(ln.page_number, ln.y0) < alt_section_start:
+            return False
+        if any(
+            abs(ln.x0 - marker_x0) <= _ALTERNATIVE_CONTINUATION_X_TOLERANCE
+            for marker_x0 in alt_marker_x0s
+        ):
+            return True
+        margin = body_margin_by_page.get(ln.page_number)
+        touching_large_regions = [
+            r
+            for r in regions
+            if not r.is_small_formula
+            and _line_in_region(
+                ln, r, overrides, pdf_sha256, own_key, margin, contextual_relation_gate
+            )
+        ]
+        if not touching_large_regions:
+            return True
+        anchor_x, anchor_y = alt_a_anchor
+        return any(
+            r.bbox[0] <= anchor_x <= r.bbox[2] and r.bbox[1] <= anchor_y <= r.bbox[3]
+            for r in touching_large_regions
         )
 
     # Table detection (PROMPT Phase 1C section 5) runs on the *raw*,

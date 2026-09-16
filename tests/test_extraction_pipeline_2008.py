@@ -256,10 +256,7 @@ def test_q29_no_longer_has_sidebar_fragment_inserted_mid_sentence(extraction_res
 def test_q75_statement_is_now_complete(extraction_result):
     """Regression test for ``q75-region-merge-content-loss`` (RESOLVED
     Phase 3G): the NAPT statement, previously entirely empty, must now be
-    complete and match the source verbatim. The separate, pre-existing
-    alternative-D diagram-label contamination
-    (``q75-alternative-d-diagram-label-bleed``) is intentionally not
-    asserted against here - it remains open.
+    complete and match the source verbatim.
     """
     result, _ = extraction_result
     questions_by_number = {
@@ -276,6 +273,35 @@ def test_q75_statement_is_now_complete(extraction_result):
         "respectivamente, que chegarão a esse servidor?"
     )
     assert "cujos equipamentos de rede interna (LAN) usam endereços IP privados" in q75.statement
+
+
+def test_q75_alternative_d_no_longer_bleeds_diagram_labels(extraction_result):
+    """Regression test for ``q75-alternative-d-diagram-label-bleed``
+    (RESOLVED Phase 3M): the NAPT diagram's own interior labels
+    ("Computador A"/"Computador B"/its IP-address annotations) sit at or
+    below the first alternative's own y0 (they print alongside
+    alternatives D and E, not above the statement), and
+    ``assembler._in_alternatives_section``'s own former blanket exemption
+    (every line from the first alternative marker onward was exempted from
+    all region filtering, regardless of position) let them bleed into
+    alternative D's own text as if they were its own trailing words. The
+    exemption is now narrowed to a structural test - see
+    ``_in_alternatives_section``'s own docstring - that correctly still
+    protects a genuine multi-line alternative's own continuation (this
+    same test file's own Q22/Q68/D40 regression tests) while no longer
+    protecting a large, disjoint diagram region's own interior content.
+    """
+    result, _ = extraction_result
+    questions_by_number = {
+        q.question_number: q
+        for q in result.questions
+        if q.question_type == QuestionType.MULTIPLE_CHOICE
+    }
+    q75 = questions_by_number[75]
+    alt_d = next(alt for alt in q75.alternatives if alt.letter == "D")
+    assert alt_d.text == "138.76.28.1 e 138.76.28.2"
+    assert "Computador" not in alt_d.text
+    assert "10.0.0" not in alt_d.text
 
 
 def test_q12_statement_is_now_complete(extraction_result):

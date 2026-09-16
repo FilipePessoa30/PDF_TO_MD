@@ -1,0 +1,2025 @@
+{
+  "schema_version": 1,
+  "generated_by": "PROMPT Phase 3M section 4 - reconciles the 270 (data/questions/2011|2021) vs 288 (270 + 18 related manifests) figures cited across docs/phase-3a through phase-3l reports; both were always correct, describing different scopes of the same protected set.",
+  "total_files": 288,
+  "question_file_count": 270,
+  "manifest_file_count": 18,
+  "files": [
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-d01.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "aff588882865c5b58b6719ebcbec0d1c4db3be411e12d4adf885aa84b9d9345c",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-d02.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "537041e1e541328d8d3116f623ba0d140d9712c4ac4c2701142b5853e6a7b10b",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-d03.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "606ceca85e8038e411d132b67f6e361320e5d55ce95004b692d29b0ec2c6759b",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-d03/figure-01.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "acc9ec93cf7ecbc515bd5c51eaba75cfe83188a9a63326ab9044ad97f614b294",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-d04.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "23587d21c9ab27e5f5379b94d0bce96cd47802d60dcb4d60d72c41cb89d22d07",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-d05.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "0084dcd55a72014f2a0adbed677918f76d5117c2ea28bf9d1be8bd67af51ed47",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q01.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "3f393c7967444f4e700c5d7bc9ae43528f33cb16ba5594a991042198733d03ae",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q02.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "9bc6ca134bda2b78a78ef9c5df03da4c5241a47f1cb7a82ccaae21f7bc013d94",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q03.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "157117dfe7574f2e3d9f6d2dbe41bb0f298c31c9786ec9fb871c021fb55f5a23",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q04.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "d86fb3ff66f0c4b1f64a37d3f1587943e36b757e2dbeaafb45002c884d201ce1",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q05.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "c7379fb54cac6f55e37dfa63972b85350802ea7b10824a2d60b505c3f87d3271",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q05/figure-01.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "c1d55dad4b13b11e1420e6ce123cebe4c5175281ff7c7cd3cff4413a1924f2f8",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q06.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "6593760c7329b32a23bbfcb77e84ac7bc83495fb247a6ac769c30a79fb63cce2",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q06/figure-01.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "7ecd39105ac4f8e4a0b0b11aef6a8d1156a46a1dc07232b12a591f0ef3c97b9f",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q07.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "5c009427e0b607d12ded144f112140fce32661083d91da7d014aabd3de21e335",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q08.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "29fa476f67816ecc2e3b290dc1ddb71310e6b76c3346a48052af1df944f6c820",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q09.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "12cedc0b4c7e5403c084209a2c5cbbcbe78f5ce035af7355de39a74f4c242275",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q09/figure-01.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "4b2d76af587bf443910930371ac3dccc3c00acdeff4ad4a70dc74ac3a0682c51",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q09/figure-02.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "2d76feb54da1f3e42464f1edb9d4c7a99cbeb6dc1ea05f257fc7ba648d6cdebc",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q09/figure-03.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "1da400f9ec2d8400cfc8708f8e581d1e6439343ba20bed87829b42e9c45e8159",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q09/figure-04.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "9cfd40550c7b16c7e40dd94c86ea43b4adae89cff29c377d8b642717637d6f48",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q10.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "a795b1841f6f6faecceb112e382891e77cf943fea31499e4a9fdae49c36b1bda",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q11.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "3c8a984a655cfbbd1bbdb2767a8a5730aba1db48664353f6922b12a06cf0d19c",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q12.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "f7821aa91e76a3e93d7f021b1ee67910875e8d365731a1eb60ce90dcbbaeeaf5",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q12/figure-01.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "309a88937fdb571329eb0c032d38f29dfbbff27aff2cfd6711dc1278094d21e4",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q13.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "ca788433aa076b7fb3002372521a588b57bd89a4e017f8b031bde7c3dc012222",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q14.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "1439471e5565b514808b7e5c9c4f6f90bf00b8534069470598161e3a2fbc8999",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q14/figure-01.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "ba5c522b3186c2ce6b7a8398b1af8c17ca07add5f78796802c96c7c09f9b8dde",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q14/figure-02.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "3de2e7a8d2e3dd0a37339dbcef2a475b5ece96f468266ffd3252405ea1130502",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q14/figure-03.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "e34063711d546a5ba805bfd953772b8c2ca16c2302ab6ac83cb641ce49f161ae",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q14/figure-04.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "0551077cc83ef0e1766fc209f6dcaa8f476b9b9cc1d8023465d01cd107fc96d4",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q14/figure-05.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "a7f6a3a680b2495b79221c63c99270575a56e90e6b80b80553a5d74a30908dce",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q14/figure-06.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "d3e8c9efbee814caf482bb67cdb2dab31864e8e6a7836bfb87947c9a52459e05",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q14/figure-07.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "4119a0c066fe4751e3382765a900484654a904fcbf3edd31bef1bb22798700e9",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q15.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "93c8fdd38f2391b8193f154ab623df49f97e4bf3e0dbf03375bd3dc4035ca013",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q16.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "238706055f5fcf1e6cbc0a14e971957478138265dde907a589343aa4d55873a6",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q17.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "6ef1240e0253ee681e563fca1b30735ef06ae5c718db63b05cc97fd728a1d12e",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q17/figure-01.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "50b249557bd667fd16b2028a6bdcbba4ba74b0de9444e98bfb13c7ebe1dd6bcd",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q17/figure-02.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "4231fa18d899beaabf03659ea0dc728e509b7d7a3f0271e904b51731c522dc68",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q18.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "f5298e8f0708a148a6cc599fbfa76e3f74bed372cb1f42ba06243637bcc186a8",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q19.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "26805bff4f40d637a7e74743f148e0869af972b5e7ac386edecca172d5e9a323",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q20.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "8a9c432a55ec0cb78d1398e59124e38adae481428e5a4cb2ef56dd08677a948e",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q20/figure-01.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "5dff5dd004c436bdf3f4568b77a9533efbaabba2cab34cf467b1ab114d42e158",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q21.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "6a358ec6d3e91a42301315ecdb629181f308a3e8f04e9643684eb6647afe4046",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q22.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "d629e320a9bc8344370e64c4bd32940878344e877b34561c0c82e33f6e2eee4b",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q22/table-01.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "8a016f1def64b6e364f6db73c3c325acd2df2e01208603afdab4239f2a1664e8",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q23.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "07513cf2b310ecdb34ca539caec31934bbbdf95b9d0b9649c21b082cffde1ded",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q23/figure-01.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "67fd480695f319b89efb5620c3415cf6a4824580fd6c2d2f2fbe5c378536c392",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q23/figure-02.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "af0f3acc4fbc92f343353f057f32d7749db210a6eefff05b0e797664064259f1",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q23/figure-03.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "bad242288322406f801cb0972e5e5d921239e7d45c43a355ca06b489038ba3e1",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q23/figure-04.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "c26c69fa6a1af4ac90b15e6dc1630aab2cc1b90ee255aaa52b863e9524092229",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q23/figure-05.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "a72c5f3d6a8bcfb1cf61d85308e15a94e0a8e70a25507b34db99e1052841b75b",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q24.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "bfc9a57f5190138424d109739705238349c5ec06e0e06d8159fbfda762df601b",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q25.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "a95c80f4dc9b283692b68c2cea754657884c46de426c69802eb75a869e4c80ed",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q26.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "9f40cabaf65df873d6b9e5cd59525419e81b477554b01bc5eae8abd5880f889c",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q26/figure-01.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "04cbdde0c4f5c8e162b88f5dad13e1e1b0bf06e87ade1e548711d8ac72d054d4",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q27.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "d8b81a4ace6231aae9a8ecc57e34bd5e2cc1ec6fe0644bc7fe642c5fe2b7e3e2",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q28.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "0ce888d1e722f55e1a23460b1aff7fbeb408fd9d10131fb4f009833d653c021b",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q29.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "ed931a6511853ba37a32e0938e9c2c8032783910c9cacb67690c0a6e822e9741",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q30.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "893e2c9b112dea1d832d59e9ea8eaddd35587879a053e64f5136cf2dd283937f",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q31.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "a099f6197bac9758a2d733498af98d0ff52ae1a9234bc2bcbd7db92b94b60543",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q32.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "bf99fa6abf8ea5bc5ed555a49ff205f1592c66f60af467d748a0a1b633f1b3bf",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q33.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "cd6487dca06d9f52e9504f306d1b69f842538fd98886b014e8c3b47b98508827",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q33/figure-01.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "30ce69cbc5ab0c2180761891d4de119bd568cd948469747101cb31a979fea239",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q34.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "d82771ce5168c76ac8be7ce2af757103d4a651f8c9a8e55d39e317048847c6ca",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q35.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "262941deb8ed5032fa27362671d0ef77ece43a33f64d72394f6c62d9bb341278",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q35/figure-01.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "1253279f5da79027f23f3266cc7be86bdf7640f645adbf64c9a606d0c7cf5184",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q36.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "953ae4032ce809e8de53513e4dadbe38c0bac04df02f6ef618b12e975b596b22",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q37.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "32405ab56da0fd912710ff1a46420f40f06077f0086367679d98224dfeb0fcb3",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q38.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "259b8b8de992f48086aa782d0fd5a09565a53b7b0d8c2592879a77a26f239ba0",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q38/figure-01.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "ae4b37fd1a67dd389cb50b156c2aac9fe6e77ab696a78c5d5481864e7be9a106",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q38/figure-02.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "ace7993540025c156bca32f2402926d41cafebc4e213f7d9fba020394afff824",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q38/figure-03.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "3515d6f4f52e78e160b972713ed6af885518127961f65adc379b09d592ad0b47",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q38/figure-04.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "4f20b5db44bbab6bb08bec10dbf7e0ef1e063c8e027bda53ac654019c56b4238",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q38/figure-05.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "225d251de725980e7c437a839114d55a35353fe48cbcdd96360be8197289644f",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q38/figure-06.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "93c771c65746bc44b488d2594193740fef9cebddc334ac78915bf34bb66fb562",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q38/figure-07.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "661751e3e48c1cd7ea02399dfb540fb2f9a2d97327ee6ea88eeb6cc01ae5ecbf",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q39.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "3409e4a5ce2a56b5dd732a3fdeb41a08af586d008cfd9ec988e49289d8b87cee",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q40.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "19548990f29c6ad1543a8944aeb58dec376b77ac4e007200e79e6742e4c5661e",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q40/figure-01.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "dd186047586118fdd7cd495343f3cd3566da3ac7362e14a8eb57ae9d2b4c4c1a",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q41.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "ea66f167bc992af3791b30112abbc5796be126356072fba1cf7a525e29ed5d77",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q41/figure-01.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "6b67d1cf8fda1fa8896ba2ac7cfd7914f4598ef8e56a8fdeae55f5e01e800302",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q42.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "d38ecd43d0d8f9aebf00316d83861449044482760f352c1d97d2f2352639bdfc",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q43.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "e282d0ac2250e383a423519e557cfeb397d37431a30348e544472d7757276b2e",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q43/figure-01.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "c1ad73328ed858ef4f8e62fc72001dfb658d78fc33bcd480592ae70ba6ddd45a",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q44.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "d8ad492f0e5af691a9c114e256d8e8a2911e8a34baa99d7dbb5ce52a5b29ee1e",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q44/figure-01.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "540b405fd4deaec12f68a98552370c7c2f51c1075810dddc8c19bdf294ca845f",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q44/figure-02.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "1e654c30e3204d11e10c28f344e8fba75388cf6b08c7af8330bdf9d048903a6d",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q44/figure-03.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "e5f00da72ab556fe7b8eb5d36d7e5746ba6548a4bf9df3ce584d49fe2c67c3f7",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q45.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "879bbfa84cbd080510fa2be9346b0ae6d7eca60ff77c61005c503b801eb83d5f",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q45/figure-01.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "fd6cdee26490f4acf7b40749a475ccabe623696350c9f7f4b70bdef1a873d771",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q46.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "d24922bc282910122f8921abdadc2de4515bf82e82ea7e85a47cb32d1aae250b",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q47.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "530317977682465e40f4a63fa10c2ce6f2445051d9ab5967e373e56d536934bd",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q48.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "ecf6c12e8c5f6b59dc628c632e8090da5a14214c7de45b346cce1cf8fc4e1269",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q48/figure-01.png",
+      "corpus": "2011",
+      "category": "question_asset",
+      "sha256": "607003413b659682d55c50f012c17cb1629706bdf8b51f9ffb2c0810a3703440",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q49.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "ef17ff087c0c18d5b225abf4b9fbeab2050e8401703c995e87e135d9e84eb784",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2011/all-computing/enade-2011-computing-q50.md",
+      "corpus": "2011",
+      "category": "question_markdown",
+      "sha256": "9044778a26128d022ce230f01d7a5b636411e36a876ecd5898b5063e580d6b29",
+      "protected_reason": "gold-locked 2011 unified booklet corpus (Phase 1C onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-d01.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "e7d49ef66b2ff4c19c437651f30ec69aa3723d7a147b19f9738f9347dc5f9bd6",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-d02.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "692401a6bb30ee234939d2a0972630d6562f729e83b34506354835b95e7848d7",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-d03.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "912dfab52c63875cd772f3727503f2d4d0875fd60c7c4cbc33b097792988490c",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-d03/table-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "351e31a199403eec4c2db2bc12794492cd128b9fb7d878f0a80ed495405bb52a",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-d04.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "fa2e27f8af660421d0ceef989dd446aafa505cc82899b7608757b364447003b4",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-d04/answer-standard/padrao-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "38b8eec545a826e0d18f07790d40e7be92d631e055ec534e579e071312414383",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-d04/answer-standard/padrao-02.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "f5e2a42493bee59c0a1c04d6a3aeba5dad2aaedc072c2b9ce82e247024baf152",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-d04/answer-standard/padrao-03.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "4e3416284330269cfce726362e539837ea414dd52e7f15368dfba6c3e1eb2ca1",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-d04/answer-standard/padrao-04.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "2744dac26f9039e943264a50d78de39025a3bb80a775df5b5063cc72f864c193",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-d04/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "9c4c1b2b4c072920e25aa057052e721ee41e568aa45052c8e2b4478ea33fa918",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-d05.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "8ab18c59b3429a5638b89e9dce52ccc549387874ca6dc2703481d9e370c7861b",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-d05/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "b5e2f7cc359d586daf48ec0ddaac914a7bf5343c4f7919fa0acc38d69b4789c9",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q01.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "2d1b8219f91334f68783814f145b2eca4dcb49b8b9baaea2cdeca4efacd9be54",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q02.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "200fb71b5043ec59c02f592cbfe8cb6bc4345cb709d0750c09632507492cbefc",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q02/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "41851e4a35d55485d1d2a8cac8f6240fd31a9454421ab136367e6ac0349d0e25",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q03.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "2ee70140c43872275cb188922b009cbb3c36c6c23b96b1081d532a652596efa4",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q03/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "6d25f9a81d2794230865e85342e9b395954f047ce89d149efbfbada5e7e6b951",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q04.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "abf3482150bf2b9c9a18185c9c67b0a742969d6f31e33edc15dd5ba712d9c6f1",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q05.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "450d68d422c1b0306a53cf33f7a6c42e4af995fcc0df615701ff0a89689abc18",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q05/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "14788a6f4afa1f2e6ece4d53aa725ff94d7efaa07a4e015322f5fcd26941fc38",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q06.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "9a0430fde0c3abd73720951a58c8a9e9a8a7b2b71dd7cdc995f98cba1b695f89",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q07.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "701b7cee30b2d7713710c43980a20f682dabbbf7edbbc8153f9faccea98f9a1d",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q08.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "b50813582c47d164cc7675b469574dc497bd253b7789e3236f3c96ecb6ce477a",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q09.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "f98072700c22f94351faee9037087a8a0f93e59cfe916e64614b5d52d8dea7ec",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q10.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "db672ef662c6ed1b502d7925ec7929889515c65648dd8c46940ae2f03214e31a",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q11.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "f8c61ab87ea902ccd5b0aab88fe5695339e24afea114e90c1ad0414f522575e5",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q11/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "a5e455f0bc40d3a600e8389ca28661cd33561cf4baf821482e32c224fcfb8f9c",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q12.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "d607adb0303fe84be1669251d24488dbec4fbc32c894414788d0ba4ad6c949f6",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q13.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "e56be02b7b9ba03bc9d02a14f4d0d223855eae26b342b0cb7b5bc37aaedb6f67",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q14.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "0dcf89b878f801a1f70dfb7cc93db15e1e2af52c157ab4e4d485b4c96134eb39",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q15.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "a392c4b09004d2fd3d96fd625c1df15eff113426a3213f2b1a8d76b0fe098ff2",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q16.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "b656c09247b43aa8ff5a1debc9f70834cb484a46f76735e33c5d200899a8dda2",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q16/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "a7e8c4f7b7aa132e2d8da011626ca16440ff94d07a35d4e304645647ba989002",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q17.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "ab394e23f1ca6fb381ea5f3d7972ba79559d69561504f888cf046efb1b5a9980",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q17/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "bbe3ef67d5e8ec392afa6ebd5513a35ee778901d05307506c3fa4b648a817ad8",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q18.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "91e661cbdae0e3ea1013ca1aab1c31c0cf006a4ad17dda995f40fb5c2e6554e6",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q19.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "594842dfd944242fa83beea76b8b3280d929e37ba6dcb471ea53fdb4d9754407",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q20.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "09b1f80897993b9a211bfe6a6c0eff3ca12c9fe013b8c9b331f4a0ed170c9f89",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q21.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "1519609b1ccc13c7330ea69c6ebc5f5d7b23ec0c85ca431ed7a3c9e24a07834b",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q21/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "84f2400928f371cecb7f46eda1248b56b973815d1827b89e40b40c8c092b0b88",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q22.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "4809925cc4a1d097dfd23d8ed24fb7ad4cb6aca450bd4a57c1d5124bc7563676",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q22/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "6a36dcb4e410c1fd7fad80581d13eab7ed9501d85b92dfd4f1a77f00fe94ea75",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q23.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "5dfe8407d17f808a306abe3da32d55a0695fcecb5a9b8e18331296175f2f8db5",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q23/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "182a9047a72cfdb807da8fbf1770373c3c2ea21021fc17c9252dec9b0b868e0d",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q24.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "aadec64216e0c18dd4f504f82294aaf3982ec678c4bf979ca17ed78f47a33da3",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q25.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "61c3a77ee448a8941c33bab0bfc7876fef4bddefcce52e0b08cf175a33ec0c76",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q26.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "edcd68f8ed1e8cd0246925c15e7993a805aef4b7e4cef192bbb846831b07711b",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q27.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "6afb42fb74408b7dce86113d531b9f22f4fd951de2fe94293739211845885e3e",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q27/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "91a071982175c316169418a8d3c7c284a31802a98525da925e51aed468dd009f",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q28.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "7665a289523434c6ee1d69520f62efb4fb24400cd08873ff6f799be5df2ae7c6",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q28/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "bf42d8c7663f9a908720523b69ce58c9ee5f8dbad71b572c6da260e6fbb238d6",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q29.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "320b8ec74fbc481257c2a4db862e7cd329074d789ff946181d69a454b87828ad",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q29/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "fcd16177346b10b6569b47e0370c5731fe5fc1089f5299bf0f8121fa110fdba9",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q29/figure-02.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "a5bc2283662933694008d1c92d4130fe2574baf34563e09b49aeaa2bc422c74a",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q29/figure-03.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "6c6de38bd5fdb955bfd989a4d964b8a392f6f531f08e6c7146d44285792ff194",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q29/figure-04.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "eb3bc02bcce32c0014bf85f3dccbbd3a4645ef95c33932373e2e90e4bde9b13c",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q30.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "67aedc3cd0b0768d4754fc8c36eb0a2d61d1142a6da8a9ebe2056a1d5f3253c4",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q31.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "29871a5fcfc473f0188b09801a5a65a381f486bce085d2d495690ff875d5daa1",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q31/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "0825023f38b9108b53fef10431e66feb3d4979936f636884f1fa9c90ea4e8d61",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q32.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "f7f5abf10ae769e9cfe26bd80f583ca5f1afaadc388c1f3f79f37e106633cd5d",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q33.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "e0b1bfbe3747465198e22ed98a8f0ce376680ca4119c7e0756ccd03f12c6fd0c",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q34.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "ef8b02f7e00eae628bb16a564b1b3003c8eae7b67d394b8bc820fe25654f1e1e",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q34/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "55faefa6b059dcaf4b5439c09ccc9c47ee4a23675b94ac804ba39998f8c34826",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-bacharelado/enade-2021-cc-b-q35.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "ee940162d7716b78032c067a7c98965e1dac81024251dbb4272c4e42d3a1533c",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-d01.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "573ec322d2ed6ed0644637f20ec5e6e960bbc6be0de1dda74ecda09527d7f4f7",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-d02.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "0a37422b7027ac4a42c461a3a3f090b82553210378f561faa732e6642c9faa7d",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-d03.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "294b57662a7cd060f5d1d80c06796539a9c0318323bec7422284f6435113e33a",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-d03/table-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "351e31a199403eec4c2db2bc12794492cd128b9fb7d878f0a80ed495405bb52a",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-d04.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "ae2ae478187e3b0f0abbad5f41d143eb90e086b9485f2590de650588a23a6cfb",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-d04/answer-standard/padrao-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "38b8eec545a826e0d18f07790d40e7be92d631e055ec534e579e071312414383",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-d04/answer-standard/padrao-02.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "f5e2a42493bee59c0a1c04d6a3aeba5dad2aaedc072c2b9ce82e247024baf152",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-d04/answer-standard/padrao-03.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "4e3416284330269cfce726362e539837ea414dd52e7f15368dfba6c3e1eb2ca1",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-d04/answer-standard/padrao-04.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "2744dac26f9039e943264a50d78de39025a3bb80a775df5b5063cc72f864c193",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-d04/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "9c4c1b2b4c072920e25aa057052e721ee41e568aa45052c8e2b4478ea33fa918",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-d05.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "fd9ca4d604b1424e3eed15feb9c0933d73d8aaf592a0c04d1eebc07c4b15d412",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q01.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "a8903917d20621f8d2fd89ded836c77da0ed49bf9be1a08c287abc3315ceeac4",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q02.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "351a03d0086a9337565004a00a98c7169906e355b2bbd5f4b07abd3a2a08f1b6",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q02/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "d4231a3ad4341876ee322027adb439d7b791020bd185f43adeec05d3c994aa88",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q03.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "683de10cfd3aaf39f1c1885ff1c68531c7cbf3494c38a4664ef48496bb2bacc8",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q03/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "6d25f9a81d2794230865e85342e9b395954f047ce89d149efbfbada5e7e6b951",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q04.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "43cde2ee03c2d8a6a2ee1c648f72ea8775feef59c97527e78c9a33961542abeb",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q05.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "9663999aa3a64f59992f52c3737de0ee29b267df24711c02130899eaf4219cac",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q05/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "14788a6f4afa1f2e6ece4d53aa725ff94d7efaa07a4e015322f5fcd26941fc38",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q06.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "d1f2fc8ab51cb416029bea20285d8f37503ddbe527ec24407d81c449d89faa86",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q07.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "d94cef90e57756d927cebab9f7adf7c31d269e83028d898db0cdbace36ad893c",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q08.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "d437d6a1da46d22ff45327284d6b427d82008255a79325011b86c9e53b5138d0",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q09.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "1337ed33bc516ceecb3e832412a9219f2bcba29b5cb9d79cc09d22948bea9619",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q10.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "8c5308b8d9afa984ca75b1b7ee41b4c8a69077d435fe2398a4b1d23a29fbf094",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q11.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "a6c5fec157d7057d94591d6c6b6c945b453f9926443a5903cbad188cd400f2fe",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q11/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "eea55de996e691faf740ba9eb1e0a99c164899d414c0af477132989ee88bca24",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q12.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "2ac8d975d77e767f222f9195aee80d89b3eb89595cfdc6dbed772fd96477ec52",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q13.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "63a444161baa5ef5d566b91c684e19486c8de5f2f8488b6b06e84f1eaf3bc691",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q14.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "b11ba40cf8e74ab885fb847377d8c9de9cc789f759fb95bd852e6f536ebf03b9",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q15.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "b4812cbfe8b8c2410673b579953899d862017950fa61cf3e8b90f429aaabd5c9",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q16.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "2f0c9d8ed4fb38f1a18174f4302677bed0267c5ea3830a2697f187ade28aa3d5",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q16/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "a7e8c4f7b7aa132e2d8da011626ca16440ff94d07a35d4e304645647ba989002",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q17.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "96c672c6b39a35ee7b608b9c1ad34a62e42ad4423cb8b915d8c38edd7716e0ce",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q17/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "bbe3ef67d5e8ec392afa6ebd5513a35ee778901d05307506c3fa4b648a817ad8",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q18.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "40821855bab204ed9c0fa8bba514668780d09b032c116cad1a848487d1a742b0",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q19.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "aa646c041946825c12a30b8706328a1dcbe782cd344c1d6f4204358b7c717254",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q20.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "cc307c09bc9f43a39268cc3e76fa5ceb02977693c3603f4d0f1754c121934568",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q21.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "da745ccc71c9328640deb58ba2140df8f8a0fcdbeebb9fe71d55d2dc296c3697",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q21/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "84f2400928f371cecb7f46eda1248b56b973815d1827b89e40b40c8c092b0b88",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q22.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "27e091d4b6077f6c09d9080c629008263035cfc586ac55686ab7a8282569ef45",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q22/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "6a36dcb4e410c1fd7fad80581d13eab7ed9501d85b92dfd4f1a77f00fe94ea75",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q23.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "7cdb2864663f6cd9da1b9042962083fe414cbda150bf9e22f75e98b82c24d307",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q23/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "e0c97662ea361a1695a895eb357780c2862511bde38579481290816a585f2fef",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q24.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "5f4e20008bd4107f1ddf47fd821e03622e3f88fcc6a6112e766ecc26fb434827",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q25.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "75d986bca026d4e5419e068852e9607f4504487830677019757da4a4c3404eb1",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q26.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "528c4fbea35a5efeccb1c5841d72d68811723033c86b736b75628c9c3d115108",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q27.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "7e8ca987a8733d4e3a7f1dd8c82c0626da7c890d2ac2cd8b3a990a88e7a9b684",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q28.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "8a4d7bb62b884983471a59fe5e9370f24153ba122d8905994fcc0d28ea8380b3",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q29.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "3ee2ea01ce9620e72ab5e828cdc6abc04bf646855298fdca10b3562c99ab0282",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q30.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "de097f37fa84620fd2fa4ce61dfa67cdc0eb0c9e775151a57e265ec0a93941e5",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q31.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "101323e60bfe82f41acd75f32569de0599790a9e2147a882ea8a87508e1cdef6",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q32.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "a3d8ebf49db850749095eeff3dc42b235ce78bd18c8d6d116d1c6acaff6c104c",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q33.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "ee46b9f1b4c05b5b6962f2a904fa078e5c63397a5b6b132e18589c7df1a8eaa1",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q34.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "1a7964749f0ff45ddbcb7794deb92d0a76ad86a794e3aee7829f2111ea5cee8e",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/ciencia-da-computacao-licenciatura/enade-2021-cc-l-q35.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "48a62b9bd9622cfcb7b74db1dba38782579580a37ed16adfba0bd8f9b7cec473",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-d01.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "280d2a4a6c7db8a17479d731381659a50e6fd9866c860a71643587b3b7e29eb1",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-d02.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "486447a7793b45bdbc806d1301cc02831d8a52eb947db735de625987de6a1d49",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-d03.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "aaf09017f0780e3451456755ace5d2611c2a6bdbd551a7a9d06ccb9390b344f2",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-d04.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "d6d218e6d9f68bfc7a9566812153f869997f90ec9b0007bfd8242d74dab6b2ab",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-d04/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "ef9b04a724cd93bac5479dee81c0f4af935f8b47da0eab944d82f14baaf6eff7",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-d05.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "e563dedac2a9c435f3352bc91eaaa67375df14d097625c61753c6619249ef630",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-d05/answer-standard/padrao-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "a529cd23db927a6c7695f2f1e17fd330e1318edb15bc6421eee865ae02a9b85f",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-d05/answer-standard/padrao-02.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "79941d8d58bb34c85f98cbfc8854f042f586e115b50c5df80194ba07c461254e",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-d05/answer-standard/padrao-03.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "82fab33712f55db9e45279661e63d74655d10483f271de431c47e9c1679379dc",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q01.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "f9e878ef36e7a05ffdb2d4f04c1839632fb8fa79464fd77b16514233e9d9bd78",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q02.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "58439f5fa50ef034dbfcc7dbbed8290b92aa9ed552831e762544b3e57e09e0a4",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q02/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "d4231a3ad4341876ee322027adb439d7b791020bd185f43adeec05d3c994aa88",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q03.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "ce4c156b95e709b4ffd8901784c813a2f0197087bb78043afa1296a1dcb82ac1",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q03/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "6d25f9a81d2794230865e85342e9b395954f047ce89d149efbfbada5e7e6b951",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q04.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "f385733572147fbcb30878d72255ff3582f198a9d65d604648469dd2f7d8ed0b",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q05.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "75437d753a2a60aee3d499737eff53263a600142ae18cdf43d1ba4d5a221f3ef",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q05/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "14788a6f4afa1f2e6ece4d53aa725ff94d7efaa07a4e015322f5fcd26941fc38",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q06.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "c5ba1b80743337e58c86ed0c86f2c8015c7fcfd37f58653c601412dc95882b7b",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q07.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "065b28627a712f1e603c56e95016b6646d89161cffea68ad1543cef3d2b322aa",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q08.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "7434379e8b7d15c4a4c5fca2083fed56918a8154f536d0fa43c8b6a8114d76a5",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q09.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "128b58f9501ba5bd969870b88d40c3f1b0fbc9f71b344b045b5dc3a98b74d48c",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q09/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "4e2c5261b66f2093f60deae8f8704f424452d70b0d607101ab0257082e9c4421",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q10.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "3e30b8c54970b8f9b76365ea9e18a41a4d90187f86977bdeea93622927c6203c",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q10/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "d1494136c2af3dd70cfafceeeb2d2434a558f9a30138106c5581378f181dd4b9",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q11.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "632fad7eabd15930879cb6c3149eb3a9145c30058ab480390f1b03df262d8e98",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q12.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "962ced6670e2b8aa465dd8b99fa2880cf781e9c5b62b2b1f55d5caf5fdb32af3",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q13.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "539cb9f4941937dbcad63a91ef8ec711291619da90ca7a3b6c786b35464b230d",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q14.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "e0de9202d4eb190dd47e3fb6bda4f8be404bca3a5b1ce3d9770c10ce861e6e41",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q15.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "cef108114b03fae52afc16da7f1b54776d90868e267078c4ea78bf8d6ce0ac8c",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q16.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "c02a64953aa09369ea2eabdf8dee3a35174d4f3191768193a9eb69a4eccaf1b3",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q17.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "a28d1f1a184e774aab4401121e807c78a35c4e31c59bc3cbea987a382441f3da",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q18.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "50002e52448ca2a66cc2e771730305291bd4d5f76ad293b00e9e52a44ab6b5d0",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q19.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "27638f50c9d8dcd595fb635fe4fa5a5785dd1727d5ec45fef3c071620b749a1e",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q20.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "95623b880f039df02aa2f711061608d773ab254b32e72451ea5c4187aec87cbd",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q21.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "10f825479f5f963f5eccc423df260b0383660a0e2d26982cdf3f641bc46f11b3",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q22.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "293c46e01fbed69c247b308b1f89a0fb00ca307f5a51ecfb074f51e1da0a29bc",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q23.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "92a3a94160c7866a032d479c618d37675edabb518491ac8ba759e1d1a633644e",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q23/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "d3ef8e60a4bc39dfc4c9bcde47bc12c02a7c934b876756146bed70d4798a371e",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q24.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "0f0914334051ceeadcce4ad11d457baa41d6d59d2bd4c0a24cdbdc38fef7c0bf",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q25.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "893cca378ab986d0dff84be5dfd15faa5f342422539ed6b89a34cd61f9faa164",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q26.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "78a3d29ecb7cba98c55b2665566c496db5ab33d413415a5bcc1dbda54b356aec",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q27.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "0796a0d9fc6049d386c30a014e13947d37311314b1ce362ade7afaaf7c9ac893",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q28.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "bdc03f8ea50d85a262b603389b7fb2a599cd0960759913c9e0f0b1fc8a8a3ad9",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q28/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "295cddf5613e6058cc7af352b9a88916aad265de43bfb7ec6e7981014a6c34fc",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q29.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "a15fb9e9cc831ce6e4cd5c8f1b13439a233b03d50bf5f48b244a88b103e130a4",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q29/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "0ebd55f91a13049816efc5af4f8ba52d1fb93d1992aa02d5097ba758038e2208",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q30.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "91af856c7bb63ccfdcbba5809bcc49cc2014ebaca4fee770b4cdb3d0232d055e",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q31.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "2d3134593f4173e78f15c20e7c67362d51b4ea70798d3decbeb7e49bc7a86804",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q32.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "99d8ae9fdd1c820b6d1a56ad5d337b18f0831dc90555dc7cf73a739b0fc6f77a",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q32/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "fc135d07578fe689455e3c9b343602266a527ae033b8bafc08c6230a29cef648",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q33.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "4a7bff5a49033753377462b400352ed9e42fd9b84ea5e028757f999e69ba22c8",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q33/figure-01.png",
+      "corpus": "2021",
+      "category": "question_asset",
+      "sha256": "de0870482647bed3d1a3613d0197bb7ee63557888d6b37f94593be91294caec5",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q34.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "6cadab7ad5837335e3e44fa24951f70f6a4fb2f791eb6d0199c9f44e58f2ba38",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/questions/2021/sistemas-de-informacao/enade-2021-si-q35.md",
+      "corpus": "2021",
+      "category": "question_markdown",
+      "sha256": "0b23d56b846caf722146c1082b01b48ec2baaf24788d53b930a5d30bd25e1525",
+      "protected_reason": "gold-locked 2021 booklet corpus (Phase 2A onward) - never modified by any 2008-b-focused phase"
+    },
+    {
+      "path": "data/manifests/blocker-ledger-2011.yaml",
+      "corpus": "2011",
+      "category": "manifest",
+      "sha256": "c064e55fc83c3aca9a0f6997ef9e3ee4bb1320869c522002a48472f8c4b8b133",
+      "protected_reason": "derived manifest (gold/visual-audit/blocker-ledger/exam-structure/extraction-audit/transformation-log) for a protected 2011/2021 corpus - regenerating it is only ever done deliberately, never as a side effect"
+    },
+    {
+      "path": "data/manifests/exam-structure-2011.yaml",
+      "corpus": "2011",
+      "category": "manifest",
+      "sha256": "2608e1e8b101c64db91e16d02c5a5cd5eafeb6438dd077ae6ad86c064e301fae",
+      "protected_reason": "derived manifest (gold/visual-audit/blocker-ledger/exam-structure/extraction-audit/transformation-log) for a protected 2011/2021 corpus - regenerating it is only ever done deliberately, never as a side effect"
+    },
+    {
+      "path": "data/manifests/extraction-audit-2011-computing.csv",
+      "corpus": "2011",
+      "category": "manifest",
+      "sha256": "8e4274ebdb396da0c992c21da0de703491ef07beb398792c4798997555fa979e",
+      "protected_reason": "derived manifest (gold/visual-audit/blocker-ledger/exam-structure/extraction-audit/transformation-log) for a protected 2011/2021 corpus - regenerating it is only ever done deliberately, never as a side effect"
+    },
+    {
+      "path": "data/manifests/extraction-audit-2011-computing.json",
+      "corpus": "2011",
+      "category": "manifest",
+      "sha256": "e022dcec6b0d56e5a38eab63651cb9d3700ee40ecc3ecef12d9d2d3c42c98acd",
+      "protected_reason": "derived manifest (gold/visual-audit/blocker-ledger/exam-structure/extraction-audit/transformation-log) for a protected 2011/2021 corpus - regenerating it is only ever done deliberately, never as a side effect"
+    },
+    {
+      "path": "data/manifests/extraction-audit-2021-b.csv",
+      "corpus": "2021",
+      "category": "manifest",
+      "sha256": "de02b76f8cfb11a181d6d4fe0657790abeaaeaaee3c9f2b813ca49a58e3d2703",
+      "protected_reason": "derived manifest (gold/visual-audit/blocker-ledger/exam-structure/extraction-audit/transformation-log) for a protected 2011/2021 corpus - regenerating it is only ever done deliberately, never as a side effect"
+    },
+    {
+      "path": "data/manifests/extraction-audit-2021-b.json",
+      "corpus": "2021",
+      "category": "manifest",
+      "sha256": "06b6fbd738c623a19be70993726ed0f3b93e24463224727031b62b9565e88963",
+      "protected_reason": "derived manifest (gold/visual-audit/blocker-ledger/exam-structure/extraction-audit/transformation-log) for a protected 2011/2021 corpus - regenerating it is only ever done deliberately, never as a side effect"
+    },
+    {
+      "path": "data/manifests/extraction-audit-2021-l.csv",
+      "corpus": "2021",
+      "category": "manifest",
+      "sha256": "1f9c1c7db70e0c716de51b93fd762c0c23a2a0496cdf59fca4ee3c81171ec5c6",
+      "protected_reason": "derived manifest (gold/visual-audit/blocker-ledger/exam-structure/extraction-audit/transformation-log) for a protected 2011/2021 corpus - regenerating it is only ever done deliberately, never as a side effect"
+    },
+    {
+      "path": "data/manifests/extraction-audit-2021-l.json",
+      "corpus": "2021",
+      "category": "manifest",
+      "sha256": "71987fa4143a56ce1227c6fe0d6da9c77dda62e2de1187a5837668966804760e",
+      "protected_reason": "derived manifest (gold/visual-audit/blocker-ledger/exam-structure/extraction-audit/transformation-log) for a protected 2011/2021 corpus - regenerating it is only ever done deliberately, never as a side effect"
+    },
+    {
+      "path": "data/manifests/extraction-audit-2021-s.csv",
+      "corpus": "2021",
+      "category": "manifest",
+      "sha256": "f9c3aa52f980b116a5ade9e9198be198f0873e0dfa93048531f7a0d5f7c7d9f4",
+      "protected_reason": "derived manifest (gold/visual-audit/blocker-ledger/exam-structure/extraction-audit/transformation-log) for a protected 2011/2021 corpus - regenerating it is only ever done deliberately, never as a side effect"
+    },
+    {
+      "path": "data/manifests/extraction-audit-2021-s.json",
+      "corpus": "2021",
+      "category": "manifest",
+      "sha256": "2152def135979d12abdff0277a24f8510e47d3ecfea791929e28eb78435ba9bf",
+      "protected_reason": "derived manifest (gold/visual-audit/blocker-ledger/exam-structure/extraction-audit/transformation-log) for a protected 2011/2021 corpus - regenerating it is only ever done deliberately, never as a side effect"
+    },
+    {
+      "path": "data/manifests/gold-2011-computing.json",
+      "corpus": "2011",
+      "category": "manifest",
+      "sha256": "fcc656f03f8fcc8da4f92f4fbb7f1544c76c1c523fb5c78dec62f7d1081cdd34",
+      "protected_reason": "derived manifest (gold/visual-audit/blocker-ledger/exam-structure/extraction-audit/transformation-log) for a protected 2011/2021 corpus - regenerating it is only ever done deliberately, never as a side effect"
+    },
+    {
+      "path": "data/manifests/gold-2021-b.json",
+      "corpus": "2021",
+      "category": "manifest",
+      "sha256": "44b080eb9313934eeac593aa40a4fbb0b213ca059bf974fcf9d2fb76ad188dfd",
+      "protected_reason": "derived manifest (gold/visual-audit/blocker-ledger/exam-structure/extraction-audit/transformation-log) for a protected 2011/2021 corpus - regenerating it is only ever done deliberately, never as a side effect"
+    },
+    {
+      "path": "data/manifests/transformation-log-2011-computing.json",
+      "corpus": "2011",
+      "category": "manifest",
+      "sha256": "49d6b8a8bcb73c46f057fa6cae70c8e1ef577169d1406aaeef1559d4e4ccba90",
+      "protected_reason": "derived manifest (gold/visual-audit/blocker-ledger/exam-structure/extraction-audit/transformation-log) for a protected 2011/2021 corpus - regenerating it is only ever done deliberately, never as a side effect"
+    },
+    {
+      "path": "data/manifests/transformation-log-2021-b.json",
+      "corpus": "2021",
+      "category": "manifest",
+      "sha256": "0bd088454b40fb11c99a6677370dda3ebb7efb5fe822ac39380121f5b921b65f",
+      "protected_reason": "derived manifest (gold/visual-audit/blocker-ledger/exam-structure/extraction-audit/transformation-log) for a protected 2011/2021 corpus - regenerating it is only ever done deliberately, never as a side effect"
+    },
+    {
+      "path": "data/manifests/transformation-log-2021-l.json",
+      "corpus": "2021",
+      "category": "manifest",
+      "sha256": "5cb0c3eeb35a75738299ec33f6b5d04f3ecb5c8424ffba9338383c358795781e",
+      "protected_reason": "derived manifest (gold/visual-audit/blocker-ledger/exam-structure/extraction-audit/transformation-log) for a protected 2011/2021 corpus - regenerating it is only ever done deliberately, never as a side effect"
+    },
+    {
+      "path": "data/manifests/transformation-log-2021-s.json",
+      "corpus": "2021",
+      "category": "manifest",
+      "sha256": "000a5ff21a9fa48fc8b28372713bdeb7ffa4622e1d0e8b80236423dc7458d997",
+      "protected_reason": "derived manifest (gold/visual-audit/blocker-ledger/exam-structure/extraction-audit/transformation-log) for a protected 2011/2021 corpus - regenerating it is only ever done deliberately, never as a side effect"
+    },
+    {
+      "path": "data/manifests/visual-audit-2011-computing.json",
+      "corpus": "2011",
+      "category": "manifest",
+      "sha256": "1a3c785cf4c72013470fc875f0a48e2f0c8a27e0f7cc5c10297d6bf117479d9c",
+      "protected_reason": "derived manifest (gold/visual-audit/blocker-ledger/exam-structure/extraction-audit/transformation-log) for a protected 2011/2021 corpus - regenerating it is only ever done deliberately, never as a side effect"
+    },
+    {
+      "path": "data/manifests/visual-audit-2021-b.json",
+      "corpus": "2021",
+      "category": "manifest",
+      "sha256": "7032b41718bb6503676da28651d2787dfcb87c5d0e8613d372f330fedec21354",
+      "protected_reason": "derived manifest (gold/visual-audit/blocker-ledger/exam-structure/extraction-audit/transformation-log) for a protected 2011/2021 corpus - regenerating it is only ever done deliberately, never as a side effect"
+    }
+  ]
+}

@@ -73,3 +73,28 @@ def test_q39_alternatives_are_not_regressed_by_the_horizontal_grid_shape(extract
     assert q39.statement.endswith("É correto apenas o que se afirma em")
     alternative_a = next(a for a in q39.alternatives if a.letter == "A")
     assert alternative_a.text == "I."
+
+
+def test_q23_alternative_e_trailing_period_after_inline_formula_is_preserved(extraction_result):
+    """Preservation test (PROMPT Phase 3M): Q23's own alternative E ends
+    with an inline "expressao regular" formula image followed by a lone
+    "." sitting ~150pt to the right of alternative E's own marker,
+    immediately after that inline image. ``assembler._in_alternatives_
+    section`` was narrowed this phase to stop granting its own blanket
+    exemption to a line inside a *large* diagram/photo region disjoint
+    from the alternative sequence (fixing 2008-b Q75's own diagram-label
+    bleed) - this period must stay exempted regardless, since it never
+    touches a large region at all, only its own small-formula asset
+    (``_attach_alternative_formula_regions`` decides that asset's own
+    attachment, not this exemption).
+    """
+    result = extraction_result
+    questions_by_number = {
+        q.question_number: q
+        for q in result.questions
+        if q.question_type == QuestionType.MULTIPLE_CHOICE
+    }
+    q23 = questions_by_number[23]
+    alternative_e = next(a for a in q23.alternatives if a.letter == "E")
+    assert alternative_e.text.endswith(".")
+    assert "representada pela expressão regular" in alternative_e.text
