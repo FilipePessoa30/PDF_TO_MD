@@ -56,6 +56,38 @@ than trusting that construction blindly, is what makes a future cycle (a
 malformed edge set from a later extension) a loud ``CycleError`` instead
 of a silently wrong or duplicated order (PROMPT section 8: "nunca resolver
 ciclo descartando conteúdo silenciosamente").
+
+PROMPT Phase 3L adds two things on top of the Phase 3K mechanism above,
+neither of which changes zone/order computation itself:
+
+1. ``assess_eligibility`` - a purely structural decision (zone count,
+   topology transitions, graph acyclicity) for whether a given line list
+   is even a *candidate* for zone-aware reordering at all - never a
+   question ID, page number, or page hash. Phase 3K activated the
+   mechanism via a hash-locked, page-specific override
+   (``layout_overrides.LayoutOverrideSet.forces_zoned_reading_order``,
+   removed in Phase 3L) after discovering that applying it unconditionally
+   to *every* page regressed dozens of already-correct ones - not because
+   the zoning itself was wrong, but because several *other* consumers of
+   ``layout.extract_page_lines`` (``figures.py``'s own label absorption
+   chief among them) use that function's own returned order as an
+   implicit geometric proxy, and broke when the order changed under them
+   for reasons unrelated to their own job. Phase 3L's fix is architectural
+   (see ``assembler._canonical_content_lines``): this module is now only
+   ever consulted from within ``assembler.assemble_question``, on one
+   question's own already-sliced span, strictly *after* every geometric
+   consumer (region detection, margin detection, question-boundary
+   detection) has already been fed the original, untouched, page-wide
+   order from ``layout.extract_page_lines``. Structural eligibility
+   replaces the override as the operational selector; the override itself
+   is kept in ``data/manifests/layout-overrides.yaml``, marked
+   ``superseded``, as a historical record of the page-scoped fix that
+   first resolved D10 safely.
+2. A differential safety check (``assembler._canonical_content_lines``'s
+   own ``same_lines``/``word_conserved`` gates) that never trusts
+   eligibility alone: a span is only ever reordered if the candidate order
+   is confirmed, by direct comparison, to be a pure permutation of the
+   exact same lines - never a content change.
 """
 
 from __future__ import annotations
@@ -435,3 +467,87 @@ def zoned_reading_order(lines: list[Line], page: int) -> tuple[list[Line], Readi
     """
     zones = detect_reading_zones(lines, page)
     return resolve_reading_order(lines, zones)
+
+
+@dataclass(frozen=True)
+class ReadingZoneEligibility:
+    """Whether a line list is structurally a candidate for zone-aware
+    reordering - PROMPT Phase 3L, section 9.
+
+    Computed from zone/graph evidence alone: never a question ID, page
+    number, or page hash. Deliberately does *not* decide whether the
+    reorder is actually safe to publish - that is a separate concern
+    (word/source-id conservation), decided by the caller after this
+    structural question is answered, since this module has no notion of
+    "word" or "owner" at all (see ``assembler._canonical_content_lines``).
+    """
+
+    eligible: bool
+    confidence: float
+    positive_evidence: tuple[str, ...]
+    negative_evidence: tuple[str, ...]
+    zone_count: int
+    topology_transitions: int
+    graph_acyclic: bool
+    decision_reason: str
+
+
+def assess_eligibility(
+    zones: list[ReadingZone], cycles: tuple[tuple[str, ...], ...] = ()
+) -> ReadingZoneEligibility:
+    """Decide, from zone evidence alone, whether zone-aware reordering is
+    even a candidate here.
+
+    Positive evidence requires *both* at least two zones and at least one
+    genuine mode transition between adjacent zones (a uniform single- or
+    two-column page - the common case, e.g. two independent objective
+    questions side by side, or a page whose own bare item markers happen
+    to sit in their own column - produces exactly one zone spanning the
+    whole span, or several same-mode zones with zero transitions, and is
+    therefore never eligible: see ``test_reading_zones.py``'s own
+    ``test_whole_page_two_column_matches_left_then_right_convention`` and
+    ``test_narrow_single_left_side_line_is_not_enough_evidence_for_two_columns``).
+    A cyclic graph is disqualifying regardless of transition evidence.
+    """
+    zone_count = len(zones)
+    ordered = sorted(zones, key=lambda z: z.y_interval[0])
+    transitions = sum(1 for a, b in zip(ordered, ordered[1:], strict=False) if a.mode != b.mode)
+    graph_acyclic = len(cycles) == 0
+
+    positive: list[str] = []
+    negative: list[str] = []
+
+    if zone_count < 2:
+        negative.append(f"only {zone_count} zone(s) - no evidence of a topology change")
+    elif transitions < 1:
+        negative.append(
+            f"{zone_count} zones but zero mode transitions between them - a uniform topology"
+        )
+    else:
+        positive.append(
+            f"{transitions} vertical topology transition(s) detected across {zone_count} zones"
+        )
+
+    multi_column_zones = [z for z in zones if z.mode == "multi_column"]
+    if multi_column_zones:
+        positive.append(
+            f"{len(multi_column_zones)} zone(s) with genuine concurrent two-column evidence"
+        )
+
+    if not graph_acyclic:
+        negative.append(f"reading-order graph has {len(cycles)} cycle(s)")
+
+    eligible = bool(positive) and not negative
+    confidence = 1.0 if eligible else 0.0
+    reason = "; ".join(positive) if eligible else "; ".join(negative) or "no zones produced"
+
+    return ReadingZoneEligibility(
+        eligible=eligible,
+        confidence=confidence,
+        positive_evidence=tuple(positive),
+        negative_evidence=tuple(negative),
+        zone_count=zone_count,
+        topology_transitions=transitions,
+        graph_acyclic=graph_acyclic,
+        decision_reason=reason,
+    )

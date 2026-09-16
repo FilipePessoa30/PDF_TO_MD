@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from enade.extraction.annotations import (
     DocumentAnnotation,
-    _find_item_markers,
+    find_item_markers,
     reattach_value_annotations,
 )
 from enade.extraction.layout import Line
@@ -142,7 +142,7 @@ def test_decimal_dot_and_singular_ponto_are_recognized():
 
 
 def test_ordinary_prose_is_never_reordered_when_no_value_annotation_exists():
-    # _find_item_markers alone is deliberately naive (same bare-letter
+    # find_item_markers alone is deliberately naive (same bare-letter
     # shape as alternative_groups's own known false positive, "A chance
     # de..."): safety comes from reattach_value_annotations's own early
     # exit when no value-annotation-shaped line is present at all - the
@@ -150,7 +150,7 @@ def test_ordinary_prose_is_never_reordered_when_no_value_annotation_exists():
     # every real question in this corpus with plain prose starting with a
     # bare capital letter but no "(valor: ...)" annotation.
     lines = [_line("A chance de algo acontecer e alta.", 10.0)]
-    assert _find_item_markers(lines) == [("A", 0)]
+    assert find_item_markers(lines) == [("A", 0)]
     result, trace = reattach_value_annotations(lines)
     assert result is lines
     assert trace == []

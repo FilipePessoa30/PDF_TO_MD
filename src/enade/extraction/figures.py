@@ -944,7 +944,6 @@ def detect_visual_regions(
     pdf_sha256: str = "",
     question_regions: list[QuestionRegion] | None = None,
     fragment_reconstruction_gate: bool = False,
-    zoned_reading_order_gate: bool = False,
 ) -> list[VisualRegion]:
     """Detect non-decorative visual content regions on one (1-indexed) page.
 
@@ -1020,11 +1019,24 @@ def detect_visual_regions(
     if not candidates:
         return []
 
+    # PROMPT Phase 3L: always the stable, page-wide geometric order - never
+    # a zone-aware/"canonical reading order" reorder, even when one is
+    # active elsewhere for this same page's own text. label_candidates
+    # below (via _is_paragraph_continuation) uses list *position* as a
+    # proxy for "the line immediately above this one, visually" - a valid
+    # proxy only when every line on the page shares one single, consistent
+    # geometric order. A Phase 3K attempt to thread a zone-aware order
+    # into this exact call regressed dozens of already-correct pages
+    # (label absorption, region growth and crop bounds all changed
+    # silently) precisely because that proxy stopped holding once a
+    # question's own text was reordered independently of its own figures'
+    # geometry - see docs/phase-3l-report.md, section D/H. Region
+    # detection is purely geometric and must stay that way regardless of
+    # which text order downstream consumers choose.
     page_lines = extract_page_lines(
         page,
         page_number,
         fragment_reconstruction_gate=fragment_reconstruction_gate,
-        zoned_reading_order_gate=zoned_reading_order_gate,
     )
     body_margin_x0 = _dominant_left_margin(page_lines)
     body_font_size = _dominant_body_font_size(page_lines) if caption_font_size_gate else None

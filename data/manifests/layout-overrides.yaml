@@ -506,14 +506,17 @@ overrides:
     evidence: docs/decisions.md, Phase 2E ADR 39 (small-formula region membership)
     status: reviewed
   # --- Phase 3K: D10's own newspaper-collage page (2008-b) - page-scoped
-  # activation of reading_zones.zoned_reading_order. See
-  # exam-structure-2008.yaml's own comment for why this is a page override
-  # rather than a booklet-wide default: applying the new mechanism to
-  # every two-column page in 2008-b regressed several already-correct
-  # ones (Q28, Q63, Q71 among others), because extract_page_lines's own
-  # output order feeds other order-dependent heuristics (figures.py's own
-  # label-absorption _is_paragraph_continuation) tuned against the old,
-  # page-wide split.
+  # activation of reading_zones.zoned_reading_order. SUPERSEDED IN PHASE
+  # 3L: the rule this entry names (force_zoned_reading_order_page) is no
+  # longer consulted by any code - LayoutOverrideSet.forces_zoned_reading_order
+  # was removed once assembler.py gained a structural eligibility detector
+  # (reading_zones.assess_eligibility) that selects D10's own span
+  # automatically, from the same observable zone evidence described below,
+  # never from this page/hash record. Kept here, not deleted, as the
+  # historical record of the page-scoped fix that first resolved D10
+  # safely (PROMPT Phase 3L section 12: "não apague o histórico do
+  # override; marque-o como superseded"). See docs/phase-3l-report.md for
+  # the full account of why page/hash selection was replaced.
   - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
     page: 7
     bbox: [0.0, 0.0, 0.0, 0.0]
@@ -534,6 +537,8 @@ overrides:
       within each specific vertical window rather than one page-wide
       split - confirmed to reproduce D10's own correct reading order
       without disturbing any other 2008-b page or 2011/2021 (neither of
-      which sets zoned_reading_order_gate at all).
-    evidence: docs/phase-3k-report.md
-    status: reviewed
+      which sets zoned_reading_order_gate at all). SUPERSEDED (Phase 3L):
+      D10 is now selected by structural eligibility instead - see the
+      note above.
+    evidence: docs/phase-3k-report.md; docs/phase-3l-report.md
+    status: superseded

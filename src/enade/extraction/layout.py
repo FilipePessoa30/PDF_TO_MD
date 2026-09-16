@@ -697,24 +697,25 @@ def extract_page_lines(
     overrides: LayoutOverrideSet | None = None,
     pdf_sha256: str = "",
     fragment_reconstruction_gate: bool = False,
-    zoned_reading_order_gate: bool = False,
 ) -> list[Line]:
     """Extract every physical line on ``page``, in visual reading order.
 
-    ``zoned_reading_order_gate`` (PROMPT Phase 3K, default False): opt-in
-    replacement of the page-wide left-then-right column split below with
-    ``reading_zones.zoned_reading_order`` - a page's own column topology
-    can change partway down (a photo-and-article zone, then full-width
-    prose, then a two-column bulleted list, all on one page - see
-    ``reading_zones.py``'s own module docstring, 2008-b D10), and this
-    function's own single global ``detect_column_margins`` split cannot
-    represent that. Threaded from
-    ``ExamStructureProfile.zoned_reading_order_gate`` by
-    ``pipeline.py``/``assembler.py``/``figures.py`` - every booklet
-    without this field set keeps the exact original, page-wide-split
-    behavior unconditionally (confirmed by full regeneration: 2011/2021
-    are byte-identical whether or not this gate exists at all, since
-    neither profile sets it).
+    This is always the stable, page-wide *geometric* order (PROMPT Phase
+    3L, section 5/8) - the single source every other geometric consumer
+    (region/label detection in figures.py, question-boundary detection,
+    margin detection) can keep relying on regardless of whether a
+    question's own *text* gets a zone-aware reorder elsewhere. A Phase 3K
+    attempt threaded a page-wide zone-aware alternative into this exact
+    function and into every one of its callers; reverted after it
+    regressed dozens of already-correct pages, because several downstream
+    consumers use this function's own returned *order* (not just its
+    content) as an implicit proxy for geometric adjacency - see
+    ``figures._is_paragraph_continuation`` and
+    docs/phase-3l-report.md, section D/E/H. The zone-aware reorder
+    (``reading_zones.py``) is instead applied only within
+    ``assembler.assemble_question``, scoped to one question's own already
+    -sliced span, after this function's own stable order has already fed
+    every geometric consumer that needs it.
 
     Single-column pages: sorted by (y0, x0). Two-column pages (detected via
     :func:`detect_column_margins`): every left-column line (top to
@@ -751,26 +752,6 @@ def extract_page_lines(
     margins = detect_column_margins(raw)
     lines = _merge_orphan_markers(raw, margins, overrides, pdf_sha256)
 
-    if (
-        zoned_reading_order_gate
-        and overrides is not None
-        and overrides.forces_zoned_reading_order(pdf_sha256, page_number)
-    ):
-        # Subsumes the plain single-column sort below too - a page with no
-        # page-wide column evidence at all resolves to one single_column
-        # zone covering everything, sorted by (y0, x0), identical to the
-        # ``margins is None`` branch this replaces (see
-        # reading_zones.detect_reading_zones). Requires *both* the
-        # booklet-level profile gate and a page-specific override (see
-        # ``LayoutOverrideSet.forces_zoned_reading_order``) - never applied
-        # to every two-column page in a booklet at once (see this
-        # function's own docstring for why that regressed several
-        # already-correct pages).
-        from enade.extraction.reading_zones import zoned_reading_order
-
-        ordered, _trace = zoned_reading_order(lines, page_number)
-        return ordered
-
     if margins is None:
         lines.sort(key=lambda ln: (round(ln.y0, 1), ln.x0))
         return lines
@@ -806,7 +787,6 @@ def extract_document_lines(
     overrides: LayoutOverrideSet | None = None,
     pdf_sha256: str = "",
     fragment_reconstruction_gate: bool = False,
-    zoned_reading_order_gate: bool = False,
 ) -> list[Line]:
     """Extract position-sorted lines for every page, in page order."""
     all_lines: list[Line] = []
@@ -819,7 +799,6 @@ def extract_document_lines(
                 overrides=overrides,
                 pdf_sha256=pdf_sha256,
                 fragment_reconstruction_gate=fragment_reconstruction_gate,
-                zoned_reading_order_gate=zoned_reading_order_gate,
             )
         )
     return all_lines

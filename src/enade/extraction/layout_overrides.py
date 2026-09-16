@@ -264,35 +264,6 @@ class LayoutOverrideSet(BaseModel):
                 return True
         return False
 
-    def forces_zoned_reading_order(self, pdf_sha256: str, page: int) -> bool:
-        """True if some override activates ``reading_zones.zoned_reading_order``
-        for this specific page (PROMPT Phase 3K).
-
-        A second, narrower gate on top of
-        ``ExamStructureProfile.zoned_reading_order_gate`` (which only
-        declares the mechanism *available* for a booklet, never
-        auto-activates it anywhere): unconditionally applying zone-aware
-        ordering to every two-column page in a booklet was tried and
-        reverted - ``extract_page_lines``'s own output order feeds several
-        other, order-dependent heuristics elsewhere in the pipeline (most
-        notably ``figures.py``'s own label-absorption
-        ``_is_paragraph_continuation``, which was tuned against the old,
-        page-wide column split) that regressed on several already-correct
-        pages when the ordering changed under them, even though those
-        pages' own final text was never wrong to begin with. Scoping
-        activation to one documented, hash-locked page at a time - exactly
-        like ``forces_single_column`` above - is what lets the new
-        mechanism fix a genuine defect (2008-b's own D10) without
-        reopening any of those. ``bbox``/``question_id`` are unused for
-        this rule kind and left as the schema's own placeholder values.
-        """
-        for override in self.overrides:
-            if override.rule != "force_zoned_reading_order_page":
-                continue
-            if override.pdf_sha256 == pdf_sha256 and override.page == page:
-                return True
-        return False
-
 
 def load_layout_overrides(path: Path) -> LayoutOverrideSet:
     """Load an override set, or an empty one if ``path`` does not exist -

@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
+from typing import Literal
 
 import pymupdf
 import yaml
@@ -159,24 +160,33 @@ class ExamStructureProfile(BaseModel):
     #: corpus is reverted on principle (PROMPT: "nao aceite equivalencia
     #: semantica"), not only when it is wrong.
     fragment_reconstruction_gate: bool = False
-    #: Opt-in (PROMPT Phase 3K, "topologia de colunas") replacement of
-    #: ``layout.extract_page_lines``'s own single, page-wide
-    #: ``detect_column_margins`` split with a zone-aware resolution (see
-    #: ``reading_zones.py``) that can represent a page whose column
-    #: topology changes partway down - a photo-and-article zone, then
-    #: full-width prose, then a two-column bulleted list, all on the same
-    #: page (2008-b's own D10, "Formação Geral Discursiva 10"). A vertical
-    #: window is only ever treated as genuine two-column when *both* sides
-    #: have real, substantial evidence *concurrently occupying* that same
-    #: window (never merely because a line's own x0 sits past the page's
-    #: own globally-detected right margin) - so a single caption sharing
-    #: the left bucket with an unrelated later paragraph, or a full-width
-    #: paragraph's own continuation, is never mistaken for a second
-    #: column. ``False`` (default) keeps the exact, original page-wide
-    #: split every booklet without this field set already has - confirmed
-    #: by full regeneration that 2011/2021 are byte-identical, since
-    #: neither profile sets it.
-    zoned_reading_order_gate: bool = False
+    #: Opt-in (PROMPT Phase 3K/3L, "topologia de colunas") activation of a
+    #: zone-aware, question-local reordering (see ``reading_zones.py``)
+    #: for a page whose column topology changes partway down - a
+    #: photo-and-article zone, then full-width prose, then a two-column
+    #: bulleted list, all on the same page (2008-b's own D10, "Formação
+    #: Geral Discursiva 10"). ``"disabled"`` (default) keeps the exact,
+    #: original page-wide split every booklet without this field set
+    #: already has - confirmed by full regeneration that 2011/2021 are
+    #: byte-identical, since neither profile sets it. This field only ever
+    #: *enables the capability for a booklet* - it never selects which
+    #: page(s) actually activate (PROMPT Phase 3L, section 13: "o profile
+    #: pode habilitar a capacidade, mas não selecionar páginas
+    #: específicas"). Which question spans actually get reordered is
+    #: decided per span, from structural evidence alone (see
+    #: ``reading_zones.assess_eligibility`` and
+    #: ``assembler._canonical_content_lines``) - never by a question ID,
+    #: page number, or page hash consulted as an operational selector.
+    #: ``"shadow"``: compute zones/eligibility/candidate order and record
+    #: them in the transformation log for every eligible span, but always
+    #: publish the original, stable order (diagnostic only - used to build
+    #: the Phase 3L confusion matrix against 2008-b/2011/2021 without any
+    #: risk of publishing a wrong reorder). ``"active"``: publish the
+    #: candidate order instead of the stable one, but only for a span that
+    #: is both structurally eligible *and* passes the differential safety
+    #: oracle (word-multiset/source-id/owner conservation) - a span that
+    #: fails either check keeps the original, stable order and records why.
+    zoned_reading_order_mode: Literal["disabled", "shadow", "active"] = "disabled"
 
     @model_validator(mode="after")
     def _validate_sections(self) -> ExamStructureProfile:

@@ -17,6 +17,7 @@ import pytest
 from enade.extraction.layout import Line
 from enade.extraction.reading_zones import (
     ReadingZone,
+    assess_eligibility,
     detect_reading_zones,
     resolve_reading_order,
     zoned_reading_order,
@@ -263,3 +264,75 @@ def test_gutter_width_variation_does_not_affect_resolution():
 
 def test_detect_reading_zones_on_empty_lines_returns_empty():
     assert detect_reading_zones([], page=1) == []
+
+
+# --- structural eligibility (PROMPT Phase 3L) --------------------------------
+
+
+def test_assess_eligibility_accepts_a_genuine_topology_change():
+    # Mirrors D10's own shape: a real multi_column zone followed by a real
+    # single_column zone - >=2 zones, a genuine transition between them.
+    left = [_line(f"L{i}", 40.0, 100.0 + i * 20) for i in range(4)]
+    right = [_line(f"R{i}", 320.0, 100.0 + i * 20) for i in range(4)]
+    footer = [_line("FOOTER", 40.0, 300.0, width=480.0)]
+    _, trace = zoned_reading_order(left + right + footer, page=1)
+    eligibility = assess_eligibility(trace.zones, trace.cycles)
+    assert eligibility.eligible
+    assert eligibility.zone_count >= 2
+    assert eligibility.topology_transitions >= 1
+    assert eligibility.graph_acyclic
+
+
+def test_assess_eligibility_rejects_a_single_uniform_multi_column_zone():
+    # D40's own real shape: one genuine multi_column zone and otherwise no
+    # topology change at all - trivially satisfying a naive "zone_count>=2"
+    # bar (many single-line "unclaimed" zones) must NOT be enough; there
+    # must be a real *transition* between differently-shaped zones.
+    left = [_line(f"L{i}", 40.0, 100.0 + i * 20) for i in range(4)]
+    right = [_line(f"R{i}", 320.0, 100.0 + i * 20) for i in range(4)]
+    _, trace = zoned_reading_order(left + right, page=1)
+    eligibility = assess_eligibility(trace.zones, trace.cycles)
+    assert not eligibility.eligible
+    assert eligibility.topology_transitions == 0
+
+
+def test_assess_eligibility_rejects_a_single_zone_page():
+    lines = [_line(f"line {i}", 40.0, 100.0 + i * 20) for i in range(6)]
+    _, trace = zoned_reading_order(lines, page=1)
+    eligibility = assess_eligibility(trace.zones, trace.cycles)
+    assert not eligibility.eligible
+    assert eligibility.zone_count == 1
+
+
+def test_assess_eligibility_rejects_when_the_graph_has_a_cycle():
+    zone = ReadingZone(
+        zone_id="p1:z0",
+        page=1,
+        y_interval=(0.0, 10.0),
+        mode="single_column",
+        column_count=1,
+        column_bounds=(),
+        source_line_ids=(0,),
+        detection_method="test",
+        confidence=1.0,
+    )
+    other = ReadingZone(
+        zone_id="p1:z1",
+        page=1,
+        y_interval=(10.0, 20.0),
+        mode="multi_column",
+        column_count=2,
+        column_bounds=((0.0, 5.0), (10.0, 15.0)),
+        source_line_ids=(1, 2),
+        detection_method="test",
+        confidence=1.0,
+    )
+    eligibility = assess_eligibility([zone, other], cycles=(("a", "b"),))
+    assert not eligibility.eligible
+    assert not eligibility.graph_acyclic
+
+
+def test_assess_eligibility_on_no_zones_is_not_eligible():
+    eligibility = assess_eligibility([], cycles=())
+    assert not eligibility.eligible
+    assert eligibility.zone_count == 0

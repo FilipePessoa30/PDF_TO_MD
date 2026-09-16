@@ -22,7 +22,11 @@ from typing import Literal
 import pymupdf
 
 from enade.extraction.alternative_groups import find_alternative_group
-from enade.extraction.annotations import DocumentAnnotation, reattach_value_annotations
+from enade.extraction.annotations import (
+    DocumentAnnotation,
+    find_item_markers,
+    reattach_value_annotations,
+)
 from enade.extraction.boundaries import QuestionKind, QuestionSpan
 from enade.extraction.chrome import is_chrome_line
 from enade.extraction.figures import (
@@ -38,6 +42,11 @@ from enade.extraction.label_normalization import LabelCorrection
 from enade.extraction.layout import Line, extract_page_lines
 from enade.extraction.layout_overrides import LayoutOverrideSet
 from enade.extraction.ownership import QuestionRegion, question_key
+from enade.extraction.reading_zones import (
+    assess_eligibility,
+    detect_reading_zones,
+    resolve_reading_order,
+)
 from enade.extraction.spacing import SpacingCorrection
 from enade.extraction.tables import DetectedTable, detect_tables
 
@@ -204,6 +213,15 @@ class ExtractedQuestion:
     #: reason for human review) when reading order placed it away from its
     #: owning item; the raw material for the content-assignment ledger.
     value_annotations: list[DocumentAnnotation] = field(default_factory=list)
+    #: Every zone-eligibility/safety-oracle finding from
+    #: ``_canonical_content_lines`` (PROMPT Phase 3L) - a shadow-mode
+    #: candidate that was never published, or an active-mode candidate
+    #: the safety oracle rejected. Never surfaced as a ``warnings`` entry
+    #: (same reasoning as ``value_annotations`` above): a rejection means
+    #: the original, already-correct order was kept, and a shadow-mode
+    #: finding is diagnostic by definition - neither is a reason for
+    #: ``automatic_validation`` to flag a question for human review.
+    zone_reorder_notes: list[str] = field(default_factory=list)
 
     @property
     def plain_statement(self) -> str:
@@ -847,6 +865,151 @@ def _strip_leading_marker(lines: list[Line]) -> list[Line]:
     return lines
 
 
+def _canonical_content_lines(
+    lines: list[Line],
+    mode: Literal["disabled", "shadow", "active"],
+    regions: list[VisualRegion],
+    detected_tables: list[DetectedTable],
+) -> tuple[list[Line], list[str]]:
+    """Apply ``reading_zones``'s zone-aware reorder to ``lines``, scoped to
+    one question's own already-sliced span - never a page/hash override
+    (PROMPT Phase 3L; see ``reading_zones.py``'s own module docstring for
+    the full architecture and why this replaces Phase 3K's
+    ``force_zoned_reading_order_page`` override).
+
+    Reordering never reaches past the first genuine item/alternative
+    marker sequence (``annotations.find_item_markers``, requiring at
+    least two markers found in strictly increasing order - a lone "A"
+    coincidentally starting a sentence, as in 2008-b D10's own "A partir
+    da leitura...", never counts, matching the same false-positive shape
+    ``alternative_groups``/``annotations`` already guard against
+    elsewhere). A real marker sequence (2008-b D40's own item A/B,
+    Q50's own alternatives A-E) marks a structurally distinct region -
+    the markers themselves, and everything from the first one onward -
+    that this mechanism must never touch: an early, real two-column
+    statement fragment sharing a page with those markers can otherwise
+    be *correctly* confirmed as its own zone, but including the markers
+    (and any trailing table/diagram-label content sitting past them,
+    e.g. Q50's own "Tabela I"/"Tabela II") in the same reordering pass
+    lets genuinely unclaimed content on the far side of the page's own
+    column split - which the old, page-wide algorithm always keeps in
+    one strict left-then-right block - interleave with it by raw y0
+    instead, corrupting the alternative/item boundary itself (found via
+    exactly this regression against D20/D40/Q50 during Phase 3L's own
+    development - see docs/phase-3l-report.md, section D).
+
+    The eligible prefix is partitioned by page (a multi-page span's own
+    reading order is never mixed across a page boundary); each page's
+    own partition is independently assessed. A partition is only ever
+    reordered when ``reading_zones.assess_eligibility`` finds genuine
+    structural evidence (at least two zones, at least one real topology
+    transition between them, an acyclic graph) *and* the differential
+    safety oracle below confirms the candidate is a pure permutation of
+    the exact same lines - never a content change. In ``"shadow"`` mode
+    the candidate is computed and any eligibility/safety finding is
+    recorded as a warning, but the original, stable order is always what
+    gets published - used to audit the corpus for eligible spans without
+    any risk of publishing a wrong reorder (PROMPT section 10).
+    """
+    if mode == "disabled":
+        return lines, []
+
+    item_markers = find_item_markers(lines)
+    boundary = item_markers[0][1] if len(item_markers) >= 2 else len(lines)
+    eligible_prefix, frozen_suffix = lines[:boundary], lines[boundary:]
+
+    by_page: dict[int, list[Line]] = {}
+    for ln in eligible_prefix:
+        by_page.setdefault(ln.page_number, []).append(ln)
+
+    result: list[Line] = []
+    notes: list[str] = []
+    for page_number in sorted(by_page):
+        page_lines = by_page[page_number]
+        if len(page_lines) < 2:
+            result.extend(page_lines)
+            continue
+
+        zones = detect_reading_zones(page_lines, page_number)
+        candidate_order, trace = resolve_reading_order(page_lines, zones)
+        eligibility = assess_eligibility(zones, trace.cycles)
+
+        if not eligibility.eligible:
+            result.extend(page_lines)
+            continue
+
+        # Differential safety oracle (PROMPT section 11). Two checks:
+        # (1) the candidate must be a pure permutation of the exact same
+        # lines - reordering cannot, by itself, change word content, so
+        # this exists to catch a bug in the general zone/graph code
+        # above, not because eligible-but-unsafe from this check alone is
+        # expected against any real case found so far; (2) every figure/
+        # table this page owns must land at the *same* insertion point
+        # (``_find_region_insertion_index``) under the candidate order as
+        # under the original one. Zone-local "left-then-right" grouping,
+        # computed only over one zone's own narrow y-range, can silently
+        # disagree with the old, page-wide left/right split about exactly
+        # where a region sits relative to a same-side line just outside
+        # that zone's own boundary (found via a real regression against
+        # 2008-b Q50's own figure during Phase 3L's own development -
+        # the reordered *text* was correct, but the figure moved to a
+        # different, wrong position in the flow - see
+        # docs/phase-3l-report.md, section D/K).
+        same_lines = Counter(id(ln) for ln in candidate_order) == Counter(
+            id(ln) for ln in page_lines
+        )
+        word_conserved = sorted(ln.text for ln in candidate_order) == sorted(
+            ln.text for ln in page_lines
+        )
+        page_assets: list[VisualRegion | DetectedTable] = [
+            r for r in regions if r.page_number == page_number
+        ] + [t for t in detected_tables if t.page_number == page_number]
+
+        def _lines_before(
+            ordered_lines: list[Line], asset: VisualRegion | DetectedTable
+        ) -> frozenset[int]:
+            # The *set* of lines (by identity) that would precede the
+            # asset - never the raw index (meaningless to compare between
+            # two differently-ordered lists of the same lines) and never
+            # just the one anchor line's own identity either (an asset
+            # inserted "before everything" or "after everything" keeps
+            # that same relationship - the empty set, or the full set -
+            # even when what "everything" contains is legitimately
+            # reordered, e.g. 2008-b D10's own photo, always first,
+            # regardless of how its surrounding text is ordered).
+            idx = _find_region_insertion_index(ordered_lines, asset)
+            return frozenset(id(ln) for ln in ordered_lines[:idx])
+
+        insertion_points_conserved = all(
+            _lines_before(page_lines, asset) == _lines_before(candidate_order, asset)
+            for asset in page_assets
+        )
+        safe = same_lines and word_conserved and insertion_points_conserved
+
+        if mode == "shadow":
+            notes.append(
+                f"[shadow] page {page_number}: zoned reading order eligible "
+                f"({eligibility.decision_reason}); safety={'passed' if safe else 'FAILED'} "
+                "- original order published (shadow mode never activates)"
+            )
+            result.extend(page_lines)
+            continue
+
+        if safe:
+            result.extend(candidate_order)
+        else:
+            notes.append(
+                f"page {page_number}: zoned reading order was structurally eligible "
+                f"({eligibility.decision_reason}) but rejected by the safety oracle "
+                f"(same_lines={same_lines}, word_conserved={word_conserved}) - "
+                "original order published instead"
+            )
+            result.extend(page_lines)
+
+    result.extend(frozen_suffix)
+    return result, notes
+
+
 #: An alternative's own text is "empty" (nothing but the marker and
 #: trailing punctuation survived) - the shape ``_attach_alternative_
 #: formula_regions`` looks for, never a question id.
@@ -1125,7 +1288,7 @@ def assemble_question(
     owner_exclusion_gate: bool = False,
     contextual_relation_gate: bool = False,
     fragment_reconstruction_gate: bool = False,
-    zoned_reading_order_gate: bool = False,
+    zoned_reading_order_mode: Literal["disabled", "shadow", "active"] = "disabled",
 ) -> ExtractedQuestion:
     warnings: list[str] = []
 
@@ -1187,11 +1350,14 @@ def assemble_question(
     # unconditionally protected again (the exact blanket exemption Cluster
     # C exists to narrow) purely because no margin evidence was available.
     def _page_body_margin(page_number: int) -> float | None:
+        # Always the stable, page-wide geometric order (PROMPT Phase 3L,
+        # section 8) - margin detection is purely geometric and must never
+        # depend on whatever text order a question's own zoned reorder
+        # (below) produces.
         page_lines = extract_page_lines(
             doc[page_number - 1],
             page_number,
             fragment_reconstruction_gate=fragment_reconstruction_gate,
-            zoned_reading_order_gate=zoned_reading_order_gate,
         )
         margin = _dominant_left_margin(page_lines)
         return margin if margin is not None else dominant_left_margin_by_text_length(page_lines)
@@ -1211,7 +1377,6 @@ def assemble_question(
             pdf_sha256=pdf_sha256,
             question_regions=(question_regions_by_page or {}).get(page_number),
             fragment_reconstruction_gate=fragment_reconstruction_gate,
-            zoned_reading_order_gate=zoned_reading_order_gate,
         )
         bounds = page_y_bounds.get(page_number)
         x_bounds = page_x_bounds.get(page_number)
@@ -1367,6 +1532,16 @@ def assemble_question(
 
     content_lines = _strip_leading_marker(
         [ln for ln in span.lines if ln in table_consumed_lines or not is_chrome_line(ln.text)]
+    )
+
+    # PROMPT Phase 3L: zone-aware, question-local reordering, scoped to
+    # this one already-sliced span - never a page/hash override (see
+    # _canonical_content_lines's own docstring and reading_zones.py's
+    # module docstring for the full architecture). A true no-op
+    # (mode="disabled") for every booklet without this field set, and for
+    # any span whose own lines are not structurally eligible.
+    content_lines, zone_reorder_notes = _canonical_content_lines(
+        content_lines, zoned_reading_order_mode, regions, detected_tables
     )
 
     # PROMPT Phase 3J (single-source-ownership): a per-item "(valor: X
@@ -1568,4 +1743,5 @@ def assemble_question(
         symbol_corrections=symbol_corrections,
         fragment_merges=fragment_merges,
         value_annotations=value_annotations,
+        zone_reorder_notes=zone_reorder_notes,
     )

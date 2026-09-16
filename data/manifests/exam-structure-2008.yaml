@@ -113,21 +113,28 @@ caption_font_size_gate: true
 owner_exclusion_gate: true
 contextual_relation_gate: true
 fragment_reconstruction_gate: true
-# `zoned_reading_order_gate` (PROMPT Phase 3K): declares the new zone-aware
+# `zoned_reading_order_mode` (PROMPT Phase 3K/3L): declares the zone-aware
 # reading-order mechanism (reading_zones.py) *available* for this booklet -
-# it still only ever activates on a page carrying its own documented,
-# hash-locked `force_zoned_reading_order_page` override in
-# data/manifests/layout-overrides.yaml (this booklet's own D10 page, so
-# far - see that file's own comment). Applying it unconditionally to every
-# 2-column page in this booklet was tried and reverted: many other, already
-# -correct pages (Q28, Q63, Q71, among many others) regressed, because
-# extract_page_lines's own output order feeds several *other*,
-# order-dependent heuristics (figures.py's own label-absorption
-# _is_paragraph_continuation chief among them) that were tuned against the
-# old, page-wide split - a page-scoped override, not a booklet-wide
-# default, is what keeps every one of those pages on their own
-# already-correct behavior while still fixing D10.
-zoned_reading_order_gate: true
+# "active" here means a question span is reordered only when
+# reading_zones.assess_eligibility finds genuine structural evidence
+# (multiple zones, a real topology transition, concurrent two-sided
+# evidence) AND the differential safety oracle in
+# assembler._canonical_content_lines confirms word/source-id/owner
+# conservation - never by a page number, question ID, or page hash
+# consulted as an operational selector (Phase 3K's own page-scoped
+# override, force_zoned_reading_order_page, is superseded - see
+# layout-overrides.yaml's own note). Applying zone-aware reordering
+# unconditionally to *every* line list a page-wide geometric consumer
+# (figures.py's own label absorption, question-boundary detection, margin
+# detection) also happens to see was tried and reverted in Phase 3K: many
+# already-correct pages (Q28, Q63, Q71, among many others) regressed,
+# because those consumers use list *position* as an implicit proxy for
+# geometric adjacency, tuned against the old, page-wide split. The fix
+# (Phase 3L) is architectural, not a narrower selector: reading_zones is
+# only ever consulted from within assembler.assemble_question, on one
+# question's own already-sliced span, after every geometric consumer has
+# already been fed the original, stable, page-wide order.
+zoned_reading_order_mode: active
 sections:
   - id: formacao-geral-objetiva
     kind: objective

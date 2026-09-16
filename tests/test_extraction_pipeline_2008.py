@@ -22,7 +22,7 @@ import pytest
 
 from enade.extraction.answer_key import parse_flat_item_gabarito
 from enade.extraction.exam_profile import _RANGE_PATTERNS_2008_B, load_exam_structure_profile
-from enade.extraction.layout_overrides import load_layout_overrides
+from enade.extraction.layout_overrides import LayoutOverrideSet, load_layout_overrides
 from enade.extraction.pipeline import extract_exam
 from enade.models.enums import QuestionType
 
@@ -57,6 +57,34 @@ def extraction_result(tmp_path_factory: pytest.TempPathFactory):
         output_dir_name="all-computing",
         answer_key_parser=parse_flat_item_gabarito,
         layout_overrides=load_layout_overrides(OVERRIDES_PATH),
+    )
+    return result, out_dir
+
+
+@pytest.fixture(scope="module")
+def extraction_result_no_layout_overrides(tmp_path_factory: pytest.TempPathFactory):
+    """Same extraction, but with an *empty* ``LayoutOverrideSet`` - no
+    entries loaded at all, not even D10's own now-superseded
+    ``force_zoned_reading_order_page`` rule. PROMPT Phase 3L section 14:
+    proves D10's own reordering is selected by structural eligibility
+    alone, with literally no override of any kind available to consult.
+    """
+    out_dir = tmp_path_factory.mktemp("pipeline_2008_no_overrides")
+    profile = load_exam_structure_profile(PROFILE_PATH)
+    result = extract_exam(
+        prova_path=PROVA_PATH,
+        gabarito_path=GABARITO_PATH,
+        padrao_path=PADRAO_PATH,
+        corpus_root=CORPUS_ROOT,
+        exam_year=2008,
+        exam_id=profile.exam_id,
+        questions_output_dir=out_dir / "questions",
+        structure_profile=profile,
+        structure_verification_page=11,
+        structure_verification_patterns=_RANGE_PATTERNS_2008_B,
+        output_dir_name="all-computing",
+        answer_key_parser=parse_flat_item_gabarito,
+        layout_overrides=LayoutOverrideSet(overrides=[]),
     )
     return result, out_dir
 
@@ -396,20 +424,26 @@ def test_d60_value_annotations_are_attached_to_their_own_item(extraction_result)
 
 def test_d10_reading_order_is_no_longer_scrambled(extraction_result):
     """Regression test for ``d10-newspaper-collage-reading-order-scramble``
-    (RESOLVED Phase 3K): D10's own page opens with a photo beside a
-    two-column newspaper article, continues as full-width single-column
-    prose for two more motivating fragments, then closes with a genuine
-    two-column bulleted "Observações" box - detect_column_margins's own
-    single, page-wide (left_margin, right_margin) split pushed the entire
-    right-side article (and the entire right half of the bulleted box) to
-    after every left-side line on the page, scrambling three distinct
-    articles' own text together out of order. reading_zones.
-    zoned_reading_order (activated only for this one page, via a
-    hash-locked layout override - see data/manifests/layout-overrides.yaml)
-    requires genuine, concurrent two-sided evidence within each specific
-    vertical window rather than one page-wide split. This test would have
-    failed against the pre-Phase-3K output (each assertion below reflects
-    an ordering that literally did not hold before this fix).
+    (RESOLVED Phase 3K, generalized Phase 3L): D10's own page opens with a
+    photo beside a two-column newspaper article, continues as full-width
+    single-column prose for two more motivating fragments, then closes with
+    a genuine two-column bulleted "Observações" box - detect_column_margins's
+    own single, page-wide (left_margin, right_margin) split pushed the
+    entire right-side article (and the entire right half of the bulleted
+    box) to after every left-side line on the page, scrambling three
+    distinct articles' own text together out of order. reading_zones.
+    zoned_reading_order requires genuine, concurrent two-sided evidence
+    within each specific vertical window rather than one page-wide split.
+    As of Phase 3L this activates through purely structural eligibility
+    (assembler._canonical_content_lines / reading_zones.assess_eligibility) -
+    the Phase 3K page/hash-locked override this test used to depend on is
+    marked ``status: superseded`` in data/manifests/layout-overrides.yaml
+    and is no longer consulted by any code path (see
+    test_d10_activates_automatically_with_no_layout_override_present below,
+    which proves the same ordering holds even with an *empty* override set).
+    This test would have failed against the pre-Phase-3K output (each
+    assertion below reflects an ordering that literally did not hold before
+    that fix).
     """
     result, _ = extraction_result
     d10 = _discursive_by_number(result)[10]
@@ -443,6 +477,48 @@ def test_d10_reading_order_is_no_longer_scrambled(extraction_result):
     )
     assert statement.rstrip().endswith("motivadores. (valor: 10,0 pontos)")
     # Never absorbed into or contaminated by any neighboring question.
+    assert "QUESTÃO 11" not in statement
+
+
+def test_d10_activates_automatically_with_no_layout_override_present(
+    extraction_result_no_layout_overrides,
+):
+    """PROMPT Phase 3L, section 14: the exact same assertions as
+    ``test_d10_reading_order_is_no_longer_scrambled`` above, but run
+    against an extraction given a completely empty ``LayoutOverrideSet`` -
+    no ``force_zoned_reading_order_page`` entry, no override of any kind.
+    D10's own reordering must be identical either way, because
+    ``LayoutOverrideSet.forces_zoned_reading_order`` was removed from
+    layout_overrides.py entirely in Phase 3L and no code path consults it
+    any more - the override in data/manifests/layout-overrides.yaml is
+    kept only as historical record (``status: superseded``).
+    """
+    result, _ = extraction_result_no_layout_overrides
+    d10 = _discursive_by_number(result)[10]
+    statement = d10.statement
+
+    assert statement.index("Alunos dão nota 7,1 para ensino médio") < statement.index(
+        "GOIS, Antonio. Folha de S.Paulo, 11 jun. 2008"
+    )
+    assert statement.index("GOIS, Antonio. Folha de S.Paulo, 11 jun. 2008") < statement.index(
+        "Entre os piores também em matemática e leitura"
+    )
+    assert statement.index("Entre os piores também em matemática e leitura") < statement.index(
+        "WEBER, Demétrio. Jornal O Globo, 5 dez. 2007"
+    )
+    assert statement.index("WEBER, Demétrio. Jornal O Globo, 5 dez. 2007") < statement.index(
+        "Ensino fundamental atinge meta de 2009"
+    )
+    assert statement.index("Ensino fundamental atinge meta de 2009") < statement.index(
+        "GOIS, Antonio; PINHO, Angela. Folha de S.Paulo, 12 jun. 2008"
+    )
+    assert statement.index(
+        "GOIS, Antonio; PINHO, Angela. Folha de S.Paulo, 12 jun. 2008"
+    ) < statement.index("A partir da leitura dos fragmentos motivadores")
+    assert statement.index("A partir da leitura dos fragmentos motivadores") < statement.index(
+        "Observações"
+    )
+    assert statement.rstrip().endswith("motivadores. (valor: 10,0 pontos)")
     assert "QUESTÃO 11" not in statement
 
 

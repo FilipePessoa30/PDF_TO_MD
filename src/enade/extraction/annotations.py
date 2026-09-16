@@ -118,7 +118,7 @@ class DocumentAnnotation:
     reattached: bool
 
 
-def _find_item_markers(lines: list[Line]) -> list[tuple[str, int]]:
+def find_item_markers(lines: list[Line]) -> list[tuple[str, int]]:
     """Return ``(letter, line_index)`` for the strictly increasing A, B, C,
     ... prefix of item markers found in ``lines``, in list order.
 
@@ -167,7 +167,7 @@ def reattach_value_annotations(lines: list[Line]) -> tuple[list[Line], list[Docu
     if not annotation_indices:
         return lines, []
 
-    item_markers = _find_item_markers(lines)
+    item_markers = find_item_markers(lines)
     annotation_set = set(annotation_indices)
 
     if not item_markers:
