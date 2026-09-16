@@ -180,11 +180,17 @@ def extract_exam(
                 if structure_profile is not None
                 else False
             )
+            zoned_reading_order_gate = (
+                structure_profile.zoned_reading_order_gate
+                if structure_profile is not None
+                else False
+            )
             lines = extract_document_lines(
                 prova.raw,
                 overrides=layout_overrides,
                 pdf_sha256=prova.identity.sha256,
                 fragment_reconstruction_gate=fragment_reconstruction_gate,
+                zoned_reading_order_gate=zoned_reading_order_gate,
             )
             boundary_result = detect_question_boundaries(
                 lines,
@@ -305,6 +311,7 @@ def extract_exam(
                     owner_exclusion_gate=owner_exclusion_gate,
                     contextual_relation_gate=contextual_relation_gate,
                     fragment_reconstruction_gate=fragment_reconstruction_gate,
+                    zoned_reading_order_gate=zoned_reading_order_gate,
                 )
 
                 suffix = "q" if span.kind == QuestionKind.OBJECTIVE else "d"
@@ -395,6 +402,7 @@ def extract_exam(
                         prova.raw[table.page_number - 1],
                         table.page_number,
                         fragment_reconstruction_gate=fragment_reconstruction_gate,
+                        zoned_reading_order_gate=zoned_reading_order_gate,
                     )
                     column_bounds = render_bounds_for_owner(
                         owner_region, detect_column_margins(table_page_lines)

@@ -22,6 +22,7 @@ from typing import Literal
 import pymupdf
 
 from enade.extraction.alternative_groups import find_alternative_group
+from enade.extraction.annotations import DocumentAnnotation, reattach_value_annotations
 from enade.extraction.boundaries import QuestionKind, QuestionSpan
 from enade.extraction.chrome import is_chrome_line
 from enade.extraction.figures import (
@@ -196,6 +197,13 @@ class ExtractedQuestion:
     #: into this question's final text - a distinct transformation type
     #: from the three above (line-level rejoining, not word/glyph-level).
     fragment_merges: list[FragmentMergeTrace] = field(default_factory=list)
+    #: Every "(valor: X pontos)" annotation found in this question's own
+    #: span (see annotations.py, PROMPT Phase 3J "atribuição canônica de
+    #: conteúdo") - reattached silently (like fragment_merges above, never
+    #: as a warning: a deterministic, evidence-based correction is not a
+    #: reason for human review) when reading order placed it away from its
+    #: owning item; the raw material for the content-assignment ledger.
+    value_annotations: list[DocumentAnnotation] = field(default_factory=list)
 
     @property
     def plain_statement(self) -> str:
@@ -493,6 +501,40 @@ def _line_in_region(
 
 def _position_key(page_number: int, y: float) -> tuple[int, float]:
     return (page_number, y)
+
+
+def _reading_order_index(lines: list[Line], target: Line) -> int:
+    """Return ``target``'s own position within ``lines``, found by identity.
+
+    Used to slice a reading-order-preserving list (``content_lines``) up to
+    a specific line already located by index in a *different*,
+    independently-filtered reading-order-preserving list
+    (``text_only_lines``) - never by recomputing a geometric ``(page, y)``
+    comparison as a proxy for "before this line in reading order", which
+    silently breaks whenever a line's own reading-order position and its
+    raw y0 on the page diverge (PROMPT Phase 3J, single-source-ownership:
+    2008-b Q13's own alternative E - "E {{1, 2}, {2, 3}, {3, 4}, {4, 5},
+    {5, 6}}" - is typeset at the very top of the *next* printed column
+    because it did not fit below alternative D in its own column; it is
+    genuinely the *last* line of Q13 in true reading order (confirmed by
+    ``extract_page_lines``'s own column-major ordering, and by
+    ``find_alternative_group`` correctly accepting it as E), yet its raw
+    y0 is smaller than every earlier alternative's own y0 on the same
+    page. A ``(page, y0) < (page, y0)`` cutoff comparison wrongly
+    re-admitted it into the statement it had already correctly left,
+    publishing the same source line in two destinations at once.
+    ``target`` is located by identity (``is``), not equality, because
+    ``Line`` is a frozen dataclass whose ``==`` is structural - two
+    genuinely different lines could coincidentally compare equal, but
+    ``text_only_lines`` is built by filtering ``content_lines`` in place
+    (no line is ever copied except the one span-marker line
+    ``_strip_leading_marker`` rewrites, which is never an alternative
+    line), so the exact object is always present.
+    """
+    for i, ln in enumerate(lines):
+        if ln is target:
+            return i
+    raise ValueError("target line not found in lines - filtering invariant violated")
 
 
 def _find_region_insertion_index(lines: list[Line], region: VisualRegion | DetectedTable) -> int:
@@ -1083,6 +1125,7 @@ def assemble_question(
     owner_exclusion_gate: bool = False,
     contextual_relation_gate: bool = False,
     fragment_reconstruction_gate: bool = False,
+    zoned_reading_order_gate: bool = False,
 ) -> ExtractedQuestion:
     warnings: list[str] = []
 
@@ -1148,6 +1191,7 @@ def assemble_question(
             doc[page_number - 1],
             page_number,
             fragment_reconstruction_gate=fragment_reconstruction_gate,
+            zoned_reading_order_gate=zoned_reading_order_gate,
         )
         margin = _dominant_left_margin(page_lines)
         return margin if margin is not None else dominant_left_margin_by_text_length(page_lines)
@@ -1167,6 +1211,7 @@ def assemble_question(
             pdf_sha256=pdf_sha256,
             question_regions=(question_regions_by_page or {}).get(page_number),
             fragment_reconstruction_gate=fragment_reconstruction_gate,
+            zoned_reading_order_gate=zoned_reading_order_gate,
         )
         bounds = page_y_bounds.get(page_number)
         x_bounds = page_x_bounds.get(page_number)
@@ -1324,6 +1369,19 @@ def assemble_question(
         [ln for ln in span.lines if ln in table_consumed_lines or not is_chrome_line(ln.text)]
     )
 
+    # PROMPT Phase 3J (single-source-ownership): a per-item "(valor: X
+    # pontos)" scoring annotation, typeset in its own narrow column to the
+    # right of a discursive question's own items, sorts *after* every
+    # other column in extract_page_lines's own column-major reading order
+    # - detached from the item it structurally belongs to (2008-b D60's
+    # own root cause). Reattaching by each annotation's own real geometry
+    # (never by reading-order adjacency) here, before any statement/
+    # alternative slicing runs, is what lets the ordinary paragraph-gap
+    # merge below produce the correct grouping without any further
+    # special-casing. A true no-op for every question with no such
+    # annotation-shaped line at all (see annotations.py).
+    content_lines, value_annotations = reattach_value_annotations(content_lines)
+
     text_only_lines = [
         ln
         for ln in content_lines
@@ -1362,9 +1420,8 @@ def assemble_question(
             starts = alt_group.accepted
             cutoff_line = text_only_lines[starts["A"]]
             cutoff_key = _position_key(cutoff_line.page_number, cutoff_line.y0)
-            statement_lines = [
-                ln for ln in content_lines if _position_key(ln.page_number, ln.y0) < cutoff_key
-            ]
+            cutoff_index = _reading_order_index(content_lines, cutoff_line)
+            statement_lines = content_lines[:cutoff_index]
             statement_regions = [
                 r for r in regions if _position_key(r.page_number, r.bbox[1]) < cutoff_key
             ]
@@ -1510,4 +1567,5 @@ def assemble_question(
         label_corrections=label_corrections,
         symbol_corrections=symbol_corrections,
         fragment_merges=fragment_merges,
+        value_annotations=value_annotations,
     )

@@ -22,6 +22,7 @@ import pytest
 
 from enade.extraction.answer_key import parse_flat_item_gabarito
 from enade.extraction.exam_profile import _RANGE_PATTERNS_2008_B, load_exam_structure_profile
+from enade.extraction.layout_overrides import load_layout_overrides
 from enade.extraction.pipeline import extract_exam
 from enade.models.enums import QuestionType
 
@@ -30,6 +31,7 @@ PROVA_PATH = CORPUS_ROOT / "2008" / "b1_prova.pdf"
 GABARITO_PATH = CORPUS_ROOT / "2008" / "b2_gabarito.pdf"
 PADRAO_PATH = CORPUS_ROOT / "2008" / "b3_padrao.pdf"
 PROFILE_PATH = Path(__file__).parent.parent / "data" / "manifests" / "exam-structure-2008.yaml"
+OVERRIDES_PATH = Path(__file__).parent.parent / "data" / "manifests" / "layout-overrides.yaml"
 
 pytestmark = pytest.mark.skipif(
     not PROVA_PATH.exists(),
@@ -54,6 +56,7 @@ def extraction_result(tmp_path_factory: pytest.TempPathFactory):
         structure_verification_patterns=_RANGE_PATTERNS_2008_B,
         output_dir_name="all-computing",
         answer_key_parser=parse_flat_item_gabarito,
+        layout_overrides=load_layout_overrides(OVERRIDES_PATH),
     )
     return result, out_dir
 
@@ -333,6 +336,114 @@ def test_q71_alternative_b_c_boundary_is_now_correct(extraction_result):
         "Em relação à alternativa 1, na alternativa 2, a coesão do módulo A é maior, "
         "a dos módulos B e C é menor e o acoplamento do projeto é maior."
     )
+
+
+def test_q13_statement_no_longer_duplicates_alternative_e(extraction_result):
+    """Regression test for ``q13-duplicated-alternative-text`` (RESOLVED
+    Phase 3J): alternative E's own text genuinely overflows into the top
+    of the next printed column on page 8 (it did not fit below D in Q13's
+    own left-column position), so its own reading-order position is
+    *after* D even though its raw y0 is smaller than every earlier
+    alternative's own y0 on that page. The old ``(page, y0)`` cutoff
+    comparison in assembler.assemble_question re-admitted it into the
+    statement it had already correctly left for the alternatives, on top
+    of it being correctly assembled as alternative E - the same source
+    line published in two destinations. assembler._reading_order_index
+    slices the statement using the cutoff line's own reading-order
+    position within ``content_lines``, not its raw geometric position.
+    """
+    result, _ = extraction_result
+    questions_by_number = {
+        q.question_number: q
+        for q in result.questions
+        if q.question_type == QuestionType.MULTIPLE_CHOICE
+    }
+    q13 = questions_by_number[13]
+    assert q13.statement == (
+        "Considerando o conjunto A = {1, 2, 3, 4, 5, 6}, qual opção corresponde a uma "
+        "partição desse conjunto?"
+    )
+    alternative_e = next(a for a in q13.alternatives if a.letter == "E")
+    assert alternative_e.text == "{{1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}}"
+
+
+def test_d60_value_annotations_are_attached_to_their_own_item(extraction_result):
+    """Regression test for ``d60-valor-annotation-misattachment`` (RESOLVED
+    Phase 3J): the three "(valor: X pontos)" annotations for items A, B, C
+    are typeset in their own narrow column, which extract_page_lines's own
+    column-major reading order sorts after every other column on the
+    page - detaching them from the items they belong to and, worse, gluing
+    the first one onto item C's own trailing text (item C published with
+    A's own 3,0-point value instead of its real 4,0).
+    annotations.reattach_value_annotations reattaches each one by real
+    geometric interval containment against each item's own position.
+    """
+    result, _ = extraction_result
+    d60 = _discursive_by_number(result)[60]
+    assert (
+        "Apresente os cálculos necessários. (valor: 3,0 pontos)\n\n"
+        "B Na presença de ruído térmico" in d60.statement
+    )
+    assert "considere que log10 (1.023) = 3,01. (valor: 3,0 pontos)" in d60.statement
+    assert d60.statement.rstrip().endswith(
+        "é possível adotar mais de 16 níveis de sinalização no referido canal? "
+        "Justifique. (valor: 4,0 pontos)"
+    )
+    # The old, wrong shape must not survive: two orphaned annotation
+    # paragraphs trailing after item C's own text.
+    assert "\n\n(valor: 3,0 pontos)\n\n(valor: 4,0 pontos)" not in d60.statement
+
+
+def test_d10_reading_order_is_no_longer_scrambled(extraction_result):
+    """Regression test for ``d10-newspaper-collage-reading-order-scramble``
+    (RESOLVED Phase 3K): D10's own page opens with a photo beside a
+    two-column newspaper article, continues as full-width single-column
+    prose for two more motivating fragments, then closes with a genuine
+    two-column bulleted "Observações" box - detect_column_margins's own
+    single, page-wide (left_margin, right_margin) split pushed the entire
+    right-side article (and the entire right half of the bulleted box) to
+    after every left-side line on the page, scrambling three distinct
+    articles' own text together out of order. reading_zones.
+    zoned_reading_order (activated only for this one page, via a
+    hash-locked layout override - see data/manifests/layout-overrides.yaml)
+    requires genuine, concurrent two-sided evidence within each specific
+    vertical window rather than one page-wide split. This test would have
+    failed against the pre-Phase-3K output (each assertion below reflects
+    an ordering that literally did not hold before this fix).
+    """
+    result, _ = extraction_result
+    d10 = _discursive_by_number(result)[10]
+    statement = d10.statement
+
+    # Each article's own body stays with its own headline and its own
+    # citation, in the correct relative order - never split across the
+    # old algorithm's own left/right halves.
+    assert statement.index("Alunos dão nota 7,1 para ensino médio") < statement.index(
+        "GOIS, Antonio. Folha de S.Paulo, 11 jun. 2008"
+    )
+    assert statement.index("GOIS, Antonio. Folha de S.Paulo, 11 jun. 2008") < statement.index(
+        "Entre os piores também em matemática e leitura"
+    )
+    assert statement.index("Entre os piores também em matemática e leitura") < statement.index(
+        "WEBER, Demétrio. Jornal O Globo, 5 dez. 2007"
+    )
+    assert statement.index("WEBER, Demétrio. Jornal O Globo, 5 dez. 2007") < statement.index(
+        "Ensino fundamental atinge meta de 2009"
+    )
+    assert statement.index("Ensino fundamental atinge meta de 2009") < statement.index(
+        "GOIS, Antonio; PINHO, Angela. Folha de S.Paulo, 12 jun. 2008"
+    )
+    # The main task prompt comes after all three motivating fragments, and
+    # the bulleted "Observações" box comes last, ending on its own value.
+    assert statement.index(
+        "GOIS, Antonio; PINHO, Angela. Folha de S.Paulo, 12 jun. 2008"
+    ) < statement.index("A partir da leitura dos fragmentos motivadores")
+    assert statement.index("A partir da leitura dos fragmentos motivadores") < statement.index(
+        "Observações"
+    )
+    assert statement.rstrip().endswith("motivadores. (valor: 10,0 pontos)")
+    # Never absorbed into or contaminated by any neighboring question.
+    assert "QUESTÃO 11" not in statement
 
 
 def test_q25_alternative_b_is_no_longer_word_order_scrambled(extraction_result):

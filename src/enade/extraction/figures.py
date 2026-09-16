@@ -944,6 +944,7 @@ def detect_visual_regions(
     pdf_sha256: str = "",
     question_regions: list[QuestionRegion] | None = None,
     fragment_reconstruction_gate: bool = False,
+    zoned_reading_order_gate: bool = False,
 ) -> list[VisualRegion]:
     """Detect non-decorative visual content regions on one (1-indexed) page.
 
@@ -1020,7 +1021,10 @@ def detect_visual_regions(
         return []
 
     page_lines = extract_page_lines(
-        page, page_number, fragment_reconstruction_gate=fragment_reconstruction_gate
+        page,
+        page_number,
+        fragment_reconstruction_gate=fragment_reconstruction_gate,
+        zoned_reading_order_gate=zoned_reading_order_gate,
     )
     body_margin_x0 = _dominant_left_margin(page_lines)
     body_font_size = _dominant_body_font_size(page_lines) if caption_font_size_gate else None

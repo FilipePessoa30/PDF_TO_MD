@@ -113,6 +113,21 @@ caption_font_size_gate: true
 owner_exclusion_gate: true
 contextual_relation_gate: true
 fragment_reconstruction_gate: true
+# `zoned_reading_order_gate` (PROMPT Phase 3K): declares the new zone-aware
+# reading-order mechanism (reading_zones.py) *available* for this booklet -
+# it still only ever activates on a page carrying its own documented,
+# hash-locked `force_zoned_reading_order_page` override in
+# data/manifests/layout-overrides.yaml (this booklet's own D10 page, so
+# far - see that file's own comment). Applying it unconditionally to every
+# 2-column page in this booklet was tried and reverted: many other, already
+# -correct pages (Q28, Q63, Q71, among many others) regressed, because
+# extract_page_lines's own output order feeds several *other*,
+# order-dependent heuristics (figures.py's own label-absorption
+# _is_paragraph_continuation chief among them) that were tuned against the
+# old, page-wide split - a page-scoped override, not a booklet-wide
+# default, is what keeps every one of those pages on their own
+# already-correct behavior while still fixing D10.
+zoned_reading_order_gate: true
 sections:
   - id: formacao-geral-objetiva
     kind: objective

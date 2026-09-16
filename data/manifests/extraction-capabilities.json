@@ -434,6 +434,164 @@
       "profile_dependency": "none - shares alternative_group's own unconditional scope",
       "runtime_ai_dependency": "none",
       "introduced_phase": "3I"
+    },
+    {
+      "capability_id": "canonical_content_assignment",
+      "description": "Guarantees that a question's own statement slice and every one of its own alternative slices are computed from the *same* reading-order-preserving line list and can never overlap by construction - the general, single-source-ownership principle behind the Q13 fix (PROMPT Phase 3J). Before this phase, assembler.assemble_question computed the statement's own cutoff via a geometric (page, y0) comparison (assembler._position_key) used as a *proxy* for 'before the first alternative in reading order' - correct whenever a line's own y0 and its own reading-order position happen to move together, but silently wrong for a line that is genuinely last in reading order yet has a smaller raw y0 (a column-overflow line, printed at the top of the next column because it did not fit at the bottom of its own). assembler._reading_order_index instead locates the exact reading-order position of the alternative-group's own cutoff line within content_lines and slices there directly, so the statement can never re-admit a line that the alternative group already correctly claimed, for any question, not only Q13's own shape.",
+      "trigger_features": [
+        "n/a - runs unconditionally for every objective question with a resolved alternative group, not triggered by a document characteristic"
+      ],
+      "parameters": {},
+      "scope": "assembler.py: assemble_question (statement cutoff), assembler._reading_order_index",
+      "generalization_level": "G2",
+      "positive_fixtures": [
+        "tests/test_extraction_pipeline_2008.py::test_q13_statement_no_longer_duplicates_alternative_e"
+      ],
+      "negative_fixtures": [
+        "the Section 20 corpus-wide scan (docs/phase-3j-report.md) confirms zero line-identity duplicate-destination findings across all 77 published 2008-b questions after this fix"
+      ],
+      "real_cases": [
+        "2008-b Q13 (page 8, alternative E's own column-overflow line was published in both the statement and alternative E at once)"
+      ],
+      "protected_cases": [
+        "every other 2008-b/2011/2021 question (zero byte-level drift confirmed via SHA-256 baseline)"
+      ],
+      "failure_behavior": "an unresolved or unusable alternative group leaves the statement as the full content_lines, exactly as before this phase - never a partial or guessed cutoff",
+      "profile_dependency": "none - unconditional replacement of the old position-key cutoff for every corpus",
+      "runtime_ai_dependency": "none",
+      "introduced_phase": "3J"
+    },
+    {
+      "capability_id": "annotation_ownership",
+      "description": "Reattaches a document annotation (currently: only '(valor: X pontos)' scoring annotations - see question_value_annotation below) to the item it structurally belongs to, by real geometric interval containment against each item's own printed position - never by reading-order adjacency and never by the annotation's own text content beyond confirming it matches the annotation's own shape. Owner (which item), anchor (the item's own real position) and destination (where the annotation ends up in the rebuilt line list) are three separate concerns (PROMPT Phase 3J section 7): proximity to a neighboring line in the buggy reading order is never treated as evidence of ownership.",
+      "trigger_features": [
+        "at least one line in a question's own span matches the annotation shape (see question_value_annotation) AND at least one lettered item marker (A-E) is present in the same span"
+      ],
+      "parameters": {},
+      "scope": "annotations.py: reattach_value_annotations, _find_item_markers",
+      "generalization_level": "G2",
+      "positive_fixtures": [
+        "tests/test_annotations.py::test_annotations_bunched_after_the_last_item_are_redistributed",
+        "tests/test_annotations.py::test_partial_item_set_two_items_still_resolves",
+        "tests/test_annotations.py::test_page_change_between_items_is_respected"
+      ],
+      "negative_fixtures": [
+        "tests/test_annotations.py::test_already_correctly_interleaved_annotations_are_a_content_noop",
+        "tests/test_annotations.py::test_fused_inline_annotation_is_never_detected",
+        "tests/test_annotations.py::test_single_overall_value_with_no_items_is_left_in_place",
+        "tests/test_annotations.py::test_ordinary_prose_is_never_reordered_when_no_value_annotation_exists"
+      ],
+      "real_cases": [
+        "2008-b D60 (page 26, three per-item annotations bunched at the end of the reading order, item C published with item A's own value)"
+      ],
+      "protected_cases": [
+        "2008-b D80 (page 35, two per-item annotations already correctly interleaved - confirmed a true content no-op)",
+        "2008-b D9/D10/D20/D39/D40/D59/D79 (every fused-inline annotation, never matched by the whole-line regex at all)",
+        "every 2011/2021 discursive question with a '(valor:' annotation (zero drift)"
+      ],
+      "failure_behavior": "no item markers found at all leaves every annotation exactly where it was (status left as a single overall value, not per-item) - never guesses an owner",
+      "profile_dependency": "none - unconditional, gated only by the presence of the annotation shape itself",
+      "runtime_ai_dependency": "none",
+      "introduced_phase": "3J"
+    },
+    {
+      "capability_id": "question_value_annotation",
+      "description": "The concrete annotation type this phase has real evidence for: a parenthesized '(valor: X pontos)' scoring annotation (decimal separator, singular/plural and whitespace all vary across the corpus but the shape is otherwise fixed). A narrower, evidenced instance of the broader DocumentAnnotation/AnnotationType architecture (annotations.py) - the other declared types (instruction, figure_reference, table_reference, source_citation, answer_area_label, section_note, chrome, ambiguous) have no detection logic implemented, since no real positive and negative corpus case for any of them was found this phase (see docs/generalization-contract.md section 1.1).",
+      "trigger_features": [
+        "a line's own text exactly matches ^\\(valor:\\s*[\\d.,]+\\s*pontos?\\)$ (case-insensitive)"
+      ],
+      "parameters": {},
+      "scope": "annotations.py: _VALUE_ANNOTATION_RE, DocumentAnnotation.annotation_type='question_value'",
+      "generalization_level": "G2",
+      "positive_fixtures": [
+        "tests/test_annotations.py::test_decimal_dot_and_singular_ponto_are_recognized"
+      ],
+      "negative_fixtures": [
+        "tests/test_annotations.py::test_fused_inline_annotation_is_never_detected"
+      ],
+      "real_cases": [
+        "2008-b D60"
+      ],
+      "protected_cases": [
+        "2008-b D80, D9/D10/D20/D39/D40/D59/D79; every 2011/2021 discursive question with a value annotation"
+      ],
+      "failure_behavior": "a line that does not match the whole-line pattern is never treated as an annotation, even if it contains the word 'valor' as part of a longer sentence",
+      "profile_dependency": "none",
+      "runtime_ai_dependency": "none",
+      "introduced_phase": "3J"
+    },
+    {
+      "capability_id": "duplicate_source_detection",
+      "description": "A standalone, read-only audit (never wired into the live extraction pipeline) that flags a source element published to more than one destination, owner, or alternative - grouped strictly by source_element_id (real, stable PDF geometry), never by text equality, so two alternatives that legitimately share identical wording are never flagged (PROMPT Phase 3J section 9). Runs against the content-assignment ledger (scripts/generate_content_assignment_ledger.py, data/manifests/content-assignment-2008-b.json) generated by re-running the real pipeline with a read-only instrumentation hook. Reports only - a gate can never decide which of two competing destinations is documentally correct; that judgment belongs to the general mechanism that produced the assignment in the first place (canonical_content_assignment/annotation_ownership above), not to a post-hoc gate.",
+      "trigger_features": [
+        "n/a - runs unconditionally over every record in a given content-assignment ledger, not triggered by a document characteristic"
+      ],
+      "parameters": {},
+      "scope": "content_assignment.py: detect_duplicate_assignments, detect_missing_assignments",
+      "generalization_level": "G3",
+      "positive_fixtures": [
+        "tests/test_content_assignment.py::test_same_source_two_destinations_is_a_duplicate",
+        "tests/test_content_assignment.py::test_same_source_two_alternatives_is_a_duplicate",
+        "tests/test_content_assignment.py::test_blocked_source_with_a_real_destination_is_a_source_without_destination_gap"
+      ],
+      "negative_fixtures": [
+        "tests/test_content_assignment.py::test_identical_text_from_different_sources_is_never_flagged",
+        "tests/test_content_assignment.py::test_authorized_mirror_is_not_flagged",
+        "tests/test_content_assignment.py::test_a_fix_that_removes_a_destination_without_moving_it_elsewhere_is_caught"
+      ],
+      "real_cases": [
+        "run against the full 2008-b content-assignment ledger (2280 records, 77 questions): zero duplicate findings, zero missing-assignment findings, after the Q13/D60 fixes"
+      ],
+      "protected_cases": [
+        "the ledger itself only ever covers 2008-b (generated by re-running its own extraction with a temp output directory) - never touches 2011/2021's own published files"
+      ],
+      "failure_behavior": "an empty findings list means 'checked, none found' - the gate never silently skips a record",
+      "profile_dependency": "none - invoked as a standalone script/audit, not automatically as part of extract_exam",
+      "runtime_ai_dependency": "none",
+      "introduced_phase": "3J"
+    },
+    {
+      "capability_id": "zoned_reading_order",
+      "description": "Replaces layout.extract_page_lines's own single, page-wide (left_margin, right_margin) column split with a zone-aware resolution (reading_zones.py) for a page whose column topology changes partway down - a photo-and-article zone, then full-width prose, then a two-column bulleted list, all on the same page (2008-b's own D10, 'Formacao Geral Discursiva 10'). layout.detect_column_margins keeps its existing job unchanged (page-wide evidence for whether a genuine two-column shape exists at all, and its two candidate margins); reading_zones answers a separate question - which specific vertical windows of the page actually exhibit both columns concurrently (real, substantial evidence on both sides, genuinely overlapping in Y - never merely because some line's own x0 sits past the page-wide right margin) and therefore need left-then-right interleaving there, versus windows with only one side's real content, which need nothing more than being merged, by y0, into the surrounding flow. The final order is built and verified as a small dependency graph (one node per line, edges tagged with why: same_column_vertical / cross_column_transition / spanning_barrier) and resolved with graphlib.TopologicalSorter - a real cycle raises CycleError and reverts to plain document order rather than ever being silently broken.",
+      "trigger_features": [
+        "a page carries a documented, hash-locked force_zoned_reading_order_page override in data/manifests/layout-overrides.yaml (matched by pdf_sha256 + page number) - never a document characteristic detected automatically"
+      ],
+      "parameters": {
+        "zoned_reading_order_gate": "bool, default False (ExamStructureProfile) - declares the mechanism available for a booklet, does not by itself activate it on any page",
+        "force_zoned_reading_order_page": "layout override rule kind (pdf_sha256 + page) - the actual per-page activation switch"
+      },
+      "scope": "layout.py: extract_page_lines (consumes both gates together); layout_overrides.py: LayoutOverrideSet.forces_zoned_reading_order; reading_zones.py: detect_reading_zones, resolve_reading_order, zoned_reading_order (new module)",
+      "generalization_level": "G2",
+      "positive_fixtures": [
+        "tests/test_reading_zones.py::test_topology_changes_more_than_once_matches_d10s_own_shape",
+        "tests/test_reading_zones.py::test_wide_header_then_two_columns",
+        "tests/test_reading_zones.py::test_two_columns_then_full_width_block",
+        "tests/test_reading_zones.py::test_return_to_two_columns_after_a_wide_block"
+      ],
+      "negative_fixtures": [
+        "tests/test_reading_zones.py::test_narrow_single_left_side_line_is_not_enough_evidence_for_two_columns",
+        "tests/test_reading_zones.py::test_false_column_from_a_diagram_label_is_not_confirmed",
+        "tests/test_reading_zones.py::test_whole_page_single_column_is_one_zone_sorted_by_y0",
+        "tests/test_reading_zones.py::test_whole_page_two_column_matches_left_then_right_convention"
+      ],
+      "metamorphic_tests": [
+        "tests/test_reading_zones.py::test_translation_invariance",
+        "tests/test_reading_zones.py::test_scale_invariance",
+        "tests/test_reading_zones.py::test_content_stream_order_does_not_affect_result",
+        "tests/test_reading_zones.py::test_font_size_variation_does_not_affect_zone_topology",
+        "tests/test_reading_zones.py::test_gutter_width_variation_does_not_affect_resolution"
+      ],
+      "real_cases": [
+        "2008-b D10 (page 7): three topology changes on one page - photo+article (two-column), full-width motivating prose, two-column bulleted 'Observacoes' box - all resolved to the correct sequence, confirmed by a full word-set comparison against the raw PDF text (478 words each side, zero missing, zero added)"
+      ],
+      "protected_cases": [
+        "every other 2008-b page with genuine column evidence (Q28, Q29, Q52, Q61, Q62, Q63, Q68, Q71 among many others) - confirmed unaffected only because activation is page-scoped: an earlier, booklet-wide-gate-only attempt (no page override requirement) regressed dozens of these, since extract_page_lines's own output order feeds other order-dependent heuristics elsewhere in the pipeline (figures.py's own label-absorption _is_paragraph_continuation chief among them) tuned against the old, page-wide split; reverted in favor of requiring both the profile gate and a documented per-page override",
+        "every 2011/2021 page (zero byte-level drift confirmed via SHA-256 baseline) - neither profile sets zoned_reading_order_gate at all"
+      ],
+      "failure_behavior": "a page with no page-wide column evidence at all (detect_column_margins returns None) resolves to one single_column zone sorted by (y0, x0), identical to the pre-existing fallback; a genuine graph cycle (not reached by any real case this phase found - the construction is a linear chain by design) reverts to plain document order and records the cycle in the trace rather than guessing an order or dropping content",
+      "profile_dependency": "ExamStructureProfile.zoned_reading_order_gate (default False) AND a page-specific data/manifests/layout-overrides.yaml entry (rule: force_zoned_reading_order_page) - both required together; the profile field alone never activates the mechanism on any page",
+      "runtime_ai_dependency": "none",
+      "introduced_phase": "3K"
     }
   ]
 }

@@ -60,9 +60,9 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
@@ -72,12 +72,8 @@ Para transmissões de sinais em banda base, a largura de banda do canal limita a
 
 Tendo como referência inicial as informações acima, considere que seja necessário determinar a taxa de transmissão máxima de um canal de comunicação que possui largura de banda de 3 kHz, relação sinal-ruído de 30,1 dB e adota 16 diferentes níveis de sinalização. Nessa situação, responda aos seguintes questionamentos.
 
-A Na ausência de ruído, de acordo com o teorema de Nyquist, qual a taxa de transmissão máxima do referido canal, em bits por segundo. Apresente os cálculos necessários.
+A Na ausência de ruído, de acordo com o teorema de Nyquist, qual a taxa de transmissão máxima do referido canal, em bits por segundo. Apresente os cálculos necessários. (valor: 3,0 pontos)
 
-B Na presença de ruído térmico, de acordo com a lei de Shannon, qual a taxa de transmissão máxima do canal, em bits por segundo? Apresente os cálculos necessário e considere que log10 (1.023) = 3,01.
+B Na presença de ruído térmico, de acordo com a lei de Shannon, qual a taxa de transmissão máxima do canal, em bits por segundo? Apresente os cálculos necessário e considere que log10 (1.023) = 3,01. (valor: 3,0 pontos)
 
-C Na presença de ruído térmico, é possível adotar mais de 16 níveis de sinalização no referido canal? Justifique. (valor: 3,0 pontos)
-
-(valor: 3,0 pontos)
-
-(valor: 4,0 pontos)
+C Na presença de ruído térmico, é possível adotar mais de 16 níveis de sinalização no referido canal? Justifique. (valor: 4,0 pontos)

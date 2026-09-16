@@ -9,18 +9,16 @@
   "pipeline_version": "0.1.0",
   "data_contract_version": "1.1.0",
   "maturity": "provisional",
-  "verified_count": 63,
-  "needs_review_count": 14,
+  "verified_count": 65,
+  "needs_review_count": 12,
   "unresolved_question_ids": [
     "enade-2008-computing-d09",
     "enade-2008-computing-d10",
     "enade-2008-computing-d40",
     "enade-2008-computing-d59",
-    "enade-2008-computing-d60",
     "enade-2008-computing-q02",
     "enade-2008-computing-q05",
     "enade-2008-computing-q07",
-    "enade-2008-computing-q13",
     "enade-2008-computing-q24",
     "enade-2008-computing-q33",
     "enade-2008-computing-q45",
@@ -55,10 +53,10 @@
     {
       "id": "enade-2008-computing-d10",
       "markdown_path": "enade-2008-computing-d10.md",
-      "markdown_sha256": "404e1690b7cfe1bede1276ba24fe7ff87af17ce43626514adc0f44005ff1564e",
+      "markdown_sha256": "2ffa48cfecf81dd7b9997f9371376b047a7b558b0874c81ae24e6b4ae7b6c10f",
       "extraction_status": "needs_review",
       "automatic_validation": "failed",
-      "visual_validation": "failed",
+      "visual_validation": "passed",
       "assets": [
         {
           "id": "figure-01",
@@ -117,10 +115,10 @@
     {
       "id": "enade-2008-computing-d60",
       "markdown_path": "enade-2008-computing-d60.md",
-      "markdown_sha256": "99750a47e36ab00b648b82de9f3fdcfea85f9b85a11b2f01bc5aa190ba4ef925",
-      "extraction_status": "needs_review",
+      "markdown_sha256": "67ba41693f997c687f361daaf855a95ad83ae7ef0de35e22e2e20cc46c759af6",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "failed",
+      "visual_validation": "passed",
       "assets": []
     },
     {
@@ -277,10 +275,10 @@
     {
       "id": "enade-2008-computing-q13",
       "markdown_path": "enade-2008-computing-q13.md",
-      "markdown_sha256": "8cd4d00df42156f24ce614b2ab215e757a49f5d0e6d836f2b0268b5edcac6d21",
-      "extraction_status": "needs_review",
+      "markdown_sha256": "b3a5d149daa7c3a2d34d6105278acc74e64f08d0f728a7203f93255dd000dbc4",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "failed",
+      "visual_validation": "passed",
       "assets": []
     },
     {

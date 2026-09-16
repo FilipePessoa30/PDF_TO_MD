@@ -1090,20 +1090,33 @@ blockers:
   visual_validation: passed
 - affected_assets: []
   category: content-duplication
-  cause: Not yet root-caused precisely. Left open.
-  description: Alternative E's own text ('E {{1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}}') is duplicated -
-    appearing both appended to the statement and correctly under Alternativas. Not a content loss, but
-    confusing to a reader.
-  evidence: null
+  cause: 'RESOLVED (Phase 3J): root-caused precisely. Alternative E''s own text genuinely
+    overflows into the top of the next printed column on page 8 (it did not fit below D in
+    Q13''s own left-column position), so in the pipeline''s own column-major reading order its
+    line comes *after* alternative D even though its raw y0 is smaller than every earlier
+    alternative''s own y0 on that page. assembler.assemble_question''s own statement cutoff
+    compared raw (page, y0) tuples as a proxy for reading order (_position_key) - this line''s
+    own smaller y0 wrongly satisfied "before alternative A" even though it is genuinely the
+    *last* line of Q13 in true reading order, so it was re-admitted into the statement on top
+    of being correctly assembled as alternative E: the same source line published in two
+    destinations at once (PROMPT Phase 3J, "single source ownership"). Fixed generally via a
+    new assembler._reading_order_index helper: the statement slice now uses the cutoff line''s
+    own position within content_lines (the same reading order the alternative-group boundary
+    itself trusts), never a geometric position-key comparison - the statement and every
+    alternative slice can no longer overlap by construction, for any question, not only Q13.'
+  description: 'RESOLVED (Phase 3J): the statement now ends cleanly at "qual opção corresponde
+    a uma partição desse conjunto?" and alternative E correctly reads "{{1, 2}, {2, 3}, {3, 4},
+    {4, 5}, {5, 6}}" with zero duplication. See cause above.'
+  evidence: docs/phase-3j-report.md; tests/test_extraction_pipeline_2008.py::test_q13_statement_no_longer_duplicates_alternative_e
   id: q13-duplicated-alternative-text
   question_id: enade-2008-computing-q13
-  regression_tests: []
-  resolution: null
+  regression_tests: ['tests/test_extraction_pipeline_2008.py::test_q13_statement_no_longer_duplicates_alternative_e']
+  resolution: 'RESOLVED (Phase 3J): see cause above.'
   source_pages:
   - 9
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets: []
   category: table-reading-order-scramble
   cause: 'ROOT-CAUSED AND RESOLVED IN PHASE 3G. The diagram''s own ''A''/''B'' production labels were
@@ -1176,14 +1189,15 @@ blockers:
     own raw pre-growth extent and growth''s own authoritative absorbed-label record, instead of a fixed
     padding touch test) recovers every previously-lost piece - confirmed by direct word-for-word
     re-comparison against page 7''s own raw text. The underlying reading-order defect (paragraph order,
-    not content) persists and is now tracked on its own - see d10-newspaper-collage-reading-order-scramble.'
+    not content) persists and is now tracked on its own - see d10-newspaper-collage-reading-order-scramble
+    (also RESOLVED, Phase 3K).'
   description: 'RESOLVED (Phase 3G): direct word-for-word comparison against page 7''s own raw PDF text
     confirms contextual_relation_gate recovers ALL of the previously-lost content - all three headlines''
     titles, full bodies, and all three citations, plus all five ''Observacoes'' bullets and the closing
     valor line, are now present verbatim. The underlying page layout (a two-column newspaper-collage the
     existing reading-order model cannot represent) still produces a severely scrambled paragraph ORDER, now
-    tracked separately as a pure reading-order defect (no content loss) - see the new
-    d10-newspaper-collage-reading-order-scramble blocker.'
+    tracked separately as a pure reading-order defect (no content loss) - see the
+    d10-newspaper-collage-reading-order-scramble blocker (also RESOLVED, Phase 3K).'
   evidence: docs/phase-3c-report.md section E/L; docs/phase-3d-report.md section D/I; docs/phase-3e-report.md;
     docs/phase-3g-report.md; tests/test_extraction_pipeline_2008.py::test_d10_no_longer_loses_its_own_newspaper_fragments
   id: d10-label-absorption-newspaper-fragments
@@ -1245,27 +1259,37 @@ blockers:
   visual_validation: passed
 - affected_assets: []
   category: table-reading-order-scramble
-  cause: 'NOT ROOT-CAUSED THIS PHASE. Only visible once d60-cross-question-diagram-label-bleed''s own
-    ITIL contamination was removed (Phase 3E) - the ITIL text previously trailing after these lines
-    made the annotation misplacement harder to notice on a quick read. Confirmed present in the prior
-    committed version too (the same three ''(valor: X pontos)'' lines already appear, in the same
-    order, before this phase''s fix - only the ITIL text after them changed). Likely the same general
-    local-reading-order family as D10/Q29/Q33 (item-level content interleaved out of its own correct
-    position), not isolated to a specific mechanism this phase.'
-  description: 'D60''s own per-item ''(valor: X pontos)'' scoring annotations are not attached to their
-    own items - item C is immediately followed by ''(valor: 3,0 pontos)'' (item A''s own value, not
-    C''s real 4,0), and two more orphaned valor lines trail at the very end of the statement, unattached
-    to any item.'
-  evidence: docs/phase-3e-report.md
+  cause: 'RESOLVED (Phase 3J): root-caused precisely. The three per-item ''(valor: X pontos)''
+    scoring annotations are typeset in their own narrow column, to the right of items A/B/C and
+    their own ''RASCUNHO'' scratch-answer labels - not inline with each item''s own running
+    text. extract_page_lines''s own column-major reading order (correct for the page''s two
+    real content columns) places that whole narrow column *after* every other column on the
+    page, so all three annotations end up bunched together at the very end of the question''s
+    own line list, in their own correct relative order (A''s, then B''s, then C''s) but
+    geometrically detached from the items they belong to. assembler._build_statement_segments''s
+    own paragraph-merge heuristic then computed a spurious negative gap between item C''s own
+    last line and the first orphaned annotation, gluing them together (publishing item C with
+    A''s own 3,0-point value instead of its real 4,0), and left the other two as disconnected
+    trailing paragraphs. Fixed generally via a new module, annotations.py
+    (reattach_value_annotations): each annotation is reattached to the item whose own real
+    printed vertical span (page + y0 interval, using each item''s own geometry, never
+    reading-order adjacency or text content) actually contains it - confirmed a true no-op for
+    every other discursive question in this corpus with a separately-lined value annotation
+    (2008-b D80) or a fused-inline one (D9/D10/D20/D39/D40/D59/D79), and for every 2011/2021
+    discursive question with one.'
+  description: 'RESOLVED (Phase 3J): item A now correctly ends with "(valor: 3,0 pontos)", item
+    B with "(valor: 3,0 pontos)", and item C with its own real "(valor: 4,0 pontos)" - matching
+    page 26''s own visual layout exactly. No content lost, no duplication. See cause above.'
+  evidence: docs/phase-3e-report.md; docs/phase-3j-report.md; tests/test_annotations.py; tests/test_extraction_pipeline_2008.py::test_d60_value_annotations_are_attached_to_their_own_item
   id: d60-valor-annotation-misattachment
   question_id: enade-2008-computing-d60
-  regression_tests: []
-  resolution: null
+  regression_tests: ['tests/test_annotations.py', 'tests/test_extraction_pipeline_2008.py::test_d60_value_annotations_are_attached_to_their_own_item']
+  resolution: 'RESOLVED (Phase 3J): see cause above.'
   source_pages:
   - 26
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets:
   - figure-01
   category: region-merge-content-loss
@@ -1309,7 +1333,7 @@ blockers:
     edd04b77c8960841940b96ab6ca456a6e0f8b3b145270020a438378df325d8fd) is gone - Q13 now correctly
     has assets: [] (a pure set-partition question with no diagram on its own source page). Q12''s
     own asset is unaffected. The separate, pre-existing q13-duplicated-alternative-text defect
-    (unrelated mechanism) remains open.'
+    (unrelated mechanism, also RESOLVED, Phase 3J) is documented under its own entry.'
   evidence: docs/phase-3f-report.md; tests/test_extraction_assembler.py (owner_exclusion_gate);
     data/manifests/exam-structure-2008.yaml
   id: q13-cross-question-image-contamination
@@ -1325,29 +1349,47 @@ blockers:
   visual_validation: failed
 - affected_assets: []
   category: table-reading-order-scramble
-  cause: 'OPENED IN PHASE 3G, split off from d10-label-absorption-newspaper-fragments once
-    contextual_relation_gate resolved that blocker''s own content-loss component. The page''s own
-    "collage" of three separate newspaper clippings arranged in a two-column layout (each with its own
-    title, body, and citation, not always vertically contiguous within a single column) defeats the
-    existing "all of left column top to bottom, then all of right column top to bottom" reading-order
-    model (layout.py): headline 2''s own body is split across two disconnected rendered paragraphs (one
-    holding its tail, printed BEFORE the one holding its own title and opening clause); the five
-    "Observacoes" bullets are split apart into two separate paragraphs; citations are detached from their
-    own headlines. Same general local-reading-order family as d60-valor-annotation-misattachment,
-    q29-inline-sidebar-fragment (resolved), and q33-item-marker-displacement - Phase 3G''s own "Cluster D"
-    (geometric word/line-fragment reconstruction), not attempted this phase given scope.'
-  description: All source content is present (see d10-label-absorption-newspaper-fragments, resolved), but
-    the three newspaper clippings' own paragraph boundaries do not correspond to the source's own grouping.
-  evidence: docs/phase-3g-report.md
+  cause: 'RESOLVED (Phase 3K, wrong_column_order): root-caused precisely. D10''s own page 7
+    genuinely changes column topology three times - a photo beside a two-column newspaper
+    article (top), full-width single-column prose for two more motivating fragments (middle),
+    and a genuine two-column bulleted "Observacoes" box (bottom). layout.detect_column_margins
+    makes exactly one (left_margin=35, right_margin=250) decision for the whole page, and the
+    pre-existing extract_page_lines applies it globally - every line at or past x0=245 sorts
+    after every line before it, regardless of where on the page either actually sits, scrambling
+    the collage. Fixed via a new module, reading_zones.py (zoned_reading_order): a vertical
+    window is only treated as genuinely two-column when both sides have real, substantial
+    evidence concurrently occupying that specific window (never merely because a line''s own x0
+    sits past the page-wide right margin) - never a hand-rolled sort, resolved and verified as a
+    small dependency graph via graphlib.TopologicalSorter. Activated only for this one page via
+    a hash-locked layout override (data/manifests/layout-overrides.yaml,
+    force_zoned_reading_order_page) on top of the booklet-level zoned_reading_order_gate -
+    applying the mechanism to every two-column page in 2008-b was tried and reverted after it
+    regressed several already-correct pages (Q28, Q63, Q71 among others), since
+    extract_page_lines''s own output order feeds other order-dependent heuristics
+    (figures.py''s own label-absorption) tuned against the old, page-wide split. Same general
+    local-reading-order family as d60-valor-annotation-misattachment (also RESOLVED, Phase 3J)
+    and q29-inline-sidebar-fragment (resolved) - q33-item-marker-displacement remains open,
+    confirmed NOT to share this same mechanism (its own page has no comparable topology change;
+    left for a future, separately-diagnosed fix).'
+  description: 'RESOLVED (Phase 3K): a full word-set comparison against page 7''s own raw text
+    (478 words each side) confirms zero words missing, zero words added. Each of the three
+    newspaper articles'' own headline, body and citation now reads in one continuous, correct
+    sequence, followed by the actual task prompt and the fully-interleaved "Observacoes"
+    bullets ending on the correct closing value line. One residual, cosmetic-only limitation:
+    all three articles'' own text still renders as a single merged paragraph rather than being
+    split at each article''s own boundary (assembler._build_statement_segments''s own
+    paragraph-merge heuristic is gap-based, not topology-aware, and was not changed this
+    phase) - affects readability, not content accuracy or sequence.'
+  evidence: docs/phase-3g-report.md; docs/phase-3k-report.md; tests/test_reading_zones.py; tests/test_extraction_pipeline_2008.py::test_d10_reading_order_is_no_longer_scrambled
   id: d10-newspaper-collage-reading-order-scramble
   question_id: enade-2008-computing-d10
-  regression_tests: []
-  resolution: null
+  regression_tests: ['tests/test_reading_zones.py', 'tests/test_extraction_pipeline_2008.py::test_d10_reading_order_is_no_longer_scrambled']
+  resolution: 'RESOLVED (Phase 3K): see cause above.'
   source_pages:
   - 7
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets: []
   category: alternative-boundary-misparse
   cause: 'NEWLY FOUND IN PHASE 3G, ROOT-CAUSED IN PHASE 3H, RESOLVED IN PHASE 3I. assembler.py''s own

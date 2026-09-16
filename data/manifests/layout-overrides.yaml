@@ -505,3 +505,35 @@ overrides:
       both the plain statement text and figure-01.png's own crop.
     evidence: docs/decisions.md, Phase 2E ADR 39 (small-formula region membership)
     status: reviewed
+  # --- Phase 3K: D10's own newspaper-collage page (2008-b) - page-scoped
+  # activation of reading_zones.zoned_reading_order. See
+  # exam-structure-2008.yaml's own comment for why this is a page override
+  # rather than a booklet-wide default: applying the new mechanism to
+  # every two-column page in 2008-b regressed several already-correct
+  # ones (Q28, Q63, Q71 among others), because extract_page_lines's own
+  # output order feeds other order-dependent heuristics (figures.py's own
+  # label-absorption _is_paragraph_continuation) tuned against the old,
+  # page-wide split.
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 7
+    bbox: [0.0, 0.0, 0.0, 0.0]
+    rule: force_zoned_reading_order_page
+    question_id: enade-2008-computing-d10
+    reason: >-
+      D10's own page ("Formacao Geral Discursiva 10") opens with a photo
+      beside a two-column newspaper article, continues as full-width
+      single-column prose for two more motivating fragments, then closes
+      with a genuine two-column bulleted "Observacoes" box - three
+      distinct column topologies on one page. detect_column_margins's own
+      single, page-wide (left_margin, right_margin) decision (35.0, 250.0)
+      applied unconditionally pushes every line at or past x0=245 to
+      after every line before it, scrambling the article/prose/bullets
+      sequence into unrelated fragments interleaved out of order (see
+      docs/phase-3k-report.md for the full forensic trace). reading_zones
+      resolves this by requiring genuine, concurrent two-sided evidence
+      within each specific vertical window rather than one page-wide
+      split - confirmed to reproduce D10's own correct reading order
+      without disturbing any other 2008-b page or 2011/2021 (neither of
+      which sets zoned_reading_order_gate at all).
+    evidence: docs/phase-3k-report.md
+    status: reviewed
