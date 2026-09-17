@@ -1063,8 +1063,10 @@ blockers:
     baseline) back to its own correct left-to-right position. The two remaining, unrelated content-loss
     residuals this id used to also describe (the truncated schema code block; the indices paragraph''s
     own missing opening clause) are genuinely a different invariant (missing/truncated content, not
-    order) and are now tracked on their own - see d40-region-merge-content-loss (still open). The
-    cosmetic "F" label leak (Phase 3G, documented, not hidden) is also unrelated and untouched.'
+    order) and are now tracked on their own - see d40-region-merge-content-loss (resolved Phase 3O). The
+    cosmetic "F" label leak (Phase 3G, documented, not hidden) was also unrelated and untouched by this
+    id''s own fix - see d40-cosmetic-selection-operator-leak (resolved Phase 3R) for its own, separate
+    root cause and resolution.'
   evidence: docs/phase-3c-report.md section E; docs/phase-3d-report.md section D; docs/phase-3e-report.md;
     docs/phase-3g-report.md; docs/phase-3n-report.md; tests/test_extraction_pipeline_2008.py::test_d40_sql_code_block_is_now_preserved_verbatim;
     tests/test_extraction_pipeline_2008.py::test_d40_opening_sentence_word_order_is_no_longer_scrambled
@@ -1114,7 +1116,96 @@ blockers:
   - 17
   status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
+- affected_assets:
+  - figure-01
+  category: cosmetic-text-leak
+  cause: >-
+    FIRST OBSERVED IN PHASE 3G, as an accepted, documented cosmetic
+    trade-off of the tri-state consumption policy's own safe default
+    ("ambiguous never authorizes destructive removal"): a wide-line-
+    barely-touching-a-grown-bbox false positive elsewhere in this same
+    corpus (D10/Q07's own bad lines) required refusing to guess on weak
+    geometric evidence alone, and this diagram's own selection-operator
+    symbol happened to land on the same "ambiguous" side of that same
+    tri-state boundary, with no override written for it at the time.
+    ROOT-CAUSED IN PHASE 3R via direct low-level forensic inspection
+    (rawdict/texttrace/get_fonts/extract_font/get_pixmap - never OCR,
+    never semantic inference): the standalone line "F" (bbox
+    95.759,574.538-103.201,587.914, page 17) is charcode 70/glyph_id 2 in
+    font PKHEMP+TT2F14o00, a 367-byte embedded CFF/Type1 SUBSET font used
+    on this page for exactly two glyphs - this one and charcode 66/
+    glyph_id 1 ("B", bbox 123.239,536.978-131.515,550.354, immediately
+    above it in the same query-tree diagram). The font declares
+    WinAnsiEncoding (PyMuPDF's own fallback decode, since it carries no
+    ToUnicode CMap), which is why the text layer reports literal "B"/"F" -
+    but rendering the page at the same 3x zoom enade.extraction.assets
+    already uses for figure-01.png (i.e. inspecting that already-published
+    asset directly) shows neither glyph is a Latin letter: the image reads
+    "pi_nome,endereco" / "sigma_idade < 40 OR renda < 30000" / "Cliente" -
+    the pi/sigma relational-algebra operators, exactly matching the
+    question's own already-published sentence "na qual B e F representam
+    as operacoes de projecao e de selecao, respectivamente" (this token IS
+    the "F" that sentence itself already names as the selection operator).
+    "F" was never absorbed as a figure label (its own 13.31pt font size is
+    *larger* than this page's own body font size, failing figures.py's own
+    FONT_SIZE_CAPTION_MARGIN candidate filter - the same filter that
+    correctly protects genuine large-font body prose elsewhere in this
+    corpus from being wrongly swallowed into a figure crop), so it was
+    never a `matches_absorbed_label` candidate; it also fails
+    `raw_intersects` (28.8pt short of the region's own raw bbox left edge)
+    and narrowly misses `state="contained"`/`"boundary_crossing"` (its own
+    x1=103.2 sits 0.12pt short of the region's own grown bbox left edge,
+    103.32) - landing on `state="touching"`, which
+    `_text_consumption_decision` correctly reports as "ambiguous" rather
+    than guess. The asset-render clip in assets.py's own `_render_bbox`
+    extends further left than the logical `VisualRegion.bbox`
+    `_line_in_region` uses (out to the page's own content margin/column
+    bound, independently of the narrower text-exclusion geometry) - so
+    figure-01.png already, faithfully shows this exact glyph, even though
+    the text-membership check alone could never safely conclude that on
+    geometry.
+  description: 'RESOLVED IN PHASE 3R: the query-tree diagram''s own selection-operator
+    symbol (rendered as a stray, contextless "F" paragraph between figure-01
+    and the closing paragraph) no longer publishes as loose text - it was
+    never a Latin letter to begin with (a custom operator-symbol subset font
+    glyph, already fully and faithfully visible in the already-published
+    figure-01.png), so removing the duplicate text loses no information a
+    reader cannot already see. The sibling "B" leak (same font, charcode
+    66/glyph_id 1, appended to the framing sentence as "...respectivamente.
+    B	nome,endereco") is a separate, pre-existing artifact, explicitly out
+    of Phase 3R''s own declared scope, and remains exactly as before.'
+  evidence: docs/phase-3r-report.md; data/manifests/source-token-ledger-2008.yaml
+    (token d40-tree-selection-operator-sigma); data/manifests/layout-overrides.yaml
+    (force_region_membership entry, question_id enade-2008-computing-d40);
+    data/questions/2008/all-computing/enade-2008-computing-d40/figure-01.png
+  id: d40-cosmetic-selection-operator-leak
+  question_id: enade-2008-computing-d40
+  regression_tests:
+  - tests/test_layout_overrides.py::test_line_inside_force_region_membership_bbox_is_forced
+  - tests/test_layout_overrides.py::test_force_region_membership_is_the_opposite_rule_from_protect
+  - tests/test_extraction_assembler.py::test_contextual_relation_ambiguous_line_is_excluded_by_a_matching_force_override
+  - tests/test_extraction_assembler.py::test_force_region_membership_override_never_fires_when_decision_is_already_accepted
+  - tests/test_extraction_pipeline_2008.py::test_d40_cosmetic_sigma_operator_leak_is_resolved
+  resolution: >-
+    RESOLVED (Phase 3R): a new, symmetric, hash+page+bbox-locked override
+    rule (`force_region_membership`, data/manifests/layout-overrides.yaml
+    and layout_overrides.py) authorizes treating this one individually-
+    proven line as consumed by its own region despite an "ambiguous"
+    geometric relation - consulted only after `_text_consumption_decision`
+    already reached "ambiguous" (assembler.py's own `_line_in_region`),
+    never overriding an "accepted" decision reached on its own geometric
+    merits. No general threshold, no font-size/touching-ratio rule change,
+    no question-ID/page/coordinate branch in central logic - confirmed by
+    full corpus regeneration that 2008-b's other 76 questions, all 55
+    2011 questions and all 110 2021 questions (3 courses) are byte-for-byte
+    unaffected; the sibling "B" leak on this same page is untouched,
+    confirming the override matches only the exact bbox it was written for.
+  source_pages:
+  - 17
+  status: resolved
+  superseded_by: null
+  visual_validation: passed
 - affected_assets: []
   category: cross-question-contamination
   cause: 'RESOLVED IN PHASE 3E. Root-caused precisely: Q61''s own ITIL diagram is printed on page 27

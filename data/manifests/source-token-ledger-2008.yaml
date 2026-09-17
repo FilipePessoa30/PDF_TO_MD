@@ -124,3 +124,63 @@ tokens:
       this booklet's own consistent, already-accepted convention for
       inline math, not a new or inconsistent standard being applied here.
     validation: reviewed
+  - token_id: d40-tree-selection-operator-sigma
+    question_id: enade-2008-computing-d40
+    source_page: 17
+    expected_role: diagram_operator_symbol
+    raw_unicode: "F"
+    charcode: 70
+    glyph_id: 2
+    font_name: PKHEMP+TT2F14o00
+    font_fingerprint: sha256:99573bc2e5d21945e581d503837be3ab37b4ed735018da36448f7e49efbdfbfa
+    bbox: [95.75910186767578, 574.5380859375, 103.20065307617188, 587.9138793945312]
+    origin: [95.75910186767578, 585.2387084960938]
+    baseline: 585.2387084960938
+    source_backend: pymupdf-rawdict+texttrace+get_fonts+extract_font+get_pixmap
+    first_divergent_stage: region_membership
+    extraction_status: glyph_verified
+    canonical_representation: null
+    visual_fallback: enade-2008-computing-d40/figure-01.png (already rendered
+      and published - the region's own asset-render clip in assets.py's
+      `_render_bbox` extends past this glyph's own x0, independently of the
+      narrower logical VisualRegion.bbox `_line_in_region` uses for text
+      exclusion, so the true glyph is already fully visible there)
+    evidence: >-
+      page.get_text("rawdict"): span text="F", font=TT2F14o00, size=13.31,
+      flags=4, single char c="F", origin=(95.759, 585.239), bbox
+      (95.759,574.538)-(103.201,587.914). page.get_texttrace(): same span,
+      chars=((70, 2, origin, bbox),) - charcode=70 (WinAnsiEncoding "F",
+      PyMuPDF's own fallback decode since this font carries no ToUnicode
+      CMap), glyph_id=2. page.get_fonts(full=True): font xref 160,
+      ('cff','Type1','PKHEMP+TT2F14o00','F66','WinAnsiEncoding',0) - a
+      367-byte embedded CFF/Type1 SUBSET font (doc.extract_font(160) sha256
+      99573bc2e5d21945e581d503837be3ab37b4ed735018da36448f7e49efbdfbfa),
+      used on this page for exactly two glyphs: charcode 70/glyph_id 2
+      (this token) and charcode 66/glyph_id 1 ("B", bbox
+      123.239,536.978-131.515,550.354, immediately above this token in the
+      same query-tree diagram, sitting over "nome,endereco" the way this
+      token sits over "idade < 40 OR renda < 30000"). Rendering this exact
+      page region via page.get_pixmap() at the same 3x zoom
+      enade.extraction.assets.RENDER_ZOOM already uses (i.e. inspecting the
+      already-published data/questions/2008/all-computing/
+      enade-2008-computing-d40/figure-01.png) shows neither glyph is a
+      Latin letter at all: the rendered image reads "pi_nome,endereco" /
+      "sigma_idade < 40 OR renda < 30000" / "Cliente" - the pi/sigma
+      relational-algebra projection/selection operators, exactly matching
+      the question's own already-published sentence "na qual B e F
+      representam as operacoes de projecao e de selecao, respectivamente"
+      (this token IS the "F" that sentence itself already names as a
+      selection-operator symbol, not a coincidence). WinAnsi's own
+      codepoint 70 is nominally LATIN CAPITAL LETTER F, but a subsetted,
+      custom-glyph-program font is free to paint any shape at any glyph
+      index regardless of its nominal encoding table entry - confirmed
+      here not by trusting the declared encoding (which would be exactly
+      the kind of raw-charcode assumption q24-item-marker-I/II's own
+      entries rely on safely, only because those markers' fonts are NOT
+      custom symbol subsets) but by directly rendering the glyph program
+      itself and visually comparing it against the source PDF's own
+      painted page. No OCR, no LLM, no semantic/linguistic inference used -
+      the identity comes from the font's own embedded glyph program,
+      rendered by the same PDF engine (PyMuPDF/MuPDF) already trusted to
+      produce every other published asset in this corpus.
+    validation: reviewed

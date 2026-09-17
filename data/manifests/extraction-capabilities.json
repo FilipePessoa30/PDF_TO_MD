@@ -793,6 +793,42 @@
       "profile_dependency": "none",
       "runtime_ai_dependency": "none",
       "introduced_phase": "3Q"
+    },
+    {
+      "capability_id": "forced_region_membership_for_proven_duplicates",
+      "description": "The symmetric opposite of the existing protect_from_region_membership override: a hash+page+bbox-locked declaration that a specific text line, individually proven (by font/glyph forensic identity plus direct visual comparison against that exact region's own already-rendered asset) to duplicate content the asset already shows in full, may be treated as consumed by its own region even though the geometric relation itself only reached 'ambiguous'. Consulted only in assembler._line_in_region, only after _text_consumption_decision has already reached 'ambiguous' on its own geometric merits - never overrides an 'accepted' decision, never introduces a new threshold on touching/overlap-ratio/font-size, never branches on question ID/page/fixed coordinates in central logic. The tri-state design's own safe default ('ambiguous never authorizes destructive removal') is unchanged for every line without a matching override.",
+      "trigger_features": [
+        "a line whose _text_consumption_decision is 'ambiguous' (never 'accepted' - the override has no effect there) AND whose own bbox is covered by a force_region_membership override for the exact source PDF hash and page",
+        "the override's own reason/evidence fields document a demonstrated duplicate: a font/glyph identity mismatch (declared encoding vs. the font's own embedded glyph program, confirmed by rendering) whose true visual content is already fully shown by the region's own already-published asset"
+      ],
+      "parameters": {},
+      "scope": "layout_overrides.py (LayoutOverrideSet.forces_region_membership, new method); assembler.py (_line_in_region, consulted only on an 'ambiguous' decision); data/manifests/layout-overrides.yaml (force_region_membership rule)",
+      "generalization_level": "G1",
+      "positive_fixtures": [
+        "tests/test_layout_overrides.py::test_line_inside_force_region_membership_bbox_is_forced",
+        "tests/test_layout_overrides.py::test_force_region_membership_is_the_opposite_rule_from_protect",
+        "tests/test_extraction_assembler.py::test_contextual_relation_ambiguous_line_is_excluded_by_a_matching_force_override",
+        "tests/test_extraction_pipeline_2008.py::test_d40_cosmetic_sigma_operator_leak_is_resolved"
+      ],
+      "negative_fixtures": [
+        "tests/test_layout_overrides.py::test_line_outside_force_region_membership_bbox_is_not_forced",
+        "tests/test_layout_overrides.py::test_force_region_membership_respects_pdf_hash",
+        "tests/test_extraction_assembler.py::test_contextual_relation_ambiguous_line_stays_visible_without_a_forcing_override",
+        "tests/test_extraction_assembler.py::test_force_region_membership_override_never_fires_when_decision_is_already_accepted",
+        "tests/test_extraction_assembler.py::test_force_region_membership_ignores_override_for_a_different_pdf_hash"
+      ],
+      "real_cases": [
+        "2008-b D40's own query-tree diagram selection-operator symbol (charcode 70/glyph_id 2, font PKHEMP+TT2F14o00 - a custom relational-algebra operator subset font whose declared WinAnsiEncoding fallback decodes to Latin 'F', but whose own glyph program, confirmed by rendering, paints sigma - already fully visible in the already-published figure-01.png)"
+      ],
+      "protected_cases": [
+        "2008-b (all 76 other published questions, confirmed byte-identical by full regeneration; D40's own sibling 'B' leak on the same page, same font, deliberately left untouched as out of scope, confirmed unchanged)",
+        "2011 (all 55 questions, confirmed byte-identical by full regeneration)",
+        "2021 (all three tracked courses, 110 questions total, confirmed byte-identical by full regeneration)"
+      ],
+      "failure_behavior": "a line reaching 'ambiguous' with no matching override stays visible exactly as before (the tri-state design's own unchanged default) - this capability only ever narrows an already-published cosmetic duplicate that has been individually reviewed, never a general rule applied automatically to any new 'ambiguous' case",
+      "profile_dependency": "none",
+      "runtime_ai_dependency": "none",
+      "introduced_phase": "3R"
     }
   ]
 }

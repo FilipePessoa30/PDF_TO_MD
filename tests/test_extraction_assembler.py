@@ -249,6 +249,130 @@ def test_contextual_relation_wide_line_barely_touching_grown_bbox_is_kept():
     assert _line_in_region(wide_line, region, contextual_relation_gate=True) is False
 
 
+def test_contextual_relation_ambiguous_line_stays_visible_without_a_forcing_override():
+    """PROMPT Fase 3R: the tri-state design's own default - "ambiguous"
+    never authorizes destructive removal on geometry alone - is unchanged
+    by the new ``force_region_membership`` override existing at all. The
+    exact same wide-line-barely-touching shape as the test above stays
+    visible when no override names it.
+    """
+    region = VisualRegion(
+        page_number=1,
+        bbox=(0.0, 90.0, 60.0, 200.0),
+        raw_bbox=(0.0, 90.0, 55.0, 195.0),
+        element_count=1,
+    )
+    wide_line = _line(
+        1, 150.0, "Uma frase real e bem mais larga que a figura.", x=58.0, width=250.0
+    )
+    overrides = LayoutOverrideSet(overrides=[])
+    assert (
+        _line_in_region(wide_line, region, overrides, "cafebabe" * 8, contextual_relation_gate=True)
+        is False
+    )
+
+
+def test_contextual_relation_ambiguous_line_is_excluded_by_a_matching_force_override():
+    """PROMPT Fase 3R: a line individually proven (by evidence recorded in
+    the override's own ``reason``/``evidence`` fields, never by a general
+    geometric rule) to duplicate content its own region's asset already
+    shows in full can be forced into the "excluded" outcome despite an
+    otherwise-"ambiguous" relation - the sole documented exception to the
+    tri-state design's own safe default (see D40's own "F" cosmetic leak,
+    docs/phase-3r-report.md).
+    """
+    region = VisualRegion(
+        page_number=1,
+        bbox=(0.0, 90.0, 60.0, 200.0),
+        raw_bbox=(0.0, 90.0, 55.0, 195.0),
+        element_count=1,
+    )
+    wide_line = _line(
+        1, 150.0, "Uma frase real e bem mais larga que a figura.", x=58.0, width=250.0
+    )
+    relation = compute_line_region_relation(wide_line, region)
+    assert _text_consumption_decision(relation) == "ambiguous"
+    overrides = LayoutOverrideSet(
+        overrides=[
+            LayoutOverride(
+                pdf_sha256="cafebabe" * 8,
+                page=1,
+                bbox=wide_line.bbox,
+                rule="force_region_membership",
+                question_id="enade-2008-computing-d40",
+                reason="test",
+                evidence="test",
+                status="reviewed",
+            )
+        ]
+    )
+    assert (
+        _line_in_region(wide_line, region, overrides, "cafebabe" * 8, contextual_relation_gate=True)
+        is True
+    )
+
+
+def test_force_region_membership_override_never_fires_when_decision_is_already_accepted():
+    """The override is only ever consulted for an "ambiguous" outcome
+    (PROMPT Fase 3R) - it must have no effect on a line that is already
+    "accepted" (e.g. genuinely ``contained``), since that line is already
+    correctly excluded and the override was never reviewed against this
+    different geometric shape.
+    """
+    region = VisualRegion(page_number=1, bbox=(0.0, 90.0, 300.0, 200.0), element_count=1)
+    label = _line(1, 150.0, "Legenda pequena", x=100.0, width=60.0)
+    relation = compute_line_region_relation(label, region)
+    assert relation.state == "contained"
+    overrides = LayoutOverrideSet(
+        overrides=[
+            LayoutOverride(
+                pdf_sha256="cafebabe" * 8,
+                page=1,
+                bbox=label.bbox,
+                rule="force_region_membership",
+                question_id="enade-2008-computing-d40",
+                reason="test",
+                evidence="test",
+                status="reviewed",
+            )
+        ]
+    )
+    assert (
+        _line_in_region(label, region, overrides, "cafebabe" * 8, contextual_relation_gate=True)
+        is True
+    )
+
+
+def test_force_region_membership_ignores_override_for_a_different_pdf_hash():
+    region = VisualRegion(
+        page_number=1,
+        bbox=(0.0, 90.0, 60.0, 200.0),
+        raw_bbox=(0.0, 90.0, 55.0, 195.0),
+        element_count=1,
+    )
+    wide_line = _line(
+        1, 150.0, "Uma frase real e bem mais larga que a figura.", x=58.0, width=250.0
+    )
+    overrides = LayoutOverrideSet(
+        overrides=[
+            LayoutOverride(
+                pdf_sha256="cafebabe" * 8,
+                page=1,
+                bbox=wide_line.bbox,
+                rule="force_region_membership",
+                question_id="enade-2008-computing-d40",
+                reason="test",
+                evidence="test",
+                status="reviewed",
+            )
+        ]
+    )
+    assert (
+        _line_in_region(wide_line, region, overrides, "deadbeef" * 8, contextual_relation_gate=True)
+        is False
+    )
+
+
 def test_contextual_relation_native_offset_caption_with_raw_overlap_is_excluded():
     """The Q61 shape: a real caption sits offset from a wide region (most
     of the caption's own width falls outside the region), but genuinely

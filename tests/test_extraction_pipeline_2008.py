@@ -1082,6 +1082,44 @@ def test_d40_own_two_region_merge_residuals_are_now_resolved(extraction_result):
     assert "figure-02" in asset_ids
 
 
+# --- PROMPT Fase 3R: D40's own residual cosmetic "F" leak -----------------
+
+
+def test_d40_cosmetic_sigma_operator_leak_is_resolved(extraction_result):
+    """Regression test for the "F" cosmetic leak documented since Phase
+    3G (RESOLVED Phase 3R): the query-tree diagram's own selection-
+    operator symbol (font PKHEMP+TT2F14o00, charcode 70/glyph_id 2 - a
+    custom relational-algebra operator subset font whose declared
+    WinAnsiEncoding fallback decodes to Latin "F", but whose own glyph
+    program paints sigma, confirmed by rendering figure-01.png) no longer
+    publishes as a standalone, contextless paragraph between figure-01 and
+    the closing paragraph. figure-01.png (already showing both operator
+    symbols in full - "pi_nome,endereco" / "sigma_idade < 40 OR renda <
+    30000" / "Cliente") is unaffected; the sibling "B" leak (same font,
+    charcode 66/glyph_id 1, appended to the framing sentence as
+    "...respectivamente. B\tnome,endereco") is a separate, pre-existing
+    artifact explicitly out of this phase's own scope and must remain
+    exactly as before.
+    """
+    result, _ = extraction_result
+    d40 = _discursive_by_number(result)[40]
+    assert d40.content_blocks is not None
+    paragraph_texts = [b.text for b in d40.content_blocks if b.type == "paragraph"]
+    assert "F" not in paragraph_texts
+    assert not any(text.strip() == "F" for text in paragraph_texts)
+    # The sibling "B" leak stays untouched (out of scope this phase).
+    assert any(text.rstrip().endswith("B\tnome,endereco") for text in paragraph_texts)
+    asset_ids = [a.id for a in d40.assets]
+    assert "figure-01" in asset_ids
+    # Every other already-restored content survives unchanged.
+    code_blocks = [b for b in d40.content_blocks if b.type == "code"]
+    assert any("data_nascimento, renda, idade)" in b.text for b in code_blocks)
+    assert (
+        "Para essa relação, foram criados dois índices secundários: IndiceIdade, "
+        "para o atributo idade" in d40.statement
+    )
+
+
 def test_q73_neighboring_question_paragraph_is_not_regressed(extraction_result):
     """PROMPT Phase 3O regression guard (mandatory counterexample, Section
     22): a `LineRegionRelation.looks_like_body_prose` unconditional veto was

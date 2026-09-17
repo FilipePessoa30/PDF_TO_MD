@@ -1076,3 +1076,63 @@ overrides:
       same false-merge root cause as the code line above.
     evidence: docs/phase-3o-report.md, Section S
     status: reviewed
+  # --- Phase 3R: D40's own residual cosmetic "F" leak (query-tree operator
+  # symbol, documented as an accepted trade-off since Phase 3G) ----
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 17
+    bbox: [95.0, 574.0, 104.0, 588.0]
+    rule: force_region_membership
+    question_id: enade-2008-computing-d40
+    reason: >-
+      Standalone line "F" (bbox 95.759,574.538-103.201,587.914; charcode
+      70, glyph_id 2, font PKHEMP+TT2F14o00, size 13.31pt) is not a Latin
+      letter at all: font PKHEMP+TT2F14o00 is a small (367-byte), embedded
+      CFF/Type1 subset used only twice on this page, for this glyph and for
+      the sibling glyph at charcode 66 ("B", glyph_id 1) that appears
+      immediately above it (bbox 123.239,536.978-131.515,550.354) - both
+      sit inline with the query-tree diagram's own projection/selection
+      row labels ("nome,endereco" under the first, "idade < 40 OR renda <
+      30000" under the second), exactly matching the statement's own
+      sentence "na qual B e F representam as operacoes de projecao e de
+      selecao, respectivamente" (i.e. these two glyphs ARE the pi/sigma
+      operator symbols the sentence describes). The font declares
+      WinAnsiEncoding (PyMuPDF's fallback charcode->unicode decode, since
+      the font carries no ToUnicode CMap), which is why the raw text layer
+      reports literal "B"/"F" - but the font's own embedded glyph *program*
+      paints something else entirely: rendering this exact page region at
+      3x zoom (the same rendering enade's own asset pipeline already uses
+      for figure-01.png) shows the real characters are the pi and sigma
+      relational-algebra operators, not Latin letters (data/questions/2008/
+      all-computing/enade-2008-computing-d40/figure-01.png, already
+      published, already shows "pi_nome,endereco" / "sigma_idade < 40 OR
+      renda < 30000" / "Cliente" in full - confirmed by direct visual
+      inspection of that exact PNG). "F"'s own sibling glyph "B" is left
+      untouched by this override (out of Fase 3R's own declared scope -
+      see docs/phase-3r-report.md) and continues to publish exactly as
+      before ("...respectivamente. B\tnome,endereco"), a separate,
+      pre-existing, undocumented-as-blocked artifact this phase does not
+      touch. "F" alone reaches `_text_consumption_decision` as "ambiguous"
+      (state="touching": h_overlap<=0 since the region's own grown bbox
+      left edge, 103.32, sits 0.12pt right of "F"'s own x1=103.2 - neither
+      `raw_intersects` (28.8pt short of the region's raw bbox left edge,
+      132.0) nor `matches_absorbed_label` (excluded from label-absorption
+      candidacy entirely: its own 13.31pt font size is *larger* than this
+      page's own body font size, failing figures.py's own
+      FONT_SIZE_CAPTION_MARGIN candidate filter - the same filter that
+      correctly protects genuine large-font body prose from being wrongly
+      swallowed into a figure crop elsewhere in this corpus) - so growth
+      never even considered it, and the tri-state consumption policy
+      correctly refuses to guess from geometry alone (PROMPT Fase 3G,
+      "ambiguous never authorizes destructive removal"). This override
+      supplies the individually-reviewed evidence that policy withholds by
+      design: figure-01.png already shows this exact glyph's true visual
+      identity in full (the render clip in assets.py's own `_render_bbox`
+      extends left to the page's own content margin, well past this line's
+      x0, independently of the narrower logical region bbox
+      `_line_in_region` uses for text-exclusion) - removing this one
+      duplicate text line loses no information the reader cannot already
+      see, and does not touch growth, merge, or crop logic at all.
+    evidence: docs/phase-3r-report.md; data/manifests/source-token-ledger-2008.yaml
+      (token d40-tree-selection-operator-sigma);
+      data/questions/2008/all-computing/enade-2008-computing-d40/figure-01.png
+    status: reviewed

@@ -600,7 +600,21 @@ def _line_in_region(
     if _is_marker_at_margin(line.text, line.x0, body_margin_x0):
         return False
     relation = compute_line_region_relation(line, region, own_key)
-    return _text_consumption_decision(relation, region.is_small_formula) == "accepted"
+    decision = _text_consumption_decision(relation, region.is_small_formula)
+    if decision == "accepted":
+        return True
+    # PROMPT Fase 3R: "ambiguous" stays the safe default (never destructive
+    # on weak evidence, per `_text_consumption_decision`'s own docstring) -
+    # the sole documented exception is a line individually proven, by
+    # font/glyph identity and by comparison against this exact region's own
+    # already-rendered asset, to be a duplicate of content that asset
+    # already shows in full (see ``forces_region_membership``). Checked
+    # only here, after the geometric decision has already been made, so it
+    # can never turn an otherwise-"accepted" or "ambiguous"-for-other-
+    # reasons line into something the override was never reviewed against.
+    return overrides is not None and overrides.forces_region_membership(
+        pdf_sha256, line.page_number, line.bbox
+    )
 
 
 def _position_key(page_number: int, y: float) -> tuple[int, float]:

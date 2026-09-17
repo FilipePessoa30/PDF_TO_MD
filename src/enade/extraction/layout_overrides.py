@@ -237,6 +237,53 @@ class LayoutOverrideSet(BaseModel):
                 return True
         return False
 
+    def forces_region_membership(
+        self, pdf_sha256: str, page: int, bbox: tuple[float, float, float, float]
+    ) -> bool:
+        """True if some override authorizes treating a text line at
+        ``bbox`` on ``page`` as consumed by (excluded on behalf of) a
+        visual region, even though ``_text_consumption_decision`` itself
+        only reached ``"ambiguous"`` for it (PROMPT Fase 3R).
+
+        The exact opposite of ``protects_from_region_membership``, and
+        deliberately just as narrow: the tri-state design's own default
+        (Phase 3G) is that "ambiguous" must never authorize destructive
+        removal - a line merely touching a region, with no genuine
+        ``raw_intersects``/``contained``/``matches_absorbed_label``
+        evidence, stays visible rather than risk silently dropping real
+        content (see ``_text_consumption_decision``'s own docstring). That
+        default is correct for the general case and is not weakened here.
+
+        This override exists for the narrow, individually-verified
+        opposite: a line already proven, by direct font/glyph inspection
+        and by visual comparison against the region's own already-
+        rendered asset, to be a duplicate of content that asset already
+        shows in full (2008-b D40, page 17: a relational-algebra operator
+        symbol painted by a custom subset font whose declared
+        WinAnsiEncoding charcode happens to coincide with Latin "F", but
+        whose own glyph program - confirmed by rendering - paints the
+        selection operator sigma, already fully visible in the question's
+        own published figure-01.png). Never applied by a general geometric
+        rule (no threshold on ``touching``/overlap ratio/font size is
+        introduced), never by question ID/page/coordinate branching in
+        calling code - only by this same hash+page+bbox containment match
+        every other override in this module already uses, requiring a
+        fresh, individually-documented review (``reason``/``evidence``) for
+        every line it is ever asked to cover.
+
+        Containment, like the other rules above.
+        """
+        x0, y0, x1, y1 = bbox
+        for override in self.overrides:
+            if override.rule != "force_region_membership":
+                continue
+            if override.pdf_sha256 != pdf_sha256 or override.page != page:
+                continue
+            ox0, oy0, ox1, oy1 = override.bbox
+            if x0 >= ox0 and y0 >= oy0 and x1 <= ox1 and y1 <= oy1:
+                return True
+        return False
+
     def forces_single_column(self, pdf_sha256: str, page: int) -> bool:
         """True if some override forces naive (y0, x0) reading order for
         the whole page, bypassing ``detect_column_margins`` entirely.

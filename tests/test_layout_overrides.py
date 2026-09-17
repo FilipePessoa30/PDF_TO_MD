@@ -233,3 +233,48 @@ def test_region_membership_protection_is_distinct_from_label_absorption_protecti
     bbox = (45.5, 608.4, 287.5, 621.8)
     assert overrides.protects_from_region_membership("a" * 64, 10, bbox)
     assert not overrides.protects_from_label_absorption("a" * 64, 10, bbox)
+
+
+def _force_membership_override(**overrides) -> LayoutOverride:
+    base = dict(
+        pdf_sha256="d40" * 21 + "x",
+        page=17,
+        bbox=(95.0, 574.0, 104.0, 588.0),
+        rule="force_region_membership",
+        question_id="enade-2008-computing-d40",
+        reason="test",
+        evidence="test",
+        status="reviewed",
+    )
+    base.update(overrides)
+    return LayoutOverride(**base)
+
+
+def test_line_inside_force_region_membership_bbox_is_forced():
+    overrides = LayoutOverrideSet(overrides=[_force_membership_override()])
+    assert overrides.forces_region_membership("d40" * 21 + "x", 17, (95.76, 574.54, 103.2, 587.91))
+
+
+def test_line_outside_force_region_membership_bbox_is_not_forced():
+    overrides = LayoutOverrideSet(overrides=[_force_membership_override()])
+    assert not overrides.forces_region_membership(
+        "d40" * 21 + "x", 17, (123.24, 536.98, 131.51, 550.35)
+    )
+
+
+def test_force_region_membership_respects_pdf_hash():
+    overrides = LayoutOverrideSet(overrides=[_force_membership_override()])
+    assert not overrides.forces_region_membership(
+        "different" * 8, 17, (95.76, 574.54, 103.2, 587.91)
+    )
+
+
+def test_force_region_membership_is_the_opposite_rule_from_protect():
+    # force_region_membership authorizes exclusion; protect_from_region_
+    # membership prevents it. The same bbox must never satisfy both at
+    # once, since a single line's own override can only ever request one
+    # of the two opposite outcomes.
+    overrides = LayoutOverrideSet(overrides=[_force_membership_override()])
+    bbox = (95.76, 574.54, 103.2, 587.91)
+    assert overrides.forces_region_membership("d40" * 21 + "x", 17, bbox)
+    assert not overrides.protects_from_region_membership("d40" * 21 + "x", 17, bbox)
