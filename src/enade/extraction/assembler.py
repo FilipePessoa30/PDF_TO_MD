@@ -21,6 +21,10 @@ from typing import Literal
 
 import pymupdf
 
+from enade.extraction.alternative_content_assignment import (
+    AlternativeContentAssignment,
+    assign_alternative_content,
+)
 from enade.extraction.alternative_groups import find_alternative_group
 from enade.extraction.annotations import (
     DocumentAnnotation,
@@ -243,6 +247,17 @@ class ExtractedQuestion:
     #: deterministic, evidence-based fragment-order correction (or a safe
     #: rejection of one) is not a reason for human review.
     same_row_reorder_notes: list[str] = field(default_factory=list)
+    #: PROMPT Phase 3P: one record per trailing (post-marker) line inside
+    #: every accepted alternative's own index range, explaining whether it
+    #: was kept as a genuine continuation, reflowed to the statement (real,
+    #: structurally-demonstrated contamination), or retained in place as
+    #: an unresolved ambiguity (see alternative_content_assignment.py's own
+    #: module docstring). Empty for every question without a resolved A-E
+    #: sequence, and empty-of-anomalies (every record ``status="assigned"``)
+    #: for the overwhelming majority of questions that do have one.
+    alternative_content_assignments: list[AlternativeContentAssignment] = field(
+        default_factory=list
+    )
 
     @property
     def plain_statement(self) -> str:
@@ -770,6 +785,7 @@ def _build_statement_segments(
     own_key: str | None = None,
     body_margin_by_page: dict[int, float | None] | None = None,
     contextual_relation_gate: bool = False,
+    force_included_lines: frozenset[Line] = frozenset(),
 ) -> tuple[list[StatementSegment], list[int], list[int]]:
     """Merge text lines, figure regions and tables into position-ordered segments.
 
@@ -782,6 +798,19 @@ def _build_statement_segments(
     segments plus the list of region indices and table indices that were
     actually placed (so the caller can tell whether every detected
     region/table ended up referenced).
+
+    ``force_included_lines`` (PROMPT Phase 3P): a line already
+    structurally demonstrated to belong to the statement despite sitting
+    inside a region's own bbox - e.g. a chart's own citation, reflowed
+    here after ``alternative_content_assignment.assign_alternative_content``
+    found it contaminating an alternative purely through column-blind
+    reading order. Region membership alone never earns the authority to
+    remove canonical text (PROMPT Phase 3O's own central principle); once
+    a line's true ownership has been positively established by a
+    different mechanism, that decision - not a fresh, unrelated geometric
+    guess - is what counts here. Empty for every question without a
+    reflowed line (the overwhelming majority), leaving this function's
+    own region-exclusion behavior completely unchanged.
     """
     tables = tables or []
     table_consumed = frozenset(ln for table in tables for ln in table.consumed_lines)
@@ -839,7 +868,7 @@ def _build_statement_segments(
             line = payload
             assert isinstance(line, Line)
             margin = (body_margin_by_page or {}).get(line.page_number)
-            if any(
+            if line not in force_included_lines and any(
                 _line_in_region(
                     line,
                     regions[i],
@@ -1815,6 +1844,8 @@ def assemble_question(
     statement_tables = detected_tables
     alt_figure_regions: list[VisualRegion] = []
     consumed_ids: set[int] = set()
+    alternative_content_assignments: list[AlternativeContentAssignment] = []
+    reflowed_lines_for_statement: list[Line] = []
 
     if span.kind == QuestionKind.OBJECTIVE:
         alt_group = find_alternative_group(text_only_lines)
@@ -1851,6 +1882,30 @@ def assemble_question(
 
             ordered_letters = ["A", "B", "C", "D", "E"]
             alt_bounds = [starts[letter] for letter in ordered_letters] + [len(text_only_lines)]
+            # PROMPT Phase 3P: a trailing line inside a letter's own naive
+            # index range is only ever a genuine continuation of that
+            # letter's own text when its own x0 matches an accepted
+            # marker's own margin (the same evidence
+            # ``_in_alternatives_section`` already uses to decide whether a
+            # line is exempt from region-exclusion, applied here to the
+            # content itself) - otherwise it is real, structurally-
+            # demonstrated contamination (reflowed to the statement when a
+            # visual region's own column explains it) or an unresolved
+            # ambiguity (retained exactly where naive assignment already
+            # put it - the safe default, identical to pre-Phase-3P
+            # behavior). See alternative_content_assignment.py.
+            alt_marker_x0s = tuple(text_only_lines[starts[letter]].x0 for letter in ordered_letters)
+            assignment_result = assign_alternative_content(
+                ordered_letters=tuple(ordered_letters),
+                alt_bounds=alt_bounds,
+                text_only_lines=text_only_lines,
+                marker_x0s=alt_marker_x0s,
+                continuation_tolerance=_ALTERNATIVE_CONTINUATION_X_TOLERANCE,
+                regions=regions,
+                question_owner=own_key,
+                group_id=own_key,
+            )
+            alternative_content_assignments = assignment_result.assignments
             for i, letter in enumerate(ordered_letters):
                 letter_lines = text_only_lines[alt_bounds[i] : alt_bounds[i + 1]]
                 if not letter_lines:
@@ -1859,9 +1914,28 @@ def assemble_question(
                 first_match = _ALTERNATIVE_LINE_RE.match(letter_lines[0].text)
                 assert first_match is not None  # guaranteed by find_alternative_group
                 first_text = (first_match.group(2) or "").strip()
-                rest_text = " ".join(ln.text.strip() for ln in letter_lines[1:])
+                kept_lines = assignment_result.retained_by_letter[letter]
+                rest_text = " ".join(ln.text.strip() for ln in kept_lines)
                 full_text = f"{first_text} {rest_text}".strip() if rest_text else first_text
                 alternatives.append(ExtractedAlternative(letter=letter, text=full_text))
+
+            if assignment_result.reflowed_to_statement:
+                # Appended after every already-ordered statement line,
+                # never interleaved by a naive (page, y0) re-sort of the
+                # whole list (PROMPT Phase 3P section 13): statement_lines
+                # may already carry a genuine multi-column or zone-aware
+                # order of its own (extract_page_lines's own column-major
+                # sort, or reading_zones's), which a flat y0 re-sort would
+                # risk inverting. A reflowed line keeps its own relative
+                # order against any other reflowed line; landing at the
+                # end of the statement rather than beside its own visual
+                # region is the deliberately conservative trade-off - the
+                # content is present and unambiguously part of the
+                # statement, never lost or misattributed to an
+                # alternative, even though its exact position is not
+                # pixel-perfect against the source page.
+                statement_lines = [*statement_lines, *assignment_result.reflowed_to_statement]
+                reflowed_lines_for_statement = assignment_result.reflowed_to_statement
 
             alt_figure_regions, consumed_ids = _attach_alternative_formula_regions(
                 alternatives, text_only_lines, alt_bounds, regions
@@ -1902,6 +1976,7 @@ def assemble_question(
         own_key,
         body_margin_by_page,
         contextual_relation_gate,
+        force_included_lines=frozenset(reflowed_lines_for_statement),
     )
 
     # Computed against the pre-attachment statement_regions/consumed_ids
@@ -1990,4 +2065,5 @@ def assemble_question(
         value_annotations=value_annotations,
         zone_reorder_notes=zone_reorder_notes,
         same_row_reorder_notes=same_row_reorder_notes,
+        alternative_content_assignments=alternative_content_assignments,
     )

@@ -38,9 +38,9 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
@@ -50,10 +50,12 @@ taxonomy_review_status: pending
 
 De acordo com o mesmo gráfico, o percentual da renda total correspondente aos 20% de maior renda foi,
 
+Disponível em http://www.ipea.gov.br
+
 ## Alternativas
 
 A. 20%.
 B. 40%.
 C. 50%.
 D. 60%.
-E. 80%. Disponível em http://www.ipea.gov.br
+E. 80%.

@@ -896,22 +896,13 @@ def test_q05_citation_is_now_complete(extraction_result):
     assert len(q05.assets) == 1
 
 
-def test_q07_framing_clause_is_now_complete_and_alternative_e_is_unchanged(
-    extraction_result,
-):
-    """Regression test for ``q07-region-merge-content-loss`` (PARTIALLY
-    RESOLVED Phase 3O): the framing clause is restored. Alternative E's own
-    citation contamination ("80%. Disponível em http://www.ipea.gov.br") is
-    a PRE-EXISTING defect, already present in the published corpus before
-    this phase (confirmed via ``git show HEAD:...q07.md``) - the image's
-    own citation was never actually region-excluded; it already flowed
-    into the alternative-boundary slicer's own tail range because its own
-    y0 sits below alternative E's own marker (a two-column geometry issue,
-    not a disposition/consumption one - see
-    ``q07-alternative-e-citation-contamination-risk``). This phase does
-    not touch alternative-boundary slicing (Section 23), so this stays
-    exactly as it already was - pinned here so it is not mistaken for a
-    new regression later.
+def test_q07_framing_clause_is_now_complete(extraction_result):
+    """Regression test for ``q07-region-merge-content-loss`` (RESOLVED
+    Phase 3O for the framing clause; the alternative E contamination this
+    test's own earlier version pinned as "pre-existing, unchanged" is now
+    itself resolved by Phase 3P - see
+    ``test_q07_alternative_e_is_no_longer_contaminated_by_the_chart_citation``
+    for the full, current-state assertion).
     """
     result, _ = extraction_result
     q07 = _objective_by_number(result)[7]
@@ -919,8 +910,6 @@ def test_q07_framing_clause_is_now_complete_and_alternative_e_is_unchanged(
         "De acordo com o mesmo gráfico, o percentual da renda total correspondente "
         "aos 20% de maior renda foi," in q07.statement
     )
-    alternative_e = next(a for a in q07.alternatives if a.letter == "E")
-    assert alternative_e.text == "80%. Disponível em http://www.ipea.gov.br"
     assert len(q07.assets) == 1
 
 
@@ -1026,3 +1015,91 @@ def test_q73_neighboring_question_paragraph_is_not_regressed(extraction_result):
     assert "técnicas que auxiliam na gerência de projetos de software" not in q73.statement
     assert "eventos iniciais e finais de cada atividade" not in q73.statement
     assert len(q73.assets) == 1
+
+
+# --- PROMPT Phase 3P: alternative ownership / Q07 contamination fix -------
+
+
+def test_q07_alternative_e_is_no_longer_contaminated_by_the_chart_citation(extraction_result):
+    """Full regression test for ``q07-alternative-e-citation-contamination-risk``
+    (RESOLVED Phase 3P): the chart's own citation, "Disponivel em
+    http://www.ipea.gov.br", lives in page 4's own LEFT column (beneath
+    the Curva de Lorenz graph) while the statement/alternatives live
+    entirely in the RIGHT column - the page is never detected as a
+    genuine two-column page (a single line is not enough evidence for
+    ``detect_column_margins``), so ``extract_page_lines`` falls back to a
+    flat (y0, x0) sort, placing the citation after alternative E's own
+    marker. ``alternative_content_assignment.assign_alternative_content``
+    now demonstrates the citation moves *backward* (x0=164.8) relative to
+    alternative E's own marker (x0=272.2) and falls inside the chart's own
+    region - reflowed to the statement instead of contaminating E.
+
+    Verified beyond substring checks: the exact final alternative E text,
+    the exact statement paragraph order, and that nothing else in the
+    77-question 2008-b corpus changed (see docs/phase-3p-report.md,
+    Section shadow-mode, for the full corpus-wide byte-diff).
+    """
+    result, _ = extraction_result
+    q07 = _objective_by_number(result)[7]
+
+    assert q07.alternatives[0].letter == "A"
+    letters_and_text = [(a.letter, a.text) for a in q07.alternatives]
+    assert letters_and_text == [
+        ("A", "20%."),
+        ("B", "40%."),
+        ("C", "50%."),
+        ("D", "60%."),
+        ("E", "80%."),
+    ]
+    assert "Disponível" not in q07.alternatives[-1].text
+    assert "ipea" not in q07.alternatives[-1].text.lower()
+
+    assert q07.statement == (
+        "![Figura da questão](enade-2008-computing-q07/figure-01.png)\n\n"
+        "De acordo com o mesmo gráfico, o percentual da renda total correspondente "
+        "aos 20% de maior renda foi,\n\n"
+        "Disponível em http://www.ipea.gov.br"
+    )
+
+    assert len(q07.assets) == 1
+
+
+def test_q28_alternatives_are_not_regressed_by_the_new_alternative_ownership_mechanism(
+    extraction_result,
+):
+    """Mandatory regression (PROMPT Phase 3P section 25): Q28's own
+    alternatives are five short, purely numeric strings ("1, 1 e 2", ...)
+    that never fail the continuation-margin test and never sit near any
+    visual region - confirms the new mechanism is a true no-op here.
+    """
+    result, _ = extraction_result
+    q28 = _objective_by_number(result)[28]
+    assert [(a.letter, a.text) for a in q28.alternatives] == [
+        ("A", "1, 1 e 2"),
+        ("B", "1, 2 e 1"),
+        ("C", "2, 1 e 2"),
+        ("D", "2, 2 e 1"),
+        ("E", "1, 1 e 1"),
+    ]
+
+
+def test_q52_alternatives_are_not_regressed_by_the_new_alternative_ownership_mechanism(
+    extraction_result,
+):
+    """Mandatory regression (PROMPT Phase 3P section 25): Q52's own
+    alternative A is the historical false-marker-candidate case
+    (alternative_groups.py's own module docstring) that motivated the
+    margin-based resolution in Phase 3I - confirms the new ownership
+    layer built on top of it does not disturb the already-correct result.
+    """
+    result, _ = extraction_result
+    q52 = _objective_by_number(result)[52]
+    assert q52.alternatives[0].letter == "A"
+    assert q52.alternatives[0].text == (
+        "A identificação e a comunicação do erro em qualquer uma das sentenças "
+        "são funções do analisador léxico."
+    )
+    assert q52.alternatives[-1].letter == "E"
+    assert q52.alternatives[-1].text == (
+        "A identificação e a comunicação do erro na sentença II são funções da análise semântica."
+    )

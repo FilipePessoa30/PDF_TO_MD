@@ -165,42 +165,39 @@ blockers:
     the earlier framing clause (''De acordo com o mesmo gráfico, o percentual da renda'') is one single,
     non-fragmented line that growth still genuinely absorbs on its own - same pre-existing over-absorption
     family as D09/D10/D40/Q02/Q05/Q45/Q54; alternative E''s own citation contamination also remains.'
-  description: 'PARTIALLY RESOLVED IN PHASE 3O: statement now reads ''total correspondente aos 20% de maior
-    renda foi,'' (was ''20% de maior renda foi,'' after Phase 3G''s own minor regression, and better than
-    even the pre-Phase-3G ''aos 20% de maior renda foi,''). The framing clause (''De acordo com o mesmo
-    grafico...'') is now also present. Alternative E''s own citation contamination is a genuinely separate,
-    PRE-EXISTING defect (confirmed present in the corpus as published before this phase, via
-    ''git show HEAD:...q07.md'' - the citation was never region-excluded at all, so there was nothing for
-    Phase 3O''s own disposition work to free; see q07-alternative-e-citation-contamination-risk) - out of
-    this blocker''s own scope and not attempted this phase.'
-  evidence: docs/phase-3e-report.md; docs/phase-3g-report.md; docs/phase-3h-report.md; docs/phase-3o-report.md, Section O
+  description: 'RESOLVED IN PHASE 3P (framing clause already RESOLVED IN PHASE 3O): statement now reads
+    ''total correspondente aos 20% de maior renda foi,'' (was ''20% de maior renda foi,'' after Phase 3G''s
+    own minor regression, and better than even the pre-Phase-3G ''aos 20% de maior renda foi,''). The
+    framing clause (''De acordo com o mesmo grafico...'') and the image''s own citation
+    (''Disponivel em http://www.ipea.gov.br'') are both now present, the citation correctly living in the
+    statement instead of contaminating alternative E - see q07-alternative-e-citation-contamination-risk,
+    also resolved this phase.'
+  evidence: docs/phase-3e-report.md; docs/phase-3g-report.md; docs/phase-3h-report.md; docs/phase-3o-report.md, Section O; docs/phase-3p-report.md, Section M
   id: q07-region-merge-content-loss
   question_id: enade-2008-computing-q07
   regression_tests:
-  - tests/test_extraction_pipeline_2008.py::test_q07_framing_clause_is_now_complete_and_alternative_e_is_unchanged
+  - tests/test_extraction_pipeline_2008.py::test_q07_framing_clause_is_now_complete
+  - tests/test_extraction_pipeline_2008.py::test_q07_alternative_e_is_no_longer_contaminated_by_the_chart_citation
   resolution: >-
-    PARTIALLY RESOLVED (Phase 3O): the framing clause was absorbed by the
+    RESOLVED (Phase 3O + Phase 3P): the framing clause was absorbed by the
     chart's own region purely as a growth/label-absorption side effect and
-    is now protected via a `protect_from_region_membership` override
-    (data/manifests/layout-overrides.yaml). The image's own citation line
-    ("Disponivel em http://www.ipea.gov.br") is a separate, PRE-EXISTING
-    defect (confirmed via `git show HEAD:...q07.md`: it already reads
-    "E. 80%. Disponivel em http://www.ipea.gov.br" in the published corpus,
-    before this phase touched anything) - it was never region-excluded at
-    all (`_in_alternatives_section` already independently exempts it, since
-    its own y0 sits below alternative E's own marker), so there was nothing
-    for a disposition-layer fix to free. The actual defect is the
-    alternative-boundary slicer's own tail range sweeping it into
-    alternative E's own text by list position alone, regardless of it
-    living in a different page column - fixing that would require making
-    the per-letter alternative-boundary slice X-proximity-aware, a change
-    to core objective-question boundary detection shared by every
-    booklet - out of scope for this phase's disposition-only mandate
-    (Section 23). Left exactly as published; tracked as
-    `q07-alternative-e-citation-contamination-risk` for a future phase.
+    is protected via a `protect_from_region_membership` override
+    (data/manifests/layout-overrides.yaml, Phase 3O). The image's own
+    citation line ("Disponivel em http://www.ipea.gov.br") was never
+    region-excluded at all - it was already free, but wrongly swept into
+    alternative E's own trailing text by the alternative-boundary slicer's
+    own naive list-position range (Phase 3P's own root cause). Resolved by
+    `alternative_content_assignment.py` (new module): a trailing line
+    inside an alternative's own range is only ever a genuine continuation
+    when its own x0 matches an accepted marker's margin; this citation
+    fails that test *and* moves backward (x0=164.8) relative to
+    alternative E's own marker (x0=272.2) *and* falls inside the chart's
+    own region - all three conditions demonstrate it belongs to the
+    statement, not the alternative. Confirmed by a full corpus-wide shadow
+    scan (2008-b/2011/2021) that no other question changes.
   source_pages:
   - 4
-  status: open
+  status: resolved
   superseded_by: null
   visual_validation: failed
 - affected_assets: []
@@ -1775,25 +1772,45 @@ blockers:
     last letter (E) absorbs everything after its own marker, regardless of
     column.
   description: >-
-    Q07's own chart citation reads as part of alternative E's own text
-    ("E. 80%. Disponivel em http://www.ipea.gov.br") instead of the
-    statement, because the alternative-boundary slicer groups trailing
-    content by raw list position only, with no column/X-proximity
-    awareness. Already present in the corpus as published before Phase 3O;
-    this phase neither caused nor fixed it (out of scope - Section 23) -
-    tracked so a future attempt does not rediscover this from scratch, and
-    is pinned by
-    tests/test_extraction_pipeline_2008.py::test_q07_framing_clause_is_now_complete_and_alternative_e_is_unchanged
-    so it is not mistaken for a new regression.
-  evidence: docs/phase-3o-report.md, Section O; data/manifests/layout-overrides.yaml
+    RESOLVED IN PHASE 3P: Q07's own chart citation used to read as part of
+    alternative E's own text ("E. 80%. Disponivel em http://www.ipea.gov.br")
+    instead of the statement, because the alternative-boundary slicer
+    grouped trailing content by raw list position only, with no column/X-
+    proximity awareness. Already present in the corpus as published before
+    Phase 3O (that phase neither caused nor fixed it - Section 23 of its
+    own prompt kept it out of scope). Phase 3P introduces
+    `alternative_content_assignment.py` (PROMPT Phase 3P), a structural
+    per-line ownership mechanism built on top of the already-validated
+    `alternative_groups.find_alternative_group` (Phase 3I): a trailing
+    line is only ever retained as a genuine continuation when its own x0
+    matches an accepted marker's own margin; this citation fails that
+    test, moves backward relative to its own alternative's marker, and
+    falls inside the chart's own visual region - all three conditions
+    together (not any one alone - each was tried in isolation during this
+    phase's own shadow-mode validation and found to cause real
+    regressions on 2008-b Q64, 2011 Q23, and 2021 SI Q33, all now covered
+    by dedicated tests) demonstrate the citation belongs to the statement.
+    Verified by a full corpus-wide shadow scan (2008-b/2011/2021): no
+    other question's own output changes.
+  evidence: docs/phase-3o-report.md, Section O; docs/phase-3p-report.md; data/manifests/layout-overrides.yaml
   id: q07-alternative-e-citation-contamination-risk
   question_id: enade-2008-computing-q07
   regression_tests:
-  - tests/test_extraction_pipeline_2008.py::test_q07_framing_clause_is_now_complete_and_alternative_e_is_unchanged
-  resolution: null
+  - tests/test_extraction_pipeline_2008.py::test_q07_alternative_e_is_no_longer_contaminated_by_the_chart_citation
+  - tests/test_alternative_content_assignment.py::test_same_row_far_right_continuation_is_never_reflowed_even_with_a_matching_region
+  resolution: >-
+    RESOLVED (Phase 3P): see cause above. The general mechanism
+    (`assign_alternative_content`) requires all of (a) the trailing line
+    fails the alternative's own continuation-margin test, (b) the line
+    moves backward (x0 less than its own marker's x0), and (c) the line
+    falls inside a visual region's own horizontal territory, before ever
+    reflowing anything to the statement - condition (b) alone was the
+    missing piece that safely separates genuine same-row, far-right
+    continuations (2008-b Q64's own "gerentes", 2011 Q23's own "em que")
+    from real cross-column contamination (this citation).
   source_pages:
   - 4
-  status: open
+  status: resolved
   superseded_by: null
   visual_validation: failed
 - affected_assets:

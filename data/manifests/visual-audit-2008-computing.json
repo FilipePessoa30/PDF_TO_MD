@@ -60,8 +60,8 @@
     "notes": "Statement (mapa de centros urbanos sustentaveis) and figure-01.png compared against page 4. Complete paragraph before and after the image, alternatives correct."
   },
   "enade-2008-computing-q07": {
-    "status": "failed",
-    "notes": "PARTIALLY RESOLVED IN PHASE 3O (was: RE-AUDITED IN PHASE 3H). The framing clause (\"De acordo com o mesmo grafico, o percentual da renda total correspondente aos 20% de maior renda foi,\") is now present via a protect_from_region_membership override (data/manifests/layout-overrides.yaml). Alternative E's own citation contamination (\"80%. Disponivel em http://www.ipea.gov.br\") is confirmed a genuinely separate, PRE-EXISTING defect (present in the corpus as published before this phase - see q07-alternative-e-citation-contamination-risk), not something this phase's own disposition work caused or could safely fix (would require touching core alternative-boundary slicing, shared by every objective question in every booklet). Stays failed."
+    "status": "passed",
+    "notes": "RESOLVED IN PHASE 3P (framing clause RESOLVED IN PHASE 3O). The image own citation (\"Disponivel em http://www.ipea.gov.br\") no longer contaminates alternative E - confirmed a genuine cross-column reading-order artifact (the citation lives in the left column beneath the Curva de Lorenz chart, never region-excluded, but swept into alternative E own trailing text by the alternative-boundary slicer own naive list-position range). alternative_content_assignment.py (new module) reflows it to the statement instead, using three joint conditions (fails the continuation-margin test, moves backward relative to its own marker, falls inside the chart own region) - directly re-viewed figure-01.png: the chart own citation prints immediately below it on the real page, matching the restored statement text exactly. No other gap found."
   },
   "enade-2008-computing-q11": {
     "status": "passed",

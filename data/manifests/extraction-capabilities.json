@@ -732,6 +732,42 @@
       "profile_dependency": "none - overrides are hash+bbox-locked per PDF, not gated by any ExamStructureProfile field",
       "runtime_ai_dependency": "none",
       "introduced_phase": "3O"
+    },
+    {
+      "capability_id": "alternative_content_assignment",
+      "description": "Per-line ownership between a question's own statement and its A-E alternatives, built on top of the already-validated alternative_groups.find_alternative_group (Phase 3I) marker sequence. A trailing line inside an accepted letter's own naive index range is only ever retained as that alternative's own continuation when its own x0 matches an accepted marker's own margin (the same evidence assembler._in_alternatives_section already uses for a different purpose). A trailing line failing that test is reflowed to the statement only when it ALSO moves backward (x0 less than its own marker's x0) AND falls inside a visual region's own horizontal territory on the same page - all three conditions together, never any one alone (each was tried in isolation during Phase 3P's own shadow-mode validation and caused real regressions - see negative_fixtures). A line failing the margin test without both remaining conditions stays exactly where naive assignment already put it (ambiguous, reported, never silently dropped or guessed).",
+      "trigger_features": [
+        "a resolved A-E alternative marker sequence (alternative_groups.AlternativeGroup.is_usable)",
+        "a trailing line whose own x0 fails the alternative's own continuation-margin tolerance, moves backward relative to its own marker, and falls inside a visual region's own horizontal territory on the same page"
+      ],
+      "parameters": {
+        "continuation_tolerance": "reuses assembler._ALTERNATIVE_CONTINUATION_X_TOLERANCE (60.0pt), not a new threshold"
+      },
+      "scope": "alternative_content_assignment.py (new module); assembler.py's own alternative-text-building loop and _build_statement_segments (force_included_lines parameter)",
+      "generalization_level": "G2",
+      "positive_fixtures": [
+        "tests/test_alternative_content_assignment.py (35 unit/safety/metamorphic tests)",
+        "tests/test_extraction_pipeline_2008.py::test_q07_alternative_e_is_no_longer_contaminated_by_the_chart_citation"
+      ],
+      "negative_fixtures": [
+        "tests/test_alternative_content_assignment.py::test_same_row_far_right_continuation_is_never_reflowed_even_with_a_matching_region (2008-b Q64's own real regression, found and fixed during this phase's own shadow-mode validation)",
+        "tests/test_extraction_pipeline_2008.py::test_q28_alternatives_are_not_regressed_by_the_new_alternative_ownership_mechanism",
+        "tests/test_extraction_pipeline_2008.py::test_q52_alternatives_are_not_regressed_by_the_new_alternative_ownership_mechanism",
+        "tests/test_extraction_pipeline_2008.py::test_q71_alternative_b_c_boundary_is_now_correct",
+        "tests/test_extraction_pipeline_2008.py::test_q13_statement_no_longer_duplicates_alternative_e"
+      ],
+      "real_cases": [
+        "2008-b Q07 (alternative-boundary-contamination, PROMPT Phase 3P)"
+      ],
+      "protected_cases": [
+        "2008-b (all 77 published questions, confirmed byte-identical except Q07 by full regeneration)",
+        "2011 (all 55 questions, confirmed byte-identical by full regeneration - the 'moves backward' condition alone was found necessary to avoid regressing 2011 Q23's own same-row 'em que'/'.' fragments)",
+        "2021 (all three tracked courses, 110 questions total, confirmed byte-identical by full regeneration - the 'moves backward' condition alone was found necessary to avoid regressing 2021 SI Q33's own NULO-fragment alternatives)"
+      ],
+      "failure_behavior": "a trailing line with no positive evidence for any owner other than its own naive list position is retained exactly there, reported as an ambiguous finding (detect_ambiguous_published_assignments), never silently reassigned or dropped",
+      "profile_dependency": "none - the mechanism runs unconditionally once a question has a resolved A-E marker sequence, gated entirely by the geometric evidence itself (margin/backward/region), never a per-booklet flag",
+      "runtime_ai_dependency": "none",
+      "introduced_phase": "3P"
     }
   ]
 }
