@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pymupdf
+
 from enade.extraction.figures import (
     MAX_ABSORPTION_GROWTH,
     TEXT_ABSORPTION_PADDING,
@@ -14,8 +16,19 @@ from enade.extraction.figures import (
     _merge_by_vertical_proximity,
     _merge_overlapping_regions,
     _rects_touch,
+    verify_drawings_present,
 )
 from enade.extraction.layout import Line
+
+
+def _page_with_drawing(rect: tuple[float, float, float, float]) -> pymupdf.Page:
+    doc = pymupdf.open()
+    page = doc.new_page(width=600, height=800)
+    shape = page.new_shape()
+    shape.draw_line((rect[0], rect[1]), (rect[2], rect[3]))
+    shape.finish()
+    shape.commit()
+    return page
 
 
 def _line(
@@ -458,3 +471,52 @@ def test_is_rule_line_false_for_a_real_diagram_sized_rect():
 
 def test_is_rule_line_false_for_a_small_formula_image():
     assert _is_rule_line((100.0, 100.0, 130.0, 115.0)) is False
+
+
+# --- PROMPT Fase 3S: verify_drawings_present (structural evidence gate) ---
+
+
+def test_verify_drawings_present_counts_a_genuine_overlapping_drawing():
+    page = _page_with_drawing((10.0, 10.0, 20.0, 20.0))
+    assert verify_drawings_present(page, (8.0, 8.0, 22.0, 22.0)) == 1
+
+
+def test_verify_drawings_present_zero_when_bbox_is_empty_space():
+    """The core safety property (PROMPT Fase 3S Section 13: "a deteccao do
+    candidato seja estrutural") - a declared override bbox pointing at a
+    page location with no real vector content must never be trusted, so
+    the caller (assembler._build_declared_inline_formula_regions) can
+    never build a region for content that does not actually exist there
+    (a stale override after a corpus refresh, a typo'd bbox, ...).
+    """
+    page = _page_with_drawing((10.0, 10.0, 20.0, 20.0))
+    assert verify_drawings_present(page, (400.0, 400.0, 420.0, 420.0)) == 0
+
+
+def test_verify_drawings_present_zero_on_a_page_with_no_drawings_at_all():
+    doc = pymupdf.open()
+    page = doc.new_page(width=600, height=800)
+    assert verify_drawings_present(page, (10.0, 10.0, 20.0, 20.0)) == 0
+
+
+def test_verify_drawings_present_counts_every_overlapping_drawing():
+    doc = pymupdf.open()
+    page = doc.new_page(width=600, height=800)
+    for start, end in [((10.0, 10.0), (20.0, 20.0)), ((15.0, 12.0), (25.0, 18.0))]:
+        shape = page.new_shape()
+        shape.draw_line(start, end)
+        shape.finish()
+        shape.commit()
+    far_shape = page.new_shape()
+    far_shape.draw_line((500.0, 500.0), (510.0, 510.0))  # far away - not counted
+    far_shape.finish()
+    far_shape.commit()
+    assert verify_drawings_present(page, (8.0, 8.0, 27.0, 22.0)) == 2
+
+
+def test_visual_region_is_declared_inline_formula_defaults_false():
+    # Every existing region in the corpus (built by detect_visual_regions,
+    # never by assembler._build_declared_inline_formula_regions) keeps this
+    # False - the new field is purely additive.
+    region = VisualRegion(page_number=1, bbox=(0.0, 0.0, 10.0, 10.0), element_count=1)
+    assert region.is_declared_inline_formula is False

@@ -829,6 +829,54 @@
       "profile_dependency": "none",
       "runtime_ai_dependency": "none",
       "introduced_phase": "3R"
+    },
+    {
+      "capability_id": "declared_inline_vector_formula_preservation",
+      "description": "A hash+page+bbox-locked override declares a bbox as a proven inline vector-drawn formula; assembler.py re-verifies real vector-drawing content is genuinely present there (figures.verify_drawings_present - never trusted blindly) before building a dedicated VisualRegion for it, built and inserted entirely outside figures.detect_visual_regions's own merge/dedup pipeline (so it can never be swallowed by, or deduplicated against, an unrelated larger region that happens to geometrically overlap it). The region renders as its own tightly-cropped asset (type: equation, ~6pt fixed padding, never widened to the page's own column bounds - assets.render_region/VisualRegion.is_declared_inline_formula) and is placed inline, at the correct point in the surrounding text's own reading order, via a same-row-aware insertion rule (assembler._find_inline_formula_insertion_index) applied only to regions carrying this flag - modeled on the pre-existing per-alternative inline-formula mechanism (Phase 2F's _merge_alternative_reading_order), generalized here to a question's own main statement for the first time. The formula's own text representation (structured_content/canonical_representation) is never populated - it is preserved visually only, and that accessibility limitation is recorded, not hidden (data/manifests/source-token-ledger-2008.yaml, extraction_status: visual_only_verified).",
+      "trigger_features": [
+        "an override declaring rule: declare_inline_formula_region for the exact source PDF hash/page/bbox",
+        "page.get_drawings() confirms at least one real vector-drawing element genuinely overlapping that declared bbox on the actual page (never a bare literal bbox match alone)",
+        "the resulting region's own bbox sits between two already-extracted text lines on the same visual row, geometrically requiring same-row-aware (X-aware) insertion rather than the general Y-only rule"
+      ],
+      "parameters": {
+        "INLINE_FORMULA_RENDER_PADDING": "6.0pt - fixed, never widened to a column's own bounds like every other region"
+      },
+      "scope": "figures.py (VisualRegion.is_declared_inline_formula, verify_drawings_present, INLINE_FORMULA_RENDER_PADDING); assembler.py (_build_declared_inline_formula_regions, _find_inline_formula_insertion_index, wired into the per-page region-collection loop and _build_statement_segments's own insertion-index computation); assets.py (render_region selects AssetType.EQUATION); layout_overrides.py (declare_inline_formula_region rule, declared_inline_formula_regions query)",
+      "generalization_level": "G1",
+      "positive_fixtures": [
+        "tests/test_extraction_assembler.py::test_find_inline_formula_insertion_index_lands_between_same_row_lines",
+        "tests/test_extraction_assembler.py::test_build_declared_inline_formula_regions_builds_a_region_with_real_drawings",
+        "tests/test_extraction_assembler.py::test_build_declared_inline_formula_regions_computes_owner_from_question_regions",
+        "tests/test_layout_overrides.py::test_declared_inline_formula_regions_returns_the_matching_bbox",
+        "tests/test_extraction_assets.py::test_render_region_declared_inline_formula_renders_as_equation",
+        "tests/test_extraction_assets.py::test_render_region_declared_inline_formula_crop_stays_tight",
+        "tests/test_extraction_pipeline_2008.py::test_q45_item_iii_own_three_lines_are_now_complete"
+      ],
+      "negative_fixtures": [
+        "tests/test_extraction_figures.py::test_verify_drawings_present_zero_when_bbox_is_empty_space",
+        "tests/test_extraction_figures.py::test_verify_drawings_present_zero_on_a_page_with_no_drawings_at_all",
+        "tests/test_extraction_assembler.py::test_build_declared_inline_formula_regions_skips_a_declaration_with_no_real_drawing",
+        "tests/test_extraction_assembler.py::test_build_declared_inline_formula_regions_none_without_overrides",
+        "tests/test_extraction_assembler.py::test_build_declared_inline_formula_regions_none_when_no_matching_declaration",
+        "tests/test_extraction_assembler.py::test_find_inline_formula_insertion_index_falls_back_when_no_same_row_line",
+        "tests/test_extraction_assets.py::test_render_region_diagram_unaffected_by_new_equation_field",
+        "tests/test_extraction_assets.py::test_render_region_image_unaffected_by_new_equation_field",
+        "tests/test_layout_overrides.py::test_declared_inline_formula_regions_empty_for_a_different_page",
+        "tests/test_layout_overrides.py::test_declared_inline_formula_regions_empty_for_a_different_hash",
+        "tests/test_layout_overrides.py::test_declared_inline_formula_regions_ignores_unrelated_rule_kinds"
+      ],
+      "real_cases": [
+        "2008-b Q45's own item III (\"...o grafico de f(x) = sqrt(x) e as retas x = 0 e x = 2.\") - the function definition is 100% vector-drawn artwork (9 path elements, page.get_drawings()), with zero text-layer presence (page.get_text/get_texttrace confirm no chars in that x-range) - the sole bbox declared for this booklet"
+      ],
+      "protected_cases": [
+        "2008-b (all 76 other published questions, confirmed byte-identical by full regeneration; D40's own relational-algebra tree symbols and the two other, still-unresolved vector-formula gaps in this same Q45 statement - the intro's '(f $ 0)' and 'como resultado da integral .' - deliberately left untouched, confirmed unchanged, since only the one previously-blocked bbox was declared)",
+        "2011 (all 55 questions, confirmed byte-identical by full regeneration)",
+        "2021 (all three tracked courses, 120 questions total, confirmed byte-identical by full regeneration)"
+      ],
+      "failure_behavior": "an override whose declared bbox has zero real vector-drawing content on the actual page produces no region at all (verify_drawings_present returns 0) - the gap it was meant to fill stays exactly as it was before this capability existed, never silently papered over; a formula with no same-row text on its own left falls back to the general Y-only insertion rule rather than crashing or mis-placing itself",
+      "profile_dependency": "none",
+      "runtime_ai_dependency": "none",
+      "introduced_phase": "3S"
     }
   ]
 }

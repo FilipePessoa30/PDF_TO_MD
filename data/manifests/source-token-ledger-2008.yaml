@@ -88,41 +88,60 @@ tokens:
     glyph_id: null
     font_name: null
     font_fingerprint: null
-    bbox: [406.68, 481.92, 442.92, 493.44]
+    bbox: [406.679, 481.919, 442.919, 493.439]
     origin: null
     baseline: null
     source_backend: pymupdf-get_drawings
     first_divergent_stage: not_applicable_never_was_text
-    extraction_status: drawing_verified
+    extraction_status: visual_only_verified
     canonical_representation: null
-    visual_fallback: enade-2008-computing-q45/figure-01.png (already rendered - the gap sits *within* the same visual region already published as figure-01.png, immediately after "o grafico de" and before "e as retas x = 0 e x = 2.")
+    visual_fallback: >-
+      enade-2008-computing-q45/figure-02.png (RESOLVED Phase 3S - a NEW,
+      dedicated, tightly-cropped asset, type equation, rendered directly
+      from this exact bbox and inserted inline at the correct point in
+      item III's own reading order, between "o grafico de" and "e as
+      retas x = 0 e x = 2." - superseding the Phase 3Q note this field
+      used to carry, which pointed at the pre-existing figure-01.png -
+      that asset happens to also show this formula, but is scoped to the
+      intro's own two solid-of-revolution diagrams, sits far earlier in
+      the statement, and includes far more surrounding text than this one
+      formula alone: a faithful visual record, but not a correctly-placed
+      one. figure-01.png itself is completely unmodified by this
+      resolution.
     evidence: >-
-      page.get_drawings() reports 9 vector path elements ("fs"/"s"/"f"
-      type curves and line segments, e.g. rect=(410.0,484.0)-(412.9,493.2)
-      with cubic-bezier "c" items) filling exactly the gap between "o
-      grafico de" (ends x1=405.0) and "e as retas x = 0 e x = 2." (starts
-      x0=444.0), both at y0=483.3. page.get_text("rawdict")/get_texttrace()
-      report NO character/span/glyph anywhere in this x-range on this
-      row - confirming this is 100% vector-drawn artwork, never a font
-      character with a charcode/glyph_id/font to recover. Direct visual
-      inspection of figure-01.png (the region already covering this exact
-      page area) confirms the drawing renders as the italic formula
-      "f(x) = √x" (a function definition, consistent with item III's
-      own printed sentence "...o grafico de f(x) = √x e as retas
-      x = 0 e x = 2."). No text recovery is possible or attempted - the
-      formula is already visually present in the published figure-01.png
-      crop; inserting a literal "f(x) = √x" string into canonical
-      text would be an unverifiable inference from the drawing's own
-      rendered shape, not a demonstrated character identity, and is
-      explicitly not done (PROMPT Phase 3Q Section 5/17). This exact
-      pattern (an inline formula rendered as vector art, never converted
-      to text) already exists twice more in this same, already-published
-      Q45 statement, neither previously flagged as a defect: "(f $ 0)"
-      for "(f(x) >= 0)" in the intro, and "como resultado da integral ."
-      (the integral formula itself, between "integral" and the trailing
-      period, is the same kind of vector-drawn gap) - confirming this is
-      this booklet's own consistent, already-accepted convention for
-      inline math, not a new or inconsistent standard being applied here.
+      page.get_drawings() reports 9 vector path elements (fill+stroke
+      glyph-shaped outlines for "f", "(", "x", ")", "=", the radical
+      "sqrt" checkmark+overbar, and the second "x") whose own union bbox
+      is (406.679,481.919)-(442.919,493.439), filling exactly the gap
+      between "o grafico de" (ends x1=404.97, y0=483.28) and "e as retas
+      x = 0 e x = 2." (starts x0=443.97, same y0=483.28).
+      page.get_text("rawdict")/get_texttrace() report NO character/span/
+      glyph anywhere in this x-range on this row - confirming this is
+      100% vector-drawn artwork, never a font character with a charcode/
+      glyph_id/font to recover. Direct visual inspection of the newly
+      rendered figure-02.png (Phase 3S) confirms the drawing renders as
+      the italic formula "f(x) = sqrt(x)" (a function definition,
+      consistent with item III's own printed sentence "...o grafico de
+      f(x) = sqrt(x) e as retas x = 0 e x = 2."). No text recovery is
+      possible or attempted - inserting a literal "f(x) = sqrt(x)" string
+      into canonical text (structured_content/canonical_representation)
+      would be an unverifiable inference from the drawing's own rendered
+      shape, not a demonstrated character identity, and is explicitly not
+      done (PROMPT Phase 3Q Section 5/17, reaffirmed Phase 3S Section 5).
+      Accessibility limitation (PROMPT Fase 3S Section 15): this formula
+      is preserved visually only - it has no extracted text representation
+      and no validated LaTeX, and is therefore not full-text-searchable as
+      a formula; this limitation is recorded here, not hidden. This exact
+      convention (an inline formula rendered as vector art, never
+      converted to text) already exists twice more in this same,
+      already-published Q45 statement, deliberately NOT touched by this
+      phase (out of its own declared scope - only this one, previously
+      blocked, formula was addressed): "(f $ 0)" for "(f(x) >= 0)" in the
+      intro, and "como resultado da integral ." (the integral formula
+      itself, between "integral" and the trailing period) - both remain
+      exactly as before, confirming this is this booklet's own consistent,
+      pre-existing convention for inline math, not a new or inconsistent
+      standard being applied here.
     validation: reviewed
   - token_id: d40-tree-selection-operator-sigma
     question_id: enade-2008-computing-d40

@@ -24,7 +24,7 @@ from enade.extraction.answer_key import parse_flat_item_gabarito
 from enade.extraction.exam_profile import _RANGE_PATTERNS_2008_B, load_exam_structure_profile
 from enade.extraction.layout_overrides import LayoutOverrideSet, load_layout_overrides
 from enade.extraction.pipeline import extract_exam
-from enade.models.enums import QuestionType
+from enade.models.enums import AssetType, QuestionType
 
 CORPUS_ROOT = Path(__file__).parent.parent / "data" / "raw" / "geacc-enade"
 PROVA_PATH = CORPUS_ROOT / "2008" / "b1_prova.pdf"
@@ -994,16 +994,15 @@ def test_q45_items_i_and_ii_are_now_complete(extraction_result):
         "(c, 0, 0) e de raio medindo f(x)" in q45.statement
     )
     assert "Se P é uma partição uniforme do intervalo [a, b], sendo" in q45.statement
-    assert len(q45.assets) == 1
+    assert len(q45.assets) == 2  # figure-01 (intro diagrams) + figure-02 (Fase 3S formula)
 
 
 def test_q45_item_iii_own_three_lines_are_now_complete(extraction_result):
     """Full regression test for the item-III residual of
     ``q45-region-merge-content-loss`` (RESOLVED Phase 3Q for the three
-    missing lines; the formula-image gap remains, deliberately, see
-    below). Item III's own continuation - "torno do eixo x da região do
-    plano delimitada pelo", "eixo x, o gráfico de" and "e as retas
-    x = 0 e x = 2." - was excluded by the exact same oversized-merge
+    missing lines). Item III's own continuation - "torno do eixo x da
+    região do plano delimitada pelo", "eixo x, o gráfico de" and "e as
+    retas x = 0 e x = 2." - was excluded by the exact same oversized-merge
     region (``state=contained`` against the grown bbox, unrelated to
     these lines' own content) as the 12 lines Phase 3O already restored;
     not found during that phase's own investigation, which mis-
@@ -1021,26 +1020,35 @@ def test_q45_item_iii_own_three_lines_are_now_complete(extraction_result):
     printed order, not a defect - Phase 3O's own characterization was
     itself mistaken. No same-row reordering was needed or attempted.
 
-    The remaining gap in item III's own text ("o gráfico de e as retas",
-    missing "f(x) = √x" in between) is a vector-drawn formula image
-    (confirmed via `page.get_drawings()` - a genuine curve/line drawing,
-    never a font character), not missing/recoverable text - the same
-    already-accepted convention this exact statement already uses twice
-    elsewhere ("(f $ 0)", "como resultado da integral ."). Deliberately
-    NOT fabricated as text (PROMPT Phase 3Q Section 5/17) - see
-    data/manifests/source-token-ledger-2008.yaml,
-    token q45-item-iii-function-formula. Q45 stays `failed` for this
-    reason alone.
+    The gap between "o grafico de" and "e as retas" (RESOLVED Phase 3S) is
+    now filled by a dedicated inline-formula asset (``figure-02``,
+    ``type: equation``) instead of a missing-text gap: item III's own
+    "f(x) = sqrt(x)" is 100% vector-drawn artwork (confirmed via
+    ``page.get_drawings()`` - never a font character), so it is preserved
+    visually, at the correct point in the reading order, rather than
+    fabricated as text - see data/manifests/source-token-ledger-2008.yaml,
+    token q45-item-iii-function-formula.
     """
     result, _ = extraction_result
     q45 = _objective_by_number(result)[45]
+    # The three lines Phase 3Q restored, in the correct order, with the
+    # Fase 3S formula asset landing exactly between "o grafico de" and
+    # "e as retas" - never fabricated as text (zero literal "f(x)"/"sqrt"/
+    # "√" substring anywhere in the published statement).
     assert (
         "III É igual a 2B o volume do sólido gerado pela rotação em torno do eixo "
-        "x da região do plano delimitada pelo eixo x, o gráfico de e as retas "
-        "x = 0 e x = 2." in q45.statement
+        "x da região do plano delimitada pelo eixo x, o gráfico de\n\n"
+        "![Figura da questão](enade-2008-computing-q45/figure-02.png)\n\n"
+        "e as retas x = 0 e x = 2." in q45.statement
     )
     assert "então para ci 0 [ xi, xi ! 1], 1< i < n." in q45.statement
-    assert len(q45.assets) == 1
+    assert "f(x)" not in q45.statement.split("gráfico de\n\n")[1].split("e as retas")[0]
+    assert "sqrt" not in q45.statement.lower()
+    assert "√" not in q45.statement
+    assert len(q45.assets) == 2
+    formula_asset = next(a for a in q45.assets if a.id == "figure-02")
+    assert formula_asset.type == AssetType.EQUATION
+    assert formula_asset.source_page == 19
 
 
 def test_q54_opening_clause_is_now_complete(extraction_result):

@@ -34,18 +34,21 @@ from enade.extraction.annotations import (
 from enade.extraction.boundaries import QuestionKind, QuestionSpan
 from enade.extraction.chrome import is_chrome_line
 from enade.extraction.figures import (
+    INLINE_FORMULA_RENDER_PADDING,
     UNBOUNDED_MERGE_X_TOLERANCE,
     VisualRegion,
     _dominant_left_margin,
     _is_marker_at_margin,
+    _rect_center,
     detect_visual_regions,
     dominant_left_margin_by_text_length,
+    verify_drawings_present,
 )
 from enade.extraction.fragment_reconstruction import FragmentMergeTrace
 from enade.extraction.label_normalization import LabelCorrection
 from enade.extraction.layout import Line, detect_column_margins, extract_page_lines
 from enade.extraction.layout_overrides import LayoutOverrideSet
-from enade.extraction.ownership import QuestionRegion, question_key
+from enade.extraction.ownership import QuestionRegion, find_owner, question_key
 from enade.extraction.reading_zones import (
     assess_eligibility,
     detect_reading_zones,
@@ -678,6 +681,47 @@ def _find_region_insertion_index(lines: list[Line], region: VisualRegion | Detec
     return len(lines)
 
 
+def _find_inline_formula_insertion_index(lines: list[Line], region: VisualRegion) -> int:
+    """Where should a declared inline-formula region (PROMPT Fase 3S,
+    ``VisualRegion.is_declared_inline_formula``) sit among ``lines``?
+
+    ``_find_region_insertion_index`` is Y-only - correct for a figure that
+    owns its whole row/paragraph, but a small inline formula can share its
+    own row with real text on *both* sides (2008-b Q45's own item III:
+    "...o grafico de" / [formula] / "e as retas..." - both text fragments
+    already restored as separate ``Line``s by their own
+    ``protect_from_region_membership`` overrides), and inserting it
+    "before the first line whose y0 is at or past the region's own top
+    edge" would place it before the *whole* row, not between the two
+    fragments that actually surround it.
+
+    The anchor is whichever same-row line sits immediately to the
+    region's own left (the largest x1 at or before the region's own x0,
+    with a small tolerance for rounding); insertion is right after that
+    line, so the region lands between it and whatever comes next in
+    reading order - mirroring the same anchor-by-same-row-overlap idea
+    ``_merge_alternative_reading_order`` already uses for an alternative's
+    own inline formula images (Phase 2F), adapted here to return a single
+    index into the statement's own already-ordered ``lines`` rather than a
+    fully re-merged sequence. Falls back to the general Y-only rule when
+    no such same-row line is found (e.g. the formula opens its own row
+    with nothing to its own left) - never applied to any region other
+    than one explicitly marked ``is_declared_inline_formula``, so every
+    other figure/table insertion in this corpus is completely unaffected.
+    """
+    same_row_before = [
+        (i, ln)
+        for i, ln in enumerate(lines)
+        if ln.page_number == region.page_number
+        and min(ln.y1, region.bbox[3]) - max(ln.y0, region.bbox[1]) > 0
+        and ln.x1 <= region.bbox[0] + 1.0
+    ]
+    if same_row_before:
+        anchor_index, _ = max(same_row_before, key=lambda pair: pair[1].x1)
+        return anchor_index + 1
+    return _find_region_insertion_index(lines, region)
+
+
 #: A monospace line whose *entire* text (after leading/trailing tab/space)
 #: is a bare integer - a standalone printed line-number gutter entry, never
 #: a real C statement (PROMPT Phase 1C section 8.1). Ambiguous on its own
@@ -831,7 +875,11 @@ def _build_statement_segments(
 
     insertions_at: dict[int, list[tuple[str, int]]] = {}
     for region_index, region in enumerate(regions):
-        idx = _find_region_insertion_index(lines, region)
+        idx = (
+            _find_inline_formula_insertion_index(lines, region)
+            if region.is_declared_inline_formula
+            else _find_region_insertion_index(lines, region)
+        )
         insertions_at.setdefault(idx, []).append(("figure", region_index))
     for table_index, table in enumerate(tables):
         idx = _find_region_insertion_index(lines, table)
@@ -1482,6 +1530,62 @@ def _attach_alternative_inline_segments(
     return extra_regions, consumed_ids
 
 
+def _build_declared_inline_formula_regions(
+    doc: pymupdf.Document,
+    page_number: int,
+    overrides: LayoutOverrideSet | None,
+    pdf_sha256: str,
+    question_regions: list[QuestionRegion] | None,
+) -> list[VisualRegion]:
+    """Individually-declared inline-formula regions for ``page_number``
+    (PROMPT Fase 3S) - never produced by any general geometric rule.
+
+    Deliberately built *outside* ``figures.detect_visual_regions``'s own
+    merge/dedup pipeline (``_merge_overlapping_regions``/
+    ``_deduplicate_overlapping_regions``): a declared formula's own tiny
+    bbox is expected to sit fully inside an unrelated, much larger
+    region's own grown bbox (2008-b Q45's own oversized figure-01 region,
+    a pre-existing, unrelated region-merge artifact - see
+    ``q45-region-merge-content-loss``), and both of those general passes
+    would otherwise either merge the two into one (Y-overlap merge) or
+    drop the smaller one as a "duplicate" of the larger (dedup) - neither
+    of which this individually-reviewed declaration should ever be
+    subject to. Each declared bbox still requires positive, structural
+    evidence (``verify_drawings_present``) before being trusted at all;
+    an override with zero matching drawings on the real page produces no
+    region and therefore has no effect.
+    """
+    if overrides is None:
+        return []
+    declared_bboxes = overrides.declared_inline_formula_regions(pdf_sha256, page_number)
+    if not declared_bboxes:
+        return []
+    page = doc[page_number - 1]
+    built: list[VisualRegion] = []
+    for bbox in declared_bboxes:
+        drawing_count = verify_drawings_present(page, bbox)
+        if drawing_count == 0:
+            continue
+        owner = find_owner(question_regions, *_rect_center(bbox)) if question_regions else None
+        built.append(
+            VisualRegion(
+                page_number=page_number,
+                bbox=bbox,
+                raw_bbox=bbox,
+                element_count=drawing_count,
+                has_raster_image=False,
+                is_small_formula=True,
+                is_declared_inline_formula=True,
+                owner_key=owner.question_key if owner is not None else None,
+                owner_x_bounds=(
+                    bbox[0] - INLINE_FORMULA_RENDER_PADDING,
+                    bbox[2] + INLINE_FORMULA_RENDER_PADDING,
+                ),
+            )
+        )
+    return built
+
+
 def assemble_question(
     span: QuestionSpan,
     doc: pymupdf.Document,
@@ -1585,6 +1689,13 @@ def assemble_question(
             pdf_sha256=pdf_sha256,
             question_regions=(question_regions_by_page or {}).get(page_number),
             fragment_reconstruction_gate=fragment_reconstruction_gate,
+        )
+        page_regions = page_regions + _build_declared_inline_formula_regions(
+            doc,
+            page_number,
+            overrides,
+            pdf_sha256,
+            (question_regions_by_page or {}).get(page_number),
         )
         bounds = page_y_bounds.get(page_number)
         x_bounds = page_x_bounds.get(page_number)

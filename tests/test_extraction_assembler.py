@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import pymupdf
 import pytest
 
 from enade.extraction.alternative_groups import find_alternative_group
@@ -9,7 +10,10 @@ from enade.extraction.assembler import (
     FigureSegment,
     TextSegment,
     _attach_alternative_formula_regions,
+    _build_declared_inline_formula_regions,
     _build_statement_segments,
+    _find_inline_formula_insertion_index,
+    _find_region_insertion_index,
     _line_in_region,
     _render_code_lines,
     _strip_leading_marker,
@@ -21,6 +25,7 @@ from enade.extraction.assembler import (
 from enade.extraction.figures import VisualRegion
 from enade.extraction.layout import Line
 from enade.extraction.layout_overrides import LayoutOverride, LayoutOverrideSet
+from enade.extraction.ownership import QuestionRegion
 
 
 def _line(
@@ -1114,3 +1119,157 @@ def test_assemble_question_indexes_an_inline_alternative_asset_correctly_alongsi
 
     text_segments = [s.text for s in alt_d.segments if isinstance(s, _TextSegment)]
     assert text_segments == ["Texto antes", "texto depois"]
+
+
+# --- PROMPT Fase 3S: declared inline-formula regions -----------------------
+
+
+def _formula_region(bbox=(200.0, 100.0, 220.0, 112.0), **overrides) -> VisualRegion:
+    base = dict(
+        page_number=1,
+        bbox=bbox,
+        raw_bbox=bbox,
+        element_count=9,
+        has_raster_image=False,
+        is_small_formula=True,
+        is_declared_inline_formula=True,
+    )
+    base.update(overrides)
+    return VisualRegion(**base)
+
+
+def test_find_inline_formula_insertion_index_lands_between_same_row_lines():
+    """The exact 2008-b Q45 shape: "...o grafico de" / [formula] / "e as
+    retas...", both text fragments on the same visual row, the formula
+    sitting geometrically between them. The general, Y-only
+    ``_find_region_insertion_index`` would place the region before the
+    whole row (it only ever asks "is this line's y0 past the region's own
+    top edge", never "which same-row line sits to its left") - the
+    inline-formula-specific index must instead land strictly between the
+    two fragments.
+    """
+    left = _line(1, 483.0, "eixo x, o grafico de", x=317.0, width=88.0)
+    right = _line(1, 483.0, "e as retas x = 0 e x = 2.", x=443.0, width=108.0)
+    lines = [left, right]
+    region = _formula_region(bbox=(406.68, 481.92, 442.92, 493.44))
+    assert _find_inline_formula_insertion_index(lines, region) == 1
+    # The general, Y-only rule would get this wrong (index 0 - before the
+    # whole row) - confirming this is genuinely a different rule, not a
+    # coincidence of this one fixture's own geometry.
+    assert _find_region_insertion_index(lines, region) == 0
+
+
+def test_find_inline_formula_insertion_index_falls_back_when_no_same_row_line():
+    """A declared inline formula that opens its own row (nothing to its
+    own left) falls back to the general Y-only rule - never crashes, never
+    silently drops the region.
+    """
+    only_line = _line(1, 500.0, "Texto qualquer.", x=36.0, width=200.0)
+    region = _formula_region(bbox=(36.0, 520.0, 60.0, 532.0))
+    assert _find_inline_formula_insertion_index([only_line], region) == 1
+    assert _find_inline_formula_insertion_index([only_line], region) == (
+        _find_region_insertion_index([only_line], region)
+    )
+
+
+def test_build_declared_inline_formula_regions_none_without_overrides():
+    doc = pymupdf.open()
+    doc.new_page(width=600, height=800)
+    assert _build_declared_inline_formula_regions(doc, 1, None, "a" * 64, None) == []
+
+
+def test_build_declared_inline_formula_regions_none_when_no_matching_declaration():
+    doc = pymupdf.open()
+    doc.new_page(width=600, height=800)
+    overrides = LayoutOverrideSet(overrides=[])
+    assert _build_declared_inline_formula_regions(doc, 1, overrides, "a" * 64, None) == []
+
+
+def test_build_declared_inline_formula_regions_skips_a_declaration_with_no_real_drawing():
+    """Positive, structural evidence is mandatory (PROMPT Fase 3S Section
+    13) - a declared bbox with zero real vector-drawing content on the
+    actual page must never produce a region, even if the override itself
+    is syntactically well-formed.
+    """
+    doc = pymupdf.open()
+    doc.new_page(width=600, height=800)  # blank - no drawings anywhere
+    overrides = LayoutOverrideSet(
+        overrides=[
+            LayoutOverride(
+                pdf_sha256="a" * 64,
+                page=1,
+                bbox=(406.68, 481.92, 442.92, 493.44),
+                rule="declare_inline_formula_region",
+                question_id="enade-2008-computing-q45",
+                reason="test",
+                evidence="test",
+                status="reviewed",
+            )
+        ]
+    )
+    assert _build_declared_inline_formula_regions(doc, 1, overrides, "a" * 64, None) == []
+
+
+def test_build_declared_inline_formula_regions_builds_a_region_with_real_drawings():
+    doc = pymupdf.open()
+    page = doc.new_page(width=600, height=800)
+    shape = page.new_shape()
+    shape.draw_line((406.68, 481.92), (442.92, 493.44))
+    shape.finish()
+    shape.commit()
+    overrides = LayoutOverrideSet(
+        overrides=[
+            LayoutOverride(
+                pdf_sha256="a" * 64,
+                page=1,
+                bbox=(406.68, 481.92, 442.92, 493.44),
+                rule="declare_inline_formula_region",
+                question_id="enade-2008-computing-q45",
+                reason="test",
+                evidence="test",
+                status="reviewed",
+            )
+        ]
+    )
+    built = _build_declared_inline_formula_regions(doc, 1, overrides, "a" * 64, None)
+    assert len(built) == 1
+    region = built[0]
+    assert region.is_declared_inline_formula is True
+    assert region.is_small_formula is True
+    assert region.has_raster_image is False
+    assert region.bbox == (406.68, 481.92, 442.92, 493.44)
+    assert region.owner_key is None  # no question_regions given
+    assert region.owner_x_bounds is not None
+    assert region.owner_x_bounds[0] < region.bbox[0]
+    assert region.owner_x_bounds[1] > region.bbox[2]
+
+
+def test_build_declared_inline_formula_regions_computes_owner_from_question_regions():
+    doc = pymupdf.open()
+    page = doc.new_page(width=600, height=800)
+    shape = page.new_shape()
+    shape.draw_line((406.68, 481.92), (442.92, 493.44))
+    shape.finish()
+    shape.commit()
+    overrides = LayoutOverrideSet(
+        overrides=[
+            LayoutOverride(
+                pdf_sha256="a" * 64,
+                page=1,
+                bbox=(406.68, 481.92, 442.92, 493.44),
+                rule="declare_inline_formula_region",
+                question_id="enade-2008-computing-q45",
+                reason="test",
+                evidence="test",
+                status="reviewed",
+            )
+        ]
+    )
+    question_regions = [
+        QuestionRegion(
+            question_key="objective-45", page_number=1, x0=300.0, y0=100.0, x1=560.0, y1=600.0
+        )
+    ]
+    built = _build_declared_inline_formula_regions(doc, 1, overrides, "a" * 64, question_regions)
+    assert len(built) == 1
+    assert built[0].owner_key == "objective-45"

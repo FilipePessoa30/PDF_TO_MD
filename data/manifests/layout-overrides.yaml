@@ -1019,6 +1019,48 @@ overrides:
       inline formula image for the function "f" between them.
     evidence: docs/phase-3q-report.md, Section K; data/manifests/source-token-ledger-2008.yaml
     status: reviewed
+  # --- Phase 3S: Q45's own item III inline vector formula, preserved as a
+  # dedicated visual asset instead of a text gap --------------------------
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 19
+    bbox: [406.68, 481.92, 442.92, 493.44]
+    rule: declare_inline_formula_region
+    question_id: enade-2008-computing-q45
+    reason: >-
+      Item III's own printed sentence ("...delimitada pelo eixo x, o
+      grafico de f(x) = sqrt(x) e as retas x = 0 e x = 2.") includes the
+      function definition "f(x) = sqrt(x)" drawn entirely as vector
+      artwork - page.get_drawings() reports exactly 9 path elements
+      (fill+stroke glyph-shaped outlines for "f", "(", "x", ")", "=", the
+      radical "sqrt" checkmark+overbar, and the second "x") whose own
+      union bbox is (406.679,481.919)-(442.919,493.439), filling exactly
+      the gap between "eixo x, o grafico de" (page 19, ends x1=404.97,
+      y0=483.28) and "e as retas x = 0 e x = 2." (starts x0=443.97, same
+      y0=483.28) - both already restored as text by the two
+      protect_from_region_membership overrides directly above.
+      page.get_text("rawdict")/get_texttrace() confirm zero spans/chars
+      anywhere in this x-range on this row - this was never font text with
+      a missing/ambiguous encoding (unlike D40's own "F"/"B" - Fase 3R),
+      it is 100% vector-drawn artwork, never recoverable as canonical text
+      without fabricating an unverified glyph sequence (PROMPT Fase 3Q
+      Section 5/17, reaffirmed by Fase 3S Section 5). This declaration
+      authorizes assembler.py's own _build_declared_inline_formula_regions
+      to construct a dedicated VisualRegion for exactly this bbox (never
+      trusted blindly - re-verified against the real PDF's own
+      page.get_drawings() at extraction time, only ever activated when at
+      least one genuine drawing is found there), rendered as its own
+      tightly-cropped asset (type: equation, ~6pt fixed padding, never
+      widened to this page's own column bounds) and inserted inline, at
+      the correct point in item III's own reading order, between the two
+      already-restored text lines above - never reusing or repositioning
+      the question's own pre-existing, much larger figure-01.png (which
+      happens to also show this formula, but is scoped to the intro's two
+      solid-of-revolution diagrams, positioned far earlier in the
+      statement, and includes far more surrounding text than this one
+      formula alone - not a faithful, correctly-placed substitute).
+    evidence: docs/phase-3s-report.md; data/manifests/source-token-ledger-2008.yaml
+      (token q45-item-iii-function-formula); docs/phase-3q-report.md, Section K
+    status: reviewed
   # --- Phase 3O: Q54's own opening clause, swallowed by the routing-table
   # figure's own grown region ------------------------------------------
   - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264

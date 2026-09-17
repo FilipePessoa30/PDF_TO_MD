@@ -284,6 +284,44 @@ class LayoutOverrideSet(BaseModel):
                 return True
         return False
 
+    def declared_inline_formula_regions(
+        self, pdf_sha256: str, page: int
+    ) -> tuple[tuple[float, float, float, float], ...]:
+        """Every bbox individually declared, for the PDF identified by
+        ``pdf_sha256`` and ``page``, as a proven inline vector-drawn
+        formula (PROMPT Fase 3S).
+
+        Unlike every other rule in this module, the caller (``assembler.py``)
+        does not just gate an existing decision with this - it *constructs*
+        a brand-new ``VisualRegion`` from the returned bbox. That is safe
+        specifically because the caller never trusts the bbox alone: it
+        first requires positive, structural evidence (``figures.
+        verify_drawings_present`` - real vector-drawing content actually
+        present there) before ever building a region from it, exactly the
+        same "detection must be structural, never a bare literal" standard
+        every other override in this project already holds itself to (e.g.
+        ``force_region_membership``'s own font/glyph proof - PROMPT Fase 3R).
+
+        For 2008-b Q45 (page 19): the gap between item III's own "o
+        grafico de" and "e as retas x = 0 e x = 2." is filled entirely by
+        9 vector-drawing path elements forming "f(x) = sqrt(x)" (confirmed
+        via ``page.get_drawings()`` - never a font character, see
+        ``data/manifests/source-token-ledger-2008.yaml``, token
+        ``q45-item-iii-function-formula``) - this is the one bbox declared
+        for this booklet.
+
+        Returns every matching bbox (there could in principle be more than
+        one on a page), never just the first - callers are expected to
+        verify each independently.
+        """
+        return tuple(
+            override.bbox
+            for override in self.overrides
+            if override.rule == "declare_inline_formula_region"
+            and override.pdf_sha256 == pdf_sha256
+            and override.page == page
+        )
+
     def forces_single_column(self, pdf_sha256: str, page: int) -> bool:
         """True if some override forces naive (y0, x0) reading order for
         the whole page, bypassing ``detect_column_margins`` entirely.

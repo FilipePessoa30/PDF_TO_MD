@@ -13,7 +13,12 @@ region built from at least one real embedded raster image is tagged
 trees, graphs, circuits, charts, tables) is tagged ``diagram``. Telling a
 chart apart from a table apart from a diagram automatically, reliably,
 without inventing a classification, is out of scope for this phase - see
-docs/decisions.md.
+docs/decisions.md. The one exception (PROMPT Fase 3S) is a region
+individually declared, by hash+page+bbox-locked override, to be a proven
+inline vector-drawn formula (``VisualRegion.is_declared_inline_formula``) -
+tagged ``equation`` regardless of ``has_raster_image``, since that
+declaration already carries positive structural evidence a general
+diagram/image never does.
 """
 
 from __future__ import annotations
@@ -128,7 +133,10 @@ def render_region(
     filesystem location and the former must stay project-relative and
     OS-independent (see docs/data-contract.md, "Assets").
     """
-    asset_type = AssetType.IMAGE if region.has_raster_image else AssetType.DIAGRAM
+    if region.is_declared_inline_formula:
+        asset_type = AssetType.EQUATION
+    else:
+        asset_type = AssetType.IMAGE if region.has_raster_image else AssetType.DIAGRAM
     return _render_bbox(
         doc,
         region.page_number,

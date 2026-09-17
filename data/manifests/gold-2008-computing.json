@@ -9,13 +9,12 @@
   "pipeline_version": "0.1.0",
   "data_contract_version": "1.1.0",
   "maturity": "provisional",
-  "verified_count": 73,
-  "needs_review_count": 4,
+  "verified_count": 74,
+  "needs_review_count": 3,
   "unresolved_question_ids": [
     "enade-2008-computing-d09",
     "enade-2008-computing-d10",
-    "enade-2008-computing-d59",
-    "enade-2008-computing-q45"
+    "enade-2008-computing-d59"
   ],
   "structural_blockers": [],
   "questions": [
@@ -563,15 +562,20 @@
     {
       "id": "enade-2008-computing-q45",
       "markdown_path": "enade-2008-computing-q45.md",
-      "markdown_sha256": "ebfc32b3928072247f9980ef799f8869137de9df4acb70c185fd6dfd2c2dd151",
-      "extraction_status": "needs_review",
+      "markdown_sha256": "c7144682bb57d1be72da1d5dd6d6c9b911e3c4aea25cc3e1c4fe500117b1705e",
+      "extraction_status": "verified",
       "automatic_validation": "passed",
-      "visual_validation": "failed",
+      "visual_validation": "passed",
       "assets": [
         {
           "id": "figure-01",
           "path": "enade-2008-computing-q45/figure-01.png",
           "sha256": "21515cc73060aabcb9491e1db7002ceecbc2ecbd553a3be8333bf195aca9d3b7"
+        },
+        {
+          "id": "figure-02",
+          "path": "enade-2008-computing-q45/figure-02.png",
+          "sha256": "6c992854aee8fd5e615f9471f34d0cf831de7ad8ac4470c8724796c587222b7a"
         }
       ]
     },

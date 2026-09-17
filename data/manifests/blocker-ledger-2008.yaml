@@ -439,7 +439,8 @@ blockers:
     residual, genuinely unrelated to region-merge (see resolution below), and stays `failed`. NOTE (Phase
     3O): source_pages corrected from a stale [20] to [19], matching this question''s own frontmatter and
     the real PDF page.'
-  evidence: docs/phase-3g-report.md; docs/phase-3o-report.md, Section Q; docs/phase-3q-report.md, Section K/L
+  evidence: docs/phase-3g-report.md; docs/phase-3o-report.md, Section Q; docs/phase-3q-report.md, Section K/L;
+    docs/phase-3s-report.md
   id: q45-region-merge-content-loss
   question_id: enade-2008-computing-q45
   regression_tests:
@@ -458,17 +459,17 @@ blockers:
     order, previously documented as a defect, is confirmed CORRECT as
     printed (same baseline, origin.y=440.04 for both spans) - Phase 3O's
     own characterization was itself mistaken; same_row_ordering.py was
-    never touched and did not need to be. STILL OPEN, genuinely unrelated
-    to region-merge (see q45-item-iii-formula-image-gap): the gap between
-    "o grafico de" and "e as retas x = 0 e x = 2." is a vector-drawn
-    formula ("f(x) = sqrt(x)", confirmed via `page.get_drawings()` - never
-    a font character), not missing/recoverable text, and is deliberately
-    not fabricated.
+    never touched and did not need to be. The one remaining item, genuinely
+    unrelated to region-merge (the gap between "o grafico de" and "e as
+    retas x = 0 e x = 2.", a vector-drawn formula never missing/recoverable
+    text), is now ALSO resolved - see q45-item-iii-formula-image-gap - so
+    this blocker's own scope (recoverable text lost to region-merge) has
+    zero remaining residual.
   source_pages:
   - 19
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets: []
   category: region-merge-content-loss
   cause: '2008-b''s own pages carry substantially more leftover decorative vector-graphics fragments than
@@ -1966,44 +1967,79 @@ blockers:
   visual_validation: failed
 - affected_assets:
   - figure-01
+  - figure-02
   category: non-textual-content-gap
   cause: >-
     NOT A DEFECT IN THE EXTRACTOR - a genuine, verified property of the
     source PDF. Item III's own printed sentence ("...o grafico de f(x) =
     sqrt(x) e as retas x = 0 e x = 2.") includes the function definition
     "f(x) = sqrt(x)" drawn as vector artwork (`page.get_drawings()`
-    reports 9 path elements - lines and cubic-bezier curves - filling
-    exactly the gap between "o grafico de" (page 19, ends x1=405.0, y0=
-    483.3) and "e as retas x = 0 e x = 2." (starts x0=444.0, same y0)),
-    never as font characters - `page.get_text("rawdict")`/
-    `get_texttrace()` report zero spans/chars anywhere in that x-range on
-    that row. This is this booklet's own consistent, already-accepted
-    convention for inline mathematical notation - the SAME already-
-    published Q45 statement already omits two other formula images this
-    same way, neither ever flagged as a defect: "(f $ 0)" for "(f(x) >=
-    0)" in the intro, and the integral sign/expression itself in "como
-    resultado da integral ." Not a new or inconsistently-applied standard.
+    reports 9 path elements - fill+stroke glyph-shaped outlines for "f",
+    "(", "x", ")", "=", the radical "sqrt" checkmark+overbar, and the
+    second "x" - filling exactly the gap between "o grafico de" (page 19,
+    ends x1=404.97, y0=483.28) and "e as retas x = 0 e x = 2." (starts
+    x0=443.97, same y0)), never as font characters -
+    `page.get_text("rawdict")`/`get_texttrace()` report zero spans/chars
+    anywhere in that x-range on that row. This is this booklet's own
+    consistent, already-accepted convention for inline mathematical
+    notation - the SAME already-published Q45 statement still omits two
+    other formula images this same way, neither ever flagged as a defect
+    and deliberately NOT touched by Phase 3S (out of its own declared
+    scope - only this one, previously blocked, formula was addressed):
+    "(f $ 0)" for "(f(x) >= 0)" in the intro, and the integral sign/
+    expression itself in "como resultado da integral ."
   description: >-
-    Item III's own text reads "...o grafico de e as retas x = 0 e x = 2."
-    with a real, structurally-confirmed gap where the function definition
-    "f(x) = sqrt(x)" is drawn as vector artwork inside the same visual
-    region already published as figure-01.png (the drawing sits within
-    that image's own already-rendered extent, page 19, bbox
-    ~406.7,481.9-442.9,493.4) - never recoverable as canonical text
-    without either fabricating an unverified glyph sequence (explicitly
-    forbidden, PROMPT Phase 3Q Section 5) or building a dedicated small-
-    formula extraction path for vector-drawn inline math generally (out
-    of this phase's own scope - Section 12 hierarchy step 3/4 do not
-    apply here: there is no font/glyph identity to fingerprint or map,
-    since no font is involved at all).
-  evidence: docs/phase-3q-report.md, Section K; data/manifests/source-token-ledger-2008.yaml, token q45-item-iii-function-formula
+    RESOLVED IN PHASE 3S via a dedicated visual fallback, never via text
+    fabrication. Item III's own gap between "o grafico de" and "e as
+    retas x = 0 e x = 2." - the function definition "f(x) = sqrt(x)",
+    100% vector-drawn artwork, confirmed to have zero recoverable text
+    layer - is now filled by a new, individually-reviewed,
+    hash+page+bbox-locked override (`declare_inline_formula_region`,
+    data/manifests/layout-overrides.yaml) that authorizes constructing a
+    dedicated `VisualRegion` for exactly this bbox (re-verified against
+    the real PDF's own `page.get_drawings()` at extraction time - never
+    trusted blindly), rendered as its own tightly-cropped asset
+    (figure-02.png, `type: equation`, ~6pt fixed padding, never widened to
+    the page's own column bounds) and inserted inline, at the correct
+    point in item III's own reading order, between the two already-
+    restored text lines on either side (`_find_inline_formula_insertion_index`,
+    assembler.py - a same-row-aware placement rule, modeled on the
+    existing per-alternative inline-formula mechanism from Phase 2F,
+    applied only to regions explicitly marked
+    `is_declared_inline_formula`). `structured_content`/
+    `canonical_representation` remain `null` - the formula is preserved
+    visually only, never transcribed as text or LaTeX; this accessibility
+    limitation (not full-text-searchable as a formula) is recorded, not
+    hidden (see data/manifests/source-token-ledger-2008.yaml, token
+    q45-item-iii-function-formula). The question's own pre-existing
+    figure-01.png (which happens to also show this formula, but is scoped
+    to the intro's two solid-of-revolution diagrams, sits far earlier in
+    the statement, and includes far more surrounding text than this one
+    formula alone) is completely unmodified - confirmed byte-identical
+    (same sha256) before and after this resolution.
+  evidence: docs/phase-3s-report.md; docs/phase-3q-report.md, Section K;
+    data/manifests/source-token-ledger-2008.yaml, token q45-item-iii-function-formula;
+    data/manifests/layout-overrides.yaml (declare_inline_formula_region entry,
+    question_id enade-2008-computing-q45)
   id: q45-item-iii-formula-image-gap
   question_id: enade-2008-computing-q45
   regression_tests:
   - tests/test_extraction_pipeline_2008.py::test_q45_item_iii_own_three_lines_are_now_complete
-  resolution: null
+  - tests/test_extraction_assembler.py::test_find_inline_formula_insertion_index_lands_between_same_row_lines
+  - tests/test_extraction_assembler.py::test_build_declared_inline_formula_regions_builds_a_region_with_real_drawings
+  - tests/test_layout_overrides.py::test_declared_inline_formula_regions_returns_the_matching_bbox
+  - tests/test_extraction_assets.py::test_render_region_declared_inline_formula_renders_as_equation
+  resolution: >-
+    RESOLVED_BY_VISUAL_FALLBACK (Phase 3S): see description above. No
+    general geometric rule was introduced (no threshold on drawing size/
+    position is used to auto-detect a formula anywhere else in the
+    corpus); the mechanism only ever activates for a bbox an individually-
+    reviewed override names, and only once real vector-drawing content is
+    re-confirmed present there. Full corpus regeneration confirms 2008-b's
+    other 76 questions, all 55 2011 questions, and all 120 2021 questions
+    (3 courses) are byte-for-byte unaffected.
   source_pages:
   - 19
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed

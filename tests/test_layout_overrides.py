@@ -278,3 +278,52 @@ def test_force_region_membership_is_the_opposite_rule_from_protect():
     bbox = (95.76, 574.54, 103.2, 587.91)
     assert overrides.forces_region_membership("d40" * 21 + "x", 17, bbox)
     assert not overrides.protects_from_region_membership("d40" * 21 + "x", 17, bbox)
+
+
+def _inline_formula_override(**overrides) -> LayoutOverride:
+    base = dict(
+        pdf_sha256="q45" * 21 + "x",
+        page=19,
+        bbox=(406.68, 481.92, 442.92, 493.44),
+        rule="declare_inline_formula_region",
+        question_id="enade-2008-computing-q45",
+        reason="test",
+        evidence="test",
+        status="reviewed",
+    )
+    base.update(overrides)
+    return LayoutOverride(**base)
+
+
+def test_declared_inline_formula_regions_returns_the_matching_bbox():
+    overrides = LayoutOverrideSet(overrides=[_inline_formula_override()])
+    result = overrides.declared_inline_formula_regions("q45" * 21 + "x", 19)
+    assert result == ((406.68, 481.92, 442.92, 493.44),)
+
+
+def test_declared_inline_formula_regions_empty_for_a_different_page():
+    overrides = LayoutOverrideSet(overrides=[_inline_formula_override()])
+    assert overrides.declared_inline_formula_regions("q45" * 21 + "x", 20) == ()
+
+
+def test_declared_inline_formula_regions_empty_for_a_different_hash():
+    overrides = LayoutOverrideSet(overrides=[_inline_formula_override()])
+    assert overrides.declared_inline_formula_regions("different" * 8, 19) == ()
+
+
+def test_declared_inline_formula_regions_returns_multiple_matches():
+    overrides = LayoutOverrideSet(
+        overrides=[
+            _inline_formula_override(bbox=(100.0, 100.0, 120.0, 112.0)),
+            _inline_formula_override(bbox=(200.0, 200.0, 220.0, 212.0)),
+        ]
+    )
+    result = overrides.declared_inline_formula_regions("q45" * 21 + "x", 19)
+    assert set(result) == {(100.0, 100.0, 120.0, 112.0), (200.0, 200.0, 220.0, 212.0)}
+
+
+def test_declared_inline_formula_regions_ignores_unrelated_rule_kinds():
+    overrides = LayoutOverrideSet(
+        overrides=[_force_membership_override(), _region_membership_override()]
+    )
+    assert overrides.declared_inline_formula_regions("a" * 64, 10) == ()

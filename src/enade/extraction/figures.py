@@ -296,6 +296,55 @@ class VisualRegion:
     #: text-*consumption* decision alone (see ``compute_line_region_relation``'s
     #: own ``looks_like_body_prose``).
     page_body_font_size: float | None = None
+    #: True only for a region built from an individually-reviewed,
+    #: hash+page+bbox-locked ``declare_inline_formula_region`` override
+    #: (PROMPT Fase 3S) - never set by any general geometric rule, and
+    #: never trusted without positive structural evidence (see
+    #: ``verify_drawings_present``) that real vector-drawing content
+    #: actually exists at the declared bbox. Selects
+    #: ``AssetType.EQUATION`` at render time (``assets.render_region``)
+    #: instead of the usual IMAGE/DIAGRAM inference from
+    #: ``has_raster_image`` alone, and is always paired with a tight,
+    #: fixed-padding ``owner_x_bounds`` (never a column-wide one) so the
+    #: rendered crop stays scoped to the formula itself, not the whole
+    #: column it sits in (see ``INLINE_FORMULA_RENDER_PADDING``).
+    is_declared_inline_formula: bool = False
+
+
+#: Padding (points) around a declared inline-formula's own tight,
+#: evidence-verified bbox when computing its ``owner_x_bounds`` for
+#: rendering (PROMPT Fase 3S, Section 17: "padding minimo e
+#: deterministico" - never widened to a column's own bounds like every
+#: other region, since this asset is meant to sit inline with its own
+#: surrounding text, not show a whole diagram's worth of context).
+INLINE_FORMULA_RENDER_PADDING = 6.0
+
+
+def verify_drawings_present(page: pymupdf.Page, bbox: Rect, pad: float = 2.0) -> int:
+    """Count vector-drawing elements genuinely overlapping ``bbox`` on ``page``.
+
+    Required, structural, positive evidence (PROMPT Fase 3S, Section 13:
+    "a deteccao do candidato seja estrutural") before an override-declared
+    inline-formula bbox is ever trusted - never a bare hash+bbox literal
+    match alone. Returns 0 (never trusted downstream) when ``bbox`` sits
+    over a page with no vector-drawing content at all, so a stale or
+    mistyped override can never fabricate a region for content that does
+    not really exist there.
+    """
+    count = 0
+    for drawing in page.get_drawings():
+        rect = drawing.get("rect")
+        if rect is None or rect.is_empty:
+            continue
+        touches = not (
+            rect.x1 < bbox[0] - pad
+            or rect.x0 > bbox[2] + pad
+            or rect.y1 < bbox[1] - pad
+            or rect.y0 > bbox[3] + pad
+        )
+        if touches:
+            count += 1
+    return count
 
 
 def _round_rect(rect: Rect) -> tuple[int, int, int, int]:

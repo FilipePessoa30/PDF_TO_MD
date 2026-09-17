@@ -28,6 +28,14 @@ assets:
   sha256: 21515cc73060aabcb9491e1db7002ceecbc2ecbd553a3be8333bf195aca9d3b7
   alt_text: null
   caption: null
+- id: figure-02
+  type: equation
+  path: enade-2008-computing-q45/figure-02.png
+  source_page: 19
+  extraction_method: raster_crop
+  sha256: 6c992854aee8fd5e615f9471f34d0cf831de7ad8ac4470c8724796c587222b7a
+  alt_text: null
+  caption: null
 subjects: []
 topics: []
 concepts: []
@@ -38,9 +46,9 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
@@ -52,7 +60,11 @@ Considere y = f(x) uma função contínua e não-negativa (f $ 0), definida em u
 
 como resultado da integral .
 
-Com base nessas informações, julgue os itens a seguir. I Cada seção transversal do sólido S obtida quando este é interceptado em x = c por um plano paralelo ao plano yOz é um círculo centrado no ponto (c, 0, 0) e de raio medindo f(x) e, portanto, de área igual a B(f(x))2. Se P é uma partição uniforme do intervalo [a, b], sendo II P = {a = x0 < x1 < x2 < ... < xn = b}, tal que )x = xi !x i-1, então para ci 0 [ xi, xi ! 1], 1< i < n. III É igual a 2B o volume do sólido gerado pela rotação em torno do eixo x da região do plano delimitada pelo eixo x, o gráfico de e as retas x = 0 e x = 2. Assinale a opção correta.
+Com base nessas informações, julgue os itens a seguir. I Cada seção transversal do sólido S obtida quando este é interceptado em x = c por um plano paralelo ao plano yOz é um círculo centrado no ponto (c, 0, 0) e de raio medindo f(x) e, portanto, de área igual a B(f(x))2. Se P é uma partição uniforme do intervalo [a, b], sendo II P = {a = x0 < x1 < x2 < ... < xn = b}, tal que )x = xi !x i-1, então para ci 0 [ xi, xi ! 1], 1< i < n. III É igual a 2B o volume do sólido gerado pela rotação em torno do eixo x da região do plano delimitada pelo eixo x, o gráfico de
+
+![Figura da questão](enade-2008-computing-q45/figure-02.png)
+
+e as retas x = 0 e x = 2. Assinale a opção correta.
 
 ## Alternativas
 
