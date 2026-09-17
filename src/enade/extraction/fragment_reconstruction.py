@@ -140,6 +140,21 @@ class RawLineFragment:
     fonts: tuple[str, ...]
     font_size: float
     is_monospace: bool
+    #: The true glyph baseline (PROMPT Phase 3N) - the first span's own
+    #: ``origin[1]`` from PyMuPDF's own dict-mode output, never derived
+    #: from this fragment's own bbox. ``y0``/``y1`` are a *bounding box*
+    #: extent, which shifts with each span's own font metrics (ascender/
+    #: descender height) even when every span on one printed row shares
+    #: the exact same baseline - confirmed by direct instrumentation
+    #: against 2008-b's own D40 (page 17): "Cliente" (set in Courier, a
+    #: different font than its own surrounding prose) has bbox y0=131.563
+    #: against its neighbors' own bbox y0=131.955 (a 0.39pt difference -
+    #: enough to escape ``layout.py``'s own 1-decimal bbox-based row
+    #: rounding), while all three spans' own ``origin[1]`` is identically
+    #: 139.07843017578125. Defaults to 0.0 (never a real page coordinate)
+    #: for a ``Line`` built by a path that does not populate it, so it can
+    #: never coincidentally match another line's own real baseline.
+    baseline_y: float = 0.0
 
     @property
     def bbox(self) -> tuple[float, float, float, float]:

@@ -204,7 +204,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -261,7 +261,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -717,7 +717,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },
@@ -1059,7 +1059,7 @@
     "answer_validation_status": "validated",
     "answer_standard_available": false,
     "extraction_method": "text_layer",
-    "extraction_status": "needs_review",
+    "extraction_status": "verified",
     "warning_count": 0,
     "warnings": ""
   },

@@ -542,3 +542,435 @@ overrides:
       note above.
     evidence: docs/phase-3k-report.md; docs/phase-3l-report.md
     status: superseded
+  # --- Phase 3O: region-merge-content-loss cluster (2008-b) ---------------
+  # Every entry below is `protect_from_region_membership`: the line is
+  # genuinely inside a legitimate visual region's own final bbox (the
+  # region/asset itself is correct and untouched), but the line's own
+  # content is real canonical prose/code, not part of what the region's
+  # own image is meant to represent - see docs/phase-3o-report.md, Section
+  # 13/20 for the full evidentiary reasoning (LineRegionRelation's own new
+  # `looks_like_body_prose` field already resolves the sibling cases where
+  # a body-prose line was, mechanically, absorbed only via a font-size-gate
+  # rounding-noise false positive: 2008-b's own real body prose renders at
+  # a raw 9.96pt (never a clean 10.0), which still rounds to the same
+  # "10.0" bucket `_dominant_body_font_size` reports as this booklet's own
+  # body size, but compares as strictly *less than* an un-rounded 10.0
+  # threshold in figures.py's own `caption_font_size_gate` (zero margin) -
+  # silently admitting Q02's own "Essa afirmativa reitera..." sentence,
+  # Q07's own "De acordo com o mesmo grafico..." clause, and Q54's own
+  # opening clause as legitimate label-absorption candidates even though
+  # none of them is caption-shaped content at all. A general, disposition-
+  # layer fix for this exact rounding defect (`LineRegionRelation.
+  # looks_like_body_prose`, gating `_text_consumption_decision` on font-
+  # size evidence alone) was tried and rejected: full corpus regeneration
+  # found two real regressions an isolated 7-question check did not surface
+  # - 2008-b Q1's own "IV"/"V" picture labels (bare 1-2 char roman
+  # numerals, coincidentally also 9.96pt) and Q73's own neighboring-
+  # question paragraph (long, genuinely body-prose-shaped, but not Q73's
+  # own statement) both would have newly leaked into canonical text. Font
+  # size alone is not sufficient evidence to authorize consumption
+  # corpus-wide (see `_text_consumption_decision`'s own docstring); these
+  # three lines get the same individually-verified
+  # `protect_from_region_membership` treatment as every other entry in
+  # this group instead. The remaining entries below cover the residual
+  # cases that were never a rounding-bug question in the first place: a
+  # genuinely caption-sized citation absorbed exactly as designed
+  # (Q02/Q05/Q07's own image citations - geometrically and mechanically
+  # indistinguishable from 2008-b D10's own "Revista Veja..." photo
+  # credit, which correctly stays hidden; the difference is evidentiary,
+  # not geometric - each citation below is the *only* record of the
+  # image's own source/context, never reproduced elsewhere in the
+  # question, per direct visual audit), and a handful of real framing
+  # sentences/code lines caught inside a single oversized region formed by
+  # `_merge_by_vertical_proximity` legitimately joining several separate
+  # diagram/table fragments (or, for D40, an unrelated far-column rascunho
+  # ruled grid) under this booklet's own generous region_merge_x_tolerance
+  # (150pt) - the region and its rendered crop are correct and left
+  # untouched; only these specific lines' own exclusion is undone.
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 3
+    bbox: [53.0, 123.0, 277.0, 136.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q02
+    reason: >-
+      "Essa afirmativa reitera a necessaria interacao das" (y0=124.5,
+      9.96pt body prose, the first physical line of the statement's own
+      transition sentence into the image) - absorbed as a label candidate
+      purely by the font-size-gate rounding defect described above (its
+      raw 9.96pt size compares as "smaller than" the page's own rounded
+      10.0 body threshold), then excluded from canonical text by plain
+      geometric containment in the resulting grown region.
+    evidence: docs/phase-3o-report.md, Section M
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 3
+    bbox: [39.0, 135.0, 290.0, 147.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q02
+    reason: >-
+      "diferentes especies, representadas na imagem a seguir." (y0=136.2),
+      the second physical line of the same sentence as the override above -
+      same defect class, same fix. Missed in this phase's own first pass
+      (only the first line was found and protected, cutting the restored
+      sentence short at "das" - caught by
+      tests/test_extraction_pipeline_2008.py::test_q02_statement_and_citation_are_now_complete,
+      which checks the full sentence rather than a partial substring).
+    evidence: docs/phase-3o-report.md, Section M
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 3
+    bbox: [133.0, 407.0, 276.0, 416.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q02
+    reason: >-
+      "Disponivel em http://curiosidades.spaceblog.com.br." (y0=408.8,
+      6pt) is Q02's own image citation - the only record of the source,
+      never reproduced elsewhere in the statement/alternatives. Absorbed
+      as a genuine label-absorption candidate (correctly - it is real
+      caption-shaped content, 6pt vs. the page's own 9.96pt body prose),
+      then excluded from canonical text by the same geometric-containment
+      check that also, correctly, keeps 2008-b D10's own "Revista Veja..."
+      photo credit hidden - the two are mechanically identical
+      (`state=contained`, `matches_absorbed_label=True`,
+      `raw_intersects=False` in both cases) and no general geometric
+      signal separates them (confirmed: same absorption pass, same
+      region-relation fields, see docs/phase-3o-report.md Section 7/13).
+      D10's own credit line is genuinely decorative relative to its own
+      question (an illustrative photo for an essay prompt, never
+      referenced by the essay's own instructions); Q02's citation is the
+      sole attribution for the image the statement explicitly discusses
+      ("...representadas na imagem a seguir" / "Depreende-se dessa
+      imagem a..."), so its loss is a real information gap, not a
+      redundant credit line duplicating the image itself.
+    evidence: docs/phase-3o-report.md, Section M
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 3
+    bbox: [207.0, 414.0, 276.0, 423.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q02
+    reason: >-
+      "Acesso em 10 out. 2008." (y0=415.9), the second physical line of
+      the same citation as the override above - same defect class, same
+      fix.
+    evidence: docs/phase-3o-report.md, Section M
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 3
+    bbox: [390.0, 628.0, 559.0, 638.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q05
+    reason: >-
+      "STRICKLAND, Carol; BOSWELL, John. Arte Comentada: da" (y0=629.3,
+      6pt) is Q05's own image citation, first physical line - same defect
+      class as Q02's own citation above (genuine label-absorption
+      candidate, then wrongly excluded from canonical text by geometric
+      containment alone). The asset's own `caption`/`alt_text` fields
+      remain null (PROMPT Phase 3O Section 15 does not yet have a general
+      mechanism to populate them from an absorbed label automatically);
+      restoring the citation to the canonical statement text is the
+      `canonical_only`-equivalent safe direction until that mechanism
+      exists.
+    evidence: docs/phase-3o-report.md, Section N
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 3
+    bbox: [390.0, 636.0, 559.0, 645.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q05
+    reason: >-
+      "pre-historia ao pos-moderno. Rio de Janeiro: Ediouro [s.d.]." (y0=
+      637.7), the second physical line of the same citation as the
+      override above - same defect class, same fix.
+    evidence: docs/phase-3o-report.md, Section N
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 4
+    bbox: [271.0, 644.0, 561.0, 656.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q07
+    reason: >-
+      "De acordo com o mesmo grafico, o percentual da renda" (y0=645.0,
+      9.96pt body prose) - the statement's own transition clause into the
+      question actually being asked, absorbed as a label candidate purely
+      by the font-size-gate rounding defect described above (same
+      mechanism as Q02's own sentence override), then excluded from
+      canonical text by plain geometric containment in the resulting
+      grown region.
+    evidence: docs/phase-3o-report.md, Section O
+    status: reviewed
+  # NOTE (Phase 3O): Q07's own chart citation, "Disponivel em
+  # http://www.ipea.gov.br" (page 4, 6pt), is NOT region-excluded at all in
+  # the real pipeline, even without any override - confirmed both by
+  # `git show HEAD:.../enade-2008-computing-q07.md` (the citation already
+  # reads "E. 80%. Disponivel em http://www.ipea.gov.br" in the corpus as
+  # published before this phase) and by direct trace: `_in_alternatives_section`
+  # (assembler.py) independently exempts it once its own y0 (753.2, below
+  # even alternative E's own marker at 745.2) places it past the
+  # alternatives section's own start - no override needed or possible to
+  # change that. The real defect is `assemble_question`'s own alternative-
+  # boundary slicing (the per-letter `alt_bounds` index range from one
+  # marker to the next, `text_only_lines`-position-based, with no X-
+  # proximity check of its own - unlike `_in_alternatives_section`'s
+  # separate exemption test), which sweeps this citation into alternative
+  # E's own tail purely by list position, regardless of it living in a
+  # different page column entirely - real alternative-text contamination,
+  # exactly the failure mode this blocker's own Phase 3H note already named
+  # ("alternative E's own citation contamination... unrelated to Cluster
+  # D"). A general fix (making the per-letter slice itself X-proximity-
+  # aware, matching `_in_alternatives_section`'s own existing logic) would
+  # touch core alternative-boundary detection shared by every objective
+  # question in every booklet - out of scope for a first, disposition-only
+  # pass (Section 23) and not attempted here. This is a pre-existing defect
+  # this phase neither caused nor fixed; left exactly as published. Tracked
+  # as q07-alternative-e-citation-contamination-risk and in
+  # docs/phase-3o-report.md, Section O.
+  # --- Phase 3O: Q24's own oversized raw-merge (decoder table + 3 item
+  # circuits merged into one region by y-proximity) swallows its own
+  # framing paragraph -------------------------------------------------
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 12
+    bbox: [36.0, 195.0, 298.0, 207.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q24
+    reason: >-
+      "Considere o bloco decodificador ilustrado acima, o qual" (y0=196.5,
+      9.96pt body prose). Q24's decoder truth table and its 3 item
+      circuits (I/II/III) are 4 separate diagrams that
+      `_merge_by_vertical_proximity` correctly groups into one connected
+      region (y=105.0-522.5) - each item's own circuit sits close enough
+      in Y to the next to be a genuine single connected cluster, and the
+      resulting single crop (figure-01.png) is itself correct and
+      unchanged by this override. This framing paragraph's own 4 lines
+      (this one and the 3 below) sit geometrically inside that region's
+      Y-range purely because the diagrams above and below them are far
+      apart on the page - `raw_intersects` is True (genuine overlap with
+      the merged raw extent, not just growth padding), so the fix is at
+      the exclusion-check layer (`protect_from_region_membership`, the
+      same mechanism as 2011 Q12's own item IV / Q48's own connecting
+      sentence), never the merge itself.
+    evidence: docs/phase-3o-report.md, Section P
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 12
+    bbox: [36.0, 207.0, 298.0, 219.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q24
+    reason: >-
+      "opera segundo a tabela apresentada. Em cada item a seguir," (y0=208.3) - second line of the same framing paragraph as above.
+    evidence: docs/phase-3o-report.md, Section P
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 12
+    bbox: [36.0, 219.0, 298.0, 231.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q24
+    reason: >-
+      "julgue se a funcao logica mostrada corresponde ao circuito" (y0=220.1) - third line of the same framing paragraph as above.
+    evidence: docs/phase-3o-report.md, Section P
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 12
+    bbox: [36.0, 231.0, 139.0, 243.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q24
+    reason: >-
+      "logico a ela associado." (y0=232.0) - fourth and last line of the same framing paragraph as above.
+    evidence: docs/phase-3o-report.md, Section P
+    status: reviewed
+  # --- Phase 3O: Q45's own oversized raw-merge (solid-of-revolution
+  # figure + item diagrams) swallows its own framing clauses and items
+  # I/II's own body text ------------------------------------------------
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 19
+    bbox: [303.0, 181.0, 426.0, 193.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q45
+    reason: >-
+      "como resultado da integral" (y0=182.3, 9.96pt body prose) - the
+      intro paragraph's own closing clause, immediately followed by a
+      small inline formula image and this sentence's own closing period
+      (protected separately below). Same root cause as Q24 above: Q45's
+      own two solid-of-revolution diagrams (one per figure) and small
+      axis-label formula images merge, by genuine Y-proximity, into
+      regions whose combined raw extent also covers real statement prose
+      physically positioned between/around them - `raw_intersects` is
+      True throughout this group, so every fix here is at the exclusion-
+      check layer, never the merge/growth/crop logic (Section 23).
+    evidence: docs/phase-3o-report.md, Section Q
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 19
+    bbox: [471.0, 181.0, 477.0, 193.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q45
+    reason: >-
+      "." (y0=182.3, x0=472.5) - the closing period of "como resultado da
+      integral [inline formula image].", same line as the override above,
+      split into its own fragment by the inline formula image between them.
+    evidence: docs/phase-3o-report.md, Section Q
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 19
+    bbox: [303.0, 322.0, 553.0, 335.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q45
+    reason: >-
+      "Com base nessas informacoes, julgue os itens a seguir." (y0=323.5,
+      9.96pt) - the transition sentence introducing items I/II/III,
+      sitting between the two solid-of-revolution figures. Same defect
+      class as the intro clause above.
+    evidence: docs/phase-3o-report.md, Section Q
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 19
+    bbox: [317.0, 346.0, 561.0, 359.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q45
+    reason: >-
+      "Cada secao transversal do solido S obtida quando este" (y0=347.7)
+      - item I's own first line, entirely missing before this override
+      (item I's own marker alone survived, per docs/phase-3o-report.md
+      Section Q's forensic scan).
+    evidence: docs/phase-3o-report.md, Section Q
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 19
+    bbox: [317.0, 358.0, 561.0, 371.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q45
+    reason: >-
+      "e interceptado em x = c por um plano paralelo ao plano" (y0=359.7) - item I's own second line, same defect class as above.
+    evidence: docs/phase-3o-report.md, Section Q
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 19
+    bbox: [317.0, 370.0, 561.0, 383.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q45
+    reason: >-
+      "yOz e um circulo centrado no ponto (c, 0, 0) e de raio" (y0=371.8) - item I's own third line, same defect class as above.
+    evidence: docs/phase-3o-report.md, Section Q
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 19
+    bbox: [317.0, 380.0, 533.0, 396.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q45
+    reason: >-
+      "medindo f(x) e, portanto, de area igual a (f(x))2." (y0=381.6) - item I's own fourth and last line, same defect class as above.
+    evidence: docs/phase-3o-report.md, Section Q
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 19
+    bbox: [317.0, 395.0, 561.0, 408.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q45
+    reason: >-
+      "Se P e uma particao uniforme do intervalo [a, b], sendo" (y0=396.2)
+      - item II's own first line, entirely missing before this override
+      (item II's own marker alone survived).
+    evidence: docs/phase-3o-report.md, Section Q
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 19
+    bbox: [317.0, 399.0, 430.0, 422.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q45
+    reason: >-
+      "P = {a = x0 < x1 < x2 < ..." (y0=400.0, 12pt - a larger math-mode
+      font than the surrounding 9.96pt body prose) - item II's own second
+      line, first fragment (the set-builder notation, split from its own
+      continuation below by a font-size change PyMuPDF reports as a
+      separate dict-mode line).
+    evidence: docs/phase-3o-report.md, Section Q
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 19
+    bbox: [427.0, 409.0, 561.0, 423.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q45
+    reason: >-
+      "< xn = b}, tal que )x = xi !x i-1," (y0=410.1) - continuation
+      fragment of the same physical line as the override above (same_row
+      ordering, already active for this booklet, reassembles the two
+      fragments into one line).
+    evidence: docs/phase-3o-report.md, Section Q
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 19
+    bbox: [438.0, 431.0, 561.0, 445.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q45
+    reason: >-
+      "para ci 0 [ xi, xi ! 1], 1< i < n." (y0=432.1) - item II's own third line, same defect class as its first two lines above.
+    evidence: docs/phase-3o-report.md, Section Q
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 19
+    bbox: [317.0, 431.0, 348.0, 444.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q45
+    reason: >-
+      "entao" (y0=432.4) - item II's own fourth and last line (a single word
+      introducing the conclusion carried by item II's own small formula
+      image), same defect class as above.
+    evidence: docs/phase-3o-report.md, Section Q
+    status: reviewed
+  # --- Phase 3O: Q54's own opening clause, swallowed by the routing-table
+  # figure's own grown region ------------------------------------------
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 23
+    bbox: [63.0, 450.0, 320.0, 463.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q54
+    reason: >-
+      "No encaminhamento de pacotes na Internet, cabe a cada" (y0=451.7,
+      9.96pt body prose) - the statement's own opening clause, currently
+      cut short mid-sentence at "no". Absorbed as a label candidate purely
+      by the font-size-gate rounding defect described above (same
+      mechanism as Q02/Q07's own sentence/clause overrides), then excluded
+      from canonical text by plain geometric containment in the routing-
+      table diagram's own grown region (the table itself - "endereco
+      de rede", "mascara", IP addresses, etc. - correctly remains image-
+      only; this override touches only the one statement-prose line).
+    evidence: docs/phase-3o-report.md, Section R
+    status: reviewed
+  # --- Phase 3O: D40's own two residuals (region-merge-content-loss) ----
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 17
+    bbox: [119.0, 186.0, 285.0, 199.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-d40
+    reason: >-
+      "data_nascimento, renda, idade)" (y0=187.5, monospace code font) -
+      the Cliente(...) schema's own second printed line, completing
+      "Cliente(nroCliente, nome, endereco," (already correctly rendered as
+      a `code` content block). This code line is legitimately inside
+      figure-02.png's own region (which exists specifically to show the
+      primary key's own underline formatting, not representable as plain
+      text) - `raw_intersects` is True (the region's raw bbox already
+      spans this line from the start), but the region itself is seeded,
+      and its own X-extent widened, by a false merge with an unrelated
+      ruled "RASCUNHO" answer-grid on the same page's own right column
+      (only ~129pt away, under this booklet's own 150pt
+      region_merge_x_tolerance) - the merge itself is a separate, riskier
+      fix (Section 23 last-resort); protecting this one code line keeps
+      it as legible text without touching that merge, while figure-02.png
+      itself (still showing the correctly-formatted schema image) is
+      completely unaffected.
+    evidence: docs/phase-3o-report.md, Section S
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 17
+    bbox: [63.0, 214.0, 292.0, 227.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-d40
+    reason: >-
+      "Para essa relacao, foram criados dois indices" (y0=216.0, 9.96pt
+      body prose) - the opening clause of the paragraph that continues
+      "secundarios: IndiceIdade, para o atributo idade...", currently
+      starting mid-sentence at "secundarios:" without it. Same region,
+      same false-merge root cause as the code line above.
+    evidence: docs/phase-3o-report.md, Section S
+    status: reviewed

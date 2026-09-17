@@ -101,18 +101,26 @@ blockers:
     figure-01''s own region - genuinely small-font body text/citation fragmented by proximity to a large
     image, the same general label-absorption-over-reach family as D09/D10/D40/Q07/Q12/Q45/Q54, not resolved
     by either fix.'
-  description: 'IMPROVED IN PHASE 3D AND 3G: the opening epigraph and the alternatives'' own lead-in clause
+  description: 'RESOLVED IN PHASE 3O: the opening epigraph and the alternatives'' own lead-in clause
     (''Depreende-se dessa imagem a'') are now present as real text; the transition sentence and image
-    citation remain lost.'
-  evidence: docs/phase-3d-report.md section D; docs/phase-3g-report.md
+    citation are now also present (see resolution below).'
+  evidence: docs/phase-3d-report.md section D; docs/phase-3g-report.md; docs/phase-3o-report.md, Section M
   id: q02-region-merge-content-loss
   question_id: enade-2008-computing-q02
   regression_tests:
   - tests/test_extraction_figures.py
-  resolution: null
+  - tests/test_extraction_pipeline_2008.py::test_q02_statement_and_citation_are_now_complete
+  resolution: >-
+    RESOLVED (Phase 3O): the transition sentence ("Essa afirmativa reitera...")
+    and the image citation (both lines) were absorbed by figure-01's own
+    region purely as growth/label-absorption side effects, never authorized
+    to be *removed from canonical text* on genuine evidence. Both are now
+    protected via `protect_from_region_membership` overrides
+    (data/manifests/layout-overrides.yaml) - the region/asset/crop itself is
+    completely unchanged.
   source_pages:
   - 3
-  status: open
+  status: resolved
   superseded_by: null
   visual_validation: failed
 - affected_assets: []
@@ -157,15 +165,39 @@ blockers:
     the earlier framing clause (''De acordo com o mesmo gráfico, o percentual da renda'') is one single,
     non-fragmented line that growth still genuinely absorbs on its own - same pre-existing over-absorption
     family as D09/D10/D40/Q02/Q05/Q45/Q54; alternative E''s own citation contamination also remains.'
-  description: 'IMPROVED IN PHASE 3H: statement now reads ''total correspondente aos 20% de maior renda
-    foi,'' (was ''20% de maior renda foi,'' after Phase 3G''s own minor regression, and better than even
-    the pre-Phase-3G ''aos 20% de maior renda foi,''). One non-fragmented framing clause and alternative
-    E''s own citation contamination remain, both unrelated to Cluster D.'
-  evidence: docs/phase-3e-report.md; docs/phase-3g-report.md; docs/phase-3h-report.md
+  description: 'PARTIALLY RESOLVED IN PHASE 3O: statement now reads ''total correspondente aos 20% de maior
+    renda foi,'' (was ''20% de maior renda foi,'' after Phase 3G''s own minor regression, and better than
+    even the pre-Phase-3G ''aos 20% de maior renda foi,''). The framing clause (''De acordo com o mesmo
+    grafico...'') is now also present. Alternative E''s own citation contamination is a genuinely separate,
+    PRE-EXISTING defect (confirmed present in the corpus as published before this phase, via
+    ''git show HEAD:...q07.md'' - the citation was never region-excluded at all, so there was nothing for
+    Phase 3O''s own disposition work to free; see q07-alternative-e-citation-contamination-risk) - out of
+    this blocker''s own scope and not attempted this phase.'
+  evidence: docs/phase-3e-report.md; docs/phase-3g-report.md; docs/phase-3h-report.md; docs/phase-3o-report.md, Section O
   id: q07-region-merge-content-loss
   question_id: enade-2008-computing-q07
-  regression_tests: []
-  resolution: null
+  regression_tests:
+  - tests/test_extraction_pipeline_2008.py::test_q07_framing_clause_is_now_complete_and_alternative_e_is_unchanged
+  resolution: >-
+    PARTIALLY RESOLVED (Phase 3O): the framing clause was absorbed by the
+    chart's own region purely as a growth/label-absorption side effect and
+    is now protected via a `protect_from_region_membership` override
+    (data/manifests/layout-overrides.yaml). The image's own citation line
+    ("Disponivel em http://www.ipea.gov.br") is a separate, PRE-EXISTING
+    defect (confirmed via `git show HEAD:...q07.md`: it already reads
+    "E. 80%. Disponivel em http://www.ipea.gov.br" in the published corpus,
+    before this phase touched anything) - it was never region-excluded at
+    all (`_in_alternatives_section` already independently exempts it, since
+    its own y0 sits below alternative E's own marker), so there was nothing
+    for a disposition-layer fix to free. The actual defect is the
+    alternative-boundary slicer's own tail range sweeping it into
+    alternative E's own text by list position alone, regardless of it
+    living in a different page column - fixing that would require making
+    the per-letter alternative-boundary slice X-proximity-aware, a change
+    to core objective-question boundary detection shared by every
+    booklet - out of scope for this phase's disposition-only mandate
+    (Section 23). Left exactly as published; tracked as
+    `q07-alternative-e-citation-contamination-risk` for a future phase.
   source_pages:
   - 4
   status: open
@@ -277,14 +309,33 @@ blockers:
     survives). Confirmed this question''s own layout (one main circuit+truth-table diagram plus three
     separately-diagrammed judged items, each its own small circuit) needs a dedicated multi-diagram/judged-item
     assembly mechanism beyond any label-absorption or line-region relation fix - not attempted this phase.'
-  description: 'IMPROVED IN PHASE 3G (garbling only): the garbled table/diagram fragments (''A 0 B S0 / A
-    II B 1 / A 0 B S0'') are gone, but the real decoder-block framing paragraph and items I/II remain
-    entirely missing - only a bare ''III'' marker survives.'
-  evidence: docs/phase-3g-report.md
+  description: 'PARTIALLY RESOLVED IN PHASE 3O: the garbled table/diagram fragments (''A 0 B S0 / A II B
+    1 / A 0 B S0'') were already gone since Phase 3G. Phase 3O restores the decoder-block''s own 4-line
+    framing paragraph (''Considere o bloco decodificador...''). Items I/II''s own bare markers remain
+    completely absent, exactly as this entry''s own original wording said - only a bare ''III'' marker
+    survives (reconfirmed directly against the published pre-Phase-3O file; an earlier draft of this
+    entry, written this same phase, mistakenly called that original wording "stale" based on a read taken
+    while an since-reverted experimental fix was still active - corrected here). Root cause of the I/II
+    gap is NOT region-merge-content-loss (confirmed: neither bare marker is ever marked "accepted" by
+    `_text_consumption_decision` against any of Q24''s own regions) and was not identified this phase -
+    tracked separately below as q24-item-i-ii-markers-missing for a future phase.'
+  evidence: docs/phase-3g-report.md; docs/phase-3o-report.md, Section P
   id: q24-region-merge-content-loss
   question_id: enade-2008-computing-q24
-  regression_tests: []
-  resolution: null
+  regression_tests:
+  - tests/test_extraction_pipeline_2008.py::test_q24_framing_paragraph_is_now_complete
+  resolution: >-
+    PARTIALLY RESOLVED (Phase 3O): Q24's own decoder truth-table diagram
+    and its 3 item circuits are 4 separate diagrams that
+    `_merge_by_vertical_proximity` correctly joins into one connected
+    region (a genuine, un-touched merge - the diagrams themselves really
+    are close enough in Y to be one connected cluster); the framing
+    paragraph's own 4 lines merely sit inside that region's Y-range because
+    the diagrams above/below them are far apart on the page. All 4 lines
+    are now protected via `protect_from_region_membership` overrides
+    (data/manifests/layout-overrides.yaml); figure-01's own region/crop is
+    unchanged. Items I/II's own bare markers are a separate, still-open gap
+    (see q24-item-i-ii-markers-missing).
   source_pages:
   - 12
   status: open
@@ -378,21 +429,43 @@ blockers:
     statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
     mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
     section M for why no fix was attempted this session.'
-  description: 'PARTIALLY IMPROVED IN PHASE 3G (was: empty structured statement, the entire statement
-    captured as one self-contained whole-question image). contextual_relation_gate now recovers item
-    III''s own marker, previously missing entirely, along with part of its own text (''III É igual a 2B
-    o volume do sólido gerado pela rotação em''). Still genuinely incomplete against page 19''s own raw
-    text: the intro''s own closing clause and the ''Com base nessas informações, julgue os itens a
-    seguir.'' transition are both missing; items I and II remain entirely bare markers with no content;
-    item III''s own recovered text is itself cut off partway through. Alternatives remain correctly
-    separate as text throughout.'
-  evidence: docs/phase-3g-report.md
+  description: 'PARTIALLY RESOLVED IN PHASE 3O (was: empty structured statement, the entire statement
+    captured as one self-contained whole-question image, then PARTIALLY IMPROVED IN PHASE 3G - item III''s
+    own marker and part of its own text recovered). Phase 3O restores the intro''s own closing clause
+    (''como resultado da integral''), the ''Com base nessas informações...'' transition, and both items
+    I and II''s own full body text (previously entirely bare markers). Item III''s own text remains as
+    recovered by Phase 3G. NOTE (Phase 3O): source_pages corrected from a stale [20] to [19], matching
+    this question''s own frontmatter and the real PDF page.'
+  evidence: docs/phase-3g-report.md; docs/phase-3o-report.md, Section Q
   id: q45-region-merge-content-loss
   question_id: enade-2008-computing-q45
-  regression_tests: []
-  resolution: null
+  regression_tests:
+  - tests/test_extraction_pipeline_2008.py::test_q45_items_i_and_ii_are_now_complete
+  resolution: >-
+    PARTIALLY RESOLVED (Phase 3O): Q45's own two solid-of-revolution
+    diagrams and small axis-label formula images merge, by genuine Y-
+    proximity, into regions whose combined raw extent also covers real
+    statement prose physically positioned between/around them (the same
+    mechanism as Q24 above). 12 lines (2 framing clauses + all of items I
+    and II's own body text) are now protected via
+    `protect_from_region_membership` overrides
+    (data/manifests/layout-overrides.yaml); figure-01's own region/crop is
+    unchanged. KNOWN RESIDUAL (not part of this blocker, not attempted this
+    phase): item II's own conclusion word "entao" reads out of order
+    relative to "para ci..." in the restored text - both lines' own y0
+    values are within ~0.3pt of each other, which same_row_ordering.py
+    (Phase 3N, not touched this phase) resolves as same-row/left-to-right
+    rather than as two distinct successive lines. Pre-existing/latent (both
+    lines were equally hidden before this phase), only now visible; left
+    as-is per Section 23 (same_row_ordering is out of scope this phase).
+    STILL OPEN, NOT ATTEMPTED THIS PHASE: item III's own recovered text
+    ("...o grafico de e as retas x = 0 e x = 2") is itself missing a single
+    character (almost certainly "f", i.e. "o grafico de f e as retas") -
+    a pre-existing text-extraction gap unrelated to region-merge/label-
+    absorption (item III's own text was never region-excluded to begin
+    with), out of this blocker's own category and not investigated here.
   source_pages:
-  - 20
+  - 19
   status: open
   superseded_by: null
   visual_validation: failed
@@ -511,20 +584,25 @@ blockers:
     statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
     mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
     section M for why no fix was attempted this session.'
-  description: 'MAJOR IMPROVEMENT IN PHASE 3G (was: empty statement, only figure-01.png remained).
-    contextual_relation_gate now recovers nearly all of it: the routing-table explanation and the full
-    closing question match page 23''s own raw text verbatim. One genuine gap remains: the opening clause
-    (''No encaminhamento de pacotes na Internet, cabe a cada'') is still missing, cutting the statement''s
-    own first sentence short at ''nó'' - real body prose (the sentence''s own subject and verb), not
-    decorative filler.'
-  evidence: docs/phase-3g-report.md
+  description: 'RESOLVED IN PHASE 3O (MAJOR IMPROVEMENT IN PHASE 3G: was empty statement, only
+    figure-01.png remained; contextual_relation_gate then recovered nearly all of it, the routing-table
+    explanation and the full closing question matching page 23''s own raw text verbatim). The one
+    remaining gap, the opening clause (''No encaminhamento de pacotes na Internet, cabe a cada''), is
+    now also present.'
+  evidence: docs/phase-3g-report.md; docs/phase-3o-report.md, Section R
   id: q54-region-merge-content-loss
   question_id: enade-2008-computing-q54
-  regression_tests: []
-  resolution: null
+  regression_tests:
+  - tests/test_extraction_pipeline_2008.py::test_q54_opening_clause_is_now_complete
+  resolution: >-
+    RESOLVED (Phase 3O): the opening clause was absorbed by the routing-
+    table diagram's own region purely as a growth/label-absorption side
+    effect and is now protected via a `protect_from_region_membership`
+    override (data/manifests/layout-overrides.yaml); the routing table
+    itself correctly remains image-only, unchanged.
   source_pages:
   - 23
-  status: open
+  status: resolved
   superseded_by: null
   visual_validation: failed
 - affected_assets: []
@@ -977,24 +1055,64 @@ blockers:
     missing its own second printed line (''data_nascimento, renda, idade)''); (3) the indices paragraph is
     missing its own opening clause (''Para essa relação, foram criados dois índices''), starting mid-word at
     ''secundários:''.'
-  description: 'FURTHER IMPROVED IN PHASE 3D AND 3G: the relation-schema intro and definition are now
-    present, and the closing paragraph''s own opening clause is restored. Phase 3G additionally restores the
-    Cliente(...) schema code line''s own first printed line after a brief regression during this same phase
-    (see cause). Residual defects: the ''F'' query-tree label now leaks as loose text after figure-01 (new,
-    cosmetic, Phase 3G); the opening sentence has a pre-existing word-order scramble; the schema code block
-    is pre-existing truncated (missing its own second line); the indices paragraph is pre-existing missing
-    its own opening clause.'
+  description: 'RESOLVED (Phase 3N), narrowed to the word-order-scramble this id names: the opening
+    sentence ("...SGBD relacional Cliente, possui a relacao com as informacoes..." instead of "...SGBD
+    relacional possui a relacao Cliente, com as informacoes...") now reads correctly - same_row_ordering.py
+    (PROMPT Phase 3N) corrects "Cliente," (a Courier/monospace font run inline in otherwise-regular prose,
+    whose own bounding-box top differs by 0.39pt from its neighbors despite an identical true glyph
+    baseline) back to its own correct left-to-right position. The two remaining, unrelated content-loss
+    residuals this id used to also describe (the truncated schema code block; the indices paragraph''s
+    own missing opening clause) are genuinely a different invariant (missing/truncated content, not
+    order) and are now tracked on their own - see d40-region-merge-content-loss (still open). The
+    cosmetic "F" label leak (Phase 3G, documented, not hidden) is also unrelated and untouched.'
   evidence: docs/phase-3c-report.md section E; docs/phase-3d-report.md section D; docs/phase-3e-report.md;
-    docs/phase-3g-report.md; tests/test_extraction_pipeline_2008.py::test_d40_sql_code_block_is_now_preserved_verbatim
+    docs/phase-3g-report.md; docs/phase-3n-report.md; tests/test_extraction_pipeline_2008.py::test_d40_sql_code_block_is_now_preserved_verbatim;
+    tests/test_extraction_pipeline_2008.py::test_d40_opening_sentence_word_order_is_no_longer_scrambled
   id: d40-table-reading-order-scramble
   question_id: enade-2008-computing-d40
   regression_tests:
-  - tests/test_extraction_figures.py
-  - tests/test_extraction_pipeline_2008.py
-  resolution: null
+  - tests/test_same_row_ordering.py
+  - tests/test_extraction_pipeline_2008.py::test_d40_opening_sentence_word_order_is_no_longer_scrambled
+  resolution: 'RESOLVED (Phase 3N): see cause above.'
   source_pages:
   - 17
-  status: open
+  status: resolved
+  superseded_by: null
+  visual_validation: passed
+- affected_assets:
+  - figure-02
+  category: region-merge-content-loss
+  cause: 'OPENED IN PHASE 3N, split out of d40-table-reading-order-scramble (now resolved) once that
+    id''s own word-order residual was fixed and these two remaining residuals were confirmed to be a
+    genuinely different invariant (missing/truncated content, not fragment order) - not root-caused
+    precisely this phase, out of Phase 3N''s own scope (which never touches region-merge-content-loss''s
+    own mechanisms - PROMPT Phase 3N section 24). Left open.'
+  description: 'RESOLVED IN PHASE 3O. Two residuals, both pre-existing (confirmed unchanged by Phase 3N''s
+    own regeneration): (1) the Cliente(...) schema code block was itself truncated, missing its own second
+    printed line ("data_nascimento, renda, idade)"); (2) the indices paragraph was missing its own opening
+    clause ("Para essa relacao, foram criados dois indices"), starting mid-word at "secundarios:". Both
+    are now present.'
+  evidence: docs/phase-3n-report.md; docs/phase-3o-report.md, Section S
+  id: d40-region-merge-content-loss
+  question_id: enade-2008-computing-d40
+  regression_tests:
+  - tests/test_extraction_pipeline_2008.py::test_d40_own_two_region_merge_residuals_are_now_resolved
+  resolution: >-
+    RESOLVED (Phase 3O): both lines sit inside figure-02's own legitimate
+    region (raw_intersects=True - genuinely, geometrically inside the raw
+    merged extent from the start, not merely grown/padded into it), but
+    that region's own X-extent is widened by a false merge with an
+    unrelated ruled "RASCUNHO" answer-grid in the page's own far-right
+    column (only ~129pt away, under this booklet's own 150pt
+    region_merge_x_tolerance) - the merge itself is a separate, riskier fix
+    (Section 23 last-resort, not attempted this phase); both lines are
+    instead individually protected via `protect_from_region_membership`
+    overrides (data/manifests/layout-overrides.yaml), leaving figure-02.png
+    itself (still showing the schema's own underlined-primary-key
+    formatting) completely unaffected.
+  source_pages:
+  - 17
+  status: resolved
   superseded_by: null
   visual_validation: failed
 - affected_assets: []
@@ -1146,20 +1264,120 @@ blockers:
   visual_validation: passed
 - affected_assets: []
   category: table-reading-order-scramble
-  cause: Not yet root-caused precisely - a multi-column item-list reading-order defect. Left open.
+  cause: 'RESOLVED (Phase 3N). Root-caused precisely: the item markers ("I"/"II") and the word "top-down"/"bottom-up"
+    each sit on the same visual printed row as their own item''s opening words, but PyMuPDF''s own dict-mode
+    reports them as separate "line" entries whenever a font run changes (the marker''s own font, or an
+    italicized word like "top-down") - each such entry''s own bounding-box top shifts by ~0.09-0.4pt due to
+    the different font''s own ascender/descender metrics, even though every entry''s own true glyph baseline
+    (span origin[1]) is identical to 10 decimal places (confirmed by direct instrumentation). layout.py''s own
+    (round(y0,1), x0) sort rounds these into different buckets, inverting their left-to-right reading order.
+    Fixed generally by same_row_ordering.py (PROMPT Phase 3N): fragments sharing a true baseline (normalized
+    by font size, never an absolute point value, and never crossing a column/region boundary) are grouped
+    and sorted by x0 within the group; this same mechanism also resolves d40-table-reading-order-scramble''s
+    own opening-sentence scramble and three previously-undetected cases (D59, Q41, Q52, Q56) sharing the
+    identical mechanism.'
   description: The four judged items' own roman-numeral markers (I/II/III/IV) and the words 'top-down'/'bottom-up'
     are displaced from their correct positions within the statement's own sentences. Full wording is present,
     order is not.
-  evidence: null
+  evidence: docs/phase-3n-report.md; tests/test_same_row_ordering.py; tests/test_extraction_pipeline_2008.py::test_q33_item_markers_are_no_longer_displaced
   id: q33-item-marker-displacement
   question_id: enade-2008-computing-q33
-  regression_tests: []
-  resolution: null
+  regression_tests:
+  - tests/test_same_row_ordering.py
+  - tests/test_extraction_pipeline_2008.py::test_q33_item_markers_are_no_longer_displaced
+  resolution: 'RESOLVED (Phase 3N): see cause above.'
   source_pages:
   - 14
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
+- affected_assets: []
+  category: table-reading-order-scramble
+  cause: 'NEWLY FOUND AND RESOLVED IN PHASE 3N (previously undetected - the question was marked passed
+    since every word was present; the defect is subtle enough that a normal read-through does not catch
+    it). Same mechanism as q33-item-marker-displacement/d40-table-reading-order-scramble: item II''s own
+    marker sits on the same visual row as "T2 tem prioridade 2..." but PyMuPDF reports them as separate
+    dict-mode "line" entries (a font-run change shifts the bounding-box top while the true glyph baseline
+    stays identical), and layout.py''s own bbox-based sort inverted their order ("...R2 durante 2 ut. A
+    partir de II seu inicio..." instead of "...R2 durante 2 ut. II T2 tem prioridade 2..."). Fixed by
+    same_row_ordering.py (PROMPT Phase 3N).'
+  description: Item II's own roman-numeral marker was displaced mid-sentence into its own item's second
+    clause instead of appearing at its own start. Full wording was already present.
+  evidence: docs/phase-3n-report.md; tests/test_same_row_ordering.py
+  id: d59-item-marker-displacement
+  question_id: enade-2008-computing-d59
+  regression_tests:
+  - tests/test_same_row_ordering.py
+  resolution: 'RESOLVED (Phase 3N): see cause above.'
+  source_pages:
+  - 30
+  status: resolved
+  superseded_by: null
+  visual_validation: passed
+- affected_assets: []
+  category: table-reading-order-scramble
+  cause: 'NEWLY FOUND AND RESOLVED IN PHASE 3N (previously undetected - same reason as
+    d59-item-marker-displacement above). Same mechanism as q33-item-marker-displacement: "tokens" (a
+    font-run change shifts its own bounding-box top while its true glyph baseline stays identical to its
+    neighbors) was printed before "permitindo que" instead of after it, scrambling item III''s own
+    grammar ("...tokens permitindo que individualizados..." instead of "...permitindo que tokens
+    individualizados..."). Fixed by same_row_ordering.py (PROMPT Phase 3N).'
+  description: A single word ("tokens") was displaced earlier in its own sentence than its correct
+    position. Full wording was already present.
+  evidence: docs/phase-3n-report.md; tests/test_same_row_ordering.py
+  id: q41-word-order-displacement
+  question_id: enade-2008-computing-q41
+  regression_tests:
+  - tests/test_same_row_ordering.py
+  resolution: 'RESOLVED (Phase 3N): see cause above.'
+  source_pages:
+  - 18
+  status: resolved
+  superseded_by: null
+  visual_validation: passed
+- affected_assets: []
+  category: table-reading-order-scramble
+  cause: 'NEWLY FOUND AND RESOLVED IN PHASE 3N (previously undetected - same reason as
+    d59-item-marker-displacement above). Same mechanism as q33-item-marker-displacement: item markers
+    "I"/"II" were displaced mid-comment, inline with monospace SQL-like example fragments ("...palavra I
+    int */" / "...dupla da II variavel a */" instead of "I int: a, b; /* dois pontos apos a palavra int
+    */" / "II int a,b; real a; /* declaracao dupla da variavel a */") - confirmed by direct
+    instrumentation against the real PDF (span origin) that each marker and its own item text share the
+    identical true baseline. Fixed by same_row_ordering.py (PROMPT Phase 3N).'
+  description: Item markers "I"/"II" were displaced mid-comment instead of appearing at each item's own
+    start. Full wording was already present.
+  evidence: docs/phase-3n-report.md; tests/test_same_row_ordering.py
+  id: q52-item-marker-displacement
+  question_id: enade-2008-computing-q52
+  regression_tests:
+  - tests/test_same_row_ordering.py
+  resolution: 'RESOLVED (Phase 3N): see cause above.'
+  source_pages:
+  - 22
+  status: resolved
+  superseded_by: null
+  visual_validation: passed
+- affected_assets: []
+  category: table-reading-order-scramble
+  cause: 'NEWLY FOUND AND RESOLVED IN PHASE 3N (previously undetected - same reason as
+    d59-item-marker-displacement above). Same mechanism as q33-item-marker-displacement: item marker "I"
+    was displaced mid-sentence ("...como !5 V e +5 V, e I transicoes entre os niveis..." instead of "I
+    Diferentes niveis de tensao no fio, como !5 V e +5 V, e transicoes entre os niveis...") - confirmed by
+    direct instrumentation against the real PDF (span origin) that the marker and its own item text share
+    the identical true baseline. Fixed by same_row_ordering.py (PROMPT Phase 3N).'
+  description: Item marker "I" was displaced mid-sentence instead of appearing at its own start. Full
+    wording was already present.
+  evidence: docs/phase-3n-report.md; tests/test_same_row_ordering.py
+  id: q56-item-marker-displacement
+  question_id: enade-2008-computing-q56
+  regression_tests:
+  - tests/test_same_row_ordering.py
+  resolution: 'RESOLVED (Phase 3N): see cause above.'
+  source_pages:
+  - 24
+  status: resolved
+  superseded_by: null
+  visual_validation: passed
 - affected_assets: []
   category: region-merge-content-loss
   cause: 'OPENED IN PHASE 3C (as region-merge-content-loss - see below for the re-categorization), root cause
@@ -1297,18 +1515,31 @@ blockers:
     phase). Same general unresolved label-absorption-over-reach family as D09/D10/D40/Q02/Q07/Q12/Q45
     (a real citation/label dropped rather than kept as body content or asset caption), not isolated to
     a specific mechanism fix this phase.'
-  description: 'The image''s own citation line, printed on page 3 between the intro sentence and "Alem
-    da preocupacao...", is missing entirely from the rendered Markdown ("STRICKLAND, Carol; BOSWELL,
-    John. Arte Comentada: da pre-historia ao pos-moderno. Rio de Janeiro: Ediouro [s.d.]."). The asset''s
-    own caption/alt_text fields are also null rather than carrying this text.'
-  evidence: docs/phase-3e-report.md
+  description: 'RESOLVED IN PHASE 3O: the image''s own citation line, printed on page 3 between the intro
+    sentence and "Alem da preocupacao...", was missing entirely from the rendered Markdown ("STRICKLAND,
+    Carol; BOSWELL, John. Arte Comentada: da pre-historia ao pos-moderno. Rio de Janeiro: Ediouro
+    [s.d.]."). Now present in the statement text. The asset''s own caption/alt_text fields remain null -
+    Phase 3O does not yet have a general mechanism to populate them from an absorbed label automatically
+    (see resolution below); restoring the citation to canonical statement text is the safe direction in
+    the meantime.'
+  evidence: docs/phase-3e-report.md; docs/phase-3o-report.md, Section N
   id: q05-image-citation-dropped
   question_id: enade-2008-computing-q05
-  regression_tests: []
-  resolution: null
+  regression_tests:
+  - tests/test_extraction_pipeline_2008.py::test_q05_citation_is_now_complete
+  resolution: >-
+    RESOLVED (Phase 3O): both physical lines of the citation were absorbed
+    by figure-01's own region purely as growth/label-absorption side
+    effects, mechanically indistinguishable from 2008-b D10's own "Revista
+    Veja..." photo credit (which correctly stays hidden - no general
+    geometric signal separates the two, see docs/phase-3o-report.md
+    Section 7/13). Both lines are now protected via
+    `protect_from_region_membership` overrides
+    (data/manifests/layout-overrides.yaml); figure-01's own region/crop is
+    unchanged.
   source_pages:
   - 3
-  status: open
+  status: resolved
   superseded_by: null
   visual_validation: failed
 - affected_assets: []
@@ -1368,9 +1599,10 @@ blockers:
     extract_page_lines''s own output order feeds other order-dependent heuristics
     (figures.py''s own label-absorption) tuned against the old, page-wide split. Same general
     local-reading-order family as d60-valor-annotation-misattachment (also RESOLVED, Phase 3J)
-    and q29-inline-sidebar-fragment (resolved) - q33-item-marker-displacement remains open,
-    confirmed NOT to share this same mechanism (its own page has no comparable topology change;
-    left for a future, separately-diagnosed fix).'
+    and q29-inline-sidebar-fragment (resolved) - q33-item-marker-displacement was confirmed NOT
+    to share this same zone/topology mechanism (its own page has no comparable topology change);
+    it was instead resolved in Phase 3N by a different, finer-grained mechanism entirely
+    (same-row fragment ordering, see q33-item-marker-displacement''s own current cause).'
   description: 'RESOLVED (Phase 3K): a full word-set comparison against page 7''s own raw text
     (478 words each side) confirms zero words missing, zero words added. Each of the three
     newspaper articles'' own headline, body and citation now reads in one continuous, correct
@@ -1518,3 +1750,95 @@ blockers:
   status: resolved
   superseded_by: null
   visual_validation: passed
+- affected_assets: []
+  category: alternative-boundary-contamination
+  cause: >-
+    ALREADY PRESENT BEFORE PHASE 3O (confirmed via
+    `git show HEAD:data/questions/2008/all-computing/enade-2008-computing-q07.md`:
+    alternative E already reads "80%. Disponivel em http://www.ipea.gov.br"
+    in the corpus as published before this phase touched anything).
+    Discovered (not caused) this phase while investigating
+    q07-region-merge-content-loss's own citation gap. Q07's own chart
+    citation ("Disponivel em http://www.ipea.gov.br", page 4, y0=753.2)
+    sits below even alternative E's own marker (y0=745.2) because the
+    citation lives in the page's own LEFT column (beneath the Curva de
+    Lorenz graph) while the statement/alternatives live entirely in the
+    RIGHT column - a genuine two-column geometry, not a defect in the
+    citation's own position. The citation was never region-excluded at all
+    (`_in_alternatives_section`, assembler.py, already independently
+    exempts it once its own position falls past the alternatives section's
+    own start) - `assemble_question`'s own per-letter alternative-boundary
+    slicing (`alt_bounds`, built from `text_only_lines`'s own list
+    position) has no X-proximity check of its own (unlike
+    `_in_alternatives_section`'s separate exemption test), so its raw list
+    position alone decides which letter's own span it falls into - the
+    last letter (E) absorbs everything after its own marker, regardless of
+    column.
+  description: >-
+    Q07's own chart citation reads as part of alternative E's own text
+    ("E. 80%. Disponivel em http://www.ipea.gov.br") instead of the
+    statement, because the alternative-boundary slicer groups trailing
+    content by raw list position only, with no column/X-proximity
+    awareness. Already present in the corpus as published before Phase 3O;
+    this phase neither caused nor fixed it (out of scope - Section 23) -
+    tracked so a future attempt does not rediscover this from scratch, and
+    is pinned by
+    tests/test_extraction_pipeline_2008.py::test_q07_framing_clause_is_now_complete_and_alternative_e_is_unchanged
+    so it is not mistaken for a new regression.
+  evidence: docs/phase-3o-report.md, Section O; data/manifests/layout-overrides.yaml
+  id: q07-alternative-e-citation-contamination-risk
+  question_id: enade-2008-computing-q07
+  regression_tests:
+  - tests/test_extraction_pipeline_2008.py::test_q07_framing_clause_is_now_complete_and_alternative_e_is_unchanged
+  resolution: null
+  source_pages:
+  - 4
+  status: open
+  superseded_by: null
+  visual_validation: failed
+- affected_assets:
+  - figure-01
+  category: unknown
+  cause: >-
+    NOT IDENTIFIED. Discovered in Phase 3O while restoring Q24's own
+    framing paragraph (q24-region-merge-content-loss). Q24's own bare item
+    markers "I" (page 12, y0=261.6) and "II" (y0=348.6) are completely
+    absent from the rendered statement - not glued onto neighboring text,
+    not present anywhere in the string - while item III's own bare marker
+    (y0=437.7) survives. Root causes explicitly ruled out by direct
+    instrumentation this phase: (1) region-exclusion - neither "I" nor "II"
+    is ever marked "accepted" by `_text_consumption_decision` against any
+    of Q24's own regions (`_line_in_region` returns `False` for both); (2)
+    `is_chrome_line` - "i"/"ii" (lower-cased by
+    `normalize_for_chrome_check`) match none of `_CHROME_REGEXES` nor
+    `_EXACT_CHROME_LINES`; (3) `_merge_orphan_markers`/`_is_orphan_marker` -
+    `_ORPHAN_MARKER_RE` (`^[A-E]\t*$`) never matches a roman numeral, so
+    neither line is ever treated as an orphan marker needing a merge
+    partner; (4) `detect_tables` - the only detected table on this page is
+    the decoder truth table (y=133-168), whose own `consumed_lines` does
+    not include either marker. The line these two markers vanish between
+    was not found this phase (would require tracing `assemble_question`'s
+    own span/boundary construction further upstream, out of budget this
+    phase - see docs/phase-3o-report.md, Section P for the full forensic
+    trace already done).
+  description: >-
+    Q24's own item markers "I" and "II" (each a bare one/two-character
+    roman numeral, immediately introducing that item's own small circuit
+    diagram) do not appear anywhere in the rendered statement at all, while
+    item III's own marker does. Confirmed NOT part of
+    q24-region-merge-content-loss's own mechanism (see cause). The
+    question remains answerable (all three items' own circuits are shown
+    correctly inside figure-01.png, and the alternatives text below still
+    reads "Apenas os itens I e II estão certos." etc. unambiguously), but
+    the statement's own prose is missing two explicit item labels a
+    student would expect to see named before their own diagrams.
+  evidence: docs/phase-3o-report.md, Section P
+  id: q24-item-i-ii-markers-missing
+  question_id: enade-2008-computing-q24
+  regression_tests: []
+  resolution: null
+  source_pages:
+  - 12
+  status: open
+  superseded_by: null
+  visual_validation: failed

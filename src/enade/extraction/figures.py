@@ -283,6 +283,19 @@ class VisualRegion:
     #: fixes that without reopening it. Empty for a region no growth
     #: touched at all (e.g. an ungrown photo, or a small-formula region).
     absorbed_label_bboxes: tuple[Rect, ...] = ()
+    #: This region's own page's dominant body-prose font size (PROMPT Phase
+    #: 3O; see ``_dominant_body_font_size``) - ``None`` unless
+    #: ``caption_font_size_gate`` is active for this booklet (same opt-in
+    #: as the label-absorption gate that already computes this value; no
+    #: new per-booklet flag needed). Pure metadata carried through from
+    #: detection, never itself used to change a region's own bbox/growth/
+    #: merge - ``assembler.py``'s own line-region relation is the only
+    #: consumer, distinguishing a line whose own font genuinely matches
+    #: body prose (never legitimately a caption/label, regardless of
+    #: geometric containment) from a real, smaller-font caption, in the
+    #: text-*consumption* decision alone (see ``compute_line_region_relation``'s
+    #: own ``looks_like_body_prose``).
+    page_body_font_size: float | None = None
 
 
 def _round_rect(rect: Rect) -> tuple[int, int, int, int]:
@@ -764,6 +777,11 @@ def _merge_overlapping_regions(regions: list[VisualRegion]) -> list[VisualRegion
                         is_small_formula=combined.is_small_formula and b.is_small_formula,
                         raw_bbox=merged_raw_bbox,
                         absorbed_label_bboxes=merged_absorbed_labels,
+                        page_body_font_size=(
+                            combined.page_body_font_size
+                            if combined.page_body_font_size is not None
+                            else b.page_body_font_size
+                        ),
                     )
                     used.add(j)
                     changed = True
@@ -1119,6 +1137,7 @@ def detect_visual_regions(
                     owner_x_bounds=owner_x_bounds,
                     raw_bbox=bbox,
                     absorbed_label_bboxes=tuple(absorbed_labels),
+                    page_body_font_size=body_font_size,
                 )
             )
 

@@ -48,6 +48,8 @@ taxonomy_review_status: pending
 
 ![Figura da questão](enade-2008-computing-q24/figure-01.png)
 
+Considere o bloco decodificador ilustrado acima, o qual opera segundo a tabela apresentada. Em cada item a seguir, julgue se a função lógica mostrada corresponde ao circuito lógico a ela associado.
+
 III
 
 Assinale a opção correta.

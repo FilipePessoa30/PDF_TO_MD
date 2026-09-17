@@ -185,10 +185,16 @@ def extract_exam(
                 if structure_profile is not None
                 else "disabled"
             )
+            same_row_fragment_ordering_mode = (
+                structure_profile.same_row_fragment_ordering_mode
+                if structure_profile is not None
+                else "disabled"
+            )
             # Question-boundary detection is a geometric concern and
             # always uses the stable, page-wide order (PROMPT Phase 3L) -
-            # zoned_reading_order_mode is threaded only to assemble_question
-            # below, where it applies within one already-sliced span.
+            # zoned_reading_order_mode/same_row_fragment_ordering_mode are
+            # threaded only to assemble_question below, where each applies
+            # within one already-sliced span.
             lines = extract_document_lines(
                 prova.raw,
                 overrides=layout_overrides,
@@ -315,6 +321,7 @@ def extract_exam(
                     contextual_relation_gate=contextual_relation_gate,
                     fragment_reconstruction_gate=fragment_reconstruction_gate,
                     zoned_reading_order_mode=zoned_reading_order_mode,
+                    same_row_fragment_ordering_mode=same_row_fragment_ordering_mode,
                 )
 
                 suffix = "q" if span.kind == QuestionKind.OBJECTIVE else "d"

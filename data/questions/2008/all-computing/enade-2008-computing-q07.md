@@ -48,7 +48,7 @@ taxonomy_review_status: pending
 
 ![Figura da questão](enade-2008-computing-q07/figure-01.png)
 
-total correspondente aos 20% de maior renda foi,
+De acordo com o mesmo gráfico, o percentual da renda total correspondente aos 20% de maior renda foi,
 
 ## Alternativas
 

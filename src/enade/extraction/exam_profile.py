@@ -187,6 +187,25 @@ class ExamStructureProfile(BaseModel):
     #: oracle (word-multiset/source-id/owner conservation) - a span that
     #: fails either check keeps the original, stable order and records why.
     zoned_reading_order_mode: Literal["disabled", "shadow", "active"] = "disabled"
+    #: Opt-in (PROMPT Phase 3N) activation of same-visual-row fragment
+    #: ordering (see ``same_row_ordering.py``) - corrects the left-to-right
+    #: order of two or more dict-mode "line" fragments that PyMuPDF itself
+    #: reports separately (a font change mid-row shifts each span's own
+    #: *bounding-box* top/bottom even though every span's own true
+    #: baseline is identical - see that module's own docstring for the
+    #: full mechanism, confirmed against 2008-b's own D40/Q33). Same
+    #: two-level architecture as ``zoned_reading_order_mode`` above: this
+    #: field only ever *enables the capability for a booklet* - which
+    #: fragments actually regroup is decided per page, from structural
+    #: evidence alone (matching true baseline, normalized by font size;
+    #: never a question ID, page number, or coordinate). ``"disabled"``
+    #: (default) keeps the exact, original per-page line order every
+    #: booklet without this field set already has. ``"shadow"``: compute
+    #: candidate groups/order and record them, but always publish the
+    #: original order (diagnostic only). ``"active"``: publish the
+    #: reordered fragments instead, but only for a group that passes the
+    #: differential safety oracle (word-multiset/source-id conservation).
+    same_row_fragment_ordering_mode: Literal["disabled", "shadow", "active"] = "disabled"
 
     @model_validator(mode="after")
     def _validate_sections(self) -> ExamStructureProfile:

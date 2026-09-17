@@ -135,6 +135,7 @@ fragment_reconstruction_gate: true
 # question's own already-sliced span, after every geometric consumer has
 # already been fed the original, stable, page-wide order.
 zoned_reading_order_mode: active
+same_row_fragment_ordering_mode: active
 sections:
   - id: formacao-geral-objetiva
     kind: objective

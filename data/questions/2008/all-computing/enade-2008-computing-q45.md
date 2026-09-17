@@ -50,11 +50,9 @@ Considere y = f(x) uma função contínua e não-negativa (f $ 0), definida em u
 
 ![Figura da questão](enade-2008-computing-q45/figure-01.png)
 
-I
+como resultado da integral .
 
-II
-
-III É igual a 2B o volume do sólido gerado pela rotação em
+Com base nessas informações, julgue os itens a seguir. I Cada seção transversal do sólido S obtida quando este é interceptado em x = c por um plano paralelo ao plano yOz é um círculo centrado no ponto (c, 0, 0) e de raio medindo f(x) e, portanto, de área igual a B(f(x))2. Se P é uma partição uniforme do intervalo [a, b], sendo II P = {a = x0 < x1 < x2 < ... < xn = b}, tal que )x = xi !x i-1, então para ci 0 [ xi, xi ! 1], 1< i < n. III É igual a 2B o volume do sólido gerado pela rotação em
 
 Assinale a opção correta.
 

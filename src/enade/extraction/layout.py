@@ -241,6 +241,16 @@ class Line:
     #: Same auditability purpose and transformation-log participation as
     #: spacing_corrections/label_corrections/symbol_corrections.
     fragment_merges: tuple[FragmentMergeTrace, ...] = ()
+    #: True glyph baseline (PROMPT Phase 3N) - see
+    #: ``RawLineFragment.baseline_y``'s own docstring. Populated by
+    #: ``_build_line_from_group`` for every line built from real PDF
+    #: geometry; defaults to 0.0 (never a real page coordinate) for a
+    #: ``Line`` built or rebuilt by a path that does not carry it forward
+    #: (e.g. ``_merge_orphan_markers``'s own rare bare-marker splice, or
+    #: ``assembler.py``'s own gutter-prefix-stripped code line), which
+    #: safely excludes such a line from ever joining a same-row group -
+    #: see ``same_row_ordering.py``.
+    baseline_y: float = 0.0
 
     @property
     def bbox(self) -> tuple[float, float, float, float]:
@@ -272,6 +282,14 @@ def _collect_raw_fragments(page: pymupdf.Page, page_number: int) -> list[RawLine
             )
             font_size = max((span.get("size", 0.0) for span in spans), default=0.0)
             x0, y0, x1, y1 = line["bbox"]
+            # PROMPT Phase 3N: the first span's own true baseline, never the
+            # bbox y0/y1 above (see RawLineFragment.baseline_y's own
+            # docstring) - every span PyMuPDF already grouped into this one
+            # dict-mode "line" entry shares the same origin[1] by
+            # construction (confirmed by direct instrumentation), so the
+            # first is representative of the whole fragment.
+            first_origin = spans[0].get("origin")
+            baseline_y = first_origin[1] if first_origin is not None else y1
             fragments.append(
                 RawLineFragment(
                     page_number=page_number,
@@ -283,6 +301,7 @@ def _collect_raw_fragments(page: pymupdf.Page, page_number: int) -> list[RawLine
                     fonts=fonts,
                     font_size=font_size,
                     is_monospace=is_monospace,
+                    baseline_y=baseline_y,
                 )
             )
     return fragments
@@ -367,6 +386,7 @@ def _build_line_from_group(
         label_corrections=tuple(label_corrections),
         symbol_corrections=tuple(symbol_corrections),
         fragment_merges=fragment_merges,
+        baseline_y=first.baseline_y,
     )
 
 

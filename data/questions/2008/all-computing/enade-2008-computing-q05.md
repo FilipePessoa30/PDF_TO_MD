@@ -38,9 +38,9 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
@@ -50,7 +50,7 @@ A foto a seguir, da americana Margaret Bourke-White (1904-71), apresenta desempr
 
 ![Figura da questão](enade-2008-computing-q05/figure-01.png)
 
-Além da preocupação com a perfeita composição, a artista, nessa foto, revela
+STRICKLAND, Carol; BOSWELL, John. Arte Comentada: da pré-história ao pós-moderno. Rio de Janeiro: Ediouro [s.d.]. Além da preocupação com a perfeita composição, a artista, nessa foto, revela
 
 ## Alternativas
 

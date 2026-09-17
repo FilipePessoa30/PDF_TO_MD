@@ -637,6 +637,101 @@
       "profile_dependency": "none - unconditional, purely structural",
       "runtime_ai_dependency": "none",
       "introduced_phase": "3M"
+    },
+    {
+      "capability_id": "same_row_fragment_ordering",
+      "description": "same_row_ordering.py corrects the left-to-right order of two or more PyMuPDF dict-mode 'line' entries that are genuinely printed on the same visual row but reported as separate entries because a font run changes mid-row (a monospace schema identifier inline in regular prose; an italicized word inside a regular sentence). A font change shifts each span's own bounding-box top/bottom (different fonts have different ascender/descender metrics) even though every span's own true baseline (PyMuPDF span 'origin'[1]) is identical to many decimal places - layout.py's own (round(y0,1), x0) line sort uses the bounding-box top, not the true baseline, and can therefore invert the correct left-to-right order (2008-b's own D40/Q33: an item marker or a monospace-font token sorts after words that should follow it). Fixed by grouping fragments whose own true baseline matches (normalized by font size, never an absolute point value) - never crossing a column or visual-region boundary - via complete-link clustering (never a single-linkage transitive chain), then sorting only within a confirmed group by x0. Runs once, inside assembler.assemble_question, on one question's own already-sliced span - before the zone-level reorder (_canonical_content_lines/reading_zones), which operates on whole Line objects and never needs to know their own sub-line fragment history; never inside figures.py, layout.py's own page-wide extraction, or reading_zones itself.",
+      "trigger_features": [
+        "two or more fragments on the same page, same column, and same visual-region membership (or lack thereof) whose own true glyph baseline (span origin[1]) matches within a font-size-normalized ceiling, even though their own bounding-box top/bottom differs - never a page number, question number, PDF hash, or literal text/coordinate consulted as a selector"
+      ],
+      "parameters": {
+        "same_row_fragment_ordering_mode": "Literal['disabled','shadow','active'], default 'disabled' (ExamStructureProfile) - declares the mechanism available for a booklet and picks its own diagnostic-vs-live posture, mirroring zoned_reading_order_mode's own two-level design; it never selects specific pages or fragments. 'shadow' always publishes the original order and only records candidate-group/safety notes (used to corpus-scan 2011 and all three 2021 courses without ever touching their own output). 'active' publishes the reordered fragments only when a confirmed group also passes the differential safety check (same lines by identity, word multiset conserved)."
+      },
+      "scope": "same_row_ordering.py (new module: SameRowRelation, RowFragmentGroup, compute_same_row_relation, group_same_row_fragments, reorder_same_row_groups); fragment_reconstruction.py/layout.py (RawLineFragment.baseline_y/Line.baseline_y, new additive fields carrying the true glyph baseline forward - never used by any pre-existing logic); assembler.py (_apply_same_row_ordering, the sole call site, run on one question's own already-sliced content_lines, before _canonical_content_lines)",
+      "generalization_level": "G2",
+      "positive_fixtures": [
+        "tests/test_same_row_ordering.py::test_identical_baseline_different_bbox_top_is_same_row",
+        "tests/test_same_row_ordering.py::test_two_fragments_same_row_form_a_group",
+        "tests/test_same_row_ordering.py::test_three_fragments_same_row_form_one_group",
+        "tests/test_extraction_pipeline_2008.py::test_d40_opening_sentence_word_order_is_no_longer_scrambled",
+        "tests/test_extraction_pipeline_2008.py::test_q33_item_markers_are_no_longer_displaced",
+        "tests/test_extraction_pipeline_2008.py::test_four_more_questions_had_the_same_undetected_item_marker_displacement"
+      ],
+      "negative_fixtures": [
+        "tests/test_same_row_ordering.py::test_genuine_next_printed_line_is_different_row",
+        "tests/test_same_row_ordering.py::test_superscript_is_not_same_row",
+        "tests/test_same_row_ordering.py::test_subscript_is_not_same_row",
+        "tests/test_same_row_ordering.py::test_ambiguous_mid_range_baseline_delta_is_never_same_row",
+        "tests/test_same_row_ordering.py::test_missing_true_baseline_is_never_same_row",
+        "tests/test_same_row_ordering.py::test_cross_column_pair_is_never_same_row_even_with_matching_baseline",
+        "tests/test_same_row_ordering.py::test_different_region_pair_is_never_same_row",
+        "tests/test_same_row_ordering.py::test_transitive_bridge_is_rejected_when_the_ends_are_incompatible",
+        "tests/test_same_row_ordering.py::test_diagram_label_never_groups_with_statement_text_across_a_region",
+        "tests/test_extraction_pipeline_2011.py::test_q23_alternative_e_trailing_period_after_inline_formula_is_preserved",
+        "tests/test_extraction_pipeline_integration.py::test_multiline_alternative_is_not_swallowed_by_a_nearby_figure_region"
+      ],
+      "metamorphic_tests": [
+        "tests/test_same_row_ordering.py::test_translation_invariance",
+        "tests/test_same_row_ordering.py::test_uniform_scale_invariance",
+        "tests/test_same_row_ordering.py::test_content_stream_order_does_not_affect_grouping_or_reorder",
+        "tests/test_same_row_ordering.py::test_small_additional_y0_jitter_within_ceiling_does_not_change_result",
+        "tests/test_same_row_ordering.py::test_source_identity_change_without_structural_change_does_not_affect_decision",
+        "tests/test_same_row_ordering.py::test_sub_point_noise_versus_true_second_line_boundary"
+      ],
+      "real_cases": [
+        "2008-b D40 (page 17): 'Cliente,' (Courier font run inline in prose) reorders correctly - 'SGBD relacional possui a relacao Cliente, com as informacoes' instead of 'SGBD relacional Cliente, possui a relacao com as informacoes'",
+        "2008-b Q33 (page 14): all four judged items' own roman-numeral markers and the italicized word 'top-down'/'bottom-up' now read in their own correct position - the question's only blocker, now fully resolved",
+        "2008-b D59/Q41/Q52/Q56: four previously-undetected cases of the identical mechanism, found only once this capability was built and run in active mode - each was already marked 'passed' since every word was present, the defect being subtle enough to miss on a normal read-through"
+      ],
+      "protected_cases": [
+        "2008-b's own remaining 71 questions (confirmed by full regeneration: zero byte-level diff)",
+        "2011 (all 55 questions, confirmed by full regeneration: zero drift; a corpus-wide forced-shadow scan additionally found one genuinely eligible group, page 8, that shadow mode guarantees was never published)",
+        "2021 (all three courses, 195 questions total, confirmed by full regeneration: zero drift; a corpus-wide forced-shadow scan found several eligible groups across all three courses, none ever published)",
+        "2011 Q22 (the original Phase 1B multi-line-alternative case, a different mechanism entirely - confirmed unaffected)",
+        "2011 Q23 (inline-formula trailing punctuation, confirmed unaffected)"
+      ],
+      "failure_behavior": "disabled mode (the default) never computes a single relation - returns the input unchanged with no notes; a candidate group that fails the differential safety check (same_lines/word_conserved) in active mode publishes the original order and records why; an ambiguous pairwise relation (baseline delta between the same-row and different-row ceilings, or a missing true baseline) never forms a group - the existing order is kept silently, exactly the PROMPT's own explicit principle: preserve the order and the blocker when the evidence does not clearly demonstrate one printed row",
+      "profile_dependency": "ExamStructureProfile.same_row_fragment_ordering_mode (default 'disabled') - the only profile-level switch; there is no page-specific override anywhere in the activation path. Classified G2, not G3, for the same reason as zoned_reading_order (Phase 3L/3M): the selection of which fragments to reorder is fully automatic/structural within an active booklet, but activation still requires an explicit per-booklet profile declaration, and only 2008-b has ever been exercised in 'active' mode - 2011/2021 were only ever exercised in forced 'shadow' mode. Promotion to G3 should wait for a real, previously-uncharacterized booklet to be extracted in 'active' mode with a clean audit.",
+      "runtime_ai_dependency": "none",
+      "introduced_phase": "3N"
+    },
+    {
+      "capability_id": "visual_text_disposition",
+      "description": "Separates 'is this line geometrically inside a visual region's own bbox' (crop inclusion) from 'does that authorize removing it from canonical text' (consumption). LineRegionRelation gained looks_like_body_prose (font-size evidence a line is genuinely body prose, not a caption/label) as documented, inspectable evidence; a corpus-wide unconditional veto on that field was tried and reverted after full regeneration found two real regressions (2008-b Q1's own bare roman-numeral picture labels, Q73's own neighboring-question paragraph) that an isolated per-question check did not surface - font size alone does not generalize safely as an automatic consumption authority corpus-wide. The actual fix for all 7 target questions (Q02, Q05, Q07, Q24, Q45, Q54, D40) is 23 individually-verified protect_from_region_membership overrides (data/manifests/layout-overrides.yaml), each documenting why that specific line's own text must remain canonical even though it sits inside a legitimate, unchanged region.",
+      "trigger_features": [
+        "a line whose own font size raw-compares as smaller than a rounded page-dominant-body-size threshold purely from sub-point PDF text-matrix rendering noise (e.g. 9.96pt rounding to the same bucket as 10.0pt body prose)",
+        "a line genuinely absorbed by a region's own growth/label-absorption or raw merge, where absorption was legitimate (the region/crop itself is correct) but removal from canonical text was never separately authorized"
+      ],
+      "parameters": {
+        "layout-overrides.yaml protect_from_region_membership entries": "hash+page+bbox-locked, one per affected line, never a general threshold"
+      },
+      "scope": "assembler.py: LineRegionRelation / compute_line_region_relation / _text_consumption_decision (documented evidence field only, no behavior change); data/manifests/layout-overrides.yaml (the actual fix, via the pre-existing Level 3 override mechanism)",
+      "generalization_level": "G1",
+      "positive_fixtures": [
+        "tests/test_extraction_pipeline_2008.py::test_q02_statement_and_citation_are_now_complete",
+        "tests/test_extraction_pipeline_2008.py::test_q05_citation_is_now_complete",
+        "tests/test_extraction_pipeline_2008.py::test_q07_framing_clause_is_now_complete_and_alternative_e_is_unchanged",
+        "tests/test_extraction_pipeline_2008.py::test_q24_framing_paragraph_is_now_complete",
+        "tests/test_extraction_pipeline_2008.py::test_q45_items_i_and_ii_are_now_complete",
+        "tests/test_extraction_pipeline_2008.py::test_q54_opening_clause_is_now_complete",
+        "tests/test_extraction_pipeline_2008.py::test_d40_own_two_region_merge_residuals_are_now_resolved"
+      ],
+      "negative_fixtures": [
+        "tests/test_extraction_pipeline_2008.py::test_q01_multi_caption_page_is_not_regressed_by_font_size_gate (extended this phase with the IV/V roman-numeral regression guard)",
+        "tests/test_extraction_pipeline_2008.py::test_q73_neighboring_question_paragraph_is_not_regressed"
+      ],
+      "real_cases": [
+        "2008-b Q02/Q05/Q07/Q24/Q45/Q54/D40 (region-merge-content-loss cluster, PROMPT Phase 3O)"
+      ],
+      "protected_cases": [
+        "2008-b D10, Q01, Q06, Q57, Q61, Q63, Q69, Q73 (the 8 mandatory Phase 3O counterexamples, confirmed byte-identical by full regeneration)",
+        "2011 (all 55 questions, confirmed byte-identical by full regeneration)",
+        "2021 (all three tracked courses, 110 questions total, confirmed byte-identical by full regeneration)"
+      ],
+      "failure_behavior": "no automatic behavior change at all - every fix is an explicit, reviewed override; a line with no matching override keeps its prior disposition exactly (the safe, unchanged direction)",
+      "profile_dependency": "none - overrides are hash+bbox-locked per PDF, not gated by any ExamStructureProfile field",
+      "runtime_ai_dependency": "none",
+      "introduced_phase": "3O"
     }
   ]
 }

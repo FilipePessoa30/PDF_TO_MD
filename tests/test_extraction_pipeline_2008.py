@@ -205,6 +205,97 @@ def test_d40_sql_code_block_is_now_preserved_verbatim(extraction_result):
     assert any("WHERE idade < 40 OR renda > 30000;" in b.text for b in code_blocks)
 
 
+def test_d40_opening_sentence_word_order_is_no_longer_scrambled(extraction_result):
+    """Regression test for ``d40-table-reading-order-scramble`` (RESOLVED
+    Phase 3N): "Cliente," is set in a Courier/monospace font run inline in
+    otherwise-regular prose - PyMuPDF reports it as a separate dict-mode
+    "line" entry whose own bounding-box top sits 0.39pt above its own
+    neighbors, even though its true glyph baseline (span origin[1]) is
+    identical to them. ``layout.py``'s own bbox-based line sort inverted
+    the correct left-to-right order, scrambling "SGBD relacional possui a
+    relacao Cliente, com as informacoes" into "SGBD relacional Cliente,
+    possui a relacao com as informacoes". ``same_row_ordering.py`` fixes
+    this generally (never a question ID, page, or specific text as a
+    selector) by grouping fragments that share a true baseline, normalized
+    by font size, and sorting them by x0 - this test pins the exact,
+    corrected word order; a plain substring check would not catch a
+    silent re-scramble that still contains every word.
+    """
+    result, _ = extraction_result
+    d40 = _discursive_by_number(result)[40]
+    statement = d40.statement
+    assert statement.startswith(
+        "O banco de dados de um sistema de controle bancário implementado por meio de "
+        "um SGBD relacional possui a relação Cliente, com as informações apresentadas "
+        "a seguir, em que a chave primária da relação é grifada."
+    )
+    assert "SGBD relacional Cliente, possui a relação" not in statement
+
+
+def test_q33_item_markers_are_no_longer_displaced(extraction_result):
+    """Regression test for ``q33-item-marker-displacement`` (RESOLVED
+    Phase 3N): the same mechanism as D40's own fix above - each of the
+    four judged items' own roman-numeral marker (and, for items II/IV, an
+    italicized word sharing its own printed row) was displaced mid-
+    sentence by the same bbox-vs-true-baseline mismatch. This test pins
+    the exact, fully-corrected statement (not merely "every word present
+    somewhere") - Q33 had no other, independent blocker, so it is now
+    fully resolved.
+    """
+    result, _ = extraction_result
+    questions_by_number = {
+        q.question_number: q
+        for q in result.questions
+        if q.question_type == QuestionType.MULTIPLE_CHOICE
+    }
+    q33 = questions_by_number[33]
+    statement = q33.statement
+    assert (
+        "julgue os itens seguintes. I A análise top-down é adequada quando a linguagem "
+        "de entrada é definida por uma gramática recursiva à esquerda. II "
+        "Independentemente da abordagem adotada, top-down ou bottom-up, o analisador "
+        "sintático utiliza informações resultantes da análise léxica. III Se os "
+        "programas em uma linguagem podem ser analisados tanto em abordagem top-down "
+        "como em bottom-up, a gramática dessa linguagem é ambígua. IV A análise "
+        "bottom-up utiliza ações comumente conhecidas como deslocamentos e reduções "
+        "sobre as sentenças do programa-fonte."
+    ) in statement
+    assert "linguagem de I entrada" not in statement
+    assert "top-down II ou" not in statement
+    assert "bottom-up IV A análise" not in statement
+
+
+def test_four_more_questions_had_the_same_undetected_item_marker_displacement(
+    extraction_result,
+):
+    """PROMPT Phase 3N: the same mechanism fixing D40/Q33 also corrects
+    four previously-undetected cases (D59, Q41, Q52, Q56) - each was
+    already marked ``passed`` because every word was present, but a
+    marker/word sat one row-fragment out of place. Pins each one's own
+    corrected substring; see the blocker ledger for the full before/after.
+    """
+    result, _ = extraction_result
+    d59 = _discursive_by_number(result)[59]
+    assert "durante 2 ut finais. II T2 tem prioridade 2" in d59.statement
+    assert "A partir de II seu início" not in d59.statement
+
+    questions_by_number = {
+        q.question_number: q
+        for q in result.questions
+        if q.question_type == QuestionType.MULTIPLE_CHOICE
+    }
+    q41 = questions_by_number[41]
+    assert "modelo, permitindo que tokens individualizados" in q41.statement
+    assert "modelo, tokens permitindo que individualizados" not in q41.statement
+
+    q52 = questions_by_number[52]
+    assert "I int: a, b; /* dois pontos após a palavra int */" in q52.statement
+    assert "II int a,b; real a; /* declaração dupla da variável a */" in q52.statement
+
+    q56 = questions_by_number[56]
+    assert "I Diferentes níveis de tensão no fio, como !5 V e +5 V, e transições" in q56.statement
+
+
 def test_d10_no_longer_loses_its_own_newspaper_fragments(extraction_result):
     """PROMPT Phase 3D: D10's own three newspaper fragments (each with a
     headline+body+citation) were previously missing 2 of 3 headlines/bodies
@@ -590,6 +681,16 @@ def test_q01_multi_caption_page_is_not_regressed_by_font_size_gate(extraction_re
     assert "Disponível em" not in q01.statement
     assert "Ermakoff" not in q01.statement
     assert "reflete o clima político-social vivido naquela época." in q01.statement
+    # PROMPT Phase 3O regression guard: a `LineRegionRelation.looks_like_body_prose`
+    # unconditional veto (font size alone authorizing a line's own
+    # consumption decision) was tried and reverted this phase precisely
+    # because it let these two bare roman-numeral picture labels ("IV",
+    # "V" - each set at the same 9.96pt raw size as this page's own real
+    # body prose, a coincidence of rendering, not evidence they are body
+    # text) leak into the statement as a stray "IV V" paragraph between
+    # the two figures. See docs/phase-3o-report.md, Section 22/T.
+    assert "IV V" not in q01.statement
+    assert "\nIV\n" not in f"\n{q01.statement}\n"
 
 
 def test_d20_statement_is_complete_and_has_no_spurious_figure(extraction_result):
@@ -727,3 +828,201 @@ def test_q13_no_longer_receives_q12_own_diagram(extraction_result):
     assert not q13.assets
     assert len(q12.assets) == 1
     assert q12.assets[0].sha256 != (q13.assets[0].sha256 if q13.assets else None)
+
+
+# --- PROMPT Phase 3O: region-merge-content-loss disposition fixes --------
+#
+# Every question below shares the same root cause: a line was genuinely
+# absorbed by a figure/diagram/table region's own growth or raw merge (a
+# real, unchanged region/crop), but that absorption never amounted to
+# evidence the line's own *canonical text* should be removed - only that it
+# happened to end up geometrically inside the region's own final bbox
+# (`_line_in_region`/`_text_consumption_decision`, assembler.py). Each fix
+# is an individually-verified `protect_from_region_membership` override
+# (data/manifests/layout-overrides.yaml), never a change to region
+# detection, merge, label growth, or crop generation (Section 23) - so
+# every asset/crop below is asserted unchanged alongside the restored text.
+
+
+def _objective_by_number(result):
+    return {
+        q.question_number: q
+        for q in result.questions
+        if q.question_type == QuestionType.MULTIPLE_CHOICE
+    }
+
+
+def test_q02_statement_and_citation_are_now_complete(extraction_result):
+    """Regression test for ``q02-region-merge-content-loss`` (RESOLVED
+    Phase 3O): the transition sentence into the image and the image's own
+    two-line citation were absorbed by figure-01's own region as growth/
+    label-absorption side effects, never authorized to be removed from
+    canonical text - both are now present, in order, and figure-01 itself
+    is unaffected.
+    """
+    result, _ = extraction_result
+    q02 = _objective_by_number(result)[2]
+    assert (
+        "Essa afirmativa reitera a necessária interação das diferentes espécies, "
+        "representadas na imagem a seguir." in q02.statement
+    )
+    assert (
+        "Disponível em http://curiosidades.spaceblog.com.br. Acesso em 10 out. 2008."
+        in q02.statement
+    )
+    assert q02.statement.index("Essa afirmativa reitera") < q02.statement.index("Disponível em")
+    assert q02.statement.index("Disponível em") < q02.statement.index("Depreende-se dessa imagem")
+    assert len(q02.assets) == 1
+
+
+def test_q05_citation_is_now_complete(extraction_result):
+    """Regression test for ``q05-image-citation-dropped`` (RESOLVED Phase
+    3O): the photo's own two-line citation was absorbed by figure-01's own
+    region - mechanically identical to 2008-b D10's own "Revista Veja..."
+    photo credit, which correctly stays hidden (no general geometric signal
+    separates the two cases, see docs/phase-3o-report.md Section 7/13) -
+    and is restored via an individually-verified override rather than a
+    general rule.
+    """
+    result, _ = extraction_result
+    q05 = _objective_by_number(result)[5]
+    assert (
+        "STRICKLAND, Carol; BOSWELL, John. Arte Comentada: da pré-história ao "
+        "pós-moderno. Rio de Janeiro: Ediouro [s.d.]." in q05.statement
+    )
+    assert q05.statement.index("STRICKLAND, Carol") < q05.statement.index(
+        "Além da preocupação com a perfeita composição"
+    )
+    assert len(q05.assets) == 1
+
+
+def test_q07_framing_clause_is_now_complete_and_alternative_e_is_unchanged(
+    extraction_result,
+):
+    """Regression test for ``q07-region-merge-content-loss`` (PARTIALLY
+    RESOLVED Phase 3O): the framing clause is restored. Alternative E's own
+    citation contamination ("80%. Disponível em http://www.ipea.gov.br") is
+    a PRE-EXISTING defect, already present in the published corpus before
+    this phase (confirmed via ``git show HEAD:...q07.md``) - the image's
+    own citation was never actually region-excluded; it already flowed
+    into the alternative-boundary slicer's own tail range because its own
+    y0 sits below alternative E's own marker (a two-column geometry issue,
+    not a disposition/consumption one - see
+    ``q07-alternative-e-citation-contamination-risk``). This phase does
+    not touch alternative-boundary slicing (Section 23), so this stays
+    exactly as it already was - pinned here so it is not mistaken for a
+    new regression later.
+    """
+    result, _ = extraction_result
+    q07 = _objective_by_number(result)[7]
+    assert (
+        "De acordo com o mesmo gráfico, o percentual da renda total correspondente "
+        "aos 20% de maior renda foi," in q07.statement
+    )
+    alternative_e = next(a for a in q07.alternatives if a.letter == "E")
+    assert alternative_e.text == "80%. Disponível em http://www.ipea.gov.br"
+    assert len(q07.assets) == 1
+
+
+def test_q24_framing_paragraph_is_now_complete(extraction_result):
+    """Regression test for ``q24-region-merge-content-loss`` (PARTIALLY
+    RESOLVED Phase 3O): the decoder-block's own 4-line framing paragraph,
+    absorbed by the (correct, unchanged) merged region spanning the truth
+    table and all 3 item circuits, is now present. Items "I" and "II"'s own
+    bare markers remain absent - a separate, not-yet-diagnosed defect
+    (confirmed NOT region-exclusion, see ``q24-item-i-ii-markers-missing``)
+    that this phase's disposition-only mandate does not reach; only "III"'s
+    own marker is asserted present here, matching the currently-published,
+    unregressed reality.
+    """
+    result, _ = extraction_result
+    q24 = _objective_by_number(result)[24]
+    assert (
+        "Considere o bloco decodificador ilustrado acima, o qual opera segundo a "
+        "tabela apresentada. Em cada item a seguir, julgue se a função lógica "
+        "mostrada corresponde ao circuito lógico a ela associado." in q24.statement
+    )
+    assert "\nIII\n" in f"\n{q24.statement}\n"
+    assert len(q24.assets) == 1
+
+
+def test_q45_items_i_and_ii_are_now_complete(extraction_result):
+    """Regression test for ``q45-region-merge-content-loss`` (PARTIALLY
+    RESOLVED Phase 3O): the intro's own closing clause, the "Com base
+    nessas informações..." transition, and items I and II's own full body
+    text (all absorbed by the two solid-of-revolution figures' own merged
+    regions) are now present. Item III's own single missing character (a
+    pre-existing, separate text-extraction gap, not region-merge - see the
+    blocker's own resolution note) is NOT asserted fixed here.
+    """
+    result, _ = extraction_result
+    q45 = _objective_by_number(result)[45]
+    assert "como resultado da integral" in q45.statement
+    assert "Com base nessas informações, julgue os itens a seguir." in q45.statement
+    assert (
+        "Cada seção transversal do sólido S obtida quando este é interceptado em "
+        "x = c por um plano paralelo ao plano yOz é um círculo centrado no ponto "
+        "(c, 0, 0) e de raio medindo f(x)" in q45.statement
+    )
+    assert "Se P é uma partição uniforme do intervalo [a, b], sendo" in q45.statement
+    assert len(q45.assets) == 1
+
+
+def test_q54_opening_clause_is_now_complete(extraction_result):
+    """Regression test for ``q54-region-merge-content-loss`` (RESOLVED
+    Phase 3O): the statement's own opening clause, previously cut short
+    mid-sentence at "nó", is now complete; the routing-table diagram
+    (correctly image-only - its own cell contents are never asserted as
+    text here) is unaffected.
+    """
+    result, _ = extraction_result
+    q54 = _objective_by_number(result)[54]
+    assert (
+        "No encaminhamento de pacotes na Internet, cabe a cada nó determinar se é "
+        "possível entregar um pacote diretamente ao destino" in q54.statement
+    )
+    assert not q54.statement.lstrip().startswith("nó determinar")
+    assert len(q54.assets) == 1
+
+
+def test_d40_own_two_region_merge_residuals_are_now_resolved(extraction_result):
+    """Regression test for ``d40-region-merge-content-loss`` (RESOLVED
+    Phase 3O): the Cliente(...) schema's own second code line and the
+    indices paragraph's own opening clause, both absorbed by figure-02's
+    own region (widened by a false merge with an unrelated ruled
+    "RASCUNHO" grid, not touched this phase), are now present - figure-02
+    itself (still showing the schema's own underlined-primary-key
+    formatting) is unaffected.
+    """
+    result, _ = extraction_result
+    d40 = _discursive_by_number(result)[40]
+    assert d40.content_blocks is not None
+    code_blocks = [b for b in d40.content_blocks if b.type == "code"]
+    assert any("data_nascimento, renda, idade)" in b.text for b in code_blocks)
+    assert (
+        "Para essa relação, foram criados dois índices secundários: IndiceIdade, "
+        "para o atributo idade" in d40.statement
+    )
+    asset_ids = [a.id for a in d40.assets]
+    assert "figure-02" in asset_ids
+
+
+def test_q73_neighboring_question_paragraph_is_not_regressed(extraction_result):
+    """PROMPT Phase 3O regression guard (mandatory counterexample, Section
+    22): a `LineRegionRelation.looks_like_body_prose` unconditional veto was
+    tried and reverted this phase precisely because it let a long,
+    genuinely body-prose-shaped paragraph - positioned above the raw top
+    edge of Q73's own activity-graph diagram, but never Q73's own statement
+    - leak into Q73's own text. Q73's own statement must stay exactly the
+    self-contained question it already was.
+    """
+    result, _ = extraction_result
+    q73 = _objective_by_number(result)[73]
+    assert (
+        "Considerando-se o gráfico de atividades acima e a tabela de custo de "
+        "aceleração das atividades da rede que podem ser aceleradas" in q73.statement
+    )
+    assert not q73.statement.lstrip().startswith("Uma das técnicas")
+    assert "técnicas que auxiliam na gerência de projetos de software" not in q73.statement
+    assert "eventos iniciais e finais de cada atividade" not in q73.statement
+    assert len(q73.assets) == 1

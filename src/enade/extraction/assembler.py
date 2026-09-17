@@ -39,13 +39,17 @@ from enade.extraction.figures import (
 )
 from enade.extraction.fragment_reconstruction import FragmentMergeTrace
 from enade.extraction.label_normalization import LabelCorrection
-from enade.extraction.layout import Line, extract_page_lines
+from enade.extraction.layout import Line, detect_column_margins, extract_page_lines
 from enade.extraction.layout_overrides import LayoutOverrideSet
 from enade.extraction.ownership import QuestionRegion, question_key
 from enade.extraction.reading_zones import (
     assess_eligibility,
     detect_reading_zones,
     resolve_reading_order,
+)
+from enade.extraction.same_row_ordering import (
+    group_same_row_fragments,
+    reorder_same_row_groups,
 )
 from enade.extraction.spacing import SpacingCorrection
 from enade.extraction.tables import DetectedTable, detect_tables
@@ -231,6 +235,14 @@ class ExtractedQuestion:
     #: finding is diagnostic by definition - neither is a reason for
     #: ``automatic_validation`` to flag a question for human review.
     zone_reorder_notes: list[str] = field(default_factory=list)
+    #: Every same-row-fragment-ordering finding (PROMPT Phase 3N) - a
+    #: shadow-mode candidate group that was never published, or an
+    #: active-mode group the differential safety check rejected, or a
+    #: successful active-mode reorder. Never surfaced as a ``warnings``
+    #: entry, for the same reason as ``zone_reorder_notes`` above: a
+    #: deterministic, evidence-based fragment-order correction (or a safe
+    #: rejection of one) is not a reason for human review.
+    same_row_reorder_notes: list[str] = field(default_factory=list)
 
     @property
     def plain_statement(self) -> str:
@@ -290,6 +302,28 @@ class LineRegionRelation:
     #: growth passes, ending up nowhere near the original raw extent).
     matches_absorbed_label: bool
     same_owner: bool | None
+    #: PROMPT Phase 3O ("Secao 13"): ``True`` when this line's own font size
+    #: - rounded to the same one-decimal precision
+    #: ``_dominant_body_font_size`` itself uses to build
+    #: ``region.page_body_font_size`` - is at or above the page's own
+    #: dominant body-prose size, i.e. genuinely indistinguishable in size
+    #: from ordinary flowing statement text. ``None`` when the region
+    #: carries no ``page_body_font_size`` at all (``caption_font_size_gate``
+    #: not active for this booklet - every 2011/2021 region, unchanged).
+    #: Deliberately independent of ``matches_absorbed_label``/``raw_intersects``:
+    #: growth's own candidate-eligibility gate (figures.py) compares a
+    #: line's *raw*, unrounded font size against the page's rounded body
+    #: size with zero margin, so a genuine body-prose line whose own raw
+    #: size renders a hair under the rounded threshold (2008-b's own body
+    #: prose: 9.96pt, rounding to the same "10.0" bucket as every other
+    #: body line, yet numerically < 10.0) can still slip through growth's
+    #: own gate and later show up here as geometrically "contained" or
+    #: even ``matches_absorbed_label`` - this field lets the *consumption*
+    #: decision catch that case on its own evidence, without changing
+    #: growth/label-absorption/merge/crop logic at all (Q02/Q07/Q24/Q45/
+    #: Q54's own missing statement clauses, all 9.96pt - see
+    #: docs/phase-3o-report.md).
+    looks_like_body_prose: bool | None
 
 
 def _axis_overlap(a0: float, a1: float, b0: float, b1: float) -> float:
@@ -375,6 +409,10 @@ def compute_line_region_relation(
         None if (own_key is None or region.owner_key is None) else own_key == region.owner_key
     )
 
+    looks_like_body_prose: bool | None = None
+    if region.page_body_font_size is not None:
+        looks_like_body_prose = round(line.font_size, 1) >= region.page_body_font_size
+
     state: LineRegionState
     if h_overlap <= 0 or v_overlap <= 0:
         # No genuine intersection at all - "touching" only within the
@@ -413,6 +451,7 @@ def compute_line_region_relation(
         raw_intersects=raw_intersects,
         matches_absorbed_label=matches_absorbed_label,
         same_owner=same_owner,
+        looks_like_body_prose=looks_like_body_prose,
     )
 
 
@@ -427,9 +466,32 @@ def compute_line_region_relation(
 def _text_consumption_decision(
     relation: LineRegionRelation, is_small_formula: bool = False
 ) -> Literal["accepted", "ambiguous"]:
-    if relation.state == "contained":
-        return "accepted"
+    # PROMPT Phase 3O ("Secao 23"): `relation.looks_like_body_prose` was
+    # tried as an unconditional veto here (genuine overlap with the raw
+    # extent aside) and rejected after full corpus regeneration found two
+    # real regressions elsewhere in this same booklet that an isolated
+    # 7-question check did not surface: 2008-b Q1's own "IV"/"V" picture
+    # labels (bare 1-2 char roman numerals, coincidentally set at the same
+    # 9.96pt as body prose) and Q73's own neighboring-question paragraph
+    # (a long, genuinely body-prose-shaped paragraph that growth pulled in
+    # from *above* the diagram's own raw top edge, but which belongs to a
+    # different question entirely, not Q73's own statement) - both would
+    # have newly leaked into canonical text. Font size alone (this
+    # booklet's own `caption_font_size_gate` evidence) discriminates a
+    # genuine caption from ordinary body prose well enough to gate *label
+    # absorption* (figures.py), but is not enough on its own to gate
+    # *consumption* safely, the same lesson `raw_intersects` /
+    # `matches_absorbed_label` already encode for other signals (see each
+    # field's own docstring). `looks_like_body_prose` stays on
+    # `LineRegionRelation` as documented, inspectable evidence (Section 13)
+    # for exactly this kind of forensic comparison; the 7 target
+    # questions' own residual lines are instead each covered by their own
+    # individually-verified `protect_from_region_membership` override
+    # (data/manifests/layout-overrides.yaml) - see docs/phase-3o-report.md,
+    # Section 23.
     if relation.raw_intersects:
+        return "accepted"
+    if relation.state == "contained":
         return "accepted"
     # Growth's own authoritative record (PROMPT Phase 3G): a real caption
     # or label can be absorbed through several incremental growth passes,
@@ -1019,6 +1081,99 @@ def _canonical_content_lines(
     return result, notes
 
 
+def _apply_same_row_ordering(
+    lines: list[Line],
+    mode: Literal["disabled", "shadow", "active"],
+    regions: list[VisualRegion],
+    detected_tables: list[DetectedTable],
+    table_consumed_lines: frozenset[Line],
+) -> tuple[list[Line], list[str]]:
+    """Correct the left-to-right order of same-visual-row fragments
+    (PROMPT Phase 3N) - see ``same_row_ordering.py``'s own module
+    docstring for the full mechanism (a font change mid-row shifts each
+    span's own bounding-box top even when every span's own true baseline
+    is identical, defeating ``layout.py``'s own bbox-based line sort).
+
+    Runs *before* ``_canonical_content_lines`` (zone-level reordering
+    operates on whole ``Line`` objects and never needs to know their own
+    sub-line fragment history), on this one question's own already-sliced
+    span - never a whole page, matching ``_canonical_content_lines``'s own
+    architecture. A line that is part of a detected table
+    (``table_consumed_lines``) is never a same-row-ordering candidate -
+    that content already has its own, entirely separate row/column
+    structure via ``tables.py`` (PROMPT section 16: never mix table cells
+    with prose ordering).
+    """
+    if mode == "disabled" or not lines:
+        return lines, []
+
+    by_page: dict[int, list[Line]] = {}
+    for ln in lines:
+        by_page.setdefault(ln.page_number, []).append(ln)
+
+    result: list[Line] = []
+    notes: list[str] = []
+    for page_number in sorted(by_page):
+        page_lines = by_page[page_number]
+        candidates = [ln for ln in page_lines if ln not in table_consumed_lines]
+        if len(candidates) < 2:
+            result.extend(page_lines)
+            continue
+
+        column_margins = detect_column_margins(candidates)
+        page_regions = tuple(r.bbox for r in regions if r.page_number == page_number) + tuple(
+            t.bbox for t in detected_tables if t.page_number == page_number
+        )
+        groups, _relations = group_same_row_fragments(
+            candidates, column_margins=column_margins, regions=page_regions
+        )
+        if not groups:
+            result.extend(page_lines)
+            continue
+
+        reordered_candidates, candidate_notes = reorder_same_row_groups(candidates, groups)
+
+        # Differential safety (PROMPT section 21): a pure permutation of
+        # the exact same lines, by identity - reorder_same_row_groups is
+        # already constructed to guarantee this, but re-verified here
+        # rather than trusted blindly, exactly like
+        # _canonical_content_lines's own oracle.
+        same_lines = Counter(id(ln) for ln in reordered_candidates) == Counter(
+            id(ln) for ln in candidates
+        )
+        word_conserved = sorted(ln.text for ln in reordered_candidates) == sorted(
+            ln.text for ln in candidates
+        )
+        safe = same_lines and word_conserved
+
+        if mode == "shadow":
+            for note in candidate_notes:
+                notes.append(f"[shadow] {note} (safety={'passed' if safe else 'FAILED'})")
+            result.extend(page_lines)
+            continue
+
+        if safe and candidate_notes:
+            # Splice the reordered candidates back into their own original
+            # slots within page_lines (table-consumed lines, excluded
+            # above, keep their own exact position untouched).
+            candidate_iter = iter(reordered_candidates)
+            result.extend(
+                ln if ln in table_consumed_lines else next(candidate_iter) for ln in page_lines
+            )
+            notes.extend(candidate_notes)
+        elif candidate_notes:
+            notes.append(
+                f"page {page_number}: same-row fragment group(s) found but rejected by the "
+                f"safety oracle (same_lines={same_lines}, word_conserved={word_conserved}) - "
+                "original order published instead"
+            )
+            result.extend(page_lines)
+        else:
+            result.extend(page_lines)
+
+    return result, notes
+
+
 #: An alternative's own text is "empty" (nothing but the marker and
 #: trailing punctuation survived) - the shape ``_attach_alternative_
 #: formula_regions`` looks for, never a question id.
@@ -1298,6 +1453,7 @@ def assemble_question(
     contextual_relation_gate: bool = False,
     fragment_reconstruction_gate: bool = False,
     zoned_reading_order_mode: Literal["disabled", "shadow", "active"] = "disabled",
+    same_row_fragment_ordering_mode: Literal["disabled", "shadow", "active"] = "disabled",
 ) -> ExtractedQuestion:
     warnings: list[str] = []
 
@@ -1609,6 +1765,20 @@ def assemble_question(
         [ln for ln in span.lines if ln in table_consumed_lines or not is_chrome_line(ln.text)]
     )
 
+    # PROMPT Phase 3N: same-visual-row fragment ordering, scoped to this
+    # one already-sliced span - runs before the zone-level reorder below,
+    # since that operates on whole Line objects and never needs to know
+    # their own sub-line fragment history (see same_row_ordering.py's own
+    # module docstring). A true no-op (mode="disabled") for every booklet
+    # without this field set.
+    content_lines, same_row_reorder_notes = _apply_same_row_ordering(
+        content_lines,
+        same_row_fragment_ordering_mode,
+        regions,
+        detected_tables,
+        table_consumed_lines,
+    )
+
     # PROMPT Phase 3L: zone-aware, question-local reordering, scoped to
     # this one already-sliced span - never a page/hash override (see
     # _canonical_content_lines's own docstring and reading_zones.py's
@@ -1819,4 +1989,5 @@ def assemble_question(
         fragment_merges=fragment_merges,
         value_annotations=value_annotations,
         zone_reorder_notes=zone_reorder_notes,
+        same_row_reorder_notes=same_row_reorder_notes,
     )

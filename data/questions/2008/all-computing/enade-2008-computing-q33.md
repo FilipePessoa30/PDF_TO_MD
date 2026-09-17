@@ -30,15 +30,15 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
 # Questão 33
 
-Compiladores de linguagens de programação traduzem programas-fonte, em uma linguagem de entrada, para programas-objeto, em uma linguagem de saída. Durante o processo de tradução, o compilador deve verificar se as sentenças do programa-fonte estão sintaticamente corretas. Esse processo de análise sintática pode ser realizado construindo-se uma árvore de análise segundo duas principais abordagens: top-down, quando a árvore é investigada da raiz às folhas; ou bottom-up, das folhas à raiz. Acerca desse assunto, julgue os itens seguintes. A análise top-down é adequada quando a linguagem de I entrada é definida por uma gramática recursiva à esquerda. Independentemente da abordagem adotada, top-down II ou bottom-up, o analisador sintático utiliza informações resultantes da análise léxica. III Se os programas em uma linguagem podem ser analisados tanto em abordagem top-down como em bottom-up, a gramática dessa linguagem é ambígua. bottom-up IV A análise utiliza ações comumente conhecidas como deslocamentos e reduções sobre as sentenças do programa-fonte. Estão certos apenas os itens
+Compiladores de linguagens de programação traduzem programas-fonte, em uma linguagem de entrada, para programas-objeto, em uma linguagem de saída. Durante o processo de tradução, o compilador deve verificar se as sentenças do programa-fonte estão sintaticamente corretas. Esse processo de análise sintática pode ser realizado construindo-se uma árvore de análise segundo duas principais abordagens: top-down, quando a árvore é investigada da raiz às folhas; ou bottom-up, das folhas à raiz. Acerca desse assunto, julgue os itens seguintes. I A análise top-down é adequada quando a linguagem de entrada é definida por uma gramática recursiva à esquerda. II Independentemente da abordagem adotada, top-down ou bottom-up, o analisador sintático utiliza informações resultantes da análise léxica. III Se os programas em uma linguagem podem ser analisados tanto em abordagem top-down como em bottom-up, a gramática dessa linguagem é ambígua. IV A análise bottom-up utiliza ações comumente conhecidas como deslocamentos e reduções sobre as sentenças do programa-fonte. Estão certos apenas os itens
 
 ## Alternativas
 

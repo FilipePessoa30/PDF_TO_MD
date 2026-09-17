@@ -38,9 +38,9 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
@@ -48,7 +48,7 @@ taxonomy_review_status: pending
 
 ![Figura da questão](enade-2008-computing-q54/figure-01.png)
 
-nó determinar se é possível entregar um pacote diretamente ao destino ou se é preciso encaminhá-lo a um nó intermediário. Para tanto, usa-se uma tabela de rotas. Um exemplo de tabela de rotas simplificada é apresentado a seguir e pertence a um computador com endereço IP 192.0.2.100 e máscara de rede 255.255.255.0.
+No encaminhamento de pacotes na Internet, cabe a cada nó determinar se é possível entregar um pacote diretamente ao destino ou se é preciso encaminhá-lo a um nó intermediário. Para tanto, usa-se uma tabela de rotas. Um exemplo de tabela de rotas simplificada é apresentado a seguir e pertence a um computador com endereço IP 192.0.2.100 e máscara de rede 255.255.255.0.
 
 Na situação em que o referido computador precise enviar pacotes para os endereços 192.0.2.50 e 192.168.0.100, de acordo com a tabela de rotas apresentada, como ocorrerá a entrega desses pacotes?
 

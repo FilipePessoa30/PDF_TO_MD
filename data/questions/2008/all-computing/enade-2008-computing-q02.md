@@ -38,9 +38,9 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
+extraction_status: verified
 automatic_validation: passed
-visual_validation: failed
+visual_validation: passed
 taxonomy_review_status: pending
 ---
 
@@ -50,7 +50,9 @@ Quando o homem não trata bem a natureza, a natureza não trata bem o homem.
 
 ![Figura da questão](enade-2008-computing-q02/figure-01.png)
 
-Depreende-se dessa imagem a
+Essa afirmativa reitera a necessária interação das diferentes espécies, representadas na imagem a seguir.
+
+Disponível em http://curiosidades.spaceblog.com.br. Acesso em 10 out. 2008. Depreende-se dessa imagem a
 
 ## Alternativas
 

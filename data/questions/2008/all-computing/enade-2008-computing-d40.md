@@ -17,19 +17,22 @@ question_type: discursive
 content_blocks:
 - type: paragraph
   text: O banco de dados de um sistema de controle bancário implementado por meio
-    de um SGBD relacional Cliente, possui a relação com as informações apresentadas
+    de um SGBD relacional possui a relação Cliente, com as informações apresentadas
     a seguir, em que a chave primária da relação é grifada.
 - type: code
   text: Cliente(nroCliente, nome, endereco,
   language: null
 - type: asset
   asset_id: figure-02
+- type: code
+  text: data_nascimento, renda, idade)
+  language: null
 - type: paragraph
-  text: 'secundários: IndiceIdade, para o atributo idade, e IndiceRenda, para o atributo
-    renda. Existe um tipo de serviço nesse banco cujo alvo são tanto os clientes que
-    possuem menos de 40 anos de idade quanto aqueles que possuem renda mensal superior
-    a 30.000 reais. Para recuperar esses clientes, a seguinte expressão de consulta
-    em SQL foi utilizada:'
+  text: 'Para essa relação, foram criados dois índices secundários: IndiceIdade, para
+    o atributo idade, e IndiceRenda, para o atributo renda. Existe um tipo de serviço
+    nesse banco cujo alvo são tanto os clientes que possuem menos de 40 anos de idade
+    quanto aqueles que possuem renda mensal superior a 30.000 reais. Para recuperar
+    esses clientes, a seguinte expressão de consulta em SQL foi utilizada:'
 - type: code
   text: 'SELECT nome, endereco
 
@@ -155,7 +158,7 @@ taxonomy_review_status: pending
 
 # Questão 40
 
-O banco de dados de um sistema de controle bancário implementado por meio de um SGBD relacional Cliente, possui a relação com as informações apresentadas a seguir, em que a chave primária da relação é grifada.
+O banco de dados de um sistema de controle bancário implementado por meio de um SGBD relacional possui a relação Cliente, com as informações apresentadas a seguir, em que a chave primária da relação é grifada.
 
 ```
 Cliente(nroCliente, nome, endereco,
@@ -163,7 +166,11 @@ Cliente(nroCliente, nome, endereco,
 
 ![Figura da questão](enade-2008-computing-d40/figure-02.png)
 
-secundários: IndiceIdade, para o atributo idade, e IndiceRenda, para o atributo renda. Existe um tipo de serviço nesse banco cujo alvo são tanto os clientes que possuem menos de 40 anos de idade quanto aqueles que possuem renda mensal superior a 30.000 reais. Para recuperar esses clientes, a seguinte expressão de consulta em SQL foi utilizada:
+```
+data_nascimento, renda, idade)
+```
+
+Para essa relação, foram criados dois índices secundários: IndiceIdade, para o atributo idade, e IndiceRenda, para o atributo renda. Existe um tipo de serviço nesse banco cujo alvo são tanto os clientes que possuem menos de 40 anos de idade quanto aqueles que possuem renda mensal superior a 30.000 reais. Para recuperar esses clientes, a seguinte expressão de consulta em SQL foi utilizada:
 
 ```
 SELECT nome, endereco
