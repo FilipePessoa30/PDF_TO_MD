@@ -1,0 +1,126 @@
+# Source-token ledger (PROMPT Fase 3Q, Section 8).
+#
+# Machine-readable record of individual tokens whose textual fidelity
+# required low-level adjudication (rawdict/texttrace/font-fingerprint
+# evidence) before being restored to canonical text - distinct from
+# layout-overrides.yaml (which documents *where* a line is protected from
+# region-membership exclusion) and blocker-ledger-2008.yaml (which
+# documents the *causal narrative* of each defect). This ledger documents
+# *token identity itself*: charcode, glyph ID, font fingerprint, and the
+# exact backend evidence that proves a character is what it appears to be,
+# independent of whether the correction mechanism (override, general fix,
+# glyph mapping, or visual fallback) is documented elsewhere.
+#
+# Never used to justify a correction by itself - see layout-overrides.yaml
+# for the actual `protect_from_region_membership` entries this evidence
+# supports. A token entry exists purely as an auditable identity record.
+schema_version: 1
+tokens:
+  - token_id: q24-item-marker-I
+    question_id: enade-2008-computing-q24
+    source_page: 12
+    expected_role: item_marker
+    raw_unicode: "I"
+    charcode: 73
+    glyph_id: 35
+    font_name: PKFJJH+TT2EC3o00
+    font_fingerprint: sha256:343d7586022dff8987613f327f457dbfc4c8cad430d340b0fe4d6fda949d0980
+    bbox: [46.67958068847656, 261.61260986328125, 49.438499450683594, 271.5726013183594]
+    origin: [46.67958068847656, 269.279052734375]
+    baseline: 269.279052734375
+    source_backend: pymupdf-rawdict+texttrace
+    first_divergent_stage: region_membership
+    extraction_status: raw_text_verified
+    canonical_representation: "I"
+    visual_fallback: null
+    evidence: >-
+      page.get_text("rawdict"): span text="I", font=TT2EC3o00, size=9.96,
+      flags=4 (superscript=0, italic=0, serifed=0, monospaced=0). char
+      c="I", origin=(46.68, 269.28), bbox matches span bbox exactly (single
+      glyph). page.get_texttrace(): same span, chars=((73, 35, origin,
+      bbox),) - charcode=73 (ASCII/WinAnsiEncoding "I"), glyph_id=35.
+      page.get_fonts(full=True): font xref 18, ('cff','Type1',
+      'PKFJJH+TT2EC3o00','F5','WinAnsiEncoding',0) - a standard,
+      non-custom encoding (no ToUnicode CMap override needed; WinAnsi's
+      own codepoint 73 is defined as LATIN CAPITAL LETTER I in the PDF
+      spec itself). Font file extracted via doc.extract_font(18): CFF/
+      Type1, 12043 bytes, sha256
+      343d7586022dff8987613f327f457dbfc4c8cad430d340b0fe4d6fda949d0980.
+      Identical font+charcode+glyph_id as sibling item markers "II" (2x)
+      and "III" (3x) on the same page, the latter of which already
+      survives, unmodified, to the published corpus - proving this exact
+      font/encoding pair is already trusted, unambiguous body content in
+      this same question. No OCR, no LLM, no semantic inference used.
+    validation: reviewed
+  - token_id: q24-item-marker-II
+    question_id: enade-2008-computing-q24
+    source_page: 12
+    expected_role: item_marker
+    raw_unicode: "II"
+    charcode: [73, 73]
+    glyph_id: [35, 35]
+    font_name: PKFJJH+TT2EC3o00
+    font_fingerprint: sha256:343d7586022dff8987613f327f457dbfc4c8cad430d340b0fe4d6fda949d0980
+    bbox: [45.23910140991211, 348.61224365234375, 50.754947662353516, 358.5722351074219]
+    origin: [45.23910140991211, 356.2786865234375]
+    baseline: 356.2786865234375
+    source_backend: pymupdf-rawdict+texttrace
+    first_divergent_stage: region_membership
+    extraction_status: raw_text_verified
+    canonical_representation: "II"
+    visual_fallback: null
+    evidence: >-
+      page.get_text("rawdict"): span text="II", font=TT2EC3o00, size=9.96,
+      flags=4, two chars both c="I" (origins (45.24,356.28) and
+      (48.00,356.28)). page.get_texttrace(): same span, chars=((73, 35,
+      origin1, bbox1), (73, 35, origin2, bbox2)) - both charcode=73,
+      glyph_id=35, identical to marker "I" above and to sibling marker
+      "III" (see q24-item-marker-I's own evidence for the shared font
+      fingerprint). Same font xref (18), same encoding (WinAnsiEncoding),
+      no custom mapping needed.
+    validation: reviewed
+  - token_id: q45-item-iii-function-formula
+    question_id: enade-2008-computing-q45
+    source_page: 19
+    expected_role: inline_formula
+    raw_unicode: null
+    charcode: null
+    glyph_id: null
+    font_name: null
+    font_fingerprint: null
+    bbox: [406.68, 481.92, 442.92, 493.44]
+    origin: null
+    baseline: null
+    source_backend: pymupdf-get_drawings
+    first_divergent_stage: not_applicable_never_was_text
+    extraction_status: drawing_verified
+    canonical_representation: null
+    visual_fallback: enade-2008-computing-q45/figure-01.png (already rendered - the gap sits *within* the same visual region already published as figure-01.png, immediately after "o grafico de" and before "e as retas x = 0 e x = 2.")
+    evidence: >-
+      page.get_drawings() reports 9 vector path elements ("fs"/"s"/"f"
+      type curves and line segments, e.g. rect=(410.0,484.0)-(412.9,493.2)
+      with cubic-bezier "c" items) filling exactly the gap between "o
+      grafico de" (ends x1=405.0) and "e as retas x = 0 e x = 2." (starts
+      x0=444.0), both at y0=483.3. page.get_text("rawdict")/get_texttrace()
+      report NO character/span/glyph anywhere in this x-range on this
+      row - confirming this is 100% vector-drawn artwork, never a font
+      character with a charcode/glyph_id/font to recover. Direct visual
+      inspection of figure-01.png (the region already covering this exact
+      page area) confirms the drawing renders as the italic formula
+      "f(x) = √x" (a function definition, consistent with item III's
+      own printed sentence "...o grafico de f(x) = √x e as retas
+      x = 0 e x = 2."). No text recovery is possible or attempted - the
+      formula is already visually present in the published figure-01.png
+      crop; inserting a literal "f(x) = √x" string into canonical
+      text would be an unverifiable inference from the drawing's own
+      rendered shape, not a demonstrated character identity, and is
+      explicitly not done (PROMPT Phase 3Q Section 5/17). This exact
+      pattern (an inline formula rendered as vector art, never converted
+      to text) already exists twice more in this same, already-published
+      Q45 statement, neither previously flagged as a defect: "(f $ 0)"
+      for "(f(x) >= 0)" in the intro, and "como resultado da integral ."
+      (the integral formula itself, between "integral" and the trailing
+      period, is the same kind of vector-drawn gap) - confirming this is
+      this booklet's own consistent, already-accepted convention for
+      inline math, not a new or inconsistent standard being applied here.
+    validation: reviewed

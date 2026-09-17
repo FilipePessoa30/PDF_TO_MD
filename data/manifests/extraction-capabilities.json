@@ -768,6 +768,31 @@
       "profile_dependency": "none - the mechanism runs unconditionally once a question has a resolved A-E marker sequence, gated entirely by the geometric evidence itself (margin/backward/region), never a per-booklet flag",
       "runtime_ai_dependency": "none",
       "introduced_phase": "3P"
+    },
+    {
+      "capability_id": "source_token_recovery",
+      "description": "A documentation and verification methodology, not a new runtime mechanism: before any character/marker is restored to canonical text, its identity is demonstrated via low-level PDF evidence (page.get_text('rawdict'), page.get_texttrace(), page.get_fonts(full=True), page.get_drawings(), font fingerprint via doc.extract_font) and recorded in data/manifests/source-token-ledger-2008.yaml. The actual correction mechanism remains the existing protect_from_region_membership override (layout-overrides.yaml) - this capability formalizes the evidence standard that must be met before that override is written, and the explicit refusal to fabricate a token's identity (e.g. a vector-drawn formula, page.get_drawings()-confirmed, is never guessed as text) when that evidence cannot be produced.",
+      "trigger_features": [
+        "a token whose textual identity was ambiguous or undemonstrated before recovery (e.g. shares a font/charcode with a sibling that already renders correctly, confirming no custom glyph mapping is needed)",
+        "a visual gap later confirmed to be non-textual (vector-drawn artwork, page.get_drawings()), correctly left unrecovered rather than fabricated"
+      ],
+      "parameters": {},
+      "scope": "data/manifests/source-token-ledger-2008.yaml (new manifest); no source-code changes of its own - consumed alongside layout-overrides.yaml's own evidence fields",
+      "generalization_level": "G1",
+      "positive_fixtures": [
+        "tests/test_extraction_pipeline_2008.py::test_q24_item_markers_i_and_ii_are_now_present",
+        "tests/test_extraction_pipeline_2008.py::test_q45_item_iii_own_three_lines_are_now_complete"
+      ],
+      "negative_fixtures": [],
+      "real_cases": [
+        "2008-b Q24 items 'I'/'II' (raw_text_verified - unambiguous charcode/glyph/font, identical to sibling 'III')",
+        "2008-b Q45 item III's own 'f(x) = sqrt(x)' gap (drawing_verified - confirmed non-textual, deliberately not fabricated, visual_fallback = the already-published figure-01.png)"
+      ],
+      "protected_cases": [],
+      "failure_behavior": "when a token's identity cannot be demonstrated by any listed backend evidence, it is never guessed - the gap is documented (extraction_status: drawing_verified/source_ambiguity/unresolved) and the question remains failed/needs_review",
+      "profile_dependency": "none",
+      "runtime_ai_dependency": "none",
+      "introduced_phase": "3Q"
     }
   ]
 }

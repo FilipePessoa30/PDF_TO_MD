@@ -914,15 +914,10 @@ def test_q07_framing_clause_is_now_complete(extraction_result):
 
 
 def test_q24_framing_paragraph_is_now_complete(extraction_result):
-    """Regression test for ``q24-region-merge-content-loss`` (PARTIALLY
-    RESOLVED Phase 3O): the decoder-block's own 4-line framing paragraph,
-    absorbed by the (correct, unchanged) merged region spanning the truth
-    table and all 3 item circuits, is now present. Items "I" and "II"'s own
-    bare markers remain absent - a separate, not-yet-diagnosed defect
-    (confirmed NOT region-exclusion, see ``q24-item-i-ii-markers-missing``)
-    that this phase's disposition-only mandate does not reach; only "III"'s
-    own marker is asserted present here, matching the currently-published,
-    unregressed reality.
+    """Regression test for ``q24-region-merge-content-loss`` (RESOLVED
+    Phase 3O for the framing paragraph): the decoder-block's own 4-line
+    framing paragraph, absorbed by the (correct, unchanged) merged region
+    spanning the truth table and all 3 item circuits, is present.
     """
     result, _ = extraction_result
     q24 = _objective_by_number(result)[24]
@@ -931,18 +926,63 @@ def test_q24_framing_paragraph_is_now_complete(extraction_result):
         "tabela apresentada. Em cada item a seguir, julgue se a função lógica "
         "mostrada corresponde ao circuito lógico a ela associado." in q24.statement
     )
-    assert "\nIII\n" in f"\n{q24.statement}\n"
+    assert len(q24.assets) == 1
+
+
+def test_q24_item_markers_i_and_ii_are_now_present(extraction_result):
+    """Full regression test for ``q24-item-i-ii-markers-missing`` (RESOLVED
+    Phase 3Q): items "I" and "II"'s own bare markers, genuinely present and
+    unambiguous in the PDF's own text layer (charcode 73 = "I" in
+    WinAnsiEncoding, font PKFJJH+TT2EC3o00 - identical to sibling marker
+    "III", which already survived to the published corpus), were excluded
+    by a razor-thin geometric coincidence: item III's own wider 3-glyph
+    marker run starts far enough left (x0=43.9) to fall *outside* the
+    merged region's own grown bbox (x0=45.2), landing in
+    ``state=boundary_crossing`` (never accepted for consumption), while
+    I/II's own narrower runs (x0=45.2/46.7) stay fully enclosed
+    (``state=contained``, accepted and excluded) - confirmed by direct
+    instrumentation of `_line_in_region`/`compute_line_region_relation`
+    against the real, unchanged region object (see
+    docs/phase-3q-report.md, Section G/H, and
+    data/manifests/source-token-ledger-2008.yaml for the full low-level
+    identity evidence). Two individually-verified
+    `protect_from_region_membership` overrides
+    (data/manifests/layout-overrides.yaml) resolve this without touching
+    region detection, merge, growth or crop - figure-01.png (still showing
+    all three item circuits I/II/III) is unaffected.
+
+    Verified beyond substring checks: the exact final statement text, in
+    order, and that the alternatives (which already reference "itens I e
+    II"/"itens II e III" etc.) are unaffected.
+    """
+    result, _ = extraction_result
+    q24 = _objective_by_number(result)[24]
+    assert q24.statement == (
+        "![Figura da questão](enade-2008-computing-q24/figure-01.png)\n\n"
+        "Considere o bloco decodificador ilustrado acima, o qual opera segundo a "
+        "tabela apresentada. Em cada item a seguir, julgue se a função lógica "
+        "mostrada corresponde ao circuito lógico a ela associado.\n\n"
+        "I\n\n"
+        "II\n\n"
+        "III\n\n"
+        "Assinale a opção correta."
+    )
+    assert [(a.letter, a.text) for a in q24.alternatives] == [
+        ("A", "Apenas um item está certo."),
+        ("B", "Apenas os itens I e II estão certos."),
+        ("C", "Apenas os itens I e III estão certos."),
+        ("D", "Apenas os itens II e III estão certos."),
+        ("E", "Todos os itens estão certos."),
+    ]
     assert len(q24.assets) == 1
 
 
 def test_q45_items_i_and_ii_are_now_complete(extraction_result):
-    """Regression test for ``q45-region-merge-content-loss`` (PARTIALLY
-    RESOLVED Phase 3O): the intro's own closing clause, the "Com base
-    nessas informações..." transition, and items I and II's own full body
-    text (all absorbed by the two solid-of-revolution figures' own merged
-    regions) are now present. Item III's own single missing character (a
-    pre-existing, separate text-extraction gap, not region-merge - see the
-    blocker's own resolution note) is NOT asserted fixed here.
+    """Regression test for ``q45-region-merge-content-loss`` (RESOLVED
+    Phase 3O for items I/II): the intro's own closing clause, the "Com
+    base nessas informações..." transition, and items I and II's own full
+    body text (all absorbed by the two solid-of-revolution figures' own
+    merged regions) are present.
     """
     result, _ = extraction_result
     q45 = _objective_by_number(result)[45]
@@ -954,6 +994,52 @@ def test_q45_items_i_and_ii_are_now_complete(extraction_result):
         "(c, 0, 0) e de raio medindo f(x)" in q45.statement
     )
     assert "Se P é uma partição uniforme do intervalo [a, b], sendo" in q45.statement
+    assert len(q45.assets) == 1
+
+
+def test_q45_item_iii_own_three_lines_are_now_complete(extraction_result):
+    """Full regression test for the item-III residual of
+    ``q45-region-merge-content-loss`` (RESOLVED Phase 3Q for the three
+    missing lines; the formula-image gap remains, deliberately, see
+    below). Item III's own continuation - "torno do eixo x da região do
+    plano delimitada pelo", "eixo x, o gráfico de" and "e as retas
+    x = 0 e x = 2." - was excluded by the exact same oversized-merge
+    region (``state=contained`` against the grown bbox, unrelated to
+    these lines' own content) as the 12 lines Phase 3O already restored;
+    not found during that phase's own investigation, which mis-
+    characterized the residual as "one missing character" rather than
+    three whole lines. All three are genuinely present, unambiguous text
+    (confirmed via rawdict/texttrace - no font/glyph ambiguity) and are
+    now protected via three individually-verified
+    `protect_from_region_membership` overrides
+    (data/manifests/layout-overrides.yaml) - figure-01.png is unaffected.
+
+    The word-order concern Phase 3O itself documented ("entao" reading
+    before "para ci...") is confirmed, by this phase's own low-level
+    verification (`page.get_text("rawdict")`'s own `origin` field - both
+    spans share the identical baseline y=440.04), to be the *correct*
+    printed order, not a defect - Phase 3O's own characterization was
+    itself mistaken. No same-row reordering was needed or attempted.
+
+    The remaining gap in item III's own text ("o gráfico de e as retas",
+    missing "f(x) = √x" in between) is a vector-drawn formula image
+    (confirmed via `page.get_drawings()` - a genuine curve/line drawing,
+    never a font character), not missing/recoverable text - the same
+    already-accepted convention this exact statement already uses twice
+    elsewhere ("(f $ 0)", "como resultado da integral ."). Deliberately
+    NOT fabricated as text (PROMPT Phase 3Q Section 5/17) - see
+    data/manifests/source-token-ledger-2008.yaml,
+    token q45-item-iii-function-formula. Q45 stays `failed` for this
+    reason alone.
+    """
+    result, _ = extraction_result
+    q45 = _objective_by_number(result)[45]
+    assert (
+        "III É igual a 2B o volume do sólido gerado pela rotação em torno do eixo "
+        "x da região do plano delimitada pelo eixo x, o gráfico de e as retas "
+        "x = 0 e x = 2." in q45.statement
+    )
+    assert "então para ci 0 [ xi, xi ! 1], 1< i < n." in q45.statement
     assert len(q45.assets) == 1
 
 

@@ -52,9 +52,7 @@ Considere y = f(x) uma função contínua e não-negativa (f $ 0), definida em u
 
 como resultado da integral .
 
-Com base nessas informações, julgue os itens a seguir. I Cada seção transversal do sólido S obtida quando este é interceptado em x = c por um plano paralelo ao plano yOz é um círculo centrado no ponto (c, 0, 0) e de raio medindo f(x) e, portanto, de área igual a B(f(x))2. Se P é uma partição uniforme do intervalo [a, b], sendo II P = {a = x0 < x1 < x2 < ... < xn = b}, tal que )x = xi !x i-1, então para ci 0 [ xi, xi ! 1], 1< i < n. III É igual a 2B o volume do sólido gerado pela rotação em
-
-Assinale a opção correta.
+Com base nessas informações, julgue os itens a seguir. I Cada seção transversal do sólido S obtida quando este é interceptado em x = c por um plano paralelo ao plano yOz é um círculo centrado no ponto (c, 0, 0) e de raio medindo f(x) e, portanto, de área igual a B(f(x))2. Se P é uma partição uniforme do intervalo [a, b], sendo II P = {a = x0 < x1 < x2 < ... < xn = b}, tal que )x = xi !x i-1, então para ci 0 [ xi, xi ! 1], 1< i < n. III É igual a 2B o volume do sólido gerado pela rotação em torno do eixo x da região do plano delimitada pelo eixo x, o gráfico de e as retas x = 0 e x = 2. Assinale a opção correta.
 
 ## Alternativas
 

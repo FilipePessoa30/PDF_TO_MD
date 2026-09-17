@@ -778,6 +778,55 @@ overrides:
       "logico a ela associado." (y0=232.0) - fourth and last line of the same framing paragraph as above.
     evidence: docs/phase-3o-report.md, Section P
     status: reviewed
+  # --- Phase 3Q: Q24's own item markers "I"/"II" (page 12) - genuinely
+  # present, unambiguous text (charcode 73 = "I" in WinAnsiEncoding, font
+  # PKFJJH+TT2EC3o00, sha256 343d7586022dff8987613f327f457dbfc4c8cad430d340b0fe4d6fda949d0980
+  # - the identical font/charcode/glyph as sibling marker "III", which
+  # already survives to the published corpus), excluded purely by a
+  # razor-thin geometric margin: item III's own marker glyph run is wider
+  # (three "I" glyphs vs one/two) and starts 1.28-2.76pt further left than
+  # I/II's own narrower runs, placing III's own left edge (x0=43.9) just
+  # outside the merged region's own grown bbox (x0=45.2) - enough to drop
+  # its own `intersection_over_line_area` under the 0.98 "contained"
+  # threshold (state=`boundary_crossing` instead), while I/II's own
+  # slightly-narrower/more-indented glyph runs (x0=45.2/46.7) stay fully
+  # enclosed (state=`contained`) and get excluded by
+  # `_text_consumption_decision`'s own first, unconditional branch. Not
+  # `raw_intersects` (the region's own *raw*, pre-growth extent never
+  # reaches this far down - Q24's own 4-diagram merge, unchanged since
+  # Phase 3O, legitimately spans y=105-522.5) - a pure growth-vs-glyph-
+  # width coincidence, confirmed by direct instrumentation of
+  # `_line_in_region`/`compute_line_region_relation` against the real,
+  # unchanged region object. See data/manifests/source-token-ledger-2008.yaml
+  # for the full low-level identity evidence (rawdict/texttrace/font
+  # fingerprint) - both markers are 100% textually unambiguous; this is a
+  # region-membership defect, never a glyph/OCR recovery problem.
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 12
+    bbox: [44.0, 260.0, 51.0, 273.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q24
+    reason: >-
+      Item marker "I" (bbox 46.68,261.61-49.44,271.57, charcode 73="I",
+      font PKFJJH+TT2EC3o00) - genuinely, unambiguously present text,
+      excluded only because its own bbox is fully enclosed
+      (`state=contained`) by the merged region's own grown bbox
+      (45.2,105.0-290.0,522.5), a coincidence of this specific glyph run's
+      own narrower width relative to sibling marker "III" (see the group
+      comment above for the full geometric account).
+    evidence: docs/phase-3q-report.md, Section H; data/manifests/source-token-ledger-2008.yaml
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 12
+    bbox: [44.0, 347.0, 52.0, 360.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q24
+    reason: >-
+      Item marker "II" (bbox 45.24,348.61-50.75,358.57, two chars each
+      charcode 73="I", same font as above) - same defect class as marker
+      "I" above.
+    evidence: docs/phase-3q-report.md, Section H; data/manifests/source-token-ledger-2008.yaml
+    status: reviewed
   # --- Phase 3O: Q45's own oversized raw-merge (solid-of-revolution
   # figure + item diagrams) swallows its own framing clauses and items
   # I/II's own body text ------------------------------------------------
@@ -916,6 +965,59 @@ overrides:
       introducing the conclusion carried by item II's own small formula
       image), same defect class as above.
     evidence: docs/phase-3o-report.md, Section Q
+    status: reviewed
+  # --- Phase 3Q: Q45's own item III residual (3 more lines, same oversized
+  # raw-merge region as the 12 Phase 3O overrides above - not found during
+  # Phase 3O's own investigation, which stopped once items I/II were
+  # restored and mis-characterized the remaining gap as "one missing
+  # character"). All three lines are genuinely present, unambiguous text
+  # (confirmed via rawdict/texttrace - no custom font/glyph mapping
+  # involved) - `state=contained` against the SAME region
+  # (owner=objective-45, bbox=(318.6,168.5)-(559.2,493.3)) whose own grown
+  # y1 (493.3) extends well past its own raw_bbox y1 (449.9) via label
+  # absorption unrelated to these lines. The "e as retas x = 0 e x = 2."
+  # fragment shares a physical row with "eixo x, o grafico de" (same
+  # baseline) and same_row_ordering.py (Phase 3N) already correctly
+  # orders the pair left-to-right - confirmed by direct instrumentation
+  # that same-row reordering runs and succeeds *before* region exclusion
+  # removes both; the same-row nuance documented in Phase 3O ("entao"
+  # reading before "para ci...", item II's own residual, unrelated to
+  # item III) is a separate, still-open mechanism, not touched here (see
+  # docs/phase-3q-report.md, Section L for why the two symptoms are
+  # independent).
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 19
+    bbox: [317.0, 466.0, 561.0, 480.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q45
+    reason: >-
+      "torno do eixo x da regiao do plano delimitada pelo" (y0=467.9) -
+      item III's own second line, continuing "III E igual a 2B o volume
+      do solido gerado pela rotacao em" (already published).
+    evidence: docs/phase-3q-report.md, Section K; data/manifests/source-token-ledger-2008.yaml
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 19
+    bbox: [317.0, 482.0, 406.0, 495.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q45
+    reason: >-
+      "eixo x, o grafico de" (y0=483.3) - item III's own third line, first
+      fragment (continues onto an inline formula image for the function
+      "f", then the fourth override below).
+    evidence: docs/phase-3q-report.md, Section K; data/manifests/source-token-ledger-2008.yaml
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 19
+    bbox: [443.0, 482.0, 551.0, 495.0]
+    rule: protect_from_region_membership
+    question_id: enade-2008-computing-q45
+    reason: >-
+      "e as retas x = 0 e x = 2." (y0=483.3, x0=444.0) - same physical row
+      as "eixo x, o grafico de" above (same_row_ordering.py already
+      orders the pair correctly, left-to-right), continuation after an
+      inline formula image for the function "f" between them.
+    evidence: docs/phase-3q-report.md, Section K; data/manifests/source-token-ledger-2008.yaml
     status: reviewed
   # --- Phase 3O: Q54's own opening clause, swallowed by the routing-table
   # figure's own grown region ------------------------------------------

@@ -306,23 +306,20 @@ blockers:
     survives). Confirmed this question''s own layout (one main circuit+truth-table diagram plus three
     separately-diagrammed judged items, each its own small circuit) needs a dedicated multi-diagram/judged-item
     assembly mechanism beyond any label-absorption or line-region relation fix - not attempted this phase.'
-  description: 'PARTIALLY RESOLVED IN PHASE 3O: the garbled table/diagram fragments (''A 0 B S0 / A II B
-    1 / A 0 B S0'') were already gone since Phase 3G. Phase 3O restores the decoder-block''s own 4-line
-    framing paragraph (''Considere o bloco decodificador...''). Items I/II''s own bare markers remain
-    completely absent, exactly as this entry''s own original wording said - only a bare ''III'' marker
-    survives (reconfirmed directly against the published pre-Phase-3O file; an earlier draft of this
-    entry, written this same phase, mistakenly called that original wording "stale" based on a read taken
-    while an since-reverted experimental fix was still active - corrected here). Root cause of the I/II
-    gap is NOT region-merge-content-loss (confirmed: neither bare marker is ever marked "accepted" by
-    `_text_consumption_decision` against any of Q24''s own regions) and was not identified this phase -
-    tracked separately below as q24-item-i-ii-markers-missing for a future phase.'
-  evidence: docs/phase-3g-report.md; docs/phase-3o-report.md, Section P
+  description: 'RESOLVED IN PHASE 3Q (framing paragraph RESOLVED IN PHASE 3G/3O): the garbled table/diagram
+    fragments (''A 0 B S0 / A II B 1 / A 0 B S0'') were already gone since Phase 3G. Phase 3O restored the
+    decoder-block''s own 4-line framing paragraph. Items I/II''s own bare markers, which remained absent
+    through Phase 3O (only a bare ''III'' marker survived), are now also present - see
+    q24-item-i-ii-markers-missing, resolved this same phase once the real mechanism (region membership,
+    not a separate defect class) was identified.'
+  evidence: docs/phase-3g-report.md; docs/phase-3o-report.md, Section P; docs/phase-3q-report.md, Section H
   id: q24-region-merge-content-loss
   question_id: enade-2008-computing-q24
   regression_tests:
   - tests/test_extraction_pipeline_2008.py::test_q24_framing_paragraph_is_now_complete
+  - tests/test_extraction_pipeline_2008.py::test_q24_item_markers_i_and_ii_are_now_present
   resolution: >-
-    PARTIALLY RESOLVED (Phase 3O): Q24's own decoder truth-table diagram
+    RESOLVED (Phase 3O + Phase 3Q): Q24's own decoder truth-table diagram
     and its 3 item circuits are 4 separate diagrams that
     `_merge_by_vertical_proximity` correctly joins into one connected
     region (a genuine, un-touched merge - the diagrams themselves really
@@ -331,11 +328,12 @@ blockers:
     the diagrams above/below them are far apart on the page. All 4 lines
     are now protected via `protect_from_region_membership` overrides
     (data/manifests/layout-overrides.yaml); figure-01's own region/crop is
-    unchanged. Items I/II's own bare markers are a separate, still-open gap
-    (see q24-item-i-ii-markers-missing).
+    unchanged. Items I/II's own bare markers, once a separate open gap,
+    are now resolved by the same mechanism (see
+    q24-item-i-ii-markers-missing).
   source_pages:
   - 12
-  status: open
+  status: resolved
   superseded_by: null
   visual_validation: failed
 - affected_assets: []
@@ -426,41 +424,46 @@ blockers:
     statement as if they were figure content. A genuine generalization gap in the decorative-baseline/region-merge
     mechanism for this booklet''s own chrome density, not fixed in Phase 3A - see docs/phase-3a-report.md
     section M for why no fix was attempted this session.'
-  description: 'PARTIALLY RESOLVED IN PHASE 3O (was: empty structured statement, the entire statement
-    captured as one self-contained whole-question image, then PARTIALLY IMPROVED IN PHASE 3G - item III''s
-    own marker and part of its own text recovered). Phase 3O restores the intro''s own closing clause
-    (''como resultado da integral''), the ''Com base nessas informações...'' transition, and both items
-    I and II''s own full body text (previously entirely bare markers). Item III''s own text remains as
-    recovered by Phase 3G. NOTE (Phase 3O): source_pages corrected from a stale [20] to [19], matching
-    this question''s own frontmatter and the real PDF page.'
-  evidence: docs/phase-3g-report.md; docs/phase-3o-report.md, Section Q
+  description: 'RESOLVED IN PHASE 3Q for the region-merge-content-loss mechanism itself (was: empty
+    structured statement, the entire statement captured as one self-contained whole-question image, then
+    PARTIALLY IMPROVED IN PHASE 3G - item III''s own marker and part of its own text recovered; PARTIALLY
+    RESOLVED IN PHASE 3O - intro''s closing clause, ''Com base nessas informações...'' transition, and
+    items I/II''s own full body text restored). Phase 3Q found and restored 3 more lines of item III''s
+    own text (''torno do eixo x da região do plano delimitada pelo'', ''eixo x, o gráfico de'', ''e as
+    retas x = 0 e x = 2.''), excluded by the exact same oversized-merge region as the 12 lines Phase 3O
+    already fixed - not found during that phase''s own investigation, which mis-characterized this
+    residual as "one missing character." Phase 3O''s own claim that item II''s own "entao" reads out of
+    order was ALSO itself mistaken: direct verification via `page.get_text("rawdict")`''s own `origin`
+    field shows "entao" and "para ci..." share the identical baseline (origin.y=440.04) - the printed
+    order is correct as-is, not a defect; no same-row reordering was needed. Q45 still carries one
+    residual, genuinely unrelated to region-merge (see resolution below), and stays `failed`. NOTE (Phase
+    3O): source_pages corrected from a stale [20] to [19], matching this question''s own frontmatter and
+    the real PDF page.'
+  evidence: docs/phase-3g-report.md; docs/phase-3o-report.md, Section Q; docs/phase-3q-report.md, Section K/L
   id: q45-region-merge-content-loss
   question_id: enade-2008-computing-q45
   regression_tests:
   - tests/test_extraction_pipeline_2008.py::test_q45_items_i_and_ii_are_now_complete
+  - tests/test_extraction_pipeline_2008.py::test_q45_item_iii_own_three_lines_are_now_complete
   resolution: >-
-    PARTIALLY RESOLVED (Phase 3O): Q45's own two solid-of-revolution
+    RESOLVED (Phase 3O + Phase 3Q): Q45's own two solid-of-revolution
     diagrams and small axis-label formula images merge, by genuine Y-
     proximity, into regions whose combined raw extent also covers real
     statement prose physically positioned between/around them (the same
-    mechanism as Q24 above). 12 lines (2 framing clauses + all of items I
-    and II's own body text) are now protected via
-    `protect_from_region_membership` overrides
+    mechanism as Q24 above). 15 lines total (2 framing clauses + all of
+    items I and II's own body text + item III's own 3-line continuation)
+    are now protected via `protect_from_region_membership` overrides
     (data/manifests/layout-overrides.yaml); figure-01's own region/crop is
-    unchanged. KNOWN RESIDUAL (not part of this blocker, not attempted this
-    phase): item II's own conclusion word "entao" reads out of order
-    relative to "para ci..." in the restored text - both lines' own y0
-    values are within ~0.3pt of each other, which same_row_ordering.py
-    (Phase 3N, not touched this phase) resolves as same-row/left-to-right
-    rather than as two distinct successive lines. Pre-existing/latent (both
-    lines were equally hidden before this phase), only now visible; left
-    as-is per Section 23 (same_row_ordering is out of scope this phase).
-    STILL OPEN, NOT ATTEMPTED THIS PHASE: item III's own recovered text
-    ("...o grafico de e as retas x = 0 e x = 2") is itself missing a single
-    character (almost certainly "f", i.e. "o grafico de f e as retas") -
-    a pre-existing text-extraction gap unrelated to region-merge/label-
-    absorption (item III's own text was never region-excluded to begin
-    with), out of this blocker's own category and not investigated here.
+    unchanged. CORRECTED (Phase 3Q): item II's own "entao"/"para ci..."
+    order, previously documented as a defect, is confirmed CORRECT as
+    printed (same baseline, origin.y=440.04 for both spans) - Phase 3O's
+    own characterization was itself mistaken; same_row_ordering.py was
+    never touched and did not need to be. STILL OPEN, genuinely unrelated
+    to region-merge (see q45-item-iii-formula-image-gap): the gap between
+    "o grafico de" and "e as retas x = 0 e x = 2." is a vector-drawn
+    formula ("f(x) = sqrt(x)", confirmed via `page.get_drawings()` - never
+    a font character), not missing/recoverable text, and is deliberately
+    not fabricated.
   source_pages:
   - 19
   status: open
@@ -1817,45 +1820,99 @@ blockers:
   - figure-01
   category: unknown
   cause: >-
-    NOT IDENTIFIED. Discovered in Phase 3O while restoring Q24's own
-    framing paragraph (q24-region-merge-content-loss). Q24's own bare item
-    markers "I" (page 12, y0=261.6) and "II" (y0=348.6) are completely
-    absent from the rendered statement - not glued onto neighboring text,
-    not present anywhere in the string - while item III's own bare marker
-    (y0=437.7) survives. Root causes explicitly ruled out by direct
-    instrumentation this phase: (1) region-exclusion - neither "I" nor "II"
-    is ever marked "accepted" by `_text_consumption_decision` against any
-    of Q24's own regions (`_line_in_region` returns `False` for both); (2)
-    `is_chrome_line` - "i"/"ii" (lower-cased by
-    `normalize_for_chrome_check`) match none of `_CHROME_REGEXES` nor
-    `_EXACT_CHROME_LINES`; (3) `_merge_orphan_markers`/`_is_orphan_marker` -
-    `_ORPHAN_MARKER_RE` (`^[A-E]\t*$`) never matches a roman numeral, so
-    neither line is ever treated as an orphan marker needing a merge
-    partner; (4) `detect_tables` - the only detected table on this page is
-    the decoder truth table (y=133-168), whose own `consumed_lines` does
-    not include either marker. The line these two markers vanish between
-    was not found this phase (would require tracing `assemble_question`'s
-    own span/boundary construction further upstream, out of budget this
-    phase - see docs/phase-3o-report.md, Section P for the full forensic
-    trace already done).
+    RESOLVED IN PHASE 3Q. Phase 3O's own claim that region-exclusion had
+    been ruled out was itself mistaken - its own instrumentation called
+    `compute_line_region_relation`/`_text_consumption_decision` directly,
+    bypassing `_line_in_region`'s own earlier gates (the
+    `contextual_relation_gate`-conditional branch and
+    `_is_marker_at_margin` check), so it never actually exercised the real
+    decision path `assemble_question` uses. Direct instrumentation of
+    `_line_in_region` itself (Phase 3Q) shows it DOES exclude both "I" and
+    "II" against Q24's own merged region (owner=objective-24,
+    bbox=(45.2,105.0)-(290.0,522.5)): both lines' own bbox is fully
+    enclosed by this grown bbox (`state=contained`,
+    `intersection_over_line_area>=0.98`), the first,
+    unconditionally-accepting branch of `_text_consumption_decision`.
+    Item "III" escapes only because its own marker glyph run is wider
+    (three "I" glyphs vs. one/two) and starts 1.3-2.8pt further left
+    (x0=43.9) than I/II's own narrower runs (x0=45.2/46.7) - just enough
+    to place III's own left edge *outside* the region's own left edge
+    (45.2), dropping its own `intersection_over_line_area` under the 0.98
+    threshold (`state=boundary_crossing` instead, never accepted). A pure
+    growth-vs-glyph-width coincidence, not a deliberate distinction of any
+    kind - `raw_intersects` is `False` for all three (the region's own
+    *raw* extent, y1=105-522.5's own pre-growth portion, never reaches
+    down to any of the three markers on its own). Font/glyph identity was
+    independently confirmed unambiguous via `page.get_text("rawdict")`/
+    `get_texttrace()`: charcode 73 = "I" in WinAnsiEncoding, font
+    PKFJJH+TT2EC3o00 (sha256
+    343d7586022dff8987613f327f457dbfc4c8cad430d340b0fe4d6fda949d0980),
+    identical for I/II/III - see
+    data/manifests/source-token-ledger-2008.yaml.
   description: >-
-    Q24's own item markers "I" and "II" (each a bare one/two-character
-    roman numeral, immediately introducing that item's own small circuit
-    diagram) do not appear anywhere in the rendered statement at all, while
-    item III's own marker does. Confirmed NOT part of
-    q24-region-merge-content-loss's own mechanism (see cause). The
-    question remains answerable (all three items' own circuits are shown
-    correctly inside figure-01.png, and the alternatives text below still
-    reads "Apenas os itens I e II estão certos." etc. unambiguously), but
-    the statement's own prose is missing two explicit item labels a
-    student would expect to see named before their own diagrams.
-  evidence: docs/phase-3o-report.md, Section P
+    RESOLVED IN PHASE 3Q: Q24's own item markers "I" and "II" (each a bare
+    one/two-character roman numeral, immediately introducing that item's
+    own small circuit diagram) previously did not appear anywhere in the
+    rendered statement at all, while item III's own marker did. Both are
+    now present, in the correct order, immediately before "Assinale a
+    opção correta." - confirmed by direct visual comparison against
+    figure-01.png (still showing all three item circuits I/II/III,
+    unaffected).
+  evidence: docs/phase-3o-report.md, Section P; docs/phase-3q-report.md, Section G/H
   id: q24-item-i-ii-markers-missing
   question_id: enade-2008-computing-q24
-  regression_tests: []
-  resolution: null
+  regression_tests:
+  - tests/test_extraction_pipeline_2008.py::test_q24_item_markers_i_and_ii_are_now_present
+  resolution: >-
+    RESOLVED (Phase 3Q): both markers are individually protected via
+    `protect_from_region_membership` overrides
+    (data/manifests/layout-overrides.yaml) - the merged region and
+    figure-01.png itself are completely unaffected.
   source_pages:
   - 12
+  status: resolved
+  superseded_by: null
+  visual_validation: failed
+- affected_assets:
+  - figure-01
+  category: non-textual-content-gap
+  cause: >-
+    NOT A DEFECT IN THE EXTRACTOR - a genuine, verified property of the
+    source PDF. Item III's own printed sentence ("...o grafico de f(x) =
+    sqrt(x) e as retas x = 0 e x = 2.") includes the function definition
+    "f(x) = sqrt(x)" drawn as vector artwork (`page.get_drawings()`
+    reports 9 path elements - lines and cubic-bezier curves - filling
+    exactly the gap between "o grafico de" (page 19, ends x1=405.0, y0=
+    483.3) and "e as retas x = 0 e x = 2." (starts x0=444.0, same y0)),
+    never as font characters - `page.get_text("rawdict")`/
+    `get_texttrace()` report zero spans/chars anywhere in that x-range on
+    that row. This is this booklet's own consistent, already-accepted
+    convention for inline mathematical notation - the SAME already-
+    published Q45 statement already omits two other formula images this
+    same way, neither ever flagged as a defect: "(f $ 0)" for "(f(x) >=
+    0)" in the intro, and the integral sign/expression itself in "como
+    resultado da integral ." Not a new or inconsistently-applied standard.
+  description: >-
+    Item III's own text reads "...o grafico de e as retas x = 0 e x = 2."
+    with a real, structurally-confirmed gap where the function definition
+    "f(x) = sqrt(x)" is drawn as vector artwork inside the same visual
+    region already published as figure-01.png (the drawing sits within
+    that image's own already-rendered extent, page 19, bbox
+    ~406.7,481.9-442.9,493.4) - never recoverable as canonical text
+    without either fabricating an unverified glyph sequence (explicitly
+    forbidden, PROMPT Phase 3Q Section 5) or building a dedicated small-
+    formula extraction path for vector-drawn inline math generally (out
+    of this phase's own scope - Section 12 hierarchy step 3/4 do not
+    apply here: there is no font/glyph identity to fingerprint or map,
+    since no font is involved at all).
+  evidence: docs/phase-3q-report.md, Section K; data/manifests/source-token-ledger-2008.yaml, token q45-item-iii-function-formula
+  id: q45-item-iii-formula-image-gap
+  question_id: enade-2008-computing-q45
+  regression_tests:
+  - tests/test_extraction_pipeline_2008.py::test_q45_item_iii_own_three_lines_are_now_complete
+  resolution: null
+  source_pages:
+  - 19
   status: open
   superseded_by: null
   visual_validation: failed
