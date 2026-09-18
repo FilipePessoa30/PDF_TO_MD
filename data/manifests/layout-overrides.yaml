@@ -1619,3 +1619,132 @@ overrides:
       is correctly never declared as a formula region.
     evidence: docs/phase-3w-report.md; docs/phase-3x-report.md
     status: reviewed
+  # --- Phase 3Y: Q8's own 5 alternatives, each a real, distinct embedded
+  # fine-art photograph (never a formula, drawing, or diagram) arranged in
+  # two horizontal rows (A/B/C; D/E) - the shape
+  # _attach_alternative_formula_regions's own Y-only row-slicing cannot
+  # represent (three markers sharing nearly the same Y, differing only in
+  # X). Each bbox below is the photograph's own exact embedded-image
+  # extent (page.get_image_info(), xrefs 50-54) - never the caption, which
+  # is instead recovered as real, genuinely extractable PDF text (never
+  # OCR, never fabricated attribution) and attached as the alternative's
+  # own text. Each individually re-verified via figures.verify_image_present
+  # before being trusted, and confirmed unique per alternative by direct
+  # visual re-render before being declared. ----
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 5
+    bbox: [50.5, 241.3, 194.0, 438.2]
+    rule: declare_raster_alternative_region
+    question_id: enade-2008-computing-q08
+    reason: >-
+      Alternative A's own content: "Homem idoso na poltrona" (Rembrandt
+      van Rijn, Louvre, Paris), xref 50, real embedded JPEG (DCTDecode,
+      sRGB, 198x272px, no soft mask, no rotation - transform is a plain
+      scale+translate). Bbox is the image's own exact
+      page.get_image_info() extent (50.999,241.799-193.442,437.639),
+      rounded outward. Marker "A" (bbox 36.8,346.3-?,356.2) sits to this
+      region's own left, vertically centered on it - see
+      docs/phase-3y-report.md for the full geometric matching evidence.
+    evidence: docs/phase-3y-report.md
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 5
+    bbox: [220.5, 242.0, 370.4, 436.4]
+    rule: declare_raster_alternative_region
+    question_id: enade-2008-computing-q08
+    reason: >-
+      Alternative B's own content: "Figura e borboleta" (Milton Dacosta),
+      xref 51, real embedded JPEG (DCTDecode, sRGB, 207x270px, no soft
+      mask, no rotation). Bbox is the image's own exact
+      page.get_image_info() extent (221.039,242.519-369.824,435.839),
+      rounded outward. Marker "B" (bbox 206.9,346.3-?,356.5) sits to this
+      region's own left, vertically centered on it. Same shape/reason as
+      alternative A above - see docs/phase-3y-report.md.
+    evidence: docs/phase-3y-report.md
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 5
+    bbox: [404.7, 238.3, 559.3, 435.8]
+    rule: declare_raster_alternative_region
+    question_id: enade-2008-computing-q08
+    reason: >-
+      Alternative C's own content: "O grito" (Edvard Munch, Museu Munch,
+      Oslo), xref 52, real embedded JPEG (DCTDecode, sRGB, 213x274px, no
+      soft mask, no rotation). Bbox is the image's own exact
+      page.get_image_info() extent (405.239,238.799-558.746,435.239),
+      rounded outward. Marker "C" (bbox 376.9,346.3-?,356.2) sits to this
+      region's own left, vertically centered on it. Same shape/reason as
+      alternative A above - see docs/phase-3y-report.md.
+    evidence: docs/phase-3y-report.md
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 5
+    bbox: [121.3, 520.3, 264.2, 723.0]
+    rule: declare_raster_alternative_region
+    question_id: enade-2008-computing-q08
+    reason: >-
+      Alternative D's own content: "Menino mordido por um lagarto"
+      (Michelangelo Merisi/Caravaggio, National Gallery, Londres), xref
+      53, real embedded JPEG (DCTDecode, sRGB, 197x280px, no soft mask, no
+      rotation). Bbox is the image's own exact page.get_image_info()
+      extent (121.799,520.799-263.626,722.399), rounded outward. Marker
+      "D" (bbox 107.6,632.0-?,642.0) sits to this region's own left,
+      vertically centered on it - second row, same shape/reason as
+      alternative A above - see docs/phase-3y-report.md.
+    evidence: docs/phase-3y-report.md
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 5
+    bbox: [291.4, 518.1, 464.4, 720.2]
+    rule: declare_raster_alternative_region
+    question_id: enade-2008-computing-q08
+    reason: >-
+      Alternative E's own content: "Abaporu" (Tarsila do Amaral), xref 54,
+      real embedded JPEG (DCTDecode, sRGB, 238x280px, no soft mask, no
+      rotation). Bbox is the image's own exact page.get_image_info()
+      extent (291.959,518.639-463.859,719.639), rounded outward. Marker
+      "E" (bbox 277.7,632.0-?,642.0) sits to this region's own left,
+      vertically centered on it - second row, same shape/reason as
+      alternative A above - see docs/phase-3y-report.md.
+    evidence: docs/phase-3y-report.md
+    status: reviewed
+  # detect_visual_regions's own general, owner-less raster merge (large
+  # candidates: images + nearby A/B/C/D/E marker labels, no
+  # per-alternative ownership concept) independently groups this page's 5
+  # photographs into two multi-image blobs - one per physical row - before
+  # any override is applied. Verified by direct instrumentation
+  # (docs/phase-3y-report.md): row 1 merges into bbox
+  # ~(36.8,238.8)-(559.1,459.7) (A+B+C+labels) and row 2 into bbox
+  # ~(36.8,408.6)-(529.0,751.9) (D+E+labels). Both are now redundant with,
+  # and strictly coarser than, the 5 individually-verified
+  # declare_raster_alternative_region entries above (one real photograph
+  # each, correctly attached to its own alternative with its own real
+  # caption) - left unsuppressed, row 1 renders as a spurious monolithic
+  # "Figura da questao" crop duplicating A+B+C's own already-published
+  # assets, and row 2 is silently dropped with a "fell after the
+  # alternatives cutoff" warning. Suppressed here explicitly (never by
+  # widening a general threshold, since this coarse owner-less merge is
+  # exactly the shape legitimately used elsewhere in the corpus, e.g.
+  # Q38's circuit) rather than changing detect_visual_regions itself.
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 5
+    bbox: [30.0, 232.0, 566.0, 466.0]
+    rule: suppress_visual_region
+    question_id: enade-2008-computing-q08
+    reason: >-
+      Row-1 merged blob (A+B+C photographs + their marker labels),
+      superseded by the 3 individual declare_raster_alternative_region
+      entries for alternatives A, B, C above. See docs/phase-3y-report.md.
+    evidence: docs/phase-3y-report.md
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 5
+    bbox: [30.0, 402.0, 536.0, 759.0]
+    rule: suppress_visual_region
+    question_id: enade-2008-computing-q08
+    reason: >-
+      Row-2 merged blob (D+E photographs + their marker labels),
+      superseded by the 2 individual declare_raster_alternative_region
+      entries for alternatives D, E above. See docs/phase-3y-report.md.
+    evidence: docs/phase-3y-report.md
+    status: reviewed

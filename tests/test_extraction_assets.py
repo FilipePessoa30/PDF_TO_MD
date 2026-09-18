@@ -232,3 +232,58 @@ def test_render_region_declared_inline_formula_crop_stays_tight(
     assert rendered.width_px < full_page_width_pt * RENDER_ZOOM
     expected_width_pt = 236.0 - 194.0
     assert rendered.width_px == pytest.approx(expected_width_pt * RENDER_ZOOM, abs=2)
+
+
+# --- PROMPT Fase 3Y: is_exact_raster_bbox skips render padding entirely ---
+
+
+def test_render_region_default_region_still_gets_vertical_padding(
+    blank_doc: pymupdf.Document, tmp_path
+):
+    # Baseline (every existing region in the corpus):
+    # is_exact_raster_bbox defaults to False, so the usual RENDER_PADDING
+    # still applies vertically - unchanged behavior.
+    from enade.extraction.assets import RENDER_PADDING, RENDER_ZOOM
+
+    region = VisualRegion(
+        page_number=1,
+        bbox=(100.0, 100.0, 200.0, 150.0),
+        element_count=1,
+        has_raster_image=True,
+        owner_x_bounds=(100.0, 200.0),
+    )
+    rendered = render_region(
+        blank_doc, region, tmp_path / "figure-01.png", "figure-01.png", "figure-01"
+    )
+    expected_height_pt = (150.0 + RENDER_PADDING) - (100.0 - RENDER_PADDING)
+    assert rendered.height_px == pytest.approx(expected_height_pt * RENDER_ZOOM, abs=2)
+
+
+def test_render_region_exact_raster_bbox_gets_no_padding_at_all(
+    blank_doc: pymupdf.Document, tmp_path
+):
+    """Regression test (PROMPT Fase 3Y): 2008-b Q8's own declared
+    raster-alternative regions come from a real embedded image's own
+    exact extent (``page.get_image_info()``), never an approximate,
+    hand-grown envelope - found by direct visual inspection to bleed in a
+    sliver of the neighboring marker letter (horizontal) and the
+    alternative's own caption text (vertical) when rendered with the
+    usual padding. ``is_exact_raster_bbox=True`` must crop to precisely
+    ``bbox`` - no vertical padding, and (combined with an
+    already-unpadded ``owner_x_bounds``) no horizontal widening either.
+    """
+    from enade.extraction.assets import RENDER_ZOOM
+
+    region = VisualRegion(
+        page_number=1,
+        bbox=(100.0, 100.0, 200.0, 150.0),
+        element_count=1,
+        has_raster_image=True,
+        owner_x_bounds=(100.0, 200.0),
+        is_exact_raster_bbox=True,
+    )
+    rendered = render_region(
+        blank_doc, region, tmp_path / "figure-01.png", "figure-01.png", "figure-01"
+    )
+    assert rendered.width_px == pytest.approx(100.0 * RENDER_ZOOM, abs=2)
+    assert rendered.height_px == pytest.approx(50.0 * RENDER_ZOOM, abs=2)

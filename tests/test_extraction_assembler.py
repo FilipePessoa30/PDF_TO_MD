@@ -11,7 +11,9 @@ from enade.extraction.assembler import (
     FigureSegment,
     TextSegment,
     _attach_alternative_formula_regions,
+    _attach_declared_raster_alternative_regions,
     _build_declared_inline_formula_regions,
+    _build_declared_raster_alternative_regions,
     _build_statement_segments,
     _find_inline_formula_insertion_index,
     _find_region_insertion_index,
@@ -715,6 +717,206 @@ def test_attach_alternative_formula_regions_none_when_no_region_overlaps():
     assert alternatives[0].figure_region_index is None
 
 
+# --- PROMPT Fase 3Y: _attach_declared_raster_alternative_regions (2008-b
+# Q8's own two-horizontal-row photograph group) ---
+
+
+def _marker(page: int, x0: float, y0: float, letter: str) -> Line:
+    return Line(page_number=page, text=letter, x0=x0, y0=y0, x1=x0 + 8.0, y1=y0 + 10.0)
+
+
+def _caption_line(page: int, x0: float, y0: float, text: str) -> Line:
+    return Line(page_number=page, text=text, x0=x0, y0=y0, x1=x0 + 80.0, y1=y0 + 6.0)
+
+
+def _photo_region(bbox: tuple[float, float, float, float]) -> VisualRegion:
+    return VisualRegion(
+        page_number=1,
+        bbox=bbox,
+        raw_bbox=bbox,
+        element_count=1,
+        has_raster_image=True,
+        owner_x_bounds=(bbox[0], bbox[2]),
+        is_exact_raster_bbox=True,
+    )
+
+
+def test_attach_declared_raster_alternative_regions_matches_by_position_and_builds_real_captions():
+    """2008-b Q8's own real shape (PROMPT Fase 3Y), scaled down: 3
+    markers (A/B/C) share nearly the same Y, each with its own photograph
+    region strictly to its own right, plus 2 markers (D/E) on a second
+    row. Each region's own real caption text (never fabricated) is
+    recovered from the genuine PDF line(s) sitting just below it.
+
+    Each row's own markers are given a slightly staggered Y (unlike the
+    real corpus, where all 3 share one exact Y) purely so this test's own
+    "closest center, all 5 matched, real captions built" assertions do
+    not also depend on the greedy per-letter processing order breaking an
+    exact tie - that narrower mechanism has its own dedicated test below.
+    """
+    markers = [
+        _marker(1, 30.0, 98.0, "A"),
+        _marker(1, 220.0, 100.0, "B"),
+        _marker(1, 410.0, 102.0, "C"),
+        _marker(1, 120.0, 300.0, "D"),
+        _marker(1, 290.0, 302.0, "E"),
+    ]
+    captions = [
+        _caption_line(1, 50.0, 158.0, "Legenda A linha 1"),
+        _caption_line(1, 50.0, 162.0, "Legenda A linha 2"),
+        _caption_line(1, 240.0, 161.0, "Legenda B"),
+        _caption_line(1, 430.0, 163.0, "Legenda C"),
+        _caption_line(1, 140.0, 363.0, "Legenda D"),
+        _caption_line(1, 310.0, 365.0, "Legenda E"),
+    ]
+    text_only_lines = markers + captions
+    alt_bounds = [0, 1, 2, 3, 4]  # markers are the first 5 entries
+    regions = [
+        _photo_region((50.0, 50.0, 190.0, 156.0)),  # y-center 103, closest to A (103)
+        _photo_region((240.0, 52.0, 380.0, 158.0)),  # y-center 105, closest to B (105)
+        _photo_region((430.0, 54.0, 570.0, 160.0)),  # y-center 107, closest to C (107)
+        _photo_region((140.0, 250.0, 260.0, 360.0)),  # y-center 305, closest to D (305)
+        _photo_region((310.0, 252.0, 450.0, 362.0)),  # y-center 307, closest to E (307)
+    ]
+    result = _attach_declared_raster_alternative_regions(
+        ["A", "B", "C", "D", "E"], text_only_lines, alt_bounds, regions
+    )
+    assert result is not None
+    alternatives, ordered_regions = result
+    assert [alt.letter for alt in alternatives] == ["A", "B", "C", "D", "E"]
+    assert [alt.figure_region_index for alt in alternatives] == [0, 1, 2, 3, 4]
+    assert ordered_regions == [regions[0], regions[1], regions[2], regions[3], regions[4]]
+    assert alternatives[0].text == "Legenda A linha 1 Legenda A linha 2"
+    assert alternatives[1].text == "Legenda B"
+    assert alternatives[2].text == "Legenda C"
+    assert alternatives[3].text == "Legenda D"
+    assert alternatives[4].text == "Legenda E"
+
+
+def test_attach_declared_raster_alternative_regions_none_when_fewer_regions_than_letters():
+    markers = [_marker(1, 30.0, 100.0, letter) for letter in "ABCDE"]
+    regions = [_photo_region((50.0, 95.0, 190.0, 200.0)) for _ in range(4)]
+    result = _attach_declared_raster_alternative_regions(
+        ["A", "B", "C", "D", "E"], markers, [0, 1, 2, 3, 4], regions
+    )
+    assert result is None
+
+
+def test_attach_declared_raster_alternative_regions_none_when_a_letter_has_no_region_to_its_right():
+    markers = [_marker(1, 30.0, 100.0, "A"), _marker(1, 220.0, 100.0, "B")]
+    # Both regions sit to the LEFT of marker B - never a valid candidate
+    # for it, regardless of how close their own Y-centers are.
+    regions = [
+        _photo_region((50.0, 95.0, 190.0, 200.0)),
+        _photo_region((0.0, 95.0, 15.0, 200.0)),
+    ]
+    result = _attach_declared_raster_alternative_regions(["A", "B"], markers, [0, 1], regions)
+    assert result is None
+
+
+def test_attach_declared_raster_alternative_regions_picks_closest_vertical_center_and_never_reuses_a_region():
+    marker_a = _marker(1, 30.0, 100.0, "A")  # y-center 105
+    marker_b = _marker(1, 30.0, 300.0, "B")  # y-center 305
+    close_to_a = _photo_region((50.0, 90.0, 190.0, 120.0))  # y-center 105
+    close_to_b = _photo_region((50.0, 290.0, 190.0, 320.0))  # y-center 305
+    # Both regions sit to the right of both markers, so a naive "first
+    # candidate" pick could wrongly reuse close_to_a for B if it were not
+    # also excluded once consumed by A.
+    result = _attach_declared_raster_alternative_regions(
+        ["A", "B"], [marker_a, marker_b], [0, 1], [close_to_b, close_to_a]
+    )
+    assert result is not None
+    alternatives, ordered_regions = result
+    assert ordered_regions == [close_to_a, close_to_b]
+    assert alternatives[0].letter == "A" and alternatives[1].letter == "B"
+
+
+def test_attach_declared_raster_alternative_regions_caption_respects_x_tolerance_and_gap():
+    marker = _marker(1, 30.0, 100.0, "A")
+    region = _photo_region((50.0, 95.0, 190.0, 200.0))
+    aligned_close = _caption_line(1, 51.0, 205.0, "Legenda real")
+    misaligned_x = _caption_line(1, 90.0, 205.0, "Fora de alinhamento")
+    too_far_below = _caption_line(1, 51.0, 400.0, "Muito distante")
+    text_only_lines = [marker, aligned_close, misaligned_x, too_far_below]
+    result = _attach_declared_raster_alternative_regions(["A"], text_only_lines, [0], [region])
+    assert result is not None
+    alternatives, _ = result
+    assert alternatives[0].text == "Legenda real"
+
+
+def test_attach_declared_raster_alternative_regions_empty_caption_is_valid():
+    # No real caption line at all is a legitimate shape (never fabricated
+    # text) - the alternative is still built, backed entirely by its asset.
+    marker = _marker(1, 30.0, 100.0, "A")
+    region = _photo_region((50.0, 95.0, 190.0, 200.0))
+    result = _attach_declared_raster_alternative_regions(["A"], [marker], [0], [region])
+    assert result is not None
+    alternatives, _ = result
+    assert alternatives[0].text == ""
+
+
+def _page_with_image(rect: tuple[float, float, float, float]) -> pymupdf.Document:
+    doc = pymupdf.open()
+    page = doc.new_page(width=600, height=800)
+    pixmap = pymupdf.Pixmap(pymupdf.csRGB, (0, 0, 4, 4), False)
+    pixmap.set_rect(pixmap.irect, (200, 0, 0))
+    page.insert_image(pymupdf.Rect(*rect), pixmap=pixmap)
+    return doc
+
+
+def _raster_alternative_override(bbox: tuple[float, float, float, float]) -> LayoutOverride:
+    return LayoutOverride(
+        pdf_sha256="a" * 64,
+        page=1,
+        bbox=bbox,
+        rule="declare_raster_alternative_region",
+        question_id="enade-2008-computing-q08",
+        reason="test",
+        evidence="test",
+        status="reviewed",
+    )
+
+
+def test_build_declared_raster_alternative_regions_none_without_overrides():
+    doc = pymupdf.open()
+    doc.new_page(width=600, height=800)
+    assert _build_declared_raster_alternative_regions(doc, 1, None, "a" * 64) == []
+
+
+def test_build_declared_raster_alternative_regions_none_when_no_matching_declaration():
+    doc = pymupdf.open()
+    doc.new_page(width=600, height=800)
+    overrides = LayoutOverrideSet(overrides=[])
+    assert _build_declared_raster_alternative_regions(doc, 1, overrides, "a" * 64) == []
+
+
+def test_build_declared_raster_alternative_regions_skips_a_declaration_with_no_real_image():
+    doc = pymupdf.open()
+    doc.new_page(width=600, height=800)  # blank - no images anywhere
+    overrides = LayoutOverrideSet(
+        overrides=[_raster_alternative_override((50.0, 95.0, 190.0, 200.0))]
+    )
+    assert _build_declared_raster_alternative_regions(doc, 1, overrides, "a" * 64) == []
+
+
+def test_build_declared_raster_alternative_regions_builds_an_exact_unpadded_region():
+    bbox = (50.0, 95.0, 190.0, 200.0)
+    doc = _page_with_image(bbox)
+    overrides = LayoutOverrideSet(overrides=[_raster_alternative_override(bbox)])
+    built = _build_declared_raster_alternative_regions(doc, 1, overrides, "a" * 64)
+    assert len(built) == 1
+    region = built[0]
+    assert region.bbox == bbox
+    assert region.has_raster_image is True
+    assert region.is_declared_inline_formula is False
+    assert region.is_exact_raster_bbox is True
+    # No padding on either side - unlike every other asset in the corpus,
+    # this bbox is already the embedded image's own exact extent (PROMPT
+    # Fase 3Y: padding here would only ever pull in a neighboring marker
+    # label or caption, never protect real content).
+    assert region.owner_x_bounds == (bbox[0], bbox[2])
+
+
 def test_detect_broken_words_flags_ligature_artifact():
     text = "Isso é uma questi onada com um problema de justi ficação."
     hits = detect_broken_words(text)
@@ -1025,6 +1227,81 @@ def test_assemble_question_does_not_attach_a_region_across_a_narrow_column_gap()
     baseline = compute_decorative_baseline(doc)
     result = assemble_question(span, doc, baseline)
     assert result.figure_regions == []
+
+
+def test_assemble_question_declared_inline_formula_alternatives_are_never_hijacked_by_raster_mechanism():
+    """Regression test (PROMPT Fase 3Y): 2008-b Q38's own real shape - 5
+    alternatives, each backed by an individually-declared
+    ``declare_inline_formula_region`` override (never a raster photograph)
+    sitting strictly to its own marker's right, one per row. Found by full
+    corpus regeneration to be silently re-matched by the new
+    ``_attach_declared_raster_alternative_regions`` mechanism when it was
+    (wrongly) given the *entire* unfiltered region list: that function's
+    own "closest region to this marker's right" matching has no notion of
+    *why* a region sits there, so it happily re-selected these same 5
+    already-correctly-declared formula regions - bypassing
+    ``_attach_alternative_formula_regions``'s own row-clipping and
+    silently changing each rendered crop's own height (docs/phase-3y-
+    report.md). The caller must filter to ``is_exact_raster_bbox`` regions
+    (set only by the raster mechanism's own region-builder) before ever
+    calling the raster attach function, so a declared-formula-only
+    question like this one takes the untouched, pre-existing code path.
+    """
+    import pymupdf
+
+    from enade.extraction.assembler import assemble_question
+    from enade.extraction.boundaries import QuestionKind, QuestionSpan
+
+    doc = pymupdf.open()
+    page = doc.new_page(width=600, height=800)
+    formula_bboxes = [
+        (200.0, 100.0, 260.0, 110.0),
+        (200.0, 120.0, 260.0, 130.0),
+        (200.0, 140.0, 260.0, 150.0),
+        (200.0, 160.0, 260.0, 170.0),
+        (200.0, 180.0, 260.0, 190.0),
+    ]
+    for x0, y0, x1, y1 in formula_bboxes:
+        shape = page.new_shape()
+        shape.draw_line((x0, y0), (x1, y1))
+        shape.finish()
+        shape.commit()
+
+    lines = [
+        Line(page_number=1, text="Enunciado da questao.", x0=30.0, y0=50.0, x1=300.0, y1=62.0),
+        Line(page_number=1, text="A", x0=30.0, y0=101.0, x1=38.0, y1=111.0),
+        Line(page_number=1, text="B", x0=30.0, y0=121.0, x1=38.0, y1=131.0),
+        Line(page_number=1, text="C", x0=30.0, y0=141.0, x1=38.0, y1=151.0),
+        Line(page_number=1, text="D", x0=30.0, y0=161.0, x1=38.0, y1=171.0),
+        Line(page_number=1, text="E", x0=30.0, y0=181.0, x1=38.0, y1=191.0),
+    ]
+    span = QuestionSpan(
+        kind=QuestionKind.OBJECTIVE, number=38, lines=tuple(lines), start_page=1, end_page=1
+    )
+    pdf_sha256 = "b" * 64
+    overrides = LayoutOverrideSet(
+        overrides=[
+            LayoutOverride(
+                pdf_sha256=pdf_sha256,
+                page=1,
+                bbox=bbox,
+                rule="declare_inline_formula_region",
+                question_id="enade-2008-computing-q38",
+                reason="test",
+                evidence="test",
+                status="reviewed",
+            )
+            for bbox in formula_bboxes
+        ]
+    )
+    result = assemble_question(span, doc, frozenset(), overrides=overrides, pdf_sha256=pdf_sha256)
+    assert len(result.alternatives) == 5
+    for alt in result.alternatives:
+        assert alt.text == ""
+        assert alt.figure_region_index is not None
+        region = result.figure_regions[alt.figure_region_index]
+        assert region.is_declared_inline_formula is True
+        assert region.is_exact_raster_bbox is False
 
 
 # --- Phase 3F: owner_exclusion_gate rejects a region owned by another span ---

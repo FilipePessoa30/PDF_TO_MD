@@ -43,6 +43,7 @@ from enade.extraction.figures import (
     detect_visual_regions,
     dominant_left_margin_by_text_length,
     verify_drawings_present,
+    verify_image_present,
 )
 from enade.extraction.fragment_reconstruction import FragmentMergeTrace
 from enade.extraction.label_normalization import LabelCorrection
@@ -1415,6 +1416,115 @@ def _attach_alternative_formula_regions(
     return extra_regions, consumed_ids
 
 
+#: Horizontal tolerance (points) for matching a declared raster-alternative
+#: region's own left edge to the printed caption immediately below it
+#: (PROMPT Fase 3Y) - both sit at the same left margin in every observed
+#: case (2008-b Q8's own 5 members), a few points looser than exact to
+#: absorb ordinary sub-pixel/font-metric jitter.
+_RASTER_ALTERNATIVE_CAPTION_X_TOLERANCE = 6.0
+#: Maximum vertical gap (points) between a declared raster-alternative
+#: region's own bottom edge and its own caption's first line - real
+#: captions in this corpus sit within a couple of points of the image they
+#: describe (2008-b Q8's own narrowest gap: 1.86pt), never far enough to
+#: risk reaching into a different, unrelated line.
+_RASTER_ALTERNATIVE_CAPTION_MAX_GAP = 10.0
+
+
+def _attach_declared_raster_alternative_regions(
+    ordered_letters: list[str],
+    text_only_lines: list[Line],
+    alt_bounds: list[int],
+    declared_regions: list[VisualRegion],
+) -> tuple[list[ExtractedAlternative], list[VisualRegion]] | None:
+    """Build all 5 alternatives directly from individually-declared,
+    positively-verified raster-image regions, for a horizontally-arranged
+    alternative-image group (PROMPT Fase 3Y) - e.g. 2008-b Q8's own 5
+    fine-art photographs, one per alternative, laid out in two rows
+    (A/B/C; D/E) rather than the single vertical column
+    ``_attach_alternative_formula_regions``'s own Y-only row-slicing
+    requires. Three alternatives sharing nearly the same marker Y,
+    differing only in X, break that function's own row-boundary math (a
+    "row" spanning from one marker's own y0 to the *next* marker's own y0
+    computes a zero-height range whenever two markers share a Y) - worse,
+    letting the *general* per-letter text-slicing loop this function is
+    called instead of run at all silently concatenates every intervening
+    line - including every other alternative's own caption - into
+    whichever letter happens to sit immediately before the next marker in
+    reading order: confirmed by direct instrumentation, 2008-b Q8's own
+    letter "C" absorbed all of A/B/C's own captions at once as its own
+    ``text``, "E" absorbed both D's and its own, while A/B/D were left
+    empty - not simply "A is empty" as the first-surfaced validation error
+    alone suggested.
+
+    Called *instead of*, never alongside, the general
+    ``assign_alternative_content``/per-letter-slicing loop - the caller
+    must skip that loop entirely when this returns non-``None``, so the
+    wrong concatenation above is never produced in the first place, rather
+    than detected and patched after the fact.
+
+    Matching a declared region to its own letter uses two simultaneous,
+    real geometric signals - a marker-shaped bare letter alone is never
+    enough: (1) the region must sit to the marker's own right (never
+    above/below/left - the source prints each circled letter immediately
+    left of its own photograph); (2) among regions satisfying (1), the one
+    whose own vertical center is closest to the marker's own vertical
+    center wins - the source vertically centers each marker on its own
+    photograph. Each declared region is used for at most one letter
+    (bijective assignment, tracked via ``used_region_ids``).
+
+    Returns ``None`` (never a partial result) unless every one of the 5
+    ordered letters can be matched to its own declared region this way -
+    matching this project's own "no silently-partial fix" rule: a group
+    that cannot be fully resolved is left entirely to the existing,
+    general per-letter mechanism (which keeps failing loudly with its own
+    "text is empty" error, exactly as before, rather than half-publishing
+    a mix of correct and silently-wrong alternatives).
+    """
+    if len(declared_regions) < len(ordered_letters):
+        return None
+
+    marker_lines = [text_only_lines[b] for b in alt_bounds[: len(ordered_letters)]]
+    used_region_ids: set[int] = set()
+    matched: dict[str, VisualRegion] = {}
+    for letter, marker in zip(ordered_letters, marker_lines, strict=True):
+        marker_y_center = (marker.y0 + marker.y1) / 2
+        candidates = [
+            r
+            for r in declared_regions
+            if id(r) not in used_region_ids
+            and r.page_number == marker.page_number
+            and marker.x1 <= r.bbox[0]
+        ]
+        if not candidates:
+            return None
+        best = min(candidates, key=lambda r: abs((r.bbox[1] + r.bbox[3]) / 2 - marker_y_center))
+        used_region_ids.add(id(best))
+        matched[letter] = best
+
+    alternatives: list[ExtractedAlternative] = []
+    ordered_regions: list[VisualRegion] = []
+    for i, letter in enumerate(ordered_letters):
+        region = matched[letter]
+        marker = marker_lines[i]
+        caption_lines = sorted(
+            (
+                ln
+                for ln in text_only_lines
+                if ln.page_number == region.page_number
+                and ln is not marker
+                and abs(ln.x0 - region.bbox[0]) <= _RASTER_ALTERNATIVE_CAPTION_X_TOLERANCE
+                and region.bbox[3] <= ln.y0 <= region.bbox[3] + _RASTER_ALTERNATIVE_CAPTION_MAX_GAP
+            ),
+            key=lambda ln: ln.y0,
+        )
+        caption_text = " ".join(ln.text.strip() for ln in caption_lines)
+        ordered_regions.append(region)
+        alternatives.append(
+            ExtractedAlternative(letter=letter, text=caption_text, figure_region_index=i)
+        )
+    return alternatives, ordered_regions
+
+
 #: How close (points) two items' own Y-ranges must overlap to be treated
 #: as sitting on the same visual row, for ``_merge_alternative_reading_order``
 #: - a small inline formula image often has a slightly different own y0
@@ -1610,6 +1720,69 @@ def _build_declared_inline_formula_regions(
     return built
 
 
+def _build_declared_raster_alternative_regions(
+    doc: pymupdf.Document,
+    page_number: int,
+    overrides: LayoutOverrideSet | None,
+    pdf_sha256: str,
+) -> list[VisualRegion]:
+    """Individually-declared raster-alternative-image regions for
+    ``page_number`` (PROMPT Fase 3Y) - never produced by any general
+    geometric rule, and never routed through
+    ``figures.detect_visual_regions``'s own merge/dedup pipeline (same
+    reasoning as ``_build_declared_inline_formula_regions``: 2008-b Q8's
+    own 3 same-row photographs would otherwise merge into one
+    ``region_merge_x_tolerance``-driven blob, exactly the pre-existing
+    defect this declaration exists to bypass).
+
+    Deliberately a separate function from
+    ``_build_declared_inline_formula_regions`` even though the two are
+    structurally similar, never sharing a code path with it: a vector-
+    drawn formula and a raster photograph are different documentary
+    types (``verify_drawings_present`` vs. ``verify_image_present``,
+    ``is_declared_inline_formula`` vs. ``has_raster_image``), and
+    conflating them would misrepresent what each region actually is.
+    Each declared bbox still requires positive, structural evidence
+    (``verify_image_present`` - a real embedded raster image
+    substantially contained in the bbox) before being trusted at all; an
+    override whose bbox has no such image on the real page produces no
+    region and therefore has no effect. No ``question_regions``/ownership
+    parameter: unlike a statement-level formula, these regions are never
+    attached by generic region-membership - ``_attach_declared_raster_
+    alternative_regions`` assigns each one to its own alternative letter
+    directly, so no owner attribution is needed here.
+    """
+    if overrides is None:
+        return []
+    declared_bboxes = overrides.declared_raster_alternative_regions(pdf_sha256, page_number)
+    if not declared_bboxes:
+        return []
+    page = doc[page_number - 1]
+    built: list[VisualRegion] = []
+    for bbox in declared_bboxes:
+        if verify_image_present(page, bbox) == 0:
+            continue
+        built.append(
+            VisualRegion(
+                page_number=page_number,
+                bbox=bbox,
+                raw_bbox=bbox,
+                element_count=1,
+                has_raster_image=True,
+                # Never widened to the page's own column/owner bounds like
+                # every other asset in this corpus: 2008-b Q8's own 3
+                # photographs sharing one row (A/B/C) sit only 27.6-35.4pt
+                # apart, so widening to the column would capture a
+                # neighboring alternative's own photograph in the same
+                # crop. No padding either (see is_exact_raster_bbox) - the
+                # bbox is already this image's own exact extent.
+                owner_x_bounds=(bbox[0], bbox[2]),
+                is_exact_raster_bbox=True,
+            )
+        )
+    return built
+
+
 def assemble_question(
     span: QuestionSpan,
     doc: pymupdf.Document,
@@ -1720,6 +1893,12 @@ def assemble_question(
             overrides,
             pdf_sha256,
             (question_regions_by_page or {}).get(page_number),
+        )
+        page_regions = page_regions + _build_declared_raster_alternative_regions(
+            doc,
+            page_number,
+            overrides,
+            pdf_sha256,
         )
         bounds = page_y_bounds.get(page_number)
         x_bounds = page_x_bounds.get(page_number)
@@ -2031,90 +2210,128 @@ def assemble_question(
 
             ordered_letters = ["A", "B", "C", "D", "E"]
             alt_bounds = [starts[letter] for letter in ordered_letters] + [len(text_only_lines)]
-            # PROMPT Phase 3P: a trailing line inside a letter's own naive
-            # index range is only ever a genuine continuation of that
-            # letter's own text when its own x0 matches an accepted
-            # marker's own margin (the same evidence
-            # ``_in_alternatives_section`` already uses to decide whether a
-            # line is exempt from region-exclusion, applied here to the
-            # content itself) - otherwise it is real, structurally-
-            # demonstrated contamination (reflowed to the statement when a
-            # visual region's own column explains it) or an unresolved
-            # ambiguity (retained exactly where naive assignment already
-            # put it - the safe default, identical to pre-Phase-3P
-            # behavior). See alternative_content_assignment.py.
-            alt_marker_x0s = tuple(text_only_lines[starts[letter]].x0 for letter in ordered_letters)
-            assignment_result = assign_alternative_content(
-                ordered_letters=tuple(ordered_letters),
-                alt_bounds=alt_bounds,
-                text_only_lines=text_only_lines,
-                marker_x0s=alt_marker_x0s,
-                continuation_tolerance=_ALTERNATIVE_CONTINUATION_X_TOLERANCE,
-                regions=regions,
-                question_owner=own_key,
-                group_id=own_key,
+
+            # PROMPT Fase 3Y: a horizontally-arranged alternative-image
+            # group (2008-b Q8's own 5 fine-art photographs, two rows of
+            # A/B/C and D/E, three markers sharing nearly the same Y) is
+            # tried *first*, and completely replaces the general
+            # per-letter mechanism below when it succeeds - never run
+            # alongside it. See _attach_declared_raster_alternative_regions's
+            # own docstring for why: letting the general, Y-slice-based
+            # loop run at all for this shape silently concatenates every
+            # other alternative's own caption into whichever letter
+            # happens to sit immediately before the next marker in
+            # reading order, rather than merely leaving affected letters
+            # empty.
+            #
+            # Filtered to ``is_exact_raster_bbox`` regions only - never
+            # the raw ``regions`` list - because that flag is set
+            # exclusively by ``_build_declared_raster_alternative_regions``
+            # (gated behind an explicit ``declare_raster_alternative_region``
+            # override) and by nothing else. Passing the unfiltered list
+            # was tried first and rejected after full corpus regression
+            # found it hijacked 2008-b Q38: that question's own 5
+            # `declare_inline_formula_region` regions also sit strictly to
+            # the right of their own markers, so the "closest region to
+            # the right of this marker" matching here wrongly claimed them
+            # instead of leaving them to the already-correct
+            # `_attach_alternative_formula_regions` row-slicing mechanism
+            # below (see docs/phase-3y-report.md).
+            raster_candidate_regions = [r for r in regions if r.is_exact_raster_bbox]
+            raster_alternative_result = _attach_declared_raster_alternative_regions(
+                ordered_letters, text_only_lines, alt_bounds, raster_candidate_regions
             )
-            alternative_content_assignments = assignment_result.assignments
-            for i, letter in enumerate(ordered_letters):
-                letter_lines = text_only_lines[alt_bounds[i] : alt_bounds[i + 1]]
-                if not letter_lines:
-                    warnings.append(f"alternative {letter} has no text")
-                    continue
-                first_match = _ALTERNATIVE_LINE_RE.match(letter_lines[0].text)
-                assert first_match is not None  # guaranteed by find_alternative_group
-                first_text = (first_match.group(2) or "").strip()
-                kept_lines = assignment_result.retained_by_letter[letter]
-                rest_text = " ".join(ln.text.strip() for ln in kept_lines)
-                full_text = f"{first_text} {rest_text}".strip() if rest_text else first_text
-                alternatives.append(ExtractedAlternative(letter=letter, text=full_text))
-
-            if assignment_result.reflowed_to_statement:
-                # Appended after every already-ordered statement line,
-                # never interleaved by a naive (page, y0) re-sort of the
-                # whole list (PROMPT Phase 3P section 13): statement_lines
-                # may already carry a genuine multi-column or zone-aware
-                # order of its own (extract_page_lines's own column-major
-                # sort, or reading_zones's), which a flat y0 re-sort would
-                # risk inverting. A reflowed line keeps its own relative
-                # order against any other reflowed line; landing at the
-                # end of the statement rather than beside its own visual
-                # region is the deliberately conservative trade-off - the
-                # content is present and unambiguously part of the
-                # statement, never lost or misattributed to an
-                # alternative, even though its exact position is not
-                # pixel-perfect against the source page.
-                statement_lines = [*statement_lines, *assignment_result.reflowed_to_statement]
-                reflowed_lines_for_statement = assignment_result.reflowed_to_statement
-
-            alt_figure_regions, consumed_ids = _attach_alternative_formula_regions(
-                alternatives, text_only_lines, alt_bounds, regions
-            )
-
-            # A second, distinct pattern (PROMPT Phase 2F section 7): an
-            # alternative with *real* text that also interleaves one or
-            # more small formula images (2011 Q23's own D/E) - skipped
-            # entirely for any alternative the wholly-empty mechanism
-            # above already claimed. Its own region indices are 0-based
-            # within its own returned list, so they are offset past
-            # alt_figure_regions's own count before the two lists merge.
-            inline_regions, inline_consumed_ids = _attach_alternative_inline_segments(
-                alternatives, text_only_lines, alt_bounds, regions
-            )
-            if inline_regions:
-                base = len(alt_figure_regions)
-                for alt in alternatives:
-                    if alt.segments is not None:
-                        alt.segments = [
-                            FigureSegment(region_index=seg.region_index + base)
-                            if isinstance(seg, FigureSegment)
-                            else seg
-                            for seg in alt.segments
-                        ]
-                alt_figure_regions = alt_figure_regions + inline_regions
-                consumed_ids = consumed_ids | inline_consumed_ids
-
-            if alt_figure_regions:
+            if raster_alternative_result is not None:
+                alternatives, alt_figure_regions = raster_alternative_result
+                consumed_ids = {id(r) for r in alt_figure_regions}
                 statement_regions = [r for r in statement_regions if id(r) not in consumed_ids]
+            else:
+                # PROMPT Phase 3P: a trailing line inside a letter's own naive
+                # index range is only ever a genuine continuation of that
+                # letter's own text when its own x0 matches an accepted
+                # marker's own margin (the same evidence
+                # ``_in_alternatives_section`` already uses to decide whether a
+                # line is exempt from region-exclusion, applied here to the
+                # content itself) - otherwise it is real, structurally-
+                # demonstrated contamination (reflowed to the statement when a
+                # visual region's own column explains it) or an unresolved
+                # ambiguity (retained exactly where naive assignment already
+                # put it - the safe default, identical to pre-Phase-3P
+                # behavior). See alternative_content_assignment.py.
+                alt_marker_x0s = tuple(
+                    text_only_lines[starts[letter]].x0 for letter in ordered_letters
+                )
+                assignment_result = assign_alternative_content(
+                    ordered_letters=tuple(ordered_letters),
+                    alt_bounds=alt_bounds,
+                    text_only_lines=text_only_lines,
+                    marker_x0s=alt_marker_x0s,
+                    continuation_tolerance=_ALTERNATIVE_CONTINUATION_X_TOLERANCE,
+                    regions=regions,
+                    question_owner=own_key,
+                    group_id=own_key,
+                )
+                alternative_content_assignments = assignment_result.assignments
+                for i, letter in enumerate(ordered_letters):
+                    letter_lines = text_only_lines[alt_bounds[i] : alt_bounds[i + 1]]
+                    if not letter_lines:
+                        warnings.append(f"alternative {letter} has no text")
+                        continue
+                    first_match = _ALTERNATIVE_LINE_RE.match(letter_lines[0].text)
+                    assert first_match is not None  # guaranteed by find_alternative_group
+                    first_text = (first_match.group(2) or "").strip()
+                    kept_lines = assignment_result.retained_by_letter[letter]
+                    rest_text = " ".join(ln.text.strip() for ln in kept_lines)
+                    full_text = f"{first_text} {rest_text}".strip() if rest_text else first_text
+                    alternatives.append(ExtractedAlternative(letter=letter, text=full_text))
+
+                if assignment_result.reflowed_to_statement:
+                    # Appended after every already-ordered statement line,
+                    # never interleaved by a naive (page, y0) re-sort of the
+                    # whole list (PROMPT Phase 3P section 13): statement_lines
+                    # may already carry a genuine multi-column or zone-aware
+                    # order of its own (extract_page_lines's own column-major
+                    # sort, or reading_zones's), which a flat y0 re-sort would
+                    # risk inverting. A reflowed line keeps its own relative
+                    # order against any other reflowed line; landing at the
+                    # end of the statement rather than beside its own visual
+                    # region is the deliberately conservative trade-off - the
+                    # content is present and unambiguously part of the
+                    # statement, never lost or misattributed to an
+                    # alternative, even though its exact position is not
+                    # pixel-perfect against the source page.
+                    statement_lines = [*statement_lines, *assignment_result.reflowed_to_statement]
+                    reflowed_lines_for_statement = assignment_result.reflowed_to_statement
+
+                alt_figure_regions, consumed_ids = _attach_alternative_formula_regions(
+                    alternatives, text_only_lines, alt_bounds, regions
+                )
+
+                # A second, distinct pattern (PROMPT Phase 2F section 7): an
+                # alternative with *real* text that also interleaves one or
+                # more small formula images (2011 Q23's own D/E) - skipped
+                # entirely for any alternative the wholly-empty mechanism
+                # above already claimed. Its own region indices are 0-based
+                # within its own returned list, so they are offset past
+                # alt_figure_regions's own count before the two lists merge.
+                inline_regions, inline_consumed_ids = _attach_alternative_inline_segments(
+                    alternatives, text_only_lines, alt_bounds, regions
+                )
+                if inline_regions:
+                    base = len(alt_figure_regions)
+                    for alt in alternatives:
+                        if alt.segments is not None:
+                            alt.segments = [
+                                FigureSegment(region_index=seg.region_index + base)
+                                if isinstance(seg, FigureSegment)
+                                else seg
+                                for seg in alt.segments
+                            ]
+                    alt_figure_regions = alt_figure_regions + inline_regions
+                    consumed_ids = consumed_ids | inline_consumed_ids
+
+                if alt_figure_regions:
+                    statement_regions = [r for r in statement_regions if id(r) not in consumed_ids]
 
     segments, placed_region_indices, placed_table_indices = _build_statement_segments(
         statement_lines,

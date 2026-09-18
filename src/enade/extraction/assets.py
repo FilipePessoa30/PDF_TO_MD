@@ -82,6 +82,7 @@ def _render_bbox(
     asset_id: str,
     asset_type: AssetType,
     column_bounds: tuple[float, float] | None = None,
+    vertical_padding: float = RENDER_PADDING,
 ) -> RenderedAsset:
     page = doc[page_number - 1]
     content_x0 = page.rect.x0 + PAGE_CONTENT_MARGIN
@@ -91,9 +92,9 @@ def _render_bbox(
         content_x1 = min(content_x1, column_bounds[1])
     clip = pymupdf.Rect(
         min(bbox[0], content_x0),
-        bbox[1] - RENDER_PADDING,
+        bbox[1] - vertical_padding,
         max(bbox[2], content_x1),
-        bbox[3] + RENDER_PADDING,
+        bbox[3] + vertical_padding,
     )
     clip = clip & page.rect  # clamp to the physical page
 
@@ -146,6 +147,7 @@ def render_region(
         asset_id,
         asset_type,
         column_bounds=region.owner_x_bounds,
+        vertical_padding=0.0 if region.is_exact_raster_bbox else RENDER_PADDING,
     )
 
 

@@ -9,7 +9,7 @@
   "pipeline_version": "0.1.0",
   "data_contract_version": "1.1.0",
   "maturity": "provisional",
-  "verified_count": 77,
+  "verified_count": 78,
   "needs_review_count": 2,
   "unresolved_question_ids": [
     "enade-2008-computing-d09",
@@ -227,6 +227,41 @@
           "id": "figure-01",
           "path": "enade-2008-computing-q07/figure-01.png",
           "sha256": "a07f6b03ceaab89070058c3c30b9b11214f3e109b3dba54a1317433b38883670"
+        }
+      ]
+    },
+    {
+      "id": "enade-2008-computing-q08",
+      "markdown_path": "enade-2008-computing-q08.md",
+      "markdown_sha256": "26b585bd61d08c4e3ca0d27692609931993fed1e254ae0d17a14634b65952778",
+      "extraction_status": "verified",
+      "automatic_validation": "passed",
+      "visual_validation": "passed",
+      "assets": [
+        {
+          "id": "figure-01",
+          "path": "enade-2008-computing-q08/figure-01.png",
+          "sha256": "313d3c25b05f3be4986376b0c4daa8d66efa69ea762cedd11cfe0a87e14e4dfd"
+        },
+        {
+          "id": "figure-02",
+          "path": "enade-2008-computing-q08/figure-02.png",
+          "sha256": "d1b1db475aee8d30b7fac9bec82ac50cb41c15e8f2cf6948b856376cc263d203"
+        },
+        {
+          "id": "figure-03",
+          "path": "enade-2008-computing-q08/figure-03.png",
+          "sha256": "2f1bf05347b01d3236b44047bbe92dc82dad5bf4dc248807e13b90433a13b5f0"
+        },
+        {
+          "id": "figure-04",
+          "path": "enade-2008-computing-q08/figure-04.png",
+          "sha256": "9b8f97751fabe0a27974af3fd72aa3db0afd6d47d2489700c9fb5bcbbe731b50"
+        },
+        {
+          "id": "figure-05",
+          "path": "enade-2008-computing-q08/figure-05.png",
+          "sha256": "69b08046ed0d97aebe573169929caf5c1f455480db7932ea3b5a07c877460b7a"
         }
       ]
     },

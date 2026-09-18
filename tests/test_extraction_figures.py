@@ -17,6 +17,7 @@ from enade.extraction.figures import (
     _merge_overlapping_regions,
     _rects_touch,
     verify_drawings_present,
+    verify_image_present,
 )
 from enade.extraction.layout import Line
 
@@ -28,6 +29,15 @@ def _page_with_drawing(rect: tuple[float, float, float, float]) -> pymupdf.Page:
     shape.draw_line((rect[0], rect[1]), (rect[2], rect[3]))
     shape.finish()
     shape.commit()
+    return page
+
+
+def _page_with_image(rect: tuple[float, float, float, float]) -> pymupdf.Page:
+    doc = pymupdf.open()
+    page = doc.new_page(width=600, height=800)
+    pixmap = pymupdf.Pixmap(pymupdf.csRGB, (0, 0, 4, 4), False)
+    pixmap.set_rect(pixmap.irect, (200, 0, 0))
+    page.insert_image(pymupdf.Rect(*rect), pixmap=pixmap)
     return page
 
 
@@ -520,3 +530,51 @@ def test_visual_region_is_declared_inline_formula_defaults_false():
     # False - the new field is purely additive.
     region = VisualRegion(page_number=1, bbox=(0.0, 0.0, 10.0, 10.0), element_count=1)
     assert region.is_declared_inline_formula is False
+
+
+def test_visual_region_is_exact_raster_bbox_defaults_false():
+    region = VisualRegion(page_number=1, bbox=(0.0, 0.0, 10.0, 10.0), element_count=1)
+    assert region.is_exact_raster_bbox is False
+
+
+# --- PROMPT Fase 3Y: verify_image_present (structural evidence gate for a
+# declared raster-alternative region, e.g. 2008-b Q8's own photographs) ---
+
+
+def test_verify_image_present_counts_a_substantially_contained_image():
+    page = _page_with_image((10.0, 10.0, 110.0, 110.0))
+    assert verify_image_present(page, (8.0, 8.0, 112.0, 112.0)) == 1
+
+
+def test_verify_image_present_zero_when_bbox_is_empty_space():
+    """Same safety property as verify_drawings_present's own (PROMPT Fase
+    3Y): a declared bbox with no real embedded image must never be
+    trusted, so ``assembler._build_declared_raster_alternative_regions``
+    never builds a region for content that does not actually exist there.
+    """
+    page = _page_with_image((10.0, 10.0, 110.0, 110.0))
+    assert verify_image_present(page, (400.0, 400.0, 500.0, 500.0)) == 0
+
+
+def test_verify_image_present_zero_on_a_page_with_no_images_at_all():
+    doc = pymupdf.open()
+    page = doc.new_page(width=600, height=800)
+    assert verify_image_present(page, (10.0, 10.0, 110.0, 110.0)) == 0
+
+
+def test_verify_image_present_zero_when_bbox_only_partially_overlaps():
+    # A bbox that only clips a corner of the real image (well under the
+    # default 90% containment threshold) must not count - this is the
+    # discriminator between "this is genuinely the declared photograph"
+    # and "this bbox merely brushes some unrelated image's own edge".
+    page = _page_with_image((10.0, 10.0, 110.0, 110.0))
+    assert verify_image_present(page, (100.0, 100.0, 200.0, 200.0)) == 0
+
+
+def test_verify_image_present_respects_min_containment_threshold():
+    page = _page_with_image((10.0, 10.0, 110.0, 110.0))
+    # bbox covers exactly the left half of the image (50% containment) -
+    # rejected at the default 0.9 threshold, accepted once the threshold
+    # itself is lowered below that overlap fraction.
+    assert verify_image_present(page, (10.0, 10.0, 60.0, 110.0)) == 0
+    assert verify_image_present(page, (10.0, 10.0, 60.0, 110.0), min_containment=0.4) == 1

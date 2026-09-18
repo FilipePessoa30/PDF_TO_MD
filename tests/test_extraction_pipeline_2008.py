@@ -90,29 +90,26 @@ def extraction_result_no_layout_overrides(tmp_path_factory: pytest.TempPathFacto
 
 
 def test_all_80_academic_questions_are_accounted_for(extraction_result):
-    """79 published + 1 explicitly excluded (unstructured image
-    alternatives, PROMPT Phase 3A) = 80 - never silently fewer.
+    """80 published, 0 excluded - never silently fewer.
 
     Was 77 published + 3 excluded until PROMPT Fase 3W (Q55's own
     alternatives re-diagnosed as 100% vector-drawn formulas, never raster
     images, published via the declared-inline-formula mechanism Fase 3S
-    already built for Q45) and 78 published + 2 excluded until PROMPT Fase
-    3X, which closed Q38's own remaining gap (its circuit diagram's own
-    pin labels and output-label annotation, previously leaking as loose
-    statement text, are now excluded via force_region_membership - see
-    q38-unstructured-image-alternatives (RESOLVED) in
-    blocker-ledger-2008.yaml). Only Q8 remains excluded (a genuinely
-    different, real-photograph/horizontal-layout shape, deliberately out
-    of this phase's own scope).
+    already built for Q45), 78 published + 2 excluded until PROMPT Fase
+    3X (Q38's own circuit pin labels and output-label annotation,
+    previously leaking as loose statement text, excluded via
+    force_region_membership), and 79 published + 1 excluded until PROMPT
+    Fase 3Y, which closed the last gap: Q8's own 5 fine-art photographs -
+    a genuinely different, real-photograph/two-row-horizontal-layout
+    shape, requiring a new `declare_raster_alternative_region` mechanism
+    (see q08-unstructured-image-alternatives (RESOLVED) in
+    blocker-ledger-2008.yaml) - are now individually published, one per
+    alternative.
     """
     result, _ = extraction_result
     published_ids = {q.id for q in result.questions}
-    assert len(published_ids) == 79
-    for excluded_number in (8,):
-        exclusion_note = f"objective {excluded_number}: could not build a valid Question"
-        assert any(exclusion_note in w for w in result.structural_warnings), (
-            f"objective {excluded_number} must be loudly excluded, not silently missing"
-        )
+    assert len(published_ids) == 80
+    assert not result.structural_warnings
 
 
 def test_q21_statement_is_complete_and_uncontaminated(extraction_result):
@@ -1249,6 +1246,53 @@ def test_q38_circuit_and_alternatives_are_now_fully_published(extraction_result)
         assert alt.asset is not None
         assert alt.asset.type == AssetType.EQUATION
     assert q38.automatic_validation.value == "passed"
+
+
+def test_q08_horizontal_photograph_alternatives_are_now_fully_published(extraction_result):
+    """Regression test for the `q08-unstructured-image-alternatives`
+    blocker (RESOLVED Phase 3Y). Q8's own 5 fine-art photographs are laid
+    out in two horizontal rows (A/B/C; D/E) sharing near-identical marker
+    Y per row - a shape ``_attach_alternative_formula_regions``'s own
+    Y-only row-slicing cannot represent (it computes a zero-height "row"
+    whenever two markers share a Y). Letting the general per-letter loop
+    run at all on this shape does not just leave letters empty - it
+    silently concatenates every intervening line, including *other*
+    alternatives' own captions, into whichever letter sits immediately
+    before the next marker in reading order (confirmed by direct
+    instrumentation: "C" absorbed A/B/C's own captions at once, "E"
+    absorbed both D's and its own, while A/B/D were left empty). Fixed
+    with 5 individually-verified `declare_raster_alternative_region`
+    overrides plus 2 `suppress_visual_region` overrides that kill the
+    general owner-less merge's own two redundant, coarser per-row blobs
+    (see docs/phase-3y-report.md).
+    """
+    result, _ = extraction_result
+    q08 = _objective_by_number(result)[8]
+    assert (
+        "O filósofo alemão Friedrich Nietzsche (1844-1900), talvez o pensador "
+        "moderno mais incômodo e provocativo" in q08.statement
+    )
+    assert q08.statement.count("Friedrich Nietzsche") == 1
+    # No monolithic per-row crop duplicating what the 5 alternatives'
+    # own individual assets already show.
+    asset_ids = [a.id for a in q08.assets]
+    assert len(asset_ids) == 5
+    assert len(asset_ids) == len(set(asset_ids))
+    assert len(q08.alternatives) == 5
+    expected_captions = {
+        "A": "Homem idoso na poltrona Rembrandt van Rijn – Louvre, Paris.",
+        "B": "Figura e borboleta Milton Dacosta",
+        "C": "O grito – Edvard Munch – Museu Munch, Oslo Disponível em: http://members.cox.net",
+        "D": "Menino mordido por um lagarto Michelangelo Merisi (Caravaggio)",
+        "E": "Abaporu – Tarsila do Amaral Disponível em: http://tarsiladoamaral.com.br",
+    }
+    for alt in q08.alternatives:
+        assert alt.asset is not None
+        assert alt.asset.type == AssetType.IMAGE
+        assert alt.text == expected_captions[alt.letter]
+    assert [alt.letter for alt in q08.alternatives] == ["A", "B", "C", "D", "E"]
+    assert q08.correct_answer == "C"
+    assert q08.automatic_validation.value == "passed"
 
 
 def test_q73_neighboring_question_paragraph_is_not_regressed(extraction_result):

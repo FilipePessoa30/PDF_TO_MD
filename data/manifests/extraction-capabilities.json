@@ -990,6 +990,49 @@
       "profile_dependency": "none",
       "runtime_ai_dependency": "none",
       "introduced_phase": "3W"
+    },
+    {
+      "capability_id": "declared_raster_alternative_group_preservation",
+      "description": "A hash+page+bbox-locked override (declare_raster_alternative_region) declares that a real embedded raster image is one alternative's own sole content, for a horizontally-arranged alternative-image group (2+ alternatives sharing nearly the same marker Y, differing in X - a shape the existing per-alternative-image mechanism, _attach_alternative_formula_regions, cannot represent, since its own Y-only row-slicing computes a zero-height row whenever two markers share a Y). Each declared bbox requires positive structural evidence (verify_image_present: a real embedded image whose own area is >=90% contained in the bbox) before being trusted; a stale or mistyped declaration with no such image on the real page produces no region and has no effect. A new, parallel attach function (_attach_declared_raster_alternative_regions) matches each declared region to its own alternative letter by two simultaneous geometric signals - the region must sit strictly to its own marker's right, and among candidates satisfying that, the one whose own vertical center is closest to the marker's own wins (bijective: a region is used for at most one letter) - and separately recovers each alternative's own real, non-fabricated caption text via geometric proximity to the matched region (never OCR, never an attribution invented from outside the PDF's own text layer). All-or-nothing by design: returns unmatched entirely unless every alternative letter resolves to its own declared region, so the caller falls back to the pre-existing general mechanism whenever this one cannot fully resolve, rather than half-publishing a mix of correct and silently-wrong alternatives. Two regressions were found and fixed during this capability's own first application: (1) the general, owner-less region merge (figures.py's large-candidate pool) independently grouped the same photographs into coarser, redundant per-row blobs alongside the new individually-declared regions, requiring 2 suppress_visual_region overrides to remove the resulting duplicate/dropped content; (2) the caller must filter its own candidate region list to `is_exact_raster_bbox` (a flag set exclusively by this capability's own region-builder) before calling the attach function - passing the unfiltered region list let it wrongly re-match an unrelated question's own already-correctly-declared vector-formula regions (declare_inline_formula_region, a structurally similar but semantically distinct override), confirmed and fixed via full corpus regression. Render-time padding is skipped entirely for a region built this way (a new VisualRegion.is_exact_raster_bbox flag, assets.py) - unlike every other region type, whose bbox is an approximate, grown envelope needing a few points of padding to avoid clipping a thin stroke at its own edge, a declared raster region's bbox is already a real embedded image's own exact extent, so padding only ever pulls in a neighboring marker label or caption rather than protecting real content.",
+      "trigger_features": [
+        "an individually-reviewed, hash+page+bbox-locked declare_raster_alternative_region override, positively verified (verify_image_present, >=90% area containment) against a real embedded raster image on the declared page",
+        "every one of a question's own alternative letters resolving, bijectively, to its own such declared region by position (strictly to its own marker's right) and closest vertical center - never a partial match"
+      ],
+      "parameters": {
+        "verify_image_present.min_containment": "0.9 - a declared bbox must be >=90% covered by a single real embedded image's own area, never merely touching or partially overlapping one",
+        "_RASTER_ALTERNATIVE_CAPTION_X_TOLERANCE": "6.0pt - how far a candidate caption line's own x0 may sit from its matched region's own left edge",
+        "_RASTER_ALTERNATIVE_CAPTION_MAX_GAP": "10.0pt - how far below its matched region's own bottom edge a candidate caption line's own y0 may sit"
+      },
+      "scope": "figures.py (new verify_image_present); layout_overrides.py (new declared_raster_alternative_regions accessor); assembler.py (new _build_declared_raster_alternative_regions, _attach_declared_raster_alternative_regions, and the assemble_question wiring that filters candidates to is_exact_raster_bbox before calling the latter); figures.py (new VisualRegion.is_exact_raster_bbox field); assets.py (render_region/_render_bbox skip padding entirely when that flag is set)",
+      "generalization_level": "G1",
+      "positive_fixtures": [
+        "tests/test_layout_overrides.py::test_declared_raster_alternative_regions_returns_the_matching_bbox",
+        "tests/test_extraction_figures.py::test_verify_image_present_counts_a_substantially_contained_image",
+        "tests/test_extraction_assembler.py::test_attach_declared_raster_alternative_regions_matches_by_position_and_builds_real_captions",
+        "tests/test_extraction_assembler.py::test_build_declared_raster_alternative_regions_builds_an_exact_unpadded_region",
+        "tests/test_extraction_assets.py::test_render_region_exact_raster_bbox_gets_no_padding_at_all",
+        "tests/test_extraction_pipeline_2008.py::test_q08_horizontal_photograph_alternatives_are_now_fully_published"
+      ],
+      "negative_fixtures": [
+        "tests/test_extraction_figures.py::test_verify_image_present_zero_when_bbox_is_empty_space",
+        "tests/test_extraction_figures.py::test_verify_image_present_zero_when_bbox_only_partially_overlaps",
+        "tests/test_extraction_assembler.py::test_attach_declared_raster_alternative_regions_none_when_fewer_regions_than_letters",
+        "tests/test_extraction_assembler.py::test_attach_declared_raster_alternative_regions_none_when_a_letter_has_no_region_to_its_right",
+        "tests/test_extraction_assembler.py::test_assemble_question_declared_inline_formula_alternatives_are_never_hijacked_by_raster_mechanism",
+        "tests/test_extraction_pipeline_2008.py::test_q38_circuit_and_alternatives_are_now_fully_published"
+      ],
+      "real_cases": [
+        "2008-b Q8's own 5 fine-art photographs (Rembrandt, Milton Dacosta, Munch, Caravaggio, Tarsila do Amaral), arranged in 2 horizontal rows (A/B/C; D/E) - the sole real case in the tracked corpus as of this phase; a corpus-wide scan for any other alternative-image group of any shape found none (2011 Q14/Q23 are the pre-existing, structurally different vertical-formula shape; every other multi-image page in the corpus is a statement-level referenced-figure sequence or a single merged chart/diagram, never an alternative-image group)"
+      ],
+      "protected_cases": [
+        "2008-b (79 previously-published questions confirmed byte-identical by full regeneration; Q38/Q55 specifically re-verified as mandatory counterexamples after this capability's own first, rejected wiring attempt was found to change them)",
+        "2011 (all 55 questions, confirmed byte-identical by full regeneration)",
+        "2021 (all three tracked courses, 120 questions total, confirmed byte-identical by full regeneration)"
+      ],
+      "failure_behavior": "a question with fewer than 5 matched declared regions, or any alternative letter that cannot be matched to one, gets no result from this mechanism at all (returns None) and falls through unchanged to the pre-existing general per-letter mechanism - never a partial substitution, never a silently-wrong mix of raster and text alternatives",
+      "profile_dependency": "none - gated entirely by the presence of a declare_raster_alternative_region override for the exact PDF hash/page/bbox, never by year or course",
+      "runtime_ai_dependency": "none",
+      "introduced_phase": "3Y"
     }
   ]
 }

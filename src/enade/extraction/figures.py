@@ -309,6 +309,22 @@ class VisualRegion:
     #: rendered crop stays scoped to the formula itself, not the whole
     #: column it sits in (see ``INLINE_FORMULA_RENDER_PADDING``).
     is_declared_inline_formula: bool = False
+    #: True only for a region built from an individually-reviewed,
+    #: hash+page+bbox-locked ``declare_raster_alternative_region`` override
+    #: (PROMPT Fase 3Y) - the bbox is a real embedded raster image's own
+    #: exact extent (``page.get_image_info()``), never a hand-grown vector
+    #: envelope. Every other region type's bbox is approximate (grown by
+    #: iterative label absorption, or a vector-drawing bounding box), so
+    #: ``assets.py``'s render step pads it outward a few points to avoid
+    #: clipping a thin stroke right at the detected edge - here that
+    #: padding has nothing to protect (the photograph's own pixels already
+    #: fill the bbox exactly) and only ever pulls in whatever real content
+    #: sits just outside it: found by direct visual inspection on 2008-b
+    #: Q8 (docs/phase-3y-report.md) to bleed in a sliver of the
+    #: neighboring marker letter (horizontal) and the alternative's own
+    #: caption text (vertical) at the default 4pt padding. Sets the render
+    #: step to crop to exactly ``bbox``, no padding on any side.
+    is_exact_raster_bbox: bool = False
 
 
 #: Padding (points) around a declared inline-formula's own tight,
@@ -343,6 +359,36 @@ def verify_drawings_present(page: pymupdf.Page, bbox: Rect, pad: float = 2.0) ->
             or rect.y0 > bbox[3] + pad
         )
         if touches:
+            count += 1
+    return count
+
+
+def verify_image_present(page: pymupdf.Page, bbox: Rect, min_containment: float = 0.9) -> int:
+    """Count real embedded raster images substantially contained in ``bbox``.
+
+    Required, structural, positive evidence (same discipline as
+    ``verify_drawings_present``, PROMPT Fase 3S/3Y) before an
+    override-declared raster-alternative bbox is ever trusted - never a
+    bare hash+bbox literal match alone. Deliberately containment-based
+    (``min_containment`` of the image's own area must fall inside
+    ``bbox``), not "touching within a pad" like ``verify_drawings_present``:
+    a single real photograph is expected to dominate its own declared
+    bbox, so requiring near-total containment rejects a stray small logo
+    or decorative dot that merely brushes a mistyped/stale bbox, the same
+    way a genuine duplicate must be near-total for
+    ``force_region_membership`` elsewhere in this module's own sibling
+    checks. Returns 0 (never trusted downstream) when no real embedded
+    image is substantially present there - text alone, or a vector
+    drawing, never satisfies this.
+    """
+    count = 0
+    for info in page.get_image_info():
+        ix0, iy0, ix1, iy1 = info["bbox"]
+        image_area = max(ix1 - ix0, 1e-6) * max(iy1 - iy0, 1e-6)
+        overlap_x = max(0.0, min(ix1, bbox[2]) - max(ix0, bbox[0]))
+        overlap_y = max(0.0, min(iy1, bbox[3]) - max(iy0, bbox[1]))
+        overlap_area = overlap_x * overlap_y
+        if overlap_area / image_area >= min_containment:
             count += 1
     return count
 

@@ -304,6 +304,25 @@
     "warnings": ""
   },
   {
+    "id": "enade-2008-computing-q08",
+    "exam_year": 2008,
+    "kind": "multiple_choice",
+    "number": 8,
+    "section": "formacao-geral-objetiva",
+    "start_page": 5,
+    "end_page": 5,
+    "num_alternatives": 5,
+    "has_assets": true,
+    "num_assets": 5,
+    "answer": "C",
+    "answer_validation_status": "validated",
+    "answer_standard_available": false,
+    "extraction_method": "text_layer",
+    "extraction_status": "verified",
+    "warning_count": 0,
+    "warnings": ""
+  },
+  {
     "id": "enade-2008-computing-q11",
     "exam_year": 2008,
     "kind": "multiple_choice",

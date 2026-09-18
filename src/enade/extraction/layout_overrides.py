@@ -370,6 +370,50 @@ class LayoutOverrideSet(BaseModel):
             and override.page == page
         )
 
+    def declared_raster_alternative_regions(
+        self, pdf_sha256: str, page: int
+    ) -> tuple[tuple[float, float, float, float], ...]:
+        """Every bbox individually declared, for the PDF identified by
+        ``pdf_sha256`` and ``page``, as a proven real embedded raster
+        image backing one multiple-choice alternative (PROMPT Fase 3Y).
+
+        Same discipline as ``declared_inline_formula_regions``, for a
+        different documentary type: never a bare bbox literal trusted on
+        its own - the caller first requires positive, structural evidence
+        (``figures.verify_image_present`` - a real embedded raster image
+        substantially contained in the bbox) before ever building a
+        region from it. Deliberately a distinct rule from
+        ``declare_inline_formula_region`` even though both feed the same
+        "declared, individually verified region" pattern: a vector-drawn
+        formula and a raster photograph are different documentary types,
+        and conflating them would misrepresent what each region actually
+        is (never reuse a formula declaration for a photograph "because
+        both are vectors/images" - PROMPT Fase 3X/3Y's own explicit
+        warning against exactly that).
+
+        For 2008-b Q8 (page 5): 5 real, distinct embedded photographs
+        (fine-art reproductions), each one multiple-choice alternative's
+        own sole content, arranged in two horizontal rows (A/B/C; D/E) -
+        the shape ``_attach_alternative_formula_regions``'s own Y-only
+        row-slicing cannot represent (three alternatives sharing nearly
+        the same Y, differing only in X). Each of the 5 bboxes declared
+        here spans one photograph plus its own printed caption
+        immediately below it (title/artist/source - real, extractable PDF
+        text, never OCR or fabricated attribution).
+
+        Returns every matching bbox, never just the first - callers are
+        expected to verify each independently and to assign each to its
+        own alternative letter by geometric evidence, never by trusting
+        override declaration order.
+        """
+        return tuple(
+            override.bbox
+            for override in self.overrides
+            if override.rule == "declare_raster_alternative_region"
+            and override.pdf_sha256 == pdf_sha256
+            and override.page == page
+        )
+
     def forces_single_column(self, pdf_sha256: str, page: int) -> bool:
         """True if some override forces naive (y0, x0) reading order for
         the whole page, bypassing ``detect_column_margins`` entirely.

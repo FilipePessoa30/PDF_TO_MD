@@ -382,3 +382,64 @@ def test_declared_inline_formula_regions_ignores_unrelated_rule_kinds():
         overrides=[_force_membership_override(), _region_membership_override()]
     )
     assert overrides.declared_inline_formula_regions("a" * 64, 10) == ()
+
+
+def _raster_alternative_override(**overrides) -> LayoutOverride:
+    base = dict(
+        pdf_sha256="q08" * 21 + "x",
+        page=5,
+        bbox=(220.5, 242.0, 370.4, 436.4),
+        rule="declare_raster_alternative_region",
+        question_id="enade-2008-computing-q08",
+        reason="test",
+        evidence="test",
+        status="reviewed",
+    )
+    base.update(overrides)
+    return LayoutOverride(**base)
+
+
+def test_declared_raster_alternative_regions_returns_the_matching_bbox():
+    overrides = LayoutOverrideSet(overrides=[_raster_alternative_override()])
+    result = overrides.declared_raster_alternative_regions("q08" * 21 + "x", 5)
+    assert result == ((220.5, 242.0, 370.4, 436.4),)
+
+
+def test_declared_raster_alternative_regions_empty_for_a_different_page():
+    overrides = LayoutOverrideSet(overrides=[_raster_alternative_override()])
+    assert overrides.declared_raster_alternative_regions("q08" * 21 + "x", 6) == ()
+
+
+def test_declared_raster_alternative_regions_empty_for_a_different_hash():
+    overrides = LayoutOverrideSet(overrides=[_raster_alternative_override()])
+    assert overrides.declared_raster_alternative_regions("different" * 8, 5) == ()
+
+
+def test_declared_raster_alternative_regions_returns_multiple_matches():
+    overrides = LayoutOverrideSet(
+        overrides=[
+            _raster_alternative_override(bbox=(50.5, 241.3, 194.0, 438.2)),
+            _raster_alternative_override(bbox=(404.7, 238.3, 559.3, 435.8)),
+        ]
+    )
+    result = overrides.declared_raster_alternative_regions("q08" * 21 + "x", 5)
+    assert set(result) == {(50.5, 241.3, 194.0, 438.2), (404.7, 238.3, 559.3, 435.8)}
+
+
+def test_declared_raster_alternative_regions_ignores_unrelated_rule_kinds():
+    overrides = LayoutOverrideSet(
+        overrides=[_force_membership_override(), _region_membership_override()]
+    )
+    assert overrides.declared_raster_alternative_regions("a" * 64, 10) == ()
+
+
+def test_declared_raster_alternative_regions_is_distinct_from_inline_formula_regions():
+    # A region declared as a raster photograph must never also surface as a
+    # declared vector-formula region just because it shares a bbox - the two
+    # rules build entirely different VisualRegion shapes downstream
+    # (has_raster_image vs. is_declared_inline_formula) and conflating them
+    # would misrepresent what the region actually is.
+    bbox = (220.5, 242.0, 370.4, 436.4)
+    overrides = LayoutOverrideSet(overrides=[_raster_alternative_override(bbox=bbox)])
+    assert overrides.declared_raster_alternative_regions("q08" * 21 + "x", 5) == (bbox,)
+    assert overrides.declared_inline_formula_regions("q08" * 21 + "x", 5) == ()

@@ -886,57 +886,101 @@ blockers:
   status: resolved
   superseded_by: null
   visual_validation: passed
-- affected_assets: []
+- affected_assets:
+  - figure-01
+  - figure-02
+  - figure-03
+  - figure-04
+  - figure-05
   category: unstructured-image-alternatives
   cause: >-
-    RE-VERIFIED IN PHASE 3W (never presumed from the original Phase 3A/3I
-    text, which turned out to describe Q38/Q55's own shape, not Q8's own -
-    see the corrected description below). Fresh forensics
-    (page.get_image_info()) confirm Q8's own alternatives are backed by 5
-    real, distinct EMBEDDED RASTER IMAGES (not vector drawings, not one
-    merged formula) - a Rembrandt painting ("Homem idoso na poltrona"), a
-    Milton Dacosta illustration ("Figura e borboleta"), Munch's "O Grito",
-    and two further images for D/E - each individually positioned at/around
-    its own letter marker, each with its own real, printed caption baked
-    into the page. The 3 alternatives A/B/C sit HORIZONTALLY side by side
-    (same Y-row, different X) rather than the vertically-stacked shape
-    every other per-alternative-image mechanism in this corpus (2011
-    Q14/Q23, 2008-b Q55 - see below) already handles; region_merge_x_tolerance
-    (150.0pt for this booklet) still merges the 3 close-together images into
-    one 492.1x343.3pt blob (matching Phase 3A's own original number for
-    this one region) and D+E into a second, 522.2x220.9pt blob - both
-    is_small_formula=False. _attach_alternative_formula_regions only ever
-    slices a region by Y-overlap against each alternative's own row - a
-    correct model for a vertical list, architecturally unable to
-    distinguish 3 alternatives sharing nearly the same Y-range. Extending
-    it (or building a parallel X-aware slicer) to handle a horizontally-laid-
-    out alternative sequence is a general-mechanism change with no existing
-    corpus precedent to validate against safely within this phase's own
-    budget - deferred, not attempted. See docs/phase-3w-report.md.
+    RESOLVED IN PHASE 3Y (never presumed from Phase 3W's own deferral -
+    re-verified from scratch). Phase 3W's own forensics
+    (page.get_image_info()) already confirmed Q8's own alternatives are
+    backed by 5 real, distinct EMBEDDED RASTER IMAGES (never vector
+    drawings, never one merged formula) - a Rembrandt painting ("Homem
+    idoso na poltrona"), a Milton Dacosta illustration ("Figura e
+    borboleta"), Munch's "O Grito", Caravaggio's "Menino mordido por um
+    lagarto", and Tarsila do Amaral's "Abaporu" - each individually
+    positioned at/around its own letter marker, each with its own real,
+    printed caption baked into the page. The 3 alternatives A/B/C sit
+    HORIZONTALLY side by side (same Y-row, different X) rather than the
+    vertically-stacked shape every other per-alternative-image mechanism
+    in this corpus (2011 Q14/Q23, 2008-b Q55) already handles -
+    _attach_alternative_formula_regions only ever slices a region by
+    Y-overlap against each alternative's own row, architecturally unable
+    to distinguish 3 alternatives sharing nearly the same Y-range. Fixed
+    this phase with a new, parallel mechanism
+    (declare_raster_alternative_region + verify_image_present +
+    _attach_declared_raster_alternative_regions/
+    _build_declared_raster_alternative_regions in assembler.py/figures.py/
+    layout_overrides.py), deliberately never sharing a code path with the
+    formula mechanism: each of the 5 photographs is individually declared
+    (hash+page+bbox-locked, positively verified against the real embedded
+    image before being trusted) and matched to its own alternative letter
+    by simultaneous position (region strictly to the marker's own right)
+    and closest vertical center - bijective, all-or-nothing (returns
+    unmatched entirely rather than a partial result unless all 5 letters
+    resolve). A real bug was found and fixed along the way: the general,
+    owner-less region merge (figures.py's own large-candidate pool) still
+    independently grouped the same 5 photographs into two coarser,
+    redundant per-row blobs alongside the new individually-declared
+    regions - left unsuppressed, row 1 rendered as a spurious monolithic
+    duplicate crop and row 2 was silently dropped with a warning; fixed
+    via 2 suppress_visual_region overrides. A second bug was found and
+    fixed by the mandatory Q38 counterexample check: the new attach
+    function was first wired to receive the *entire* unfiltered region
+    list, which let it wrongly re-match Q38's own already-correctly-declared
+    formula regions (also sitting to their own markers' right) instead of
+    leaving them to the pre-existing, correct mechanism - fixed by
+    filtering the caller's own candidate list to `is_exact_raster_bbox`
+    regions only (a flag set exclusively by this phase's own region-builder
+    and nothing else), confirmed by full corpus regeneration returning
+    Q38/Q55 to byte-identical. A third, cosmetic bug (a few points of
+    neighboring marker-letter/caption-text bleed into each crop, from the
+    generic render step's unconditional padding) was found by direct visual
+    inspection of the first render and fixed via a new `is_exact_raster_bbox`
+    render-time flag that skips padding entirely for a region whose bbox is
+    already a real embedded image's own exact extent. See docs/phase-3w-report.md
+    (original forensic classification) and docs/phase-3y-report.md (extraction,
+    publication, and both rejected-then-fixed regressions).
   description: >-
     All 5 alternatives are real, distinct embedded raster images (fine-art
     reproductions with real captions), arranged in 2 horizontal rows (A/B/C;
-    D/E) rather than the vertical, single-column shape the existing
-    per-alternative-image mechanism (_attach_alternative_formula_regions)
-    was built for. Question excluded from the published corpus entirely
-    (pipeline.py's own per-question ValidationError isolation, PROMPT Phase
-    3A) rather than published with fabricated or missing alternative
-    content. 80/80 academic question numbers remain accounted for (78
-    published as of Phase 3W + Q8/Q38 explicitly excluded, loudly, via a
-    structural warning), never silently dropped.
+    D/E). Now published: each alternative is its own individually-verified
+    image asset with its own real, geometrically-recovered caption text,
+    in the correct A-E order, with no monolithic per-row duplicate and no
+    neighboring content. 80/80 academic question numbers are now
+    accounted for and published (0 excluded).
   evidence: docs/phase-3a-report.md (original observation); docs/phase-3i-report.md
     (independent per-question re-verification, Section P); docs/phase-3w-report.md
     (forensic correction - real raster images, horizontal layout, precise region
-    sizes)
+    sizes); docs/phase-3y-report.md (extraction, publication, regression fixes)
   id: q08-unstructured-image-alternatives
   question_id: enade-2008-computing-q08
-  regression_tests: []
-  resolution: null
+  regression_tests:
+  - tests/test_layout_overrides.py::test_declared_raster_alternative_regions_returns_the_matching_bbox
+  - tests/test_layout_overrides.py::test_declared_raster_alternative_regions_is_distinct_from_inline_formula_regions
+  - tests/test_extraction_figures.py::test_verify_image_present_counts_a_substantially_contained_image
+  - tests/test_extraction_figures.py::test_verify_image_present_respects_min_containment_threshold
+  - tests/test_extraction_assembler.py::test_attach_declared_raster_alternative_regions_matches_by_position_and_builds_real_captions
+  - tests/test_extraction_assembler.py::test_attach_declared_raster_alternative_regions_picks_closest_vertical_center_and_never_reuses_a_region
+  - tests/test_extraction_assembler.py::test_build_declared_raster_alternative_regions_builds_an_exact_unpadded_region
+  - tests/test_extraction_assembler.py::test_assemble_question_declared_inline_formula_alternatives_are_never_hijacked_by_raster_mechanism
+  - tests/test_extraction_assets.py::test_render_region_exact_raster_bbox_gets_no_padding_at_all
+  - tests/test_extraction_pipeline_2008.py::test_q08_horizontal_photograph_alternatives_are_now_fully_published
+  - tests/test_extraction_pipeline_2008.py::test_q38_circuit_and_alternatives_are_now_fully_published
+  - tests/test_extraction_pipeline_2008.py::test_all_80_academic_questions_are_accounted_for
+  resolution: >-
+    RESOLVED (Phase 3Y): see cause above. Q8 is now published
+    (automatic_validation=passed, visual_validation=passed) with all 5
+    alternatives correctly represented as their own individually-verified
+    image assets with real captions, in the correct order.
   source_pages:
   - 5
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: not_performed
+  visual_validation: passed
 - affected_assets:
   - figure-01
   - figure-02
