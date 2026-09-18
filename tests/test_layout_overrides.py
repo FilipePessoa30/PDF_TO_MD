@@ -322,6 +322,61 @@ def test_declared_inline_formula_regions_returns_multiple_matches():
     assert set(result) == {(100.0, 100.0, 120.0, 112.0), (200.0, 200.0, 220.0, 212.0)}
 
 
+def _paragraph_break_override(**overrides) -> LayoutOverride:
+    base = dict(
+        pdf_sha256="q23" * 21 + "x",
+        page=11,
+        bbox=(310.0, 515.0, 500.0, 525.0),
+        rule="force_paragraph_break_after",
+        question_id="enade-2008-computing-q23",
+        reason="test",
+        evidence="test",
+        status="reviewed",
+    )
+    base.update(overrides)
+    return LayoutOverride(**base)
+
+
+def test_forces_paragraph_break_after_matches_declared_bbox():
+    overrides = LayoutOverrideSet(overrides=[_paragraph_break_override()])
+    assert overrides.forces_paragraph_break_after(
+        "q23" * 21 + "x", 11, (310.44, 515.69, 499.41, 524.69)
+    )
+
+
+def test_forces_paragraph_break_after_does_not_match_a_different_bbox():
+    overrides = LayoutOverrideSet(overrides=[_paragraph_break_override()])
+    assert not overrides.forces_paragraph_break_after(
+        "q23" * 21 + "x", 11, (310.44, 472.73, 448.31, 481.73)
+    )
+
+
+def test_forces_paragraph_break_after_respects_pdf_hash():
+    overrides = LayoutOverrideSet(overrides=[_paragraph_break_override()])
+    assert not overrides.forces_paragraph_break_after(
+        "different" * 8, 11, (310.44, 515.69, 499.41, 524.69)
+    )
+
+
+def test_forces_paragraph_break_after_respects_page():
+    overrides = LayoutOverrideSet(overrides=[_paragraph_break_override()])
+    assert not overrides.forces_paragraph_break_after(
+        "q23" * 21 + "x", 12, (310.44, 515.69, 499.41, 524.69)
+    )
+
+
+def test_forces_paragraph_break_after_is_a_distinct_rule_from_force_region_membership():
+    # A line individually proven to need only a paragraph boundary (kept
+    # visible, never merged into a region) must never also be reported as
+    # authorized for region-membership exclusion, and vice versa - the two
+    # rules answer unrelated questions about the same kind of "ambiguous,
+    # kept" line and must not be conflated by a shared bbox coincidence.
+    bbox = (310.44, 515.69, 499.41, 524.69)
+    overrides = LayoutOverrideSet(overrides=[_paragraph_break_override()])
+    assert overrides.forces_paragraph_break_after("q23" * 21 + "x", 11, bbox)
+    assert not overrides.forces_region_membership("q23" * 21 + "x", 11, bbox)
+
+
 def test_declared_inline_formula_regions_ignores_unrelated_rule_kinds():
     overrides = LayoutOverrideSet(
         overrides=[_force_membership_override(), _region_membership_override()]

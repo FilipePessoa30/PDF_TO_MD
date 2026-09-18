@@ -1128,6 +1128,38 @@ def test_d40_cosmetic_sigma_operator_leak_is_resolved(extraction_result):
     )
 
 
+def test_q23_schema_fragment_is_now_its_own_paragraph_not_glued_to_the_next_sentence(
+    extraction_result,
+):
+    """Regression test for ``q23-schema-fragment-duplicate-bleed`` (RESOLVED
+    Phase 3V): the schema's own trailing relation fragment
+    ("IdRep:integer referencia Republica)") is real, never-to-be-removed
+    text (Phase 3T's own forensic proof: figure-01.png's render clip
+    truncates this exact line to its top ~2.3pt of ~9pt height - it is not
+    a region duplicate, so ``force_region_membership`` is never applied
+    here). Its real vertical gap to the next sentence (15.92pt) sits just
+    under ``PARAGRAPH_GAP_THRESHOLD`` (19.0pt), so it used to publish glued
+    onto "Suponha que existam..." with no separating space. A new
+    ``force_paragraph_break_after`` override (data/manifests/
+    layout-overrides.yaml) now ends that paragraph run right after this
+    one, individually-identified line - the text itself, figure-01.png,
+    and every other content block are otherwise unaffected.
+    """
+    result, _ = extraction_result
+    q23 = _objective_by_number(result)[23]
+    assert q23.content_blocks is not None
+    paragraph_texts = [b.text for b in q23.content_blocks if b.type == "paragraph"]
+    assert "IdRep:integer referencia Republica)" in paragraph_texts
+    assert "Suponha que existam as seguintes tuplas no banco de dados:" in paragraph_texts
+    # The old, glued single paragraph must no longer exist.
+    assert not any(text.startswith("IdRep:integer referencia Republica) Suponha") for text in paragraph_texts)
+    # figure-01 and the code block right after it are unaffected.
+    asset_ids = [a.id for a in q23.assets]
+    assert "figure-01" in asset_ids
+    code_blocks = [b for b in q23.content_blocks if b.type == "code"]
+    assert any("Pessoa(1, " in b.text for b in code_blocks)
+
+
 def test_q73_neighboring_question_paragraph_is_not_regressed(extraction_result):
     """PROMPT Phase 3O regression guard (mandatory counterexample, Section
     22): a `LineRegionRelation.looks_like_body_prose` unconditional veto was

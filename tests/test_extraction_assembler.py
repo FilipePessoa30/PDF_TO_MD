@@ -5,6 +5,7 @@ import pytest
 
 from enade.extraction.alternative_groups import find_alternative_group
 from enade.extraction.assembler import (
+    PARAGRAPH_GAP_THRESHOLD,
     CodeSegment,
     ExtractedAlternative,
     FigureSegment,
@@ -730,6 +731,60 @@ def test_build_statement_segments_preserves_code_block_line_breaks():
     assert "\n" in code_segments[0].text  # line breaks preserved, not space-joined
     text_segments = [s for s in segments if isinstance(s, TextSegment)]
     assert len(text_segments) == 2
+
+
+def test_force_paragraph_break_after_override_splits_the_glued_paragraph():
+    """PROMPT Fase 3V: 2008-b Q23's own defect - a line individually proven
+    to be real, never-to-be-removed text (not a region duplicate - see
+    ``forces_paragraph_break_after``'s own docstring) sits less than
+    ``PARAGRAPH_GAP_THRESHOLD`` away from the next, unrelated sentence and
+    would otherwise be glued into one paragraph with no separating space.
+    """
+    first = _line(1, 10.0, "IdRep:integer referencia Republica)")
+    second = _line(
+        1, first.y1 + 15.0, "Suponha que existam as seguintes tuplas no banco de dados:"
+    )
+    assert (second.y0 - first.y1) < PARAGRAPH_GAP_THRESHOLD  # would merge without the override
+    overrides = LayoutOverrideSet(
+        overrides=[
+            LayoutOverride(
+                pdf_sha256="cafebabe" * 8,
+                page=1,
+                bbox=first.bbox,
+                rule="force_paragraph_break_after",
+                question_id="enade-2008-computing-q23",
+                reason="test",
+                evidence="test",
+                status="reviewed",
+            )
+        ]
+    )
+    segments, _, _ = _build_statement_segments(
+        [first, second], [], overrides=overrides, pdf_sha256="cafebabe" * 8
+    )
+    text_segments = [s for s in segments if isinstance(s, TextSegment)]
+    assert [s.text for s in text_segments] == [
+        "IdRep:integer referencia Republica)",
+        "Suponha que existam as seguintes tuplas no banco de dados:",
+    ]
+
+
+def test_force_paragraph_break_after_override_never_fires_without_a_matching_bbox():
+    # Same two lines as above, but with no override at all (or one that
+    # does not match this exact bbox) - the general PARAGRAPH_GAP_THRESHOLD
+    # rule alone still merges them, exactly as it does everywhere else in
+    # the corpus. Confirms the override is additive, never the default.
+    first = _line(1, 10.0, "IdRep:integer referencia Republica)")
+    second = _line(
+        1, first.y1 + 15.0, "Suponha que existam as seguintes tuplas no banco de dados:"
+    )
+    segments, _, _ = _build_statement_segments([first, second], [])
+    text_segments = [s for s in segments if isinstance(s, TextSegment)]
+    assert len(text_segments) == 1
+    assert text_segments[0].text == (
+        "IdRep:integer referencia Republica) "
+        "Suponha que existam as seguintes tuplas no banco de dados:"
+    )
 
 
 def test_strip_leading_marker_removes_prefix_and_keeps_remainder():

@@ -916,6 +916,41 @@
       "profile_dependency": "none",
       "runtime_ai_dependency": "none",
       "introduced_phase": "3U"
+    },
+    {
+      "capability_id": "declared_paragraph_boundary_for_truncated_asset_companion_text",
+      "description": "A hash+page+bbox-locked override (force_paragraph_break_after) declares that the statement-flow's own paragraph-grouping loop (assembler._build_statement_segments) must end its current prose/code run immediately after one individually-named text line, regardless of what the shared PARAGRAPH_GAP_THRESHOLD alone would have decided. Exists for a line already proven real, complete, never-to-be-removed text that a nearby figure's own render crop truncates rather than fully duplicates (so force_region_membership is never the right mechanism), yet whose real vertical gap to the next, unrelated sentence happens to sit just under the shared paragraph-continuation threshold, gluing the two together with no separating space. Two general alternatives were tried and rejected before this override: lowering PARAGRAPH_GAP_THRESHOLD corpus-wide (a direct scan found 46 other 2008-b line pairs in the same gap band, the overwhelming majority genuine same-paragraph continuations that would have been wrongly split); and a geometry-only 'a line touching any region forces a paragraph break' rule (a full shadow-mode scan across every 2008-b question found 61 raw candidates, the overwhelming majority genuinely correct, already-published text-beside-figure paragraphs - e.g. a discursive's own protected multi-line news-article paragraph running beside a side image - that must never be touched). Neither general rule was safe; this override achieves the identical, individually-verified fix with zero blast radius elsewhere by construction.",
+      "trigger_features": [
+        "a line already kept as real, visible text by the existing tri-state region-membership decision (never 'accepted'/excluded - this override only ever affects paragraph grouping, never text consumption)",
+        "an override declaring rule: force_paragraph_break_after for the exact source PDF hash/page/bbox, matched by the same outward-rounded containment check every other override in this module already uses"
+      ],
+      "parameters": {},
+      "scope": "layout_overrides.py (LayoutOverrideSet.forces_paragraph_break_after, new method); assembler.py (_build_statement_segments's own line-processing loop, one additional flush_all() call gated on the override); data/manifests/layout-overrides.yaml (force_paragraph_break_after rule)",
+      "generalization_level": "G1",
+      "positive_fixtures": [
+        "tests/test_layout_overrides.py::test_forces_paragraph_break_after_matches_declared_bbox",
+        "tests/test_extraction_assembler.py::test_force_paragraph_break_after_override_splits_the_glued_paragraph",
+        "tests/test_extraction_pipeline_2008.py::test_q23_schema_fragment_is_now_its_own_paragraph_not_glued_to_the_next_sentence"
+      ],
+      "negative_fixtures": [
+        "tests/test_layout_overrides.py::test_forces_paragraph_break_after_does_not_match_a_different_bbox",
+        "tests/test_layout_overrides.py::test_forces_paragraph_break_after_respects_pdf_hash",
+        "tests/test_layout_overrides.py::test_forces_paragraph_break_after_respects_page",
+        "tests/test_layout_overrides.py::test_forces_paragraph_break_after_is_a_distinct_rule_from_force_region_membership",
+        "tests/test_extraction_assembler.py::test_force_paragraph_break_after_override_never_fires_without_a_matching_bbox"
+      ],
+      "real_cases": [
+        "2008-b Q23's own trailing schema fragment ('IdRep:integer referencia Republica)', page 11) - figure-01.png's own render clip truncates this exact line to its top ~2.3pt of ~9pt height (state=touching, h_ratio=1.0, v_ratio=0.0 against the region's own grown bbox), so the text is the sole complete copy and must stay visible; its real 15.92pt gap to 'Suponha que existam...' sits just under PARAGRAPH_GAP_THRESHOLD (19.0pt)"
+      ],
+      "protected_cases": [
+        "2008-b (all 76 other published questions, confirmed byte-identical by full regeneration; D40's own already-resolved 'F' leak and Q45's own inline formula are untouched, confirmed unchanged; the 61 candidates surfaced by the rejected general shadow-mode rule - including D10's own protected paragraph, Q12/Q54/Q63/Q75's own text-beside-figure paragraphs, and D40's own still-open sibling 'B' leak - are all confirmed unaffected since this capability never applies without an individually-declared, exact-bbox override)",
+        "2011 (all 55 questions, confirmed byte-identical by full regeneration - contextual_relation_gate is False for this booklet, so this code path is never even reached)",
+        "2021 (all three tracked courses, 120 questions total, confirmed byte-identical by full regeneration - same reason as 2011)"
+      ],
+      "failure_behavior": "a line with no matching override is grouped by PARAGRAPH_GAP_THRESHOLD exactly as before (the pre-existing, unchanged default) - this capability only ever narrows an already-published, individually-reviewed paragraph-boundary gap, never a general rule applied automatically to any new 'ambiguous, kept' line",
+      "profile_dependency": "none",
+      "runtime_ai_dependency": "none",
+      "introduced_phase": "3V"
     }
   ]
 }

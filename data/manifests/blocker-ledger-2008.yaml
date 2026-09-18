@@ -1979,14 +1979,56 @@ blockers:
     The residual is a presentation/formatting gap (missing paragraph
     break), not a content-fidelity defect.
   evidence: docs/phase-3g-report.md (original, now-corrected diagnosis); docs/phase-3t-report.md
-    (Section O - forensic re-verification, figure-01.png visual inspection, corrected root cause)
+    (Section O - forensic re-verification, figure-01.png visual inspection, corrected root cause);
+    docs/phase-3v-report.md (paragraph-separation fix)
   id: q23-schema-fragment-duplicate-bleed
   question_id: enade-2008-computing-q23
-  regression_tests: []
-  resolution: null
+  regression_tests:
+  - tests/test_layout_overrides.py::test_forces_paragraph_break_after_matches_declared_bbox
+  - tests/test_layout_overrides.py::test_forces_paragraph_break_after_is_a_distinct_rule_from_force_region_membership
+  - tests/test_extraction_assembler.py::test_force_paragraph_break_after_override_splits_the_glued_paragraph
+  - tests/test_extraction_assembler.py::test_force_paragraph_break_after_override_never_fires_without_a_matching_bbox
+  - tests/test_extraction_pipeline_2008.py::test_q23_schema_fragment_is_now_its_own_paragraph_not_glued_to_the_next_sentence
+  resolution: >-
+    RESOLVED (Phase 3V): a new, hash+page+bbox-locked override rule
+    (`force_paragraph_break_after`, data/manifests/layout-overrides.yaml
+    and layout_overrides.py) authorizes ending the statement's current
+    prose/code run immediately after this one, individually-proven line,
+    regardless of what the shared `PARAGRAPH_GAP_THRESHOLD` alone would
+    have decided. The text itself is completely unchanged (still the sole,
+    complete copy of this schema fragment - never removed, never merged
+    into the region, `force_region_membership` never applied here); only
+    its paragraph boundary against the next, unrelated sentence changed.
+    Lowering `PARAGRAPH_GAP_THRESHOLD` corpus-wide to close this one case
+    was checked and rejected: a direct corpus-wide scan of 2008-b found 46
+    other line pairs with a gap in the same [14, 19)pt band, the
+    overwhelming majority genuine same-paragraph continuations that a
+    lowered threshold would wrongly split (e.g. D40's own "consulta em SQL
+    foi utilizada:" -> "SELECT nome, endereco", gap 17.49pt). A general,
+    geometry-based "line touching a region forces a paragraph break" rule
+    was also tried and rejected: a full shadow-mode scan across all 77
+    questions in 2008-b (2011/2021 never reach this code path at all -
+    `contextual_relation_gate` is False for both) found 61 raw candidates,
+    the overwhelming majority genuinely correct, already-published content
+    that must never be touched (D10's own protected news-article paragraph
+    running beside a side figure; Q12/Q54/Q63/Q75's own paragraphs beside
+    diagrams; D40's own sibling "B" leak, deliberately out of scope since
+    Phase 3R) - only Q23's own line combines `state="touching"` with
+    `horizontal_overlap_ratio=1.0` and `vertical_overlap_ratio=0.0` (full
+    same-column alignment, near-zero vertical gap to the region's own
+    bottom edge), a shape none of the 60 other candidates share, but
+    encoding even that narrower geometric predicate as a corpus-wide rule
+    was rejected in favor of the same Level-3, individually-verified
+    override mechanism `force_region_membership`/`declare_inline_formula_region`
+    already established (PROMPT Fase 2B fix hierarchy) - it can never
+    misfire on any other line, on any other page, in any other document,
+    no matter how the general geometry code evolves later. Full-corpus
+    regeneration (2008-b 77/77, 2011 55/55, 2021 all three courses)
+    confirmed byte-for-byte identical output everywhere except this one
+    question's own Markdown file.
   source_pages:
   - 11
-  status: open
+  status: resolved
   superseded_by: null
   visual_validation: passed
 - affected_assets: []

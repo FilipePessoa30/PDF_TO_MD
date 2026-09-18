@@ -284,6 +284,54 @@ class LayoutOverrideSet(BaseModel):
                 return True
         return False
 
+    def forces_paragraph_break_after(
+        self, pdf_sha256: str, page: int, bbox: tuple[float, float, float, float]
+    ) -> bool:
+        """True if some override declares that the statement's own
+        paragraph-grouping loop must end its current prose/code run
+        immediately after the text line at ``bbox`` on ``page`` of the PDF
+        identified by ``pdf_sha256`` - regardless of what
+        ``PARAGRAPH_GAP_THRESHOLD`` alone would have decided (PROMPT Fase
+        3V).
+
+        For 2008-b Q23 (page 11): the schema's own trailing relation
+        fragment ("IdRep:integer referencia Republica)", bbox
+        310.44,515.69-499.41,524.69) survives ``_line_in_region`` as real,
+        never-to-be-removed text (Fase 3T's own forensic proof: the
+        region's render clip truncates this exact line to its top ~2.3pt
+        of ~9pt height - applying ``force_region_membership`` here, unlike
+        D40's genuinely fully-duplicated "F", would be real content loss).
+        Its only remaining defect is cosmetic: the real vertical gap to the
+        next sentence ("Suponha que existam...", 15.92pt) sits just under
+        this corpus's own general ``PARAGRAPH_GAP_THRESHOLD`` (19.0pt), so
+        the two get glued into one paragraph with no space-preserving
+        separation. Lowering the shared threshold to 15.92pt (or less) to
+        fix this one line was rejected: a direct corpus-wide check (PROMPT
+        Fase 3V, docs/phase-3v-report.md Section Q) found 46 other line
+        pairs in 2008-b alone with a real gap in the same [14, 19)pt band -
+        the overwhelming majority genuine same-paragraph continuations
+        (e.g. D40's own "consulta em SQL foi utilizada:" -> "SELECT nome,
+        endereco", gap 17.49pt) that a lowered threshold would wrongly
+        split into two paragraphs. This override is the same Level-3 escape hatch
+        ``force_region_membership``/``declare_inline_formula_region``
+        already use: a single, individually-verified hash+page+bbox match
+        that can never affect any other line, on any other page, in any
+        other document, no matter how the general threshold or geometry
+        code evolves later.
+
+        Containment, like the other rules above.
+        """
+        x0, y0, x1, y1 = bbox
+        for override in self.overrides:
+            if override.rule != "force_paragraph_break_after":
+                continue
+            if override.pdf_sha256 != pdf_sha256 or override.page != page:
+                continue
+            ox0, oy0, ox1, oy1 = override.bbox
+            if x0 >= ox0 and y0 >= oy0 and x1 <= ox1 and y1 <= oy1:
+                return True
+        return False
+
     def declared_inline_formula_regions(
         self, pdf_sha256: str, page: int
     ) -> tuple[tuple[float, float, float, float], ...]:

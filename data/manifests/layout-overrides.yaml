@@ -1178,3 +1178,45 @@ overrides:
       (token d40-tree-selection-operator-sigma);
       data/questions/2008/all-computing/enade-2008-computing-d40/figure-01.png
     status: reviewed
+  # --- Phase 3V: Q23's own residual schema fragment glued to the next
+  # sentence with no paragraph break (documented as an open, non-content
+  # defect since Phase 3G, root-caused as a genuine truncation - never a
+  # duplicate - by Phase 3T) ----
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 11
+    bbox: [310.0, 515.0, 500.0, 525.0]
+    rule: force_paragraph_break_after
+    question_id: enade-2008-computing-q23
+    reason: >-
+      "IdRep:integer referencia Republica)" (exact bbox 310.439,515.694-
+      499.409,524.694; the override's own bbox is rounded outward to
+      310.0,515.0-500.0,525.0 so the containment check is never defeated by
+      floating-point noise, matching every other override in this file) is
+      the schema diagram's own trailing relation
+      definition line - real, never-to-be-removed text (Fase 3T's own
+      forensic proof: figure-01.png's render clip, bbox 310.44,429.77-
+      559.19,518.01 after +4pt RENDER_PADDING, covers only this line's own
+      top ~2.3pt of ~9pt height - it is truncated mid-glyph in the image,
+      never complete there; state=touching against the region's own grown
+      bbox, h_ratio=1.0, v_ratio=0.0, raw_intersects=False,
+      matches_absorbed_label=False - correctly kept visible by the same
+      tri-state policy that keeps every other ambiguous line visible).
+      Its only remaining defect was cosmetic: the real vertical gap to the
+      next sentence ("Suponha que existam as seguintes tuplas no banco de
+      dados:", gap 15.92pt) sits just under this corpus's own general
+      PARAGRAPH_GAP_THRESHOLD (19.0pt), so `_build_statement_segments`
+      glued them into one paragraph with no separating space - "...
+      Republica) Suponha que existam...". Lowering the shared threshold to
+      close this one case was checked and rejected: a direct corpus-wide
+      scan found 46 other 2008-b line pairs with a gap in the same
+      [14, 19)pt band, the overwhelming majority genuine same-paragraph
+      continuations (e.g. D40's own "consulta em SQL foi utilizada:" ->
+      "SELECT nome, endereco", gap 17.49pt) that a lowered threshold would
+      wrongly split. This override ends the current paragraph run right
+      after this one, individually-identified line instead, leaving
+      PARAGRAPH_GAP_THRESHOLD, `_line_in_region`, and figure-01.png itself
+      completely untouched.
+    evidence: docs/phase-3g-report.md (original observation); docs/phase-3t-report.md
+      (forensic re-verification, truncation proof); docs/phase-3v-report.md
+      (paragraph-break fix, corpus-wide gap-band check)
+    status: reviewed

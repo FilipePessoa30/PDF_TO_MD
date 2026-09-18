@@ -956,6 +956,21 @@ def _build_statement_segments(
                 if current_code or (gap_breaks_run and current_prose):
                     flush_all()
                 current_prose.append(line.text)
+            # PROMPT Fase 3V: a line individually proven to be the sole,
+            # never-to-be-removed remnant of a schema/diagram whose own
+            # figure crop truncates it (2008-b Q23, page 11 - see
+            # ``forces_paragraph_break_after``'s own docstring) can still
+            # sit less than ``PARAGRAPH_GAP_THRESHOLD`` away from the next,
+            # unrelated sentence - gluing them into one paragraph with no
+            # separating space. Ending the run right here, only for a line
+            # this override individually names, fixes exactly that without
+            # touching the shared threshold (proven unsafe to lower
+            # corpus-wide - 46 other 2008-b line pairs sit in the same gap
+            # band and are genuine same-paragraph continuations).
+            if overrides is not None and overrides.forces_paragraph_break_after(
+                pdf_sha256, line.page_number, line.bbox
+            ):
+                flush_all()
             previous_end = (page_number, y1)
         elif kind == "figure":
             event_region_index = payload
