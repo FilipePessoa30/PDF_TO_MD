@@ -45,6 +45,21 @@ _RUBRIC_HEADING_RE = re.compile(r"(?i)^padr[aã]o\s+de\s+resposta$")
 #: Same paragraph-break heuristic as assembler.py: a vertical gap this large
 #: (points) between consecutive lines is a real paragraph boundary.
 PARAGRAPH_GAP_THRESHOLD = 19.0
+#: Padding (points) applied to an entry's own rubric page_bounds before
+#: testing whether an embedded image's vertical midpoint falls "inside" it
+#: - generous enough to catch a diagram sitting just past the last rubric
+#: text line, but bounded to this one page's own rubric region so it can
+#: never reach back into the *reprinted question text* that precedes the
+#: rubric heading on a shared page (PROMPT Phase 1C section 9.2 - D4's own
+#: "Somador Completo de 1-bit" figure is reprinted this way on padrao page
+#: 4, immediately before D4's rubric heading; it must never be captured
+#: again here as if it were a new answer-standard-only diagram). Shared by
+#: ``find_answer_standard_images`` (below) and ``_visual_only_page_bounds``
+#: (PROMPT Fase 3U, used inside ``parse_answer_standard`` itself to decide
+#: whether a zero-text marker span is genuinely a visual-only rubric before
+#: creating an ``AnswerStandardEntry`` for it) - kept as one constant so the
+#: two never drift out of sync.
+ANSWER_STANDARD_IMAGE_Y_PADDING = 15.0
 
 
 @dataclass(frozen=True)
@@ -122,6 +137,55 @@ def _lines_to_paragraphs(lines: list[Line]) -> str:
     return "\n\n".join(" ".join(p) for p in paragraphs)
 
 
+def _visual_only_page_bounds(
+    doc: pymupdf.Document, start_line: Line, boundary_line: Line | None
+) -> dict[int, tuple[float, float]] | None:
+    """Is a zero-rubric-text marker span (PROMPT Fase 3U) genuinely a
+    visual-only rubric?
+
+    ``start_line`` is the "Questao N" marker itself (or the "PADRAO DE
+    RESPOSTA" heading, for a document that uses one) - never guessed at,
+    always the exact line ``parse_answer_standard`` already matched.
+    ``boundary_line`` is whatever line closed this span (the next marker/
+    heading, or ``None`` at end of document). The candidate region is
+    ``start_line``'s own page, from just below its own baseline down to
+    ``boundary_line``'s own top edge (same page) or the page's own bottom
+    edge (``boundary_line`` on a different page, or none at all) -
+    deliberately scoped to ``start_line``'s own single page: every real
+    case found in this corpus (2008-b D59) fits on one page, and reaching
+    across a page boundary here (with no text of any kind to anchor a stop
+    point) risks silently absorbing a *different* discursive's own content
+    on a later page - never attempted without a real, verified example to
+    justify it (docs/generalization-contract.md section 1.1).
+
+    Returns ``None`` (never create an entry) unless at least one real
+    embedded image's own vertical midpoint falls inside that region - the
+    same positive-evidence requirement ``find_answer_standard_images``
+    itself already uses, checked here *before* ``parse_answer_standard``
+    ever creates an ``AnswerStandardEntry`` for a page with no rubric text
+    at all, so a marker with genuinely nothing after it (no text, no
+    image) still correctly produces no entry (preserving the existing
+    ``missing`` warning behavior for that shape).
+    """
+    page_number = start_line.page_number
+    y_start = start_line.y1
+    if boundary_line is not None and boundary_line.page_number == page_number:
+        y_end = boundary_line.y0
+    else:
+        y_end = doc[page_number - 1].rect.height
+    if y_end <= y_start:
+        return None
+    page = doc[page_number - 1]
+    y_min = y_start - ANSWER_STANDARD_IMAGE_Y_PADDING
+    y_max = y_end + ANSWER_STANDARD_IMAGE_Y_PADDING
+    has_image = any(
+        y_min <= (info["bbox"][1] + info["bbox"][3]) / 2 <= y_max for info in page.get_image_info()
+    )
+    if not has_image:
+        return None
+    return {page_number: (y_start, y_end)}
+
+
 def parse_answer_standard(doc: pymupdf.Document) -> AnswerStandardParseResult:
     lines = extract_document_lines(doc)
     warnings: list[str] = []
@@ -138,6 +202,13 @@ def parse_answer_standard(doc: pymupdf.Document) -> AnswerStandardParseResult:
     uses_rubric_heading = any(_RUBRIC_HEADING_RE.match(ln.text.strip()) for ln in lines)
 
     current_number: int | None = None
+    #: The line that opened the current entry's own rubric span (PROMPT
+    #: Fase 3U) - the "Questao N" marker itself, or the "PADRAO DE RESPOSTA"
+    #: heading when this document uses one. Anchors the candidate region
+    #: ``_visual_only_page_bounds`` searches when ``buffer`` turns out to be
+    #: completely empty (zero rubric text) - never guessed at geometrically,
+    #: always the exact line that started this span.
+    current_marker_line: Line | None = None
     in_rubric = not uses_rubric_heading
     buffer: list[Line] = []
     #: Every line seen while ``in_rubric`` is True, *before* chrome
@@ -151,7 +222,13 @@ def parse_answer_standard(doc: pymupdf.Document) -> AnswerStandardParseResult:
     #: on it (see the full-page widening pass below).
     pages_with_markers: set[int] = set()
 
-    def flush() -> None:
+    def flush(boundary_line: Line | None) -> None:
+        """Close out the current entry. ``boundary_line`` is whatever line
+        triggered this flush (the next marker/heading, or ``None`` at end
+        of document) - used only by the zero-text, visual-only path (PROMPT
+        Fase 3U) to bound its own image search; the text path below is
+        completely unchanged from before Fase 3U.
+        """
         nonlocal buffer, raw_buffer
         if current_number is not None and buffer:
             rescued = _rescue_table_row_numbers(raw_buffer, buffer)
@@ -171,6 +248,26 @@ def parse_answer_standard(doc: pymupdf.Document) -> AnswerStandardParseResult:
                 entries[current_number] = AnswerStandardEntry(
                     number=current_number, pages=pages, text=text, page_bounds=page_bounds
                 )
+        elif current_number is not None and current_marker_line is not None:
+            # No rubric text at all (PROMPT Fase 3U) - never assumed empty
+            # by default; only ever populated when real, positively-
+            # verified image evidence exists in the marker's own span (see
+            # ``_visual_only_page_bounds``'s own docstring). A marker with
+            # genuinely nothing after it (no text, no image) still
+            # correctly produces no entry here, preserving the existing
+            # ``missing`` warning for that shape.
+            visual_bounds = _visual_only_page_bounds(doc, current_marker_line, boundary_line)
+            if visual_bounds is not None:
+                if current_number in entries:
+                    warnings.append(
+                        f"answer standard: duplicate rubric text for discursiva {current_number}"
+                    )
+                entries[current_number] = AnswerStandardEntry(
+                    number=current_number,
+                    pages=sorted(visual_bounds),
+                    text="",
+                    page_bounds=visual_bounds,
+                )
         buffer = []
         raw_buffer = []
 
@@ -181,15 +278,17 @@ def parse_answer_standard(doc: pymupdf.Document) -> AnswerStandardParseResult:
         # is specifically looking for.
         marker = _DISCURSIVE_MARKER_RE.match(line.text)
         if marker:
-            flush()
+            flush(line)
             current_number = int(marker.group(1))
             all_marker_numbers.add(current_number)
             in_rubric = not uses_rubric_heading
+            current_marker_line = line if not uses_rubric_heading else None
             pages_with_markers.add(line.page_number)
             continue
         if _RUBRIC_HEADING_RE.match(line.text.strip()):
-            flush()
+            flush(line)
             in_rubric = True
+            current_marker_line = line
             pages_with_markers.add(line.page_number)
             continue
         if in_rubric and current_number is not None:
@@ -199,7 +298,7 @@ def parse_answer_standard(doc: pymupdf.Document) -> AnswerStandardParseResult:
         if in_rubric and current_number is not None:
             buffer.append(line)
 
-    flush()
+    flush(None)
 
     # A page that a rubric's own buffer touches but that never saw a new
     # marker/heading is entirely this one rubric's content, even where the
@@ -239,18 +338,6 @@ def parse_answer_standard(doc: pymupdf.Document) -> AnswerStandardParseResult:
     return AnswerStandardParseResult(entries=entries, warnings=warnings)
 
 
-#: Padding (points) applied to an entry's own rubric page_bounds before
-#: testing whether an embedded image's vertical midpoint falls "inside" it
-#: - generous enough to catch a diagram sitting just past the last rubric
-#: text line, but bounded to this one page's own rubric region so it can
-#: never reach back into the *reprinted question text* that precedes the
-#: rubric heading on a shared page (PROMPT Phase 1C section 9.2 - D4's own
-#: "Somador Completo de 1-bit" figure is reprinted this way on padrao page
-#: 4, immediately before D4's rubric heading; it must never be captured
-#: again here as if it were a new answer-standard-only diagram).
-ANSWER_STANDARD_IMAGE_Y_PADDING = 15.0
-
-
 def find_answer_standard_images(
     doc: pymupdf.Document, entry: AnswerStandardEntry
 ) -> list[tuple[int, tuple[float, float, float, float]]]:
@@ -259,7 +346,16 @@ def find_answer_standard_images(
     never a reprint of the question's own already-captured figure (which
     sits in a different, earlier page region covered by
     ``Question.assets`` from the prova, not here). Returns
-    ``(page_number, bbox)`` pairs in document order.
+    ``(page_number, bbox)`` pairs in visual reading order (page, then top
+    to bottom by the image's own y0) - never PDF-internal xref/creation
+    order (PROMPT Fase 3U section 14: two images can be defined in the PDF
+    in one order and painted in a different one; sorting by position, not
+    trusting ``page.get_image_info()``'s own iteration order, is what
+    makes the published order match what a reader actually sees). Verified
+    safe against every already-published multi-image answer standard in
+    this corpus (2008-b D40/D80, 2011 D3/D4): each one's own images were
+    already, coincidentally, in y0-ascending order, so this sort changes
+    no existing output.
     """
     found: list[tuple[int, tuple[float, float, float, float]]] = []
     for page_number in entry.pages:
@@ -274,4 +370,5 @@ def find_answer_standard_images(
             image_y_mid = (bbox[1] + bbox[3]) / 2
             if y_min <= image_y_mid <= y_max:
                 found.append((page_number, tuple(bbox)))
+    found.sort(key=lambda item: (item[0], item[1][1]))
     return found

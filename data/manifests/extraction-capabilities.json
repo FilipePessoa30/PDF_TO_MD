@@ -877,6 +877,45 @@
       "profile_dependency": "none",
       "runtime_ai_dependency": "none",
       "introduced_phase": "3S"
+    },
+    {
+      "capability_id": "visual_only_answer_standard",
+      "description": "A discursive's own official answer standard ('padrao de resposta') can now be documentally complete when its rubric is entirely visual - zero rubric text of any kind between its own 'Questao N' marker and the next transition, at least one real embedded image in that exact span. parse_answer_standard's own flush() (answer_standard.py) creates an AnswerStandardEntry with text='' only when a new helper, _visual_only_page_bounds, positively confirms at least one real image sits within the marker's own single page, from its own baseline down to the next marker/heading's own top edge (or the page's own bottom edge) - never assumed, never geometry-guessed beyond that one positive check. AnswerStandardReference.text (provenance.py) was relaxed from an unconditional min_length=1 to a model validator requiring text non-empty OR assets non-empty (never both empty) - enabling three documentary modes: text_only (unchanged, every pre-existing answer standard), visual_only (text='', at least one asset - D59's own new shape), and mixed (both real text and real assets - already the pre-existing shape for D3/D4/D40, untouched). find_answer_standard_images was also hardened to sort its own results by page then y0 (visual reading order) rather than trusting page.get_image_info()'s own PDF-internal iteration order - verified to produce byte-identical output for every already-published multi-image answer standard in this corpus.",
+      "trigger_features": [
+        "a discursive's own rubric marker-to-next-transition span with zero rubric text captured by the existing paragraph-grouping logic",
+        "at least one real embedded raster image whose own vertical midpoint falls within that exact marker-to-transition span, on the marker's own single page (_visual_only_page_bounds's own positive-evidence check)"
+      ],
+      "parameters": {
+        "ANSWER_STANDARD_IMAGE_Y_PADDING": "15.0pt - shared, unchanged constant already used by find_answer_standard_images for the text-bearing case"
+      },
+      "scope": "answer_standard.py (_visual_only_page_bounds, parse_answer_standard's own flush(), find_answer_standard_images's own sort); models/provenance.py (AnswerStandardReference.text relaxed + _validate_text_or_assets_present)",
+      "generalization_level": "G1",
+      "positive_fixtures": [
+        "tests/test_extraction_answer_standard.py::test_parse_answer_standard_creates_visual_only_entry_for_zero_text_rubric",
+        "tests/test_extraction_answer_standard.py::test_find_answer_standard_images_orders_by_position_not_insertion_order",
+        "tests/test_schema_question.py::test_answer_standard_visual_only_allows_empty_text_with_asset",
+        "tests/test_schema_question.py::test_answer_standard_text_only_unchanged",
+        "tests/test_schema_question.py::test_answer_standard_mixed_requires_both_when_both_are_given"
+      ],
+      "negative_fixtures": [
+        "tests/test_extraction_answer_standard.py::test_parse_answer_standard_never_creates_entry_for_zero_text_zero_image",
+        "tests/test_extraction_answer_standard.py::test_parse_answer_standard_never_attributes_an_image_before_the_marker",
+        "tests/test_extraction_answer_standard.py::test_parse_answer_standard_visual_only_scoped_to_markers_own_page",
+        "tests/test_schema_question.py::test_answer_standard_rejects_empty_text_and_empty_assets",
+        "tests/test_schema_question.py::test_answer_standard_rejects_whitespace_only_text_and_empty_assets"
+      ],
+      "real_cases": [
+        "2008-b D59 (page 3 of b3_padrao.pdf) - a task-scheduling Gantt-style rubric diagram, zero rubric text, confirmed the sole real image belonging to D59 (a Phase 3T claim of '3 images' was itself found and corrected this phase - two of the four images on that same page belong to D40's own preceding, unrelated rubric and are correctly excluded by this mechanism's own marker-boundary scoping)"
+      ],
+      "protected_cases": [
+        "2008-b (all 76 other published questions, confirmed byte-identical by full regeneration; D40's own pre-existing 3-image mixed answer standard - which spans onto the same page 3 as D59 - is completely unaffected, since it has real rubric text and never reaches this new code path)",
+        "2011 (all 55 questions, confirmed byte-identical by full regeneration - D1-D5's own answer standards all have real text, none exercise the new path)",
+        "2021 (all three tracked courses, 120 questions total, confirmed byte-identical by full regeneration)"
+      ],
+      "failure_behavior": "a marker span with neither text nor a real image produces no AnswerStandardEntry at all (the pre-existing 'no rubric text found' warning, unchanged) - never a fabricated or empty answer standard; an AnswerStandardReference with both text='' and assets=[] is rejected outright by the schema's own validator, so this state can never reach the published corpus even if a future caller tried to construct it",
+      "profile_dependency": "none",
+      "runtime_ai_dependency": "none",
+      "introduced_phase": "3U"
     }
   ]
 }

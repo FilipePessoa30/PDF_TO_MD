@@ -101,6 +101,25 @@ class AnswerStandardReference(BaseModel):
     ``Question.assets``, so a future consumer can enforce "never shown to
     the student before their attempt" by field alone - see
     docs/decisions.md, "Phase 1C" ADR.
+
+    ``text`` was originally required non-empty unconditionally (PROMPT
+    Phase 1A) - relaxed in Phase 3U to allow an empty string only when
+    ``assets`` is non-empty (see ``_validate_text_or_assets_present``):
+    2008-b's own D59 (page 3 of ``b3_padrao.pdf``) has a rubric that is
+    genuinely, entirely visual - zero rubric text of any kind between its
+    own "Questao 59"/"Questao 60" markers, one real embedded diagram image
+    and nothing else. The three documentary modes this enables:
+    ``text_only`` (non-empty text, ``assets`` empty or not - unchanged,
+    every pre-Phase-3U answer standard), ``visual_only`` (``text=""``,
+    ``assets`` non-empty - D59's own new shape), ``mixed`` (non-empty text
+    AND non-empty assets - already the existing shape for D3/D4/D40, whose
+    own worked examples/diagrams sit alongside real rubric text). The one
+    state this validator still forbids, in every mode, is both empty at
+    once (``text=""`` and ``assets=[]``) - there is never a "no content at
+    all" answer standard; a discursive with neither is represented by
+    ``Question.answer_standard is None`` instead (see
+    ``answer_standard.py``'s own ``flush()``, which never creates an entry
+    for that shape).
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -110,7 +129,10 @@ class AnswerStandardReference(BaseModel):
     )
     pdf_sha256: str = Field(..., pattern=SHA256_PATTERN)
     pages: list[int] = Field(..., min_length=1)
-    text: str = Field(..., min_length=1, description="verbatim official grading rubric text")
+    text: str = Field(
+        ...,
+        description="verbatim official grading rubric text, or '' when the rubric is visual-only",
+    )
     assets: list[Asset] = Field(default_factory=list)
 
     @field_validator("pages")
@@ -125,4 +147,13 @@ class AnswerStandardReference(BaseModel):
         ids = [a.id for a in self.assets]
         if len(set(ids)) != len(ids):
             raise ValueError("answer_standard.assets must not repeat an id")
+        return self
+
+    @model_validator(mode="after")
+    def _validate_text_or_assets_present(self) -> AnswerStandardReference:
+        if not self.text.strip() and not self.assets:
+            raise ValueError(
+                "answer_standard must have non-empty text, at least one asset, or both - "
+                "never both empty (a discursive with neither should have answer_standard=None)"
+            )
         return self

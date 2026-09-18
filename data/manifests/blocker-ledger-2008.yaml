@@ -958,60 +958,182 @@ blockers:
   status: open
   superseded_by: null
   visual_validation: failed
-- affected_assets: []
+- affected_assets:
+  - padrao-01
   category: answer-standard-incomplete
-  cause: 'Genuine source-document shape, not an extraction bug: parse_answer_standard only creates an
-    AnswerStandardEntry when non-empty text is captured, so a purely visual rubric with no text produces
-    no entry at all, and there is therefore no page_bounds window for find_answer_standard_images to search
-    within. D59''s own statement text is otherwise complete and correctly extracted (visual_validation=passed).'
-  description: D59's own padrao de resposta (b3_padrao.pdf) has zero rubric text between the 'Questao
-    59' and 'Questao 60' markers - the rubric is diagram-only (4 embedded images, no text at all).
-  evidence: null
+  cause: >-
+    Genuine source-document shape, not an extraction bug: before Phase 3U,
+    parse_answer_standard only created an AnswerStandardEntry when
+    non-empty text was captured, so a purely visual rubric with no text
+    produced no entry at all - there was no page_bounds window for
+    find_answer_standard_images to search within. D59's own statement text
+    is otherwise complete and correctly extracted (visual_validation=passed).
+    RE-VERIFIED IN PHASE 3T (page.get_text("text")/get_image_info() on
+    b3_padrao.pdf page 3 confirmed zero characters between the "Questao 59"
+    and "Questao 60" markers, and 4 embedded raster images on that same
+    page). CORRECTED IN PHASE 3U: Phase 3T's own count of "3 non-header
+    images belonging to D59" was itself wrong - a fresh, marker-boundary-
+    aware re-verification (never presumed from the prior phase's own
+    page-wide claim) found that only ONE of those 4 images
+    (bbox 123.75,488.75-471.75,740.0) actually falls between "Questao 59"
+    (own line bbox 89.25,460.57-155.38,473.14) and "Questao 60" (own line
+    bbox 71.25,752.32-137.38,764.89). The other two non-header images
+    (bboxes 198.0,71.75-440.25,248.0 and 162.0,271.25-476.25,448.25) sit
+    ABOVE "Questao 59" own marker line (y1=473.14) and belong to the
+    immediately PRECEDING rubric - D40's own "B.4" continuation, spanning
+    pages 1-2-3 (confirmed: the text "B.4 A solucao abaixo e considerada..."
+    sits directly above "Questao 59" at y=248.18-271.07, matching D40's own
+    already-published answer_standard.text verbatim). D59's own single real
+    rubric image is a task-scheduling Gantt-style diagram ("Caracteristicas
+    das tarefas" / "Execucao simultanea (a)" / "Execucao simultanea (b)
+    (alternativa)", labeled T1/T2/T3/R1/R2) - confirmed, by direct
+    cross-reference against D59's own already-published statement (which
+    describes exactly three tasks T1/T2/T3 sharing resources R1/R2 under a
+    priority-inheritance scheduling protocol), to be the correct rubric for
+    this exact question, not a neighboring one. RESOLVED IN PHASE 3U:
+    answer_standard.py's own parse_answer_standard (flush()) now creates an
+    AnswerStandardEntry with text="" when a marker's own zero-text span
+    (bounded strictly to that marker's own page, from its own baseline to
+    the next marker's own top edge or the page's bottom edge) contains at
+    least one real embedded image (see the new _visual_only_page_bounds
+    helper - never trusted without this positive, per-case evidence check).
+    AnswerStandardReference.text's own min_length=1 constraint was relaxed
+    to a conditional model validator (text non-empty OR assets non-empty,
+    never both empty) - see src/enade/models/provenance.py. Full corpus
+    regeneration confirms 2008-b's other 76 questions (D40 included, whose
+    own pre-existing 3-image answer standard - including that same running
+    header logo it was already, separately, imperfectly capturing before
+    Phase 3U - is completely unaffected, since D40 has real rubric text and
+    never reaches the new code path at all), all 55 2011 questions, and all
+    120 2021 questions (3 courses) are byte-for-byte unaffected.
+  description: >-
+    RESOLVED IN PHASE 3U. D59's own padrao de resposta (b3_padrao.pdf) has
+    zero rubric text between the "Questao 59" and "Questao 60" markers -
+    the rubric is a single, real, task-scheduling diagram image (never
+    three, as Phase 3T mistakenly claimed - the other two images on the
+    same page belong to D40's own preceding rubric). Preserved as a
+    visual-only answer standard (text="", one verified asset, padrao-01)
+    via a new, general, positively-verified mechanism in
+    answer_standard.py - never fabricated as text, never OCR'd, never
+    summarized.
+  evidence: >-
+    docs/phase-3u-report.md; direct re-verification via
+    page.get_text/page.get_image_info on b3_padrao.pdf (sha256
+    7021d115731ddcbad3c227da50f6d8c9c2c7f8a5a4b4d7dabce4b3726d0d35ef),
+    page 3; data/questions/2008/all-computing/enade-2008-computing-d59.md
+    (answer_standard.assets[0], sha256 f4eb5673ba8008494788b545fc7084a6d9fd16fe903de92f509bb5bc0033783b)
   id: d59-answer-standard-image-only
   question_id: enade-2008-computing-d59
-  regression_tests: []
-  resolution: null
+  regression_tests:
+  - tests/test_extraction_answer_standard.py::test_parse_answer_standard_creates_visual_only_entry_for_zero_text_rubric
+  - tests/test_extraction_answer_standard.py::test_parse_answer_standard_never_creates_entry_for_zero_text_zero_image
+  - tests/test_extraction_answer_standard.py::test_parse_answer_standard_never_attributes_an_image_before_the_marker
+  - tests/test_extraction_answer_standard.py::test_parse_answer_standard_visual_only_scoped_to_markers_own_page
+  - tests/test_schema_question.py::test_answer_standard_visual_only_allows_empty_text_with_asset
+  - tests/test_schema_question.py::test_answer_standard_rejects_empty_text_and_empty_assets
+  resolution: >-
+    RESOLVED_BY_VISUAL_FALLBACK (Phase 3U): see cause/description above. No
+    text was fabricated, no OCR was used, no LLM/VLM was consulted - the
+    rubric's own single real image is preserved exactly as printed, with
+    full provenance (source PDF hash, page, bbox-derived crop) and a
+    documented accessibility limitation (text_available: false, not
+    full-text-searchable) recorded structurally via
+    AnswerStandardReference.text="" rather than any narrative field alone.
   source_pages:
   - 3
-  status: open
+  status: resolved_by_visual_fallback
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets: []
   category: answer-standard-absent-from-source
-  cause: Confirmed by full-document inspection of b3_padrao.pdf (6 pages) and cross-checked against 2011's
-    own unified padrao, which DOES include its own Formacao Geral discursivas (D1/D2) - this is not a
-    shared convention, genuinely absent from this specific source document. Never fabricated a rubric
-    to fill the gap.
+  cause: >-
+    Confirmed by full-document inspection of b3_padrao.pdf (6 pages) and
+    cross-checked against 2011's own unified padrao, which DOES include
+    its own Formacao Geral discursivas (D1/D2) - this is not a shared
+    convention, genuinely absent from this specific source document.
+    Never fabricated a rubric to fill the gap. RE-VERIFIED IN PHASE 3T
+    with a fresh, independent negative-search proof (never presumed from
+    this narrative alone) - see evidence field. Reclassified
+    source_unavailable (PROMPT Fase 3T Section 6/13) - this is a
+    permanent, demonstrated absence from the specific source PDF this
+    project was given, never a code defect and never fixable by any
+    future extraction improvement (contrast with
+    d59-answer-standard-image-only above, where the rubric content
+    genuinely exists in the source and stays open, a real, fixable gap).
+    This reclassification does not change readiness - D09's own
+    question_not_verified/missing_answer_standard readiness findings are
+    derived independently, directly from the published Question's own
+    fields (extraction_status, answer_standard), and are unaffected by
+    this ledger entry's own status.
   description: D09's own answer standard is entirely absent from b3_padrao.pdf - the document jumps directly
     from its own cover to 'Questao 20', never restating or grading the two Formacao Geral discursivas
     (9, 10) at all.
-  evidence: null
+  evidence: >-
+    Negative-search proof (Phase 3T, PROMPT Section 13): expected_source=2008/b3_padrao.pdf,
+    source_sha256=7021d115731ddcbad3c227da50f6d8c9c2c7f8a5a4b4d7dabce4b3726d0d35ef,
+    pages_examined=[1,2,3,4,5,6] (the document's own full 6-page extent).
+    search_methods: (1) page.get_text("text") on every page, regex search for
+    "(?i)quest[aã]o\s+(?:discursiva\s+)?0*(\d+)\b" - every match found, in
+    document order: page 1 "Questao 20", page 1 "Questao 39", page 1 "Questao 40",
+    page 3 "Questao 59", page 3 "Questao 60", page 4 "Questao 79", page 5
+    "Questao 80" - "9" and "10" never appear as a discursive marker anywhere.
+    (2) page.get_text("rawdict") line-by-line search for any line containing
+    "quest" (case-insensitive substring, catching encoding variants a plain-text
+    regex might miss) on all 6 pages - identical result set, no additional
+    matches. (3) Direct visual inspection (page.get_text("text") full dump):
+    page 1 begins immediately with "1 / COMPUTACAO / Questao 20" - no cover
+    page content, no reference to Formacao Geral or discursivas 9/10 anywhere
+    before, between, or after any of the 7 markers found. result:
+    absent_from_supplied_source. Cross-checked against 2011's own unified
+    padrao (a different exam year/document), which DOES restate its own
+    Formacao Geral discursivas D1/D2 - confirming this is not a shared,
+    expected convention this project misunderstood, but a genuine
+    document-specific absence in 2008-b's own b3_padrao.pdf.
   id: d09-answer-standard-absent-from-source
   question_id: enade-2008-computing-d09
   regression_tests: []
   resolution: null
   source_pages:
   - 1
-  status: open
+  status: source_unavailable
   superseded_by: null
   visual_validation: failed
 - affected_assets: []
   category: answer-standard-absent-from-source
-  cause: Confirmed by full-document inspection of b3_padrao.pdf (6 pages) and cross-checked against 2011's
-    own unified padrao, which DOES include its own Formacao Geral discursivas (D1/D2) - this is not a
-    shared convention, genuinely absent from this specific source document. Never fabricated a rubric
-    to fill the gap.
+  cause: >-
+    Confirmed by full-document inspection of b3_padrao.pdf (6 pages) and
+    cross-checked against 2011's own unified padrao, which DOES include
+    its own Formacao Geral discursivas (D1/D2) - this is not a shared
+    convention, genuinely absent from this specific source document.
+    Never fabricated a rubric to fill the gap. RE-VERIFIED IN PHASE 3T
+    with a fresh, independent negative-search proof (never presumed from
+    this narrative alone) - see evidence field (identical search to d09's
+    own, same source document, same 7-marker result set). Reclassified
+    source_unavailable (PROMPT Fase 3T Section 6/13) - a permanent,
+    demonstrated absence, never a code defect. This reclassification does
+    not change readiness - D10's own question_not_verified/
+    missing_answer_standard readiness findings are derived independently,
+    directly from the published Question's own fields, and are unaffected
+    by this ledger entry's own status.
   description: D10's own answer standard is entirely absent from b3_padrao.pdf - the document jumps directly
     from its own cover to 'Questao 20', never restating or grading the two Formacao Geral discursivas
     (9, 10) at all.
-  evidence: null
+  evidence: >-
+    Negative-search proof (Phase 3T, PROMPT Section 13): expected_source=2008/b3_padrao.pdf,
+    source_sha256=7021d115731ddcbad3c227da50f6d8c9c2c7f8a5a4b4d7dabce4b3726d0d35ef,
+    pages_examined=[1,2,3,4,5,6]. Identical methodology and result set as
+    d09-answer-standard-absent-from-source's own evidence field (same source
+    document, same full-document marker search: 20, 39, 40, 59, 60, 79, 80 -
+    never 9 or 10, via page.get_text("text") regex search, page.get_text("rawdict")
+    line-by-line substring search, and direct visual inspection of the full text
+    dump). result: absent_from_supplied_source.
   id: d10-answer-standard-absent-from-source
   question_id: enade-2008-computing-d10
   regression_tests: []
   resolution: null
   source_pages:
   - 1
-  status: open
+  status: source_unavailable
   superseded_by: null
   visual_validation: failed
 - affected_assets: []
@@ -1793,20 +1915,71 @@ blockers:
   visual_validation: passed
 - affected_assets:
   - figure-01
-  category: content-duplication
-  cause: 'NEW IN PHASE 3G, documented as an experiment side-effect rather than hidden. contextual_relation_gate
-    now lets a small trailing fragment of the schema image''s own last relation definition
-    (''IdRep:integer referencia Republica)'') bleed in as loose text, prepended without separation to the
-    following sentence. The full 4-relation schema remains completely and correctly available in
-    figure-01.png (unchanged) and the qualifying sentence itself is intact and unambiguous despite the ugly
-    prefix - no information is lost, same "touching, not genuinely raw-overlapping or growth-absorbed"
-    ambiguity class as d40-table-reading-order-scramble''s own new ''F'' leak. Not corrected this phase -
-    left as a documented, cosmetic (non-content-loss) residual; question stays passed (same acceptable
-    shape as q68-sql-code-block-reordering''s own cosmetic residual).'
-  description: A trailing schema fragment ('IdRep:integer referencia Republica)') bleeds in as loose text
-    immediately before 'Suponha que existam as seguintes tuplas no banco de dados:', duplicating part of
-    figure-01.png's own content as garbled text. Cosmetic only - no information lost.
-  evidence: docs/phase-3g-report.md
+  category: content-preserved-via-text-not-cosmetic-duplication
+  cause: >-
+    NEW IN PHASE 3G, documented as an experiment side-effect rather than
+    hidden - ORIGINAL DIAGNOSIS CORRECTED IN PHASE 3T after direct forensic
+    re-verification (never presumed from the Phase 3G narrative alone).
+    contextual_relation_gate lets a small trailing fragment of the schema's
+    own last relation definition ("IdRep:integer referencia Republica)",
+    page 11, bbox 310.44,515.69-499.41,524.69) stay visible as loose text
+    (state=touching against the region's own grown bbox, which ends at
+    y=514.01 - 1.68pt above this line's own y0=515.69; raw_intersects=False,
+    matches_absorbed_label=False - the exact same tri-state "ambiguous,
+    never destructively removed" mechanism as D40's own former "F" leak,
+    Fase 3R). Phase 3G's own claim that this is "cosmetic only - no
+    information lost" is FACTUALLY WRONG, confirmed by direct visual
+    inspection of the rendered figure-01.png at full resolution: the
+    region's own render clip (bbox 310.44,429.77-559.19,514.01, +4pt
+    RENDER_PADDING vertically = clip bottom 518.01) only covers the TOP
+    ~2.3pt of this line's own ~9pt height (515.69 to 518.01) - the image
+    shows this last schema line TRUNCATED, cut off mid-glyph ("IdR..."),
+    never complete. The root cause is a PDF-internal line-fragmentation
+    inconsistency: the row immediately above ("IdPessoa:integer referencia
+    Pessoa,") happens to be split by PyMuPDF's own dict-mode text
+    extraction into three separate, individually-narrow "line" entries
+    (each qualifying for figures.py's own MAX_LABEL_LINE_WIDTH-based
+    label-absorption candidacy and getting absorbed into the region's own
+    grown bbox), while "IdRep:integer referencia Republica)" is reported as
+    ONE single, unsplit, too-wide line that never qualifies as a label
+    candidate at all - an accidental width-filter miss, not a font-size
+    issue like D40's own case. CONCLUSION: this text is NOT a safe,
+    already-duplicated cosmetic artifact - it is the ONLY complete copy of
+    this genuine schema content anywhere in the published corpus. Removing
+    it (e.g. via force_region_membership, D40's own resolution mechanism)
+    would be a real content-loss regression, not a cosmetic cleanup - this
+    is exactly why Fase 3T does not reuse that mechanism here (PROMPT Fase
+    3T Section 19 explicitly requires demonstrating genuine duplication
+    before reuse; that demonstration fails here). The genuine residual is
+    narrower than previously documented: this fragment is glued, without a
+    paragraph break, to the following sentence ("...Republica) Suponha que
+    existam...") because the real vertical gap between them (15.92pt) sits
+    just under this corpus's own general PARAGRAPH_GAP_THRESHOLD (19.0pt) -
+    a correct application of the same general paragraph-continuation rule
+    used correctly everywhere else in the corpus, not a bug in that rule.
+    Reclassified open_actionable (a real, low-severity presentation/
+    formatting defect - not a duplication, not a content-loss risk in its
+    current form) - the correct next step is a narrow, individually-scoped
+    mechanism to insert a paragraph break at this exact, verified point
+    (e.g. a new hash+bbox-locked "force paragraph break" override) without
+    touching the general PARAGRAPH_GAP_THRESHOLD or any shared
+    label-absorption width filter - not attempted this phase, given the
+    verification rigor a change to shared statement-segment-building logic
+    would require (PROMPT Fase 3T Section 20: correction hierarchy,
+    general/override fix only after full shadow-mode validation) - see
+    docs/phase-3t-report.md, recommendation.
+  description: >-
+    A trailing schema fragment ("IdRep:integer referencia Republica)")
+    is glued, without paragraph separation, to the following sentence
+    ("Suponha que existam as seguintes tuplas no banco de dados:"). This
+    is NOT cosmetic duplication as previously documented: figure-01.png's
+    own render truncates this exact line (only its top ~2.3pt of ~9pt
+    height falls inside the image's own render clip) - the text is the
+    sole complete copy of this schema content and must never be removed.
+    The residual is a presentation/formatting gap (missing paragraph
+    break), not a content-fidelity defect.
+  evidence: docs/phase-3g-report.md (original, now-corrected diagnosis); docs/phase-3t-report.md
+    (Section O - forensic re-verification, figure-01.png visual inspection, corrected root cause)
   id: q23-schema-fragment-duplicate-bleed
   question_id: enade-2008-computing-q23
   regression_tests: []
@@ -2037,9 +2210,18 @@ blockers:
     reviewed override names, and only once real vector-drawing content is
     re-confirmed present there. Full corpus regeneration confirms 2008-b's
     other 76 questions, all 55 2011 questions, and all 120 2021 questions
-    (3 courses) are byte-for-byte unaffected.
+    (3 courses) are byte-for-byte unaffected. CORRECTED (Phase 3T): this
+    entry's own `status` field was mistakenly left as the generic
+    `resolved` when Phase 3S actually wrote it - `resolved_by_visual_fallback`
+    is the correct, already-existing enum value for exactly this
+    resolution shape (a visual asset filling a gap no text extraction
+    could ever fill), matching the identical precedent already set by
+    2011's own d03-fibonacci-formula-missing. Corrected here; no behavior
+    changes (both statuses are equally non-open/terminal), purely a ledger
+    accuracy fix caught by Fase 3T's own reconciliation gate (Section 10:
+    "blocker resolvido com evidência" / schema-semantic consistency).
   source_pages:
   - 19
-  status: resolved
+  status: resolved_by_visual_fallback
   superseded_by: null
   visual_validation: passed

@@ -9,12 +9,11 @@
   "pipeline_version": "0.1.0",
   "data_contract_version": "1.1.0",
   "maturity": "provisional",
-  "verified_count": 74,
-  "needs_review_count": 3,
+  "verified_count": 75,
+  "needs_review_count": 2,
   "unresolved_question_ids": [
     "enade-2008-computing-d09",
-    "enade-2008-computing-d10",
-    "enade-2008-computing-d59"
+    "enade-2008-computing-d10"
   ],
   "structural_blockers": [],
   "questions": [
@@ -89,9 +88,9 @@
     {
       "id": "enade-2008-computing-d59",
       "markdown_path": "enade-2008-computing-d59.md",
-      "markdown_sha256": "e146bd9e45a3eb1354e9ac048ed3b7c10ac7fa6b615744bef964a234a85b69ce",
-      "extraction_status": "needs_review",
-      "automatic_validation": "failed",
+      "markdown_sha256": "8b1cab2cdb3612f46d90a355697c5bd27b767f297fe4e8e40657ae9d0213b4a9",
+      "extraction_status": "verified",
+      "automatic_validation": "passed",
       "visual_validation": "passed",
       "assets": []
     },
@@ -990,6 +989,22 @@
           "id": "padrao-03",
           "path": "enade-2008-computing-d40/answer-standard/padrao-03.png",
           "sha256": "a8aed9f217fdb837f5864a3fedd2bd82298be8562a787013afb89a478685d54d"
+        }
+      ]
+    },
+    {
+      "question_id": "enade-2008-computing-d59",
+      "source_path": "2008/b3_padrao.pdf",
+      "pdf_sha256": "7021d115731ddcbad3c227da50f6d8c9c2c7f8a5a4b4d7dabce4b3726d0d35ef",
+      "pages": [
+        3
+      ],
+      "text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "assets": [
+        {
+          "id": "padrao-01",
+          "path": "enade-2008-computing-d59/answer-standard/padrao-01.png",
+          "sha256": "f4eb5673ba8008494788b545fc7084a6d9fd16fe903de92f509bb5bc0033783b"
         }
       ]
     },

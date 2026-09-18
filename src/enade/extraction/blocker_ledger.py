@@ -36,6 +36,7 @@ BlockerStatus = Literal[
     "superseded",
     "not_reproducible",
     "accepted_non_material_difference",
+    "source_unavailable",
 ]
 
 #: A verified, documented gap between the *ideal* state (a question fully
@@ -65,6 +66,25 @@ BlockerStatus = Literal[
 #: Does not block readiness (see ``Blocker.is_open`` - only ``status ==
 #: "open"`` does) but is never silently interchangeable with "resolved":
 #: nothing was fixed, a documented acceptance criterion was met instead.
+#:
+#: ``source_unavailable`` (PROMPT Fase 3T, Section 6/13): a demonstrated,
+#: permanent absence of an official artifact from the specific source PDF
+#: this project was given - never a code defect, never fixable by any
+#: future extraction improvement, and never interchangeable with "resolved"
+#: (nothing was extracted; the search itself is the deliverable). Requires
+#: documented negative-search evidence (expected source, pdf_sha256, pages
+#: examined, search methods - text/rawdict/visual - PROMPT Section 13)
+#: before it may be used. Distinct from a case where the artifact genuinely
+#: exists in the source but the current pipeline fails to extract it (that
+#: stays "open" - see 2008-b's own d59-answer-standard-image-only, whose
+#: four rubric images are physically present on the page but silently
+#: dropped by ``answer_standard.py``'s own text-required assumption, the
+#: real negative example this status must never cover). Removing an "open"
+#: blocker's own readiness-blocking effect is never a side effect of using
+#: this status: the underlying question's own ``question_not_verified``/
+#: ``missing_answer_standard`` readiness findings are derived independently,
+#: directly from the published Question's own fields, and fire regardless
+#: of this ledger entry's status.
 _TERMINAL_STATUSES: frozenset[str] = frozenset(
     {
         "resolved",
@@ -74,6 +94,7 @@ _TERMINAL_STATUSES: frozenset[str] = frozenset(
         "source_ambiguity",
         "not_reproducible",
         "accepted_non_material_difference",
+        "source_unavailable",
     }
 )
 
@@ -144,6 +165,10 @@ class BlockerLedger(BaseModel):
     @property
     def accepted_non_material_difference_count(self) -> int:
         return sum(1 for b in self.blockers if b.status == "accepted_non_material_difference")
+
+    @property
+    def source_unavailable_count(self) -> int:
+        return sum(1 for b in self.blockers if b.status == "source_unavailable")
 
     def by_id(self, blocker_id: str) -> Blocker | None:
         return next((b for b in self.blockers if b.id == blocker_id), None)
@@ -225,6 +250,16 @@ def validate_ledger(ledger: BlockerLedger) -> list[BlockerLedgerIssue]:
                     ),
                 )
             )
+        if blocker.status == "source_unavailable" and not blocker.evidence:
+            issues.append(
+                BlockerLedgerIssue(
+                    kind="source_unavailable_without_evidence",
+                    detail=(
+                        f"{blocker.id}: status=source_unavailable requires documented "
+                        "negative-search evidence (PROMPT Fase 3T Section 13)"
+                    ),
+                )
+            )
 
     accounted = (
         ledger.open_count
@@ -233,6 +268,7 @@ def validate_ledger(ledger: BlockerLedger) -> list[BlockerLedgerIssue]:
         + ledger.source_ambiguity_count
         + ledger.not_reproducible_count
         + ledger.accepted_non_material_difference_count
+        + ledger.source_unavailable_count
     )
     if accounted != ledger.total:
         issues.append(
@@ -244,7 +280,8 @@ def validate_ledger(ledger: BlockerLedger) -> list[BlockerLedgerIssue]:
                     f"source_ambiguity({ledger.source_ambiguity_count}) + "
                     f"not_reproducible({ledger.not_reproducible_count}) + "
                     f"accepted_non_material_difference("
-                    f"{ledger.accepted_non_material_difference_count}) = {accounted}, "
+                    f"{ledger.accepted_non_material_difference_count}) + "
+                    f"source_unavailable({ledger.source_unavailable_count}) = {accounted}, "
                     f"expected total = {ledger.total}"
                 ),
             )

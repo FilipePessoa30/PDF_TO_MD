@@ -285,6 +285,81 @@ def test_answer_standard_assets_are_never_mixed_with_question_assets():
     assert q.assets[0].path != q.answer_standard.assets[0].path
 
 
+# --- Fase 3U: text_only / visual_only / mixed answer standards --------------
+
+
+def test_answer_standard_text_only_unchanged():
+    # Every pre-Fase-3U answer standard: non-empty text, assets optional.
+    ref = AnswerStandardReference(
+        source_path="2008/b3_padrao.pdf", pdf_sha256="b" * 64, pages=[1], text="texto real"
+    )
+    assert ref.text == "texto real"
+    assert ref.assets == []
+
+
+def test_answer_standard_visual_only_allows_empty_text_with_asset():
+    # 2008-b D59's own shape: zero rubric text, one real image.
+    ref = AnswerStandardReference(
+        source_path="2008/b3_padrao.pdf",
+        pdf_sha256="b" * 64,
+        pages=[3],
+        text="",
+        assets=[
+            {
+                "id": "padrao-01",
+                "type": "diagram",
+                "path": "d59/answer-standard/padrao-01.png",
+                "source_page": 3,
+            }
+        ],
+    )
+    assert ref.text == ""
+    assert len(ref.assets) == 1
+
+
+def test_answer_standard_mixed_requires_both_when_both_are_given():
+    # D3/D4/D40's own existing shape: real text AND real assets together -
+    # already worked before Fase 3U, must keep working identically.
+    ref = AnswerStandardReference(
+        source_path="2008/b3_padrao.pdf",
+        pdf_sha256="b" * 64,
+        pages=[2],
+        text="B.1 A solucao a seguir e aceitavel como resposta...",
+        assets=[
+            {"id": "padrao-01", "type": "diagram", "path": "a.png", "source_page": 2},
+        ],
+    )
+    assert ref.text
+    assert len(ref.assets) == 1
+
+
+def test_answer_standard_rejects_empty_text_and_empty_assets():
+    # PROMPT Fase 3U Section 12: invalid in every mode - a discursive with
+    # neither should be represented by Question.answer_standard=None
+    # instead, never by a "hollow" AnswerStandardReference.
+    with pytest.raises(ValidationError, match="non-empty text"):
+        AnswerStandardReference(
+            source_path="2008/b3_padrao.pdf",
+            pdf_sha256="b" * 64,
+            pages=[3],
+            text="",
+            assets=[],
+        )
+
+
+def test_answer_standard_rejects_whitespace_only_text_and_empty_assets():
+    # Whitespace-only text must not be treated as "real text" just because
+    # the string itself is non-empty.
+    with pytest.raises(ValidationError, match="non-empty text"):
+        AnswerStandardReference(
+            source_path="2008/b3_padrao.pdf",
+            pdf_sha256="b" * 64,
+            pages=[3],
+            text="   \n  ",
+            assets=[],
+        )
+
+
 # --- Phase 1C: content_blocks (see docs/decisions.md, "Phase 1C" ADR 12) -----
 
 

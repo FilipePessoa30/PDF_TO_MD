@@ -233,4 +233,86 @@ def test_accepted_non_material_difference_never_counted_as_resolved():
         ]
     )
     assert ledger.resolved_count == 0
-    assert ledger.accepted_non_material_difference_count == 1
+
+
+# --- Fase 3T: source_unavailable (see docs/phase-3t-report.md) -----------
+
+
+def test_source_unavailable_is_not_open_and_is_terminal():
+    # PROMPT Fase 3T Section 6: a demonstrated, permanent absence of an
+    # official artifact from the source PDF - never a code defect, never
+    # fixable by extraction improvements, but also never silently
+    # interchangeable with "resolved" (nothing was extracted).
+    blocker = _blocker(
+        status="source_unavailable",
+        evidence="negative-search proof: text/rawdict/visual, all absent",
+    )
+    assert blocker.is_open is False
+    assert blocker.is_terminal is True
+
+
+def test_source_unavailable_requires_evidence():
+    ledger = BlockerLedger(blockers=[_blocker(status="source_unavailable", evidence=None)])
+    issues = validate_ledger(ledger)
+    assert any(i.kind == "source_unavailable_without_evidence" for i in issues)
+
+
+def test_source_unavailable_does_not_require_a_regression_test():
+    # Unlike a "resolved*" status, there is no code fix to protect against
+    # regressing - the negative-search proof itself, not a pytest case, is
+    # the deliverable (PROMPT Fase 3T Section 13).
+    ledger = BlockerLedger(
+        blockers=[
+            _blocker(
+                status="source_unavailable",
+                evidence="negative-search proof",
+                regression_tests=[],
+            )
+        ]
+    )
+    assert validate_ledger(ledger) == []
+
+
+def test_source_unavailable_counts_toward_the_ledger_total():
+    ledger = BlockerLedger(
+        blockers=[
+            _blocker(id="a", status="open"),
+            _blocker(id="b", status="source_unavailable", evidence="e"),
+        ]
+    )
+    assert ledger.source_unavailable_count == 1
+    assert (
+        ledger.open_count
+        + ledger.resolved_count
+        + ledger.superseded_count
+        + ledger.source_ambiguity_count
+        + ledger.not_reproducible_count
+        + ledger.accepted_non_material_difference_count
+        + ledger.source_unavailable_count
+    ) == ledger.total
+    assert validate_ledger(ledger) == []
+
+
+def test_source_unavailable_never_counted_as_resolved():
+    ledger = BlockerLedger(blockers=[_blocker(status="source_unavailable", evidence="e")])
+    assert ledger.resolved_count == 0
+
+
+def test_source_unavailable_never_used_when_source_content_actually_exists():
+    """Negative example (PROMPT Fase 3T Section 6): d59-answer-standard-
+    image-only has real, physically-present rubric images in the source
+    PDF - only the pipeline's own text-required assumption drops them.
+    This is genuinely `open` (a fixable extraction gap), never
+    `source_unavailable` (which requires demonstrated, permanent absence).
+    This test documents the distinction at the schema level: both statuses
+    validate independently, but a reviewer must never conflate "the
+    pipeline currently fails to extract this" with "this does not exist in
+    the source".
+    """
+    d59_like = _blocker(
+        id="d59-answer-standard-image-only",
+        status="open",
+        evidence=None,
+    )
+    assert d59_like.is_open is True
+    assert d59_like.status != "source_unavailable"

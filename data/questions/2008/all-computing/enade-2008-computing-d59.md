@@ -18,7 +18,21 @@ content_blocks: null
 correct_answer: null
 official_answer_source: null
 answer_validation_status: not_applicable
-answer_standard: null
+answer_standard:
+  source_path: 2008/b3_padrao.pdf
+  pdf_sha256: 7021d115731ddcbad3c227da50f6d8c9c2c7f8a5a4b4d7dabce4b3726d0d35ef
+  pages:
+  - 3
+  text: ''
+  assets:
+  - id: padrao-01
+    type: diagram
+    path: enade-2008-computing-d59/answer-standard/padrao-01.png
+    source_page: 3
+    extraction_method: raster_crop
+    sha256: f4eb5673ba8008494788b545fc7084a6d9fd16fe903de92f509bb5bc0033783b
+    alt_text: null
+    caption: null
 assets: []
 subjects: []
 topics: []
@@ -30,8 +44,8 @@ difficulty: null
 alternative_diagnostics: {}
 extraction_method: text_layer
 ocr_confidence: null
-extraction_status: needs_review
-automatic_validation: failed
+extraction_status: verified
+automatic_validation: passed
 visual_validation: passed
 taxonomy_review_status: pending
 ---
