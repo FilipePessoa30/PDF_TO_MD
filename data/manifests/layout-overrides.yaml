@@ -1400,3 +1400,222 @@ overrides:
       shape/reason as label "A" above.
     evidence: docs/phase-3w-report.md
     status: reviewed
+  # --- Phase 3X: Q38's own circuit diagram - pin labels B/C/D/E and the
+  # output-label annotation "f(A,B,C,D,E)" (5 PDF-internal fragments) leak
+  # as loose statement text (decision=ambiguous: each sits just outside
+  # the circuit's own logical region bbox - x0 0.5-1.3pt short for the pin
+  # labels, x0 5-52pt short for the output-label fragments - but ALL are
+  # already fully, legibly visible in the circuit's own EXISTING,
+  # byte-identical figure-01.png, since assets.py's own _render_bbox
+  # widens the crop horizontally to the page's own owner_x_bounds
+  # (316.24-579.20), well past the logical region's raw extent on both
+  # sides - confirmed by direct visual re-render of that exact, unchanged
+  # crop before writing this override). A general region-growth fix
+  # (threading overrides into figures.py's own internal label-candidate
+  # extraction) was tried and reverted after it caused two separate
+  # regions on this page to grow toward each other and catastrophically
+  # merge (see docs/phase-3x-report.md) - this is the same safe,
+  # zero-blast-radius mechanism already used for D40's own "F" leak
+  # (Fase 3R), applied to 9 individually-verified fragments instead of
+  # one. Pin label "A" already reaches "accepted" on its own (already
+  # excluded by existing growth) and needs no override. ----
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 15
+    bbox: [351.0, 330.5, 356.5, 338.7]
+    rule: force_region_membership
+    question_id: enade-2008-computing-q38
+    reason: >-
+      Circuit's own pin label "B" (bbox 351.479,330.885-355.920,338.177) -
+      state=boundary_crossing, decision=ambiguous against the circuit's
+      own region (352.0,322.48-494.76,402.60) - already fully visible in
+      figure-01.png (see the shared reason above). See docs/phase-3x-report.md.
+    evidence: docs/phase-3x-report.md
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 15
+    bbox: [350.2, 354.0, 356.2, 362.3]
+    rule: force_region_membership
+    question_id: enade-2008-computing-q38
+    reason: >-
+      Circuit's own pin label "C" (bbox 350.759,354.525-355.678,361.817) -
+      state=boundary_crossing, decision=ambiguous. Same shape/reason as
+      label "B" above. See docs/phase-3x-report.md.
+    evidence: docs/phase-3x-report.md
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 15
+    bbox: [350.2, 362.9, 356.5, 371.2]
+    rule: force_region_membership
+    question_id: enade-2008-computing-q38
+    reason: >-
+      Circuit's own pin label "D" (bbox 350.759,363.405-356.038,370.697) -
+      state=boundary_crossing, decision=ambiguous. Same shape/reason as
+      label "B" above. See docs/phase-3x-report.md.
+    evidence: docs/phase-3x-report.md
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 15
+    bbox: [350.6, 394.1, 356.1, 402.4]
+    rule: force_region_membership
+    question_id: enade-2008-computing-q38
+    reason: >-
+      Circuit's own pin label "E" (bbox 351.119,394.605-355.560,401.897) -
+      state=boundary_crossing, decision=ambiguous. Same shape/reason as
+      label "B" above. See docs/phase-3x-report.md.
+    evidence: docs/phase-3x-report.md
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 15
+    bbox: [499.4, 347.2, 545.2, 355.5]
+    rule: force_region_membership
+    question_id: enade-2008-computing-q38
+    reason: >-
+      Circuit's own output-label annotation, fragment 1 of 5 ("f (A, B, C,
+      D, E", bbox 499.918,347.685-544.686,354.977) - state=outside (well
+      clear of the circuit's own logical region on the X axis, x0=499.9
+      vs. region x1=494.8) but still decision=ambiguous per the tri-state
+      policy's own touching-padding tolerance, never "accepted" on its
+      own; already fully, legibly visible in figure-01.png (the render
+      crop widens to owner_x_bounds x1=579.2, past this fragment's own
+      x1=547.2). This is a PDF-internal artifact: PyMuPDF's own dict-mode
+      reports this single visual expression "f(A,B,C,D,E)" as 5 separate,
+      slightly overlapping same-baseline line fragments rather than one
+      line - each is declared individually here, never guessed or
+      reconstructed as one merged span. See docs/phase-3x-report.md.
+    evidence: docs/phase-3x-report.md
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 15
+    bbox: [503.2, 347.2, 521.3, 355.5]
+    rule: force_region_membership
+    question_id: enade-2008-computing-q38
+    reason: >-
+      Circuit's own output-label annotation, fragment 2 of 5 ("(A, B,",
+      bbox 503.759,347.685-520.798,354.977). Same shape/reason as
+      fragment 1 above. See docs/phase-3x-report.md.
+    evidence: docs/phase-3x-report.md
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 15
+    bbox: [527.1, 347.2, 529.9, 355.5]
+    rule: force_region_membership
+    question_id: enade-2008-computing-q38
+    reason: >-
+      Circuit's own output-label annotation, fragment 3 of 5 (",", bbox
+      527.639,347.685-529.438,354.977). Same shape/reason as fragment 1
+      above. See docs/phase-3x-report.md.
+    evidence: docs/phase-3x-report.md
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 15
+    bbox: [536.1, 347.2, 538.9, 355.5]
+    rule: force_region_membership
+    question_id: enade-2008-computing-q38
+    reason: >-
+      Circuit's own output-label annotation, fragment 4 of 5 (",", bbox
+      536.638,347.685-538.437,354.977). Same shape/reason as fragment 1
+      above. See docs/phase-3x-report.md.
+    evidence: docs/phase-3x-report.md
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 15
+    bbox: [544.3, 347.2, 547.7, 355.5]
+    rule: force_region_membership
+    question_id: enade-2008-computing-q38
+    reason: >-
+      Circuit's own output-label annotation, fragment 5 of 5 (")", bbox
+      544.797,347.685-547.200,354.977). Same shape/reason as fragment 1
+      above. See docs/phase-3x-report.md.
+    evidence: docs/phase-3x-report.md
+    status: reviewed
+  # --- Phase 3X: with the circuit diagram's own statement-side leaks
+  # fixed above, Q38's own 5 alternatives (100% vector-drawn boolean-
+  # algebra formulas, proven in Fase 3W - never raster images) can now be
+  # declared and published using the exact same mechanism already proven
+  # safe for Q55 (declare_inline_formula_region, one bbox per alternative,
+  # computed via natural-gap clustering - never marker-position, which
+  # was found unsafe on this exact question's own alternative C). The
+  # coarse, now-redundant blob spanning all 5 alternatives + "RASCUNHO"
+  # is suppressed. ----
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 15
+    bbox: [336.2, 466.2, 559.2, 553.1]
+    rule: suppress_visual_region
+    question_id: enade-2008-computing-q38
+    reason: >-
+      This is the coarse, merged region spanning all 5 of Q38's own
+      alternatives plus the "RASCUNHO" scratch box (is_small_formula=False,
+      element_count=78). Now fully redundant: each alternative's own
+      formula is individually declared below - see docs/phase-3x-report.md.
+    evidence: docs/phase-3x-report.md
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 15
+    bbox: [355.68, 466.2, 423.24, 475.44]
+    rule: declare_inline_formula_region
+    question_id: enade-2008-computing-q38
+    reason: >-
+      Alternative A's own content ("Ā.B̄ + C̄.D̄ + D.E") is 100%
+      vector-drawn (page.get_drawings() confirms 15 path elements inside
+      this bbox; page.get_text(clip=...) returns empty). Bbox computed via
+      natural-gap clustering of every drawing element in the alternatives
+      block (never a marker-line guess): a naive marker-position boundary
+      was tried first and found, by direct visual re-render, to wrongly
+      split an adjacent alternative's own overline bars into the wrong row
+      (caught before being used here) - see docs/phase-3w-report.md.
+    evidence: docs/phase-3w-report.md; docs/phase-3x-report.md
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 15
+    bbox: [355.78, 480.11, 443.28, 490.32]
+    rule: declare_inline_formula_region
+    question_id: enade-2008-computing-q38
+    reason: >-
+      Alternative B's own content ("(A+B).(C+D) + D.E") - 100%
+      vector-drawn, no overline needed (no negated term), 19 drawing path
+      elements inside this bbox. Same question/root cause as alternative A
+      above - see docs/phase-3w-report.md.
+    evidence: docs/phase-3w-report.md; docs/phase-3x-report.md
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 15
+    bbox: [355.68, 493.92, 428.76, 503.16]
+    rule: declare_inline_formula_region
+    question_id: enade-2008-computing-q38
+    reason: >-
+      Alternative C's own content ("Ā.B̄ + C̄.D̄ + D+E") - 100%
+      vector-drawn, 15 drawing path elements inside this bbox (including
+      the two overline bars, whose own y-range sits slightly above
+      alternative C's own marker-text y0 - the exact detail that made a
+      naive marker-position row boundary unsafe, see alternative A's own
+      reason above). Same question/root cause - see docs/phase-3w-report.md.
+    evidence: docs/phase-3w-report.md; docs/phase-3x-report.md
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 15
+    bbox: [355.68, 507.83, 428.76, 520.92]
+    rule: declare_inline_formula_region
+    question_id: enade-2008-computing-q38
+    reason: >-
+      Alternative D's own content ("A.B + C.D + D̄+E") - 100% vector-drawn,
+      13 drawing path elements inside this bbox (the overline over the
+      second "D" sits a few points below its own main glyph body, in its
+      own natural-gap cluster - merged into this one declaration after
+      visual re-render confirmed both belong to the same alternative). Same
+      question/root cause - see docs/phase-3w-report.md.
+    evidence: docs/phase-3w-report.md; docs/phase-3x-report.md
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 15
+    bbox: [355.68, 523.31, 423.24, 531.6]
+    rule: declare_inline_formula_region
+    question_id: enade-2008-computing-q38
+    reason: >-
+      Alternative E's own content ("A.B + C.D + D̄.Ē") - 100% vector-drawn,
+      12 drawing path elements inside this bbox. Same question/root cause -
+      see docs/phase-3w-report.md. This is the last real alternative on
+      this row; the "RASCUNHO" scratch-space box sits below it (own
+      natural-gap cluster starting y0=538.9, well clear of this bbox) and
+      is correctly never declared as a formula region.
+    evidence: docs/phase-3w-report.md; docs/phase-3x-report.md
+    status: reviewed

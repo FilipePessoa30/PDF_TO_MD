@@ -1100,6 +1100,32 @@ def detect_visual_regions(
     # geometry - see docs/phase-3l-report.md, section D/H. Region
     # detection is purely geometric and must stay that way regardless of
     # which text order downstream consumers choose.
+    #
+    # PROMPT Fase 3X: threading overrides/pdf_sha256 into this call was
+    # tried and reverted. It does fix the surface symptom (2008-b Q38's
+    # own circuit-diagram pin labels "B"/"C"/"D" no longer get merged, via
+    # _merge_orphan_markers, into over-wide garbled lines that then fail
+    # MAX_LABEL_LINE_WIDTH and drop out of label candidacy) - but it also
+    # unblocks every pin label AND the circuit's own output-label
+    # annotation as clean, individually-eligible label candidates at
+    # once, and growth has no notion of "this candidate already belongs to
+    # a different, nearby region": the circuit's own region and the
+    # alternatives-block's own region each independently grow toward the
+    # same shared candidates from opposite directions (TEXT_ABSORPTION_PADDING
+    # =90pt, MAX_ABSORPTION_GROWTH=110pt per edge - both individually
+    # reasonable, but together enough to bridge the ~64pt gap between
+    # them) until they overlap and _merge_overlapping_regions fuses them
+    # into one region spanning the circuit, the real statement text, all
+    # 5 alternatives, and the RASCUNHO box - confirmed by direct
+    # instrumentation, not by inspecting the final crop alone. This is a
+    # real, general growth-cascade risk this module's own two safeguards
+    # (margin-aware alternative-marker exclusion, MAX_ABSORPTION_GROWTH)
+    # do not fully close once two regions' own growth ranges can overlap.
+    # Fixing that safely needs its own dedicated, shadow-mode-validated
+    # phase; deferred - see docs/phase-3x-report.md. The narrower,
+    # zero-blast-radius mechanism (force_region_membership, one
+    # individually-verified override per proven-duplicate label/fragment)
+    # is used instead for Q38 itself.
     page_lines = extract_page_lines(
         page,
         page_number,

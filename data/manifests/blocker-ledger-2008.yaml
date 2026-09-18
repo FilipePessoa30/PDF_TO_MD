@@ -937,79 +937,76 @@ blockers:
   status: open
   superseded_by: null
   visual_validation: not_performed
-- affected_assets: []
+- affected_assets:
+  - figure-01
+  - figure-02
+  - figure-03
+  - figure-04
+  - figure-05
+  - figure-06
   category: unstructured-image-alternatives
   cause: >-
-    RE-VERIFIED IN PHASE 3W, in three successive layers - never presumed
-    common cause with Q8's own real-photograph case above. LAYER 1 (fixed):
-    fresh forensics (page.get_drawings(), page.get_text(clip=...)) prove
-    Q38's own 5 alternatives are 100% vector-drawn boolean-algebra formulas
-    with overline negation (e.g. "A.B + C.D + D.E") - zero raster images,
-    architecturally identical to Q45's own already-solved inline-vector-
-    formula gap (Phase 3S) and to Q55's own shape below. A first attempt
-    (5 declare_inline_formula_region overrides + one suppress_visual_region
-    for the now-redundant coarse blob) surfaced LAYER 2: this question's
-    own circuit diagram has 5 bare single-letter pin labels ("A"-"E",
-    x0~350-356) that _merge_orphan_markers (layout.py) wrongly treated as
-    real orphan alternative markers, splicing pin-label "E" directly onto
-    the real statement's own opening line, duplicating and garbling it.
-    FIXED generally (not per-question): 5 exclude_from_orphan_marker_merge
-    overrides protect these 5 diagram-internal labels (the same mechanism
-    already used for 2011 Q22's own truth-table header), AND
-    _merge_orphan_markers itself was hardened to never pick an unambiguous
-    chrome phrase (chrome.is_exact_chrome_phrase - "RASCUNHO" and the like)
-    as a merge partner anywhere in the corpus - discovered because Q38's
-    own real alternative marker "E" (bare, no text) sat 19.57pt from
-    "RASCUNHO"'s own y0, just under _ORPHAN_MARKER_MAX_DISTANCE (20.0pt),
-    merging into a bogus "E\tRASCUNHO" line (2008-b Q55's own analogous "E"
-    escaped this only by 0.47pt of coincidental margin - not a sign the
-    general behavior was ever safe). This general fix was confirmed, by
-    full regeneration, to leave every other 2008-b/2011/2021 question
-    byte-identical, EXCEPT it also silently broke Q57's own numeric
-    alternatives ("A"+"4", "B"+"8", ...) on a first attempt (is_chrome_line's
-    own bare-1-3-digit-number pattern is genuinely ambiguous without
-    geometry, matching that function's own documented caveat) - caught by
-    the same full regeneration and fixed by narrowing the guard to
-    is_exact_chrome_phrase only (never the ambiguous regex-based patterns).
-    With both layers fixed, the statement's own duplication and RASCUNHO
-    leak are both gone - but LAYER 3 remains OPEN: the circuit diagram's
-    own detected region (bbox x1=494.8) does not extend far enough left/
-    right to include its own pin labels (x0~350-356, just outside) or its
-    own output-label annotation ("f(A,B,C,D,E)", x0=499.9-547.2) - both
-    already fully visible in the diagram's own rendered figure-01.png
-    (confirmed by direct visual inspection: all 5 labels and the output
-    expression are legible there), making force_region_membership
-    (D40's own precedent) the likely correct next mechanism, but the
-    output-label's own PDF-internal fragmentation (5 overlapping-looking
-    line fragments at the same y-range, an unusual shape not yet fully
-    understood) needs more forensic work than this phase's own budget
-    allows - deferred, not attempted. The Q38-specific alternative-
-    formula/suppress overrides were therefore reverted a second time
-    (confirmed by regeneration: zero trace left in the published corpus);
-    the 5 orphan-marker exclusions and the general chrome-partner fix are
-    kept (independently justified, proven safe, and reduce the remaining
-    gap for whoever attempts Layer 3 next). See docs/phase-3w-report.md.
+    RESOLVED IN PHASE 3X, closing the Layer 3 gap Phase 3W left open (see
+    that phase's own three-layer forensic history, preserved below - never
+    presumed common cause with Q8's own real-photograph case above).
+    LAYER 1 (Phase 3W): Q38's own 5 alternatives are 100% vector-drawn
+    boolean-algebra formulas (e.g. "A.B + C.D + D.E") - fixed via 5
+    declare_inline_formula_region overrides + one suppress_visual_region
+    for the now-redundant coarse blob. LAYER 2 (Phase 3W): the circuit
+    diagram's own 5 bare pin labels ("A"-"E") were wrongly treated as
+    orphan alternative markers by _merge_orphan_markers, splicing "E" onto
+    the real statement's own opening line - fixed generally (5
+    exclude_from_orphan_marker_merge overrides + is_exact_chrome_phrase
+    hardening of _merge_orphan_markers itself, confirmed safe for the
+    whole corpus including the Q57 numeric-alternative counterexample that
+    an earlier, broader attempt broke). LAYER 3 (Phase 3X, this phase): the
+    circuit's own detected region did not extend far enough to include its
+    own 5 pin labels or its own output-label annotation
+    ("f(A,B,C,D,E)", reported by PyMuPDF as 5 separate same-baseline line
+    fragments) - both already fully, legibly visible in the SAME,
+    byte-identical figure-01.png the whole time (assets.py's own
+    render-crop widening to the page's own column bounds already showed
+    them - confirmed by direct visual re-render before writing any
+    override). A general fix (threading layout overrides into figures.py's
+    own internal label-candidate extraction, so exclude_from_orphan_marker_merge
+    would also protect these labels during region growth, not just
+    statement-line construction) was tried and REJECTED after direct
+    instrumentation proved it unblocks growth so effectively that the
+    circuit's own region and the alternatives' own region grow toward each
+    other from opposite directions (TEXT_ABSORPTION_PADDING=90pt,
+    MAX_ABSORPTION_GROWTH=110pt per edge - individually reasonable, but
+    together enough to bridge the ~64pt gap between them) until they
+    overlap and _merge_overlapping_regions fuses them into one region
+    spanning the circuit, the real statement, all 5 alternatives, and
+    RASCUNHO - a cascading regression, not a fix. Reverted; figures.py's
+    own region-growth/merge code is completely untouched. Fixed instead
+    with 9 individually-verified force_region_membership overrides (B/C/D/E
+    pin labels + the 5 output-label fragments - the same zero-blast-radius
+    mechanism already used for D40's own "F" leak, Fase 3R), each
+    individually confirmed, by direct relation computation, to be
+    decision=ambiguous (never already "accepted") against the circuit's
+    own unchanged region, and each individually confirmed, by direct
+    visual re-render, already fully visible in figure-01.png before being
+    declared. Pin label "A" needed no override (already reaches "accepted"
+    on its own, unchanged since before this phase). With Layer 3 closed,
+    Q38 now builds a complete, correct Question: clean single-sentence
+    statement, complete circuit diagram (all 5 labels + output expression
+    legible), and all 5 alternatives correctly represented as their own
+    individually-verified equation assets in the right A-E order.
   description: >-
-    All 5 alternatives are 100% vector-drawn boolean-algebra formulas
-    (never raster images - the "unstructured-image-alternatives" name is a
-    misnomer for this question). Two of three layers of defect are now
-    fixed generally (a real, corpus-wide _merge_orphan_markers hardening,
-    not a per-question patch): the statement's own former duplication and
-    "RASCUNHO" leak are both gone. One residual layer remains - the
-    circuit diagram's own pin labels and output-label annotation still
-    leak as loose, fragmented text because the diagram's own detected
-    region undershoots its own true extent (already fully shown in
-    figure-01.png) - and its own PDF-internal fragmentation needs further
-    forensic work before a safe fix can be applied. Question remains
-    excluded from the published corpus (pipeline.py's own per-question
-    ValidationError isolation) rather than published with this residual
-    defect. 80/80 academic question numbers remain accounted for (78
-    published as of Phase 3W + Q8/Q38 explicitly excluded, loudly, via a
-    structural warning).
+    RESOLVED (Phase 3X): all 5 alternatives are 100% vector-drawn
+    boolean-algebra formulas, now published as individually-verified
+    equation assets (figure-02.png-figure-06.png); the circuit diagram
+    (figure-01.png) is complete, showing all 5 pin labels and its own
+    output expression; the statement is a single, clean, non-duplicated
+    sentence with no RASCUNHO or chrome bleed. 80/80 academic question
+    numbers remain accounted for (79 published as of Phase 3X + Q8
+    explicitly excluded, loudly, via a structural warning).
   evidence: docs/phase-3a-report.md (original observation); docs/phase-3i-report.md
     (independent per-question re-verification, Section P); docs/phase-3w-report.md
-    (three-layer forensic correction; two layers fixed generally and
-    regression-tested; one layer's own minimal next step documented)
+    (three-layer forensic diagnosis; Layers 1-2 fixed generally); docs/phase-3x-report.md
+    (Layer 3 root-caused and resolved; rejected general fix documented with
+    its own full regression evidence)
   id: q38-unstructured-image-alternatives
   question_id: enade-2008-computing-q38
   regression_tests:
@@ -1017,12 +1014,17 @@ blockers:
   - tests/test_extraction_layout.py::test_merge_orphan_markers_still_merges_a_bare_short_number_partner
   - tests/test_extraction_chrome.py::test_is_exact_chrome_phrase_true_for_exact_furniture_lines
   - tests/test_extraction_chrome.py::test_is_exact_chrome_phrase_false_for_everything_else
-  resolution: null
+  - tests/test_extraction_pipeline_2008.py::test_q38_circuit_and_alternatives_are_now_fully_published
+  resolution: >-
+    RESOLVED (Phase 3X): see cause above. Q38 is now published
+    (automatic_validation=passed, visual_validation=passed) with a complete
+    circuit diagram, a clean statement, and all 5 alternatives correctly
+    represented as their own individually-verified equation assets.
   source_pages:
   - 15
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: not_performed
+  visual_validation: passed
 - affected_assets:
   - figure-01
   - figure-02

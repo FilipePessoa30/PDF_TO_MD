@@ -41,6 +41,7 @@ enade-2008-computing-q34,2008,multiple_choice,34,cc-bacharelado-objetiva,14,14,5
 enade-2008-computing-q35,2008,multiple_choice,35,cc-bacharelado-objetiva,15,15,5,False,0,B,validated,False,text_layer,verified,0,
 enade-2008-computing-q36,2008,multiple_choice,36,cc-bacharelado-objetiva,15,15,5,False,0,A,validated,False,text_layer,verified,0,
 enade-2008-computing-q37,2008,multiple_choice,37,cc-bacharelado-objetiva,15,15,5,False,0,C,validated,False,text_layer,verified,0,
+enade-2008-computing-q38,2008,multiple_choice,38,cc-bacharelado-objetiva,15,15,5,True,6,E,validated,False,text_layer,verified,0,
 enade-2008-computing-q41,2008,multiple_choice,41,engenharia-computacao-objetiva,18,18,5,False,0,C,validated,False,text_layer,verified,0,
 enade-2008-computing-q42,2008,multiple_choice,42,engenharia-computacao-objetiva,18,18,5,False,0,D,validated,False,text_layer,verified,0,
 enade-2008-computing-q43,2008,multiple_choice,43,engenharia-computacao-objetiva,18,18,5,True,1,B,validated,False,text_layer,verified,0,

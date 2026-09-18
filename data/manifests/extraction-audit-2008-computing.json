@@ -798,6 +798,25 @@
     "warnings": ""
   },
   {
+    "id": "enade-2008-computing-q38",
+    "exam_year": 2008,
+    "kind": "multiple_choice",
+    "number": 38,
+    "section": "cc-bacharelado-objetiva",
+    "start_page": 15,
+    "end_page": 15,
+    "num_alternatives": 5,
+    "has_assets": true,
+    "num_assets": 6,
+    "answer": "E",
+    "answer_validation_status": "validated",
+    "answer_standard_available": false,
+    "extraction_method": "text_layer",
+    "extraction_status": "verified",
+    "warning_count": 0,
+    "warnings": ""
+  },
+  {
     "id": "enade-2008-computing-q41",
     "exam_year": 2008,
     "kind": "multiple_choice",
