@@ -90,13 +90,22 @@ def extraction_result_no_layout_overrides(tmp_path_factory: pytest.TempPathFacto
 
 
 def test_all_80_academic_questions_are_accounted_for(extraction_result):
-    """77 published + 3 explicitly excluded (unstructured image
+    """78 published + 2 explicitly excluded (unstructured image
     alternatives, PROMPT Phase 3A) = 80 - never silently fewer.
+
+    Was 77 published + 3 excluded until PROMPT Fase 3W: Q55's own
+    alternatives were re-diagnosed as 100% vector-drawn formulas (never
+    raster images) and published via the same declared-inline-formula
+    mechanism Fase 3S already built for Q45 - see
+    q55-unstructured-image-alternatives (RESOLVED) in blocker-ledger-2008.yaml.
+    Q8/Q38 remain excluded (Q38's own equivalent attempt was reverted this
+    same phase after surfacing an unrelated, pre-existing
+    `_merge_orphan_markers` defect - see docs/phase-3w-report.md).
     """
     result, _ = extraction_result
     published_ids = {q.id for q in result.questions}
-    assert len(published_ids) == 77
-    for excluded_number in (8, 38, 55):
+    assert len(published_ids) == 78
+    for excluded_number in (8, 38):
         exclusion_note = f"objective {excluded_number}: could not build a valid Question"
         assert any(exclusion_note in w for w in result.structural_warnings), (
             f"objective {excluded_number} must be loudly excluded, not silently missing"
@@ -1152,12 +1161,67 @@ def test_q23_schema_fragment_is_now_its_own_paragraph_not_glued_to_the_next_sent
     assert "IdRep:integer referencia Republica)" in paragraph_texts
     assert "Suponha que existam as seguintes tuplas no banco de dados:" in paragraph_texts
     # The old, glued single paragraph must no longer exist.
-    assert not any(text.startswith("IdRep:integer referencia Republica) Suponha") for text in paragraph_texts)
+    assert not any(
+        text.startswith("IdRep:integer referencia Republica) Suponha") for text in paragraph_texts
+    )
     # figure-01 and the code block right after it are unaffected.
     asset_ids = [a.id for a in q23.assets]
     assert "figure-01" in asset_ids
     code_blocks = [b for b in q23.content_blocks if b.type == "code"]
     assert any("Pessoa(1, " in b.text for b in code_blocks)
+
+
+def test_q55_alternatives_are_now_published_as_vector_formula_equations(extraction_result):
+    """Regression test for the `q55-unstructured-image-alternatives` blocker
+    (RESOLVED Phase 3W): fresh forensics proved this question's own 5
+    alternatives are 100% vector-drawn exponential formulas
+    (page.get_drawings(), zero real text), never raster images -
+    architecturally identical to Q45's own already-solved inline-formula
+    gap (Phase 3S). Five new `declare_inline_formula_region` overrides (one
+    per alternative, individually re-verified via `verify_drawings_present`)
+    plus one `suppress_visual_region` override (dropping the now-redundant
+    coarse blob that used to span all 5 alternatives + the "RASCUNHO"
+    scratch box) let this question build for the first time ever. Q38's own
+    equivalent attempt was tried and reverted this same phase (unrelated,
+    pre-existing `_merge_orphan_markers` defect exposed a garbled
+    statement) - Q55 has no such defect and remains the sole content
+    target of this fix.
+    """
+    result, _ = extraction_result
+    q55 = _objective_by_number(result)[55]
+    assert len(q55.alternatives) == 5
+    for alt in q55.alternatives:
+        assert alt.text == ""
+        assert alt.asset is not None
+        assert alt.asset.type == AssetType.EQUATION
+    asset_ids = [a.id for a in q55.assets]
+    assert len(asset_ids) == len(set(asset_ids))  # every alternative got its own, distinct asset
+    # This fixture never loads a visual-audit file (see extraction_result
+    # above), so extraction_status stays "extracted" (visual_validation
+    # pending) for every question here regardless - the real CLI/canonical
+    # corpus, which does load data/manifests/visual-audit-2008-computing.json,
+    # reaches "verified" (confirmed directly against data/questions/2008/
+    # all-computing/enade-2008-computing-q55.md).
+    assert q55.automatic_validation.value == "passed"
+    assert (
+        "Considere que um sistema seja constituído por três componentes montados em paralelo"
+        in q55.statement
+    )
+
+
+def test_q38_remains_excluded_after_q55s_own_fix(extraction_result):
+    """Q38 shares the exact same root cause and fix mechanism as Q55
+    (PROMPT Fase 3W), but a fresh pipeline regeneration surfaced an
+    unrelated, pre-existing, general defect (`_merge_orphan_markers`,
+    layout.py, wrongly treating the circuit diagram's own bare single-
+    letter pin labels as real orphan markers and splicing one of them onto
+    the real statement's own opening line) that would have garbled Q38's
+    statement if published. Q38's own alternative-declaration attempt was
+    reverted; it must remain excluded exactly as before, never published
+    with a newly-introduced document-fidelity defect.
+    """
+    result, _ = extraction_result
+    assert 38 not in _objective_by_number(result)
 
 
 def test_q73_neighboring_question_paragraph_is_not_regressed(extraction_result):

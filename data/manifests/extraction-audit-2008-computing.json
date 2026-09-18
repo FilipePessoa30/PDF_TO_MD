@@ -1064,6 +1064,25 @@
     "warnings": ""
   },
   {
+    "id": "enade-2008-computing-q55",
+    "exam_year": 2008,
+    "kind": "multiple_choice",
+    "number": 55,
+    "section": "engenharia-computacao-objetiva",
+    "start_page": 23,
+    "end_page": 23,
+    "num_alternatives": 5,
+    "has_assets": true,
+    "num_assets": 5,
+    "answer": "E",
+    "answer_validation_status": "validated",
+    "answer_standard_available": false,
+    "extraction_method": "text_layer",
+    "extraction_status": "verified",
+    "warning_count": 0,
+    "warnings": ""
+  },
+  {
     "id": "enade-2008-computing-q56",
     "exam_year": 2008,
     "kind": "multiple_choice",

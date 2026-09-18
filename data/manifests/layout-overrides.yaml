@@ -1220,3 +1220,183 @@ overrides:
       (forensic re-verification, truncation proof); docs/phase-3v-report.md
       (paragraph-break fix, corpus-wide gap-band check)
     status: reviewed
+  # --- Phase 3W: Q55's own 5 alternatives (below) are each individually
+  # declared as their own precise inline-formula region, so the original,
+  # coarser detect_visual_regions blob that used to span all 5 alternatives
+  # (+ the "RASCUNHO" scratch box) becomes fully redundant - its entire
+  # content is now represented, more precisely, by the 5 per-alternative
+  # declarations. Left unsuppressed, this blob remains an "unconsumed"
+  # statement-level region (since _attach_alternative_formula_regions's own
+  # consumed_ids only ever marks the *declared* regions it actually used,
+  # never a same-area blob it did not slice from) and would wrongly
+  # duplicate the same content as a second, coarser, garbled image inserted
+  # into the statement flow. Suppressing it here is the same declarative,
+  # individually-reviewed mechanism already used for 2011 Q13 (see the NOTE
+  # above) - never a change to detect_visual_regions's own general
+  # merge/growth logic. Q38's own equivalent alternatives-declaration
+  # attempt (same root cause, same mechanism) was tried and reverted this
+  # same phase after full pipeline regeneration surfaced an unrelated,
+  # pre-existing, general defect in _merge_orphan_markers (layout.py):
+  # Q38's own circuit diagram has 5 bare single-letter pin labels
+  # (A-E, x0~350-352, no relation to the real alternative markers at
+  # x0=336.2) that the general orphan-marker merge mechanism wrongly
+  # treats as real orphan markers, splicing pin-label "E" directly onto
+  # the real alternative section's own opening statement line
+  # ("E\tNo circuito acima, que possui cinco entradas..."), duplicating and
+  # garbling Q38's own statement. This is a general-mechanism defect
+  # (affects every question in every booklet, not Q38-specific) requiring
+  # its own dedicated shadow-mode-validated fix in a future phase - see
+  # docs/phase-3w-report.md, Section G/O. Q38 remains excluded
+  # (unstructured-image-alternatives, unchanged) rather than published with
+  # a newly-introduced document-fidelity defect. ----
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 23
+    bbox: [332.2, 241.0, 405.5, 325.3]
+    rule: suppress_visual_region
+    question_id: enade-2008-computing-q55
+    reason: >-
+      This is the coarse, merged region spanning all 5 of Q55's own
+      alternatives plus the "RASCUNHO" scratch box (is_small_formula=False,
+      element_count=56 - the RASCUNHO box's own border drawing, plus every
+      alternative's own vector strokes, all merged by Y-proximity into one
+      blob). Now fully redundant - each alternative's own formula is
+      individually declared below - see docs/phase-3w-report.md.
+    evidence: docs/phase-3w-report.md
+    status: reviewed
+  # --- Phase 3W: Q55's own 5 alternatives, each a vector-drawn exponential
+  # formula (same root cause and mechanism as Q38 above, independently
+  # re-verified - never presumed common cause with Q38/Q8) ----
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 23
+    bbox: [352.2, 241.0, 392.16, 250.92]
+    rule: declare_inline_formula_region
+    question_id: enade-2008-computing-q55
+    reason: >-
+      Alternative A's own content ("[1-e^-0,3t]^3") - 100% vector-drawn (11
+      drawing path elements inside this bbox; page.get_text(clip=...)
+      returns empty). No overline notation in this question (a different
+      shape than Q38 - never presumed common cause). Bbox computed via
+      natural-gap clustering of drawing elements, restricted to x0>=330.0
+      to exclude a confirmed, unrelated cross-column drawing cluster
+      (x0~198-229, a different page element entirely) that a naive
+      Y-only proximity search would otherwise wrongly absorb - see
+      docs/phase-3w-report.md.
+    evidence: docs/phase-3w-report.md
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 23
+    bbox: [352.56, 254.88, 405.48, 264.48]
+    rule: declare_inline_formula_region
+    question_id: enade-2008-computing-q55
+    reason: >-
+      Alternative B's own content ("1-[1-e^-0,1t]^3") - 100% vector-drawn,
+      13 drawing path elements inside this bbox. Same question/root cause -
+      see docs/phase-3w-report.md.
+    evidence: docs/phase-3w-report.md
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 23
+    bbox: [351.82, 268.44, 372.84, 276.36]
+    rule: declare_inline_formula_region
+    question_id: enade-2008-computing-q55
+    reason: >-
+      Alternative C's own content ("e^-0,3t") - 100% vector-drawn, 6
+      drawing path elements inside this bbox. Same question/root cause -
+      see docs/phase-3w-report.md.
+    evidence: docs/phase-3w-report.md
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 23
+    bbox: [352.56, 282.0, 384.24, 289.92]
+    rule: declare_inline_formula_region
+    question_id: enade-2008-computing-q55
+    reason: >-
+      Alternative D's own content ("1-e^-0,3t") - 100% vector-drawn, 8
+      drawing path elements inside this bbox. Same question/root cause -
+      see docs/phase-3w-report.md.
+    evidence: docs/phase-3w-report.md
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 23
+    bbox: [352.2, 295.24, 394.08, 305.16]
+    rule: declare_inline_formula_region
+    question_id: enade-2008-computing-q55
+    reason: >-
+      Alternative E's own content ("[1-e^-0,1t]^3") - 100% vector-drawn, 11
+      drawing path elements inside this bbox. Same question/root cause -
+      see docs/phase-3w-report.md. Last real alternative on this row; the
+      "RASCUNHO" scratch-space box (own natural-gap cluster starting
+      y0=311.16) is correctly never declared as a formula region.
+    evidence: docs/phase-3w-report.md
+    status: reviewed
+  # --- Phase 3W (retry, see docs/phase-3w-report.md Section G/O for the
+  # first attempt's own revert): Q38's own circuit diagram has 5 bare
+  # single-letter pin labels (A-E, x0~351-356) that layout.py's own
+  # general _merge_orphan_markers wrongly treats as real orphan alternative
+  # markers - same false-positive class already fixed once for 2011 Q22's
+  # own truth-table header via exclude_from_orphan_marker_merge (see the
+  # very first entry in this file). Excluding these 5 diagram-internal
+  # labels the same way lets Q38's own real statement stay intact,
+  # unblocking the alternative-formula fix below without touching
+  # _merge_orphan_markers itself at all. ----
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 15
+    bbox: [351.4, 322.0, 356.9, 330.3]
+    rule: exclude_from_orphan_marker_merge
+    question_id: enade-2008-computing-q38
+    reason: >-
+      Circuit diagram's own input-pin label "A" (bbox 351.959,322.485-
+      356.400,329.777) - a diagram-internal label, not an alternative
+      marker (Q38's own real alternative markers sit at x0=336.2, matching
+      the page's own body-text margin; this label sits at x0~352,
+      matching the circuit diagram's own detected region x0=352.0-494.8,
+      confirmed by direct visual inspection of the circuit artwork). Left
+      unexcluded, _merge_orphan_markers's own general distance/column
+      search spliced this and its own sibling labels onto unrelated
+      nearby fragments, one of them (label "E") catastrophically onto the
+      real statement's own opening line - see docs/phase-3w-report.md.
+    evidence: docs/phase-3w-report.md
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 15
+    bbox: [350.9, 330.4, 356.4, 338.7]
+    rule: exclude_from_orphan_marker_merge
+    question_id: enade-2008-computing-q38
+    reason: >-
+      Circuit diagram's own input-pin label "B" (bbox 351.479,330.885-
+      355.920,338.177) - same shape/reason as label "A" above.
+    evidence: docs/phase-3w-report.md
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 15
+    bbox: [350.2, 354.0, 356.2, 362.3]
+    rule: exclude_from_orphan_marker_merge
+    question_id: enade-2008-computing-q38
+    reason: >-
+      Circuit diagram's own input-pin label "C" (bbox 350.759,354.525-
+      355.678,361.817) - same shape/reason as label "A" above.
+    evidence: docs/phase-3w-report.md
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 15
+    bbox: [350.2, 362.9, 356.5, 371.2]
+    rule: exclude_from_orphan_marker_merge
+    question_id: enade-2008-computing-q38
+    reason: >-
+      Circuit diagram's own input-pin label "D" (bbox 350.759,363.405-
+      356.038,370.697) - same shape/reason as label "A" above.
+    evidence: docs/phase-3w-report.md
+    status: reviewed
+  - pdf_sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+    page: 15
+    bbox: [350.6, 394.1, 356.1, 402.4]
+    rule: exclude_from_orphan_marker_merge
+    question_id: enade-2008-computing-q38
+    reason: >-
+      Circuit diagram's own input-pin label "E" (bbox 351.119,394.605-
+      355.560,401.897) - the one that, unexcluded, spliced directly onto
+      the real statement's own opening line ("No circuito acima, que
+      possui cinco entradas..."), duplicating and garbling it. Same
+      shape/reason as label "A" above.
+    evidence: docs/phase-3w-report.md
+    status: reviewed

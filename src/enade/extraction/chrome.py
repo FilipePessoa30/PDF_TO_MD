@@ -184,6 +184,26 @@ def normalize_for_chrome_check(text: str) -> str:
     return " ".join(text.strip().lower().split())
 
 
+def is_exact_chrome_phrase(text: str) -> bool:
+    """True only for an unambiguous, always-furniture exact phrase
+    (``_EXACT_CHROME_LINES`` - "rascunho", institutional names, and the
+    like) - never the regex-based patterns ``is_chrome_line`` also checks
+    (PROMPT Fase 3W).
+
+    Exists because at least one of those regexes (a bare 1-3 digit number,
+    meant to catch a stray page number) is genuinely ambiguous without
+    geometric context - this module's own docstring already says so for
+    ``is_chrome_line`` as a whole. A caller with no geometry of its own
+    (``layout.py``'s ``_merge_orphan_markers``, deciding whether a *candidate
+    merge partner* is real content) needs the unambiguous subset only:
+    "RASCUNHO" is never a legitimate answer to merge an orphan alternative
+    marker with, but a bare "4" or "8" often is (a real numeric alternative,
+    2008-b Q57's own shape) - collapsing the two into one check broke
+    exactly that question when tried.
+    """
+    return normalize_for_chrome_check(text) in _EXACT_CHROME_LINES
+
+
 def is_chrome_line(text: str) -> bool:
     """True if ``text`` is administrative page furniture, not question content.
 

@@ -888,19 +888,46 @@ blockers:
   visual_validation: passed
 - affected_assets: []
   category: unstructured-image-alternatives
-  cause: This question could not be built into a valid Question at all (Alternative requires real text,
-    an asset, or both) and is therefore absent from data/questions/2008/all-computing entirely - not needs_review,
-    genuinely not published. 80/80 academic question numbers are accounted for (77 published + these 3
-    explicitly excluded, loudly, via a structural warning), never silently dropped.
-  description: All 5 alternatives are bare letter markers (A/B/C/D/E) floating above/beside unrelated-looking
-    images (formula/circuit diagrams or, for Q8, unrelated artwork thumbnails) with no small-formula-candidate
-    region detected nearby (unlike 2011 Q14/Q23's own precedent, where a genuinely small per-alternative
-    formula image was found and sliced) - the detected regions on these pages are large, merged blobs
-    (492x343pt, 342x681pt, 508x687pt), architecturally different from the small-formula shape the existing
-    Alternative.asset mechanism was built for. Question excluded from the published corpus entirely (pipeline.py's
-    own per-question ValidationError isolation, PROMPT Phase 3A) rather than published with fabricated
-    or missing alternative content.
-  evidence: null
+  cause: >-
+    RE-VERIFIED IN PHASE 3W (never presumed from the original Phase 3A/3I
+    text, which turned out to describe Q38/Q55's own shape, not Q8's own -
+    see the corrected description below). Fresh forensics
+    (page.get_image_info()) confirm Q8's own alternatives are backed by 5
+    real, distinct EMBEDDED RASTER IMAGES (not vector drawings, not one
+    merged formula) - a Rembrandt painting ("Homem idoso na poltrona"), a
+    Milton Dacosta illustration ("Figura e borboleta"), Munch's "O Grito",
+    and two further images for D/E - each individually positioned at/around
+    its own letter marker, each with its own real, printed caption baked
+    into the page. The 3 alternatives A/B/C sit HORIZONTALLY side by side
+    (same Y-row, different X) rather than the vertically-stacked shape
+    every other per-alternative-image mechanism in this corpus (2011
+    Q14/Q23, 2008-b Q55 - see below) already handles; region_merge_x_tolerance
+    (150.0pt for this booklet) still merges the 3 close-together images into
+    one 492.1x343.3pt blob (matching Phase 3A's own original number for
+    this one region) and D+E into a second, 522.2x220.9pt blob - both
+    is_small_formula=False. _attach_alternative_formula_regions only ever
+    slices a region by Y-overlap against each alternative's own row - a
+    correct model for a vertical list, architecturally unable to
+    distinguish 3 alternatives sharing nearly the same Y-range. Extending
+    it (or building a parallel X-aware slicer) to handle a horizontally-laid-
+    out alternative sequence is a general-mechanism change with no existing
+    corpus precedent to validate against safely within this phase's own
+    budget - deferred, not attempted. See docs/phase-3w-report.md.
+  description: >-
+    All 5 alternatives are real, distinct embedded raster images (fine-art
+    reproductions with real captions), arranged in 2 horizontal rows (A/B/C;
+    D/E) rather than the vertical, single-column shape the existing
+    per-alternative-image mechanism (_attach_alternative_formula_regions)
+    was built for. Question excluded from the published corpus entirely
+    (pipeline.py's own per-question ValidationError isolation, PROMPT Phase
+    3A) rather than published with fabricated or missing alternative
+    content. 80/80 academic question numbers remain accounted for (78
+    published as of Phase 3W + Q8/Q38 explicitly excluded, loudly, via a
+    structural warning), never silently dropped.
+  evidence: docs/phase-3a-report.md (original observation); docs/phase-3i-report.md
+    (independent per-question re-verification, Section P); docs/phase-3w-report.md
+    (forensic correction - real raster images, horizontal layout, precise region
+    sizes)
   id: q08-unstructured-image-alternatives
   question_id: enade-2008-computing-q08
   regression_tests: []
@@ -909,55 +936,163 @@ blockers:
   - 5
   status: open
   superseded_by: null
-  visual_validation: failed
+  visual_validation: not_performed
 - affected_assets: []
   category: unstructured-image-alternatives
-  cause: This question could not be built into a valid Question at all (Alternative requires real text,
-    an asset, or both) and is therefore absent from data/questions/2008/all-computing entirely - not needs_review,
-    genuinely not published. 80/80 academic question numbers are accounted for (77 published + these 3
-    explicitly excluded, loudly, via a structural warning), never silently dropped.
-  description: All 5 alternatives are bare letter markers (A/B/C/D/E) floating above/beside unrelated-looking
-    images (formula/circuit diagrams or, for Q8, unrelated artwork thumbnails) with no small-formula-candidate
-    region detected nearby (unlike 2011 Q14/Q23's own precedent, where a genuinely small per-alternative
-    formula image was found and sliced) - the detected regions on these pages are large, merged blobs
-    (492x343pt, 342x681pt, 508x687pt), architecturally different from the small-formula shape the existing
-    Alternative.asset mechanism was built for. Question excluded from the published corpus entirely (pipeline.py's
-    own per-question ValidationError isolation, PROMPT Phase 3A) rather than published with fabricated
-    or missing alternative content.
-  evidence: null
+  cause: >-
+    RE-VERIFIED IN PHASE 3W, in three successive layers - never presumed
+    common cause with Q8's own real-photograph case above. LAYER 1 (fixed):
+    fresh forensics (page.get_drawings(), page.get_text(clip=...)) prove
+    Q38's own 5 alternatives are 100% vector-drawn boolean-algebra formulas
+    with overline negation (e.g. "A.B + C.D + D.E") - zero raster images,
+    architecturally identical to Q45's own already-solved inline-vector-
+    formula gap (Phase 3S) and to Q55's own shape below. A first attempt
+    (5 declare_inline_formula_region overrides + one suppress_visual_region
+    for the now-redundant coarse blob) surfaced LAYER 2: this question's
+    own circuit diagram has 5 bare single-letter pin labels ("A"-"E",
+    x0~350-356) that _merge_orphan_markers (layout.py) wrongly treated as
+    real orphan alternative markers, splicing pin-label "E" directly onto
+    the real statement's own opening line, duplicating and garbling it.
+    FIXED generally (not per-question): 5 exclude_from_orphan_marker_merge
+    overrides protect these 5 diagram-internal labels (the same mechanism
+    already used for 2011 Q22's own truth-table header), AND
+    _merge_orphan_markers itself was hardened to never pick an unambiguous
+    chrome phrase (chrome.is_exact_chrome_phrase - "RASCUNHO" and the like)
+    as a merge partner anywhere in the corpus - discovered because Q38's
+    own real alternative marker "E" (bare, no text) sat 19.57pt from
+    "RASCUNHO"'s own y0, just under _ORPHAN_MARKER_MAX_DISTANCE (20.0pt),
+    merging into a bogus "E\tRASCUNHO" line (2008-b Q55's own analogous "E"
+    escaped this only by 0.47pt of coincidental margin - not a sign the
+    general behavior was ever safe). This general fix was confirmed, by
+    full regeneration, to leave every other 2008-b/2011/2021 question
+    byte-identical, EXCEPT it also silently broke Q57's own numeric
+    alternatives ("A"+"4", "B"+"8", ...) on a first attempt (is_chrome_line's
+    own bare-1-3-digit-number pattern is genuinely ambiguous without
+    geometry, matching that function's own documented caveat) - caught by
+    the same full regeneration and fixed by narrowing the guard to
+    is_exact_chrome_phrase only (never the ambiguous regex-based patterns).
+    With both layers fixed, the statement's own duplication and RASCUNHO
+    leak are both gone - but LAYER 3 remains OPEN: the circuit diagram's
+    own detected region (bbox x1=494.8) does not extend far enough left/
+    right to include its own pin labels (x0~350-356, just outside) or its
+    own output-label annotation ("f(A,B,C,D,E)", x0=499.9-547.2) - both
+    already fully visible in the diagram's own rendered figure-01.png
+    (confirmed by direct visual inspection: all 5 labels and the output
+    expression are legible there), making force_region_membership
+    (D40's own precedent) the likely correct next mechanism, but the
+    output-label's own PDF-internal fragmentation (5 overlapping-looking
+    line fragments at the same y-range, an unusual shape not yet fully
+    understood) needs more forensic work than this phase's own budget
+    allows - deferred, not attempted. The Q38-specific alternative-
+    formula/suppress overrides were therefore reverted a second time
+    (confirmed by regeneration: zero trace left in the published corpus);
+    the 5 orphan-marker exclusions and the general chrome-partner fix are
+    kept (independently justified, proven safe, and reduce the remaining
+    gap for whoever attempts Layer 3 next). See docs/phase-3w-report.md.
+  description: >-
+    All 5 alternatives are 100% vector-drawn boolean-algebra formulas
+    (never raster images - the "unstructured-image-alternatives" name is a
+    misnomer for this question). Two of three layers of defect are now
+    fixed generally (a real, corpus-wide _merge_orphan_markers hardening,
+    not a per-question patch): the statement's own former duplication and
+    "RASCUNHO" leak are both gone. One residual layer remains - the
+    circuit diagram's own pin labels and output-label annotation still
+    leak as loose, fragmented text because the diagram's own detected
+    region undershoots its own true extent (already fully shown in
+    figure-01.png) - and its own PDF-internal fragmentation needs further
+    forensic work before a safe fix can be applied. Question remains
+    excluded from the published corpus (pipeline.py's own per-question
+    ValidationError isolation) rather than published with this residual
+    defect. 80/80 academic question numbers remain accounted for (78
+    published as of Phase 3W + Q8/Q38 explicitly excluded, loudly, via a
+    structural warning).
+  evidence: docs/phase-3a-report.md (original observation); docs/phase-3i-report.md
+    (independent per-question re-verification, Section P); docs/phase-3w-report.md
+    (three-layer forensic correction; two layers fixed generally and
+    regression-tested; one layer's own minimal next step documented)
   id: q38-unstructured-image-alternatives
   question_id: enade-2008-computing-q38
-  regression_tests: []
+  regression_tests:
+  - tests/test_extraction_layout.py::test_merge_orphan_markers_never_picks_an_exact_chrome_phrase_as_partner
+  - tests/test_extraction_layout.py::test_merge_orphan_markers_still_merges_a_bare_short_number_partner
+  - tests/test_extraction_chrome.py::test_is_exact_chrome_phrase_true_for_exact_furniture_lines
+  - tests/test_extraction_chrome.py::test_is_exact_chrome_phrase_false_for_everything_else
   resolution: null
   source_pages:
   - 15
   status: open
   superseded_by: null
-  visual_validation: failed
-- affected_assets: []
+  visual_validation: not_performed
+- affected_assets:
+  - figure-01
+  - figure-02
+  - figure-03
+  - figure-04
+  - figure-05
   category: unstructured-image-alternatives
-  cause: This question could not be built into a valid Question at all (Alternative requires real text,
-    an asset, or both) and is therefore absent from data/questions/2008/all-computing entirely - not needs_review,
-    genuinely not published. 80/80 academic question numbers are accounted for (77 published + these 3
-    explicitly excluded, loudly, via a structural warning), never silently dropped.
-  description: All 5 alternatives are bare letter markers (A/B/C/D/E) floating above/beside unrelated-looking
-    images (formula/circuit diagrams or, for Q8, unrelated artwork thumbnails) with no small-formula-candidate
-    region detected nearby (unlike 2011 Q14/Q23's own precedent, where a genuinely small per-alternative
-    formula image was found and sliced) - the detected regions on these pages are large, merged blobs
-    (492x343pt, 342x681pt, 508x687pt), architecturally different from the small-formula shape the existing
-    Alternative.asset mechanism was built for. Question excluded from the published corpus entirely (pipeline.py's
-    own per-question ValidationError isolation, PROMPT Phase 3A) rather than published with fabricated
-    or missing alternative content.
-  evidence: null
+  cause: >-
+    RE-VERIFIED IN PHASE 3W. Fresh forensics (page.get_drawings(),
+    page.get_text(clip=...)) prove Q55's own 5 alternatives are 100%
+    vector-drawn exponential-formula expressions (e.g. "[1-e^-0.3t]^3") -
+    zero raster images, zero real text beyond the bare letter markers and
+    "RASCUNHO" - architecturally identical to Q45's own already-solved
+    inline-vector-formula gap (Phase 3S), never presumed common cause with
+    Q38 (same underlying shape, independently re-verified) or Q8 (a
+    genuinely different, real-photograph case, see above).
+  description: >-
+    RESOLVED (Phase 3W): each alternative's own formula is individually
+    declared (declare_inline_formula_region, one bbox per alternative,
+    computed via natural-gap clustering of the page's own drawing
+    elements - a naive marker-position boundary was tried first and found
+    unsafe on Q38's own analogous case, so never used here either) and
+    re-verified via verify_drawings_present before being trusted. The
+    original, now-redundant coarse blob spanning all 5 alternatives plus
+    the "RASCUNHO" scratch box is suppressed (suppress_visual_region).
+    _attach_alternative_formula_regions already accepted these declared
+    regions as candidates for free (is_small_formula=True is set
+    unconditionally for every declared region, figures.py) - the one real
+    gap found and fixed was that its own slicing step silently dropped
+    is_declared_inline_formula when constructing the sliced-down region,
+    falling back to AssetType.DIAGRAM instead of EQUATION (assembler.py,
+    _attach_alternative_formula_regions). A second, independent gap was
+    also found and fixed: the mechanical validator (validator.py) flagged
+    every empty-text alternative as a defect regardless of whether a real
+    asset stood in for it - a check the schema's own Alternative model
+    already correctly relaxed for exactly this shape since Phase 3A, but
+    which was never wired through to this earlier, pre-model check until
+    Q55 became the first real corpus case to exercise a genuinely empty
+    (not even trailing punctuation, unlike 2011 Q14) alternative text. All
+    5 crops individually re-rendered at 6x zoom and visually confirmed to
+    show exactly, only, and completely their own formula, matching the
+    source page glyph-for-glyph. One residual, pre-existing, narrower gap
+    remains and is NOT fixed by this phase: the statement's own inline
+    probability-function reference ("...e dada por [gap], em que t > 0")
+    is itself a small vector-drawn formula never captured - a separate,
+    deferred blocker (see docs/phase-3w-report.md), not a regression
+    introduced here.
+  evidence: docs/phase-3a-report.md (original observation); docs/phase-3i-report.md
+    (independent per-question re-verification, Section P); docs/phase-3w-report.md
+    (forensic correction, fix, and full-corpus regression verification)
   id: q55-unstructured-image-alternatives
   question_id: enade-2008-computing-q55
-  regression_tests: []
-  resolution: null
+  regression_tests:
+  - tests/test_extraction_assembler.py::test_attach_alternative_formula_regions_preserves_declared_inline_formula_flag
+  - tests/test_extraction_validator.py::test_empty_alternative_text_is_fine_when_a_figure_region_stands_in
+  - tests/test_extraction_validator.py::test_empty_alternative_text_is_fine_when_an_inline_figure_segment_stands_in
+  - tests/test_extraction_validator.py::test_empty_alternative_text_still_fails_without_any_asset_or_segment
+  - tests/test_extraction_pipeline_2008.py::test_q55_alternatives_are_now_published_as_vector_formula_equations
+  - tests/test_extraction_pipeline_2008.py::test_q38_remains_excluded_after_q55s_own_fix
+  - tests/test_extraction_pipeline_2008.py::test_all_80_academic_questions_are_accounted_for
+  resolution: >-
+    RESOLVED (Phase 3W): see cause above. Q55 is now published
+    (extraction_status=verified, automatic_validation=passed,
+    visual_validation=passed) with all 5 alternatives correctly
+    represented as their own individually-verified equation assets.
   source_pages:
   - 23
-  status: open
+  status: resolved
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets:
   - padrao-01
   category: answer-standard-incomplete

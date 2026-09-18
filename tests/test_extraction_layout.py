@@ -71,6 +71,43 @@ def test_merge_orphan_markers_ignores_distant_candidates():
     assert len(merged) == 2
 
 
+def test_merge_orphan_markers_never_picks_an_exact_chrome_phrase_as_partner():
+    """PROMPT Fase 3W: 2008-b Q38's own alternative marker "E" (bare, no
+    text - a purely-image alternative) sat 19.57pt from the "RASCUNHO"
+    scratch-space label's own y0, just under _ORPHAN_MARKER_MAX_DISTANCE
+    (20.0pt) - merging into a bogus "E\tRASCUNHO" line that later leaked
+    straight into the alternative's own text. "RASCUNHO" is an exact,
+    unambiguous chrome phrase (chrome._EXACT_CHROME_LINES) and must never
+    be treated as real content to merge into, on any page, for any marker.
+    """
+    lines = [
+        _line(336.2, 523.5, "E"),
+        _line(343.6, 543.1, "RASCUNHO"),
+    ]
+    merged = _merge_orphan_markers(lines)
+    # No plausible (non-chrome) partner found - orphan line stays as-is,
+    # never merged with the scratch-space label.
+    assert len(merged) == 2
+    assert not any("RASCUNHO" in ln.text and "\t" in ln.text for ln in merged)
+
+
+def test_merge_orphan_markers_still_merges_a_bare_short_number_partner():
+    """The fix above must stay narrow: is_chrome_line's own bare
+    1-3-digit-number pattern is genuinely ambiguous without geometry (its
+    own docstring says so) - a real numeric alternative answer (2008-b
+    Q57's own "A"/"4", "B"/"8", ...) must still merge normally. Using the
+    full is_chrome_line instead of the narrower is_exact_chrome_phrase was
+    tried first and reverted after it broke exactly this shape.
+    """
+    lines = [
+        _line(30, 100, "A"),
+        _line(47, 98, "4"),
+    ]
+    merged = _merge_orphan_markers(lines)
+    assert len(merged) == 1
+    assert merged[0].text == "A\t4"
+
+
 def test_detect_column_margins_splits_at_widest_gap_not_top_two_by_frequency():
     # A column can have two recurring indentation levels (a paragraph
     # margin and a more-indented list-item margin) that are each more

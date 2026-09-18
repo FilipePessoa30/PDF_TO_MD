@@ -658,6 +658,33 @@ def test_attach_alternative_formula_regions_splits_a_merged_region_per_alternati
         assert region.bbox[3] <= merged_region.bbox[3]
 
 
+def test_attach_alternative_formula_regions_preserves_declared_inline_formula_flag():
+    """Regression test (PROMPT Fase 3W): 2008-b Q55's own 5 alternatives
+    are each a `declare_inline_formula_region` override (Fase 3S's own
+    mechanism, first attached to an alternative rather than a statement
+    segment here) - the sliced-out per-alternative region must keep
+    ``is_declared_inline_formula=True`` so ``assets.render_region`` still
+    selects ``AssetType.EQUATION``. Originally missed: the slicing
+    constructor only copied ``has_raster_image``/``owner_key``/
+    ``owner_x_bounds``/``is_small_formula`` from the source region, silently
+    dropping this flag and falling back to ``AssetType.DIAGRAM``.
+    """
+    text_only_lines = [_line(1, 100.0, "A")]
+    alternatives = [ExtractedAlternative(letter="A", text="")]
+    declared_region = VisualRegion(
+        page_number=1,
+        bbox=(200.0, 98.0, 300.0, 112.0),
+        element_count=3,
+        is_small_formula=True,
+        is_declared_inline_formula=True,
+    )
+    extra_regions, _ = _attach_alternative_formula_regions(
+        alternatives, text_only_lines, [0], [declared_region]
+    )
+    assert len(extra_regions) == 1
+    assert extra_regions[0].is_declared_inline_formula is True
+
+
 def test_attach_alternative_formula_regions_ignores_alternatives_with_real_text():
     text_only_lines = [_line(1, 100.0, "A\t Texto real da alternativa A.")]
     alternatives = [ExtractedAlternative(letter="A", text="Texto real da alternativa A.")]
@@ -741,9 +768,7 @@ def test_force_paragraph_break_after_override_splits_the_glued_paragraph():
     would otherwise be glued into one paragraph with no separating space.
     """
     first = _line(1, 10.0, "IdRep:integer referencia Republica)")
-    second = _line(
-        1, first.y1 + 15.0, "Suponha que existam as seguintes tuplas no banco de dados:"
-    )
+    second = _line(1, first.y1 + 15.0, "Suponha que existam as seguintes tuplas no banco de dados:")
     assert (second.y0 - first.y1) < PARAGRAPH_GAP_THRESHOLD  # would merge without the override
     overrides = LayoutOverrideSet(
         overrides=[
@@ -775,9 +800,7 @@ def test_force_paragraph_break_after_override_never_fires_without_a_matching_bbo
     # rule alone still merges them, exactly as it does everywhere else in
     # the corpus. Confirms the override is additive, never the default.
     first = _line(1, 10.0, "IdRep:integer referencia Republica)")
-    second = _line(
-        1, first.y1 + 15.0, "Suponha que existam as seguintes tuplas no banco de dados:"
-    )
+    second = _line(1, first.y1 + 15.0, "Suponha que existam as seguintes tuplas no banco de dados:")
     segments, _, _ = _build_statement_segments([first, second], [])
     text_segments = [s for s in segments if isinstance(s, TextSegment)]
     assert len(text_segments) == 1

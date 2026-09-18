@@ -31,7 +31,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from enade.extraction.assembler import ExtractedQuestion
+from enade.extraction.assembler import ExtractedQuestion, FigureSegment
 from enade.extraction.assets import RenderedAsset
 from enade.extraction.boundaries import QuestionKind
 from enade.models.enums import AutomaticValidationStatus, ExtractionStatus
@@ -62,7 +62,19 @@ def evaluate_extraction(
         if letters != EXPECTED_ALTERNATIVE_LETTERS:
             reasons.append(f"alternatives are not exactly A-E in order (found {letters})")
         for alt in extracted.alternatives:
-            if not alt.text.strip():
+            # Mirrors Alternative._text_or_asset_required (question.py) at
+            # this earlier, pre-model stage (PROMPT Fase 3W): an
+            # alternative whose printed content is only an image can
+            # legitimately have text="" (2008-b's own Q38/Q55 - already an
+            # explicitly documented shape in the schema's own docstring
+            # since Phase 3A, but never wired through to this mechanical
+            # check until Q55 became the first real corpus case to exercise
+            # a *genuinely* empty (not even trailing punctuation) text).
+            has_asset_content = alt.figure_region_index is not None or (
+                alt.segments is not None
+                and any(isinstance(seg, FigureSegment) for seg in alt.segments)
+            )
+            if not alt.text.strip() and not has_asset_content:
                 reasons.append(f"alternative {alt.letter} has empty text")
 
     expected_asset_count = len(extracted.figure_regions) + len(extracted.tables)

@@ -1399,6 +1399,15 @@ def _attach_alternative_formula_regions(
                 owner_key=best.owner_key,
                 owner_x_bounds=best.owner_x_bounds,
                 is_small_formula=best.is_small_formula,
+                # PROMPT Fase 3W: a declared inline-formula candidate
+                # (figures.py's own is_declared_inline_formula, Fase 3S)
+                # sliced down to one alternative's own row must keep that
+                # provenance - otherwise render_region falls back to
+                # AssetType.DIAGRAM for what is actually a vector-drawn
+                # formula (2008-b Q55's own 5 alternatives, the first real
+                # case to attach a declared region to an alternative rather
+                # than a statement segment).
+                is_declared_inline_formula=best.is_declared_inline_formula,
             )
         )
         consumed_ids.add(id(best))

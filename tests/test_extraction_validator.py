@@ -70,6 +70,42 @@ def test_empty_alternative_text_forces_needs_review():
     assert outcome.status == ExtractionStatus.NEEDS_REVIEW
 
 
+def test_empty_alternative_text_is_fine_when_a_figure_region_stands_in():
+    """PROMPT Fase 3W: mirrors Alternative._text_or_asset_required
+    (question.py) - genuinely empty text (not even trailing punctuation,
+    2008-b's own Q38/Q55 shape) is not a mechanical defect when a real
+    per-alternative asset already carries the content.
+    """
+    alts = list(_FULL_ALTS[:4]) + [ExtractedAlternative(letter="E", text="", figure_region_index=0)]
+    outcome = evaluate_extraction(
+        _extracted(alternatives=alts), rendered_assets=[], has_answer=True
+    )
+    assert not any("empty text" in r for r in outcome.reasons)
+
+
+def test_empty_alternative_text_is_fine_when_an_inline_figure_segment_stands_in():
+    from enade.extraction.assembler import FigureSegment
+
+    alts = list(_FULL_ALTS[:4]) + [
+        ExtractedAlternative(letter="E", text="", segments=[FigureSegment(region_index=0)])
+    ]
+    outcome = evaluate_extraction(
+        _extracted(alternatives=alts), rendered_assets=[], has_answer=True
+    )
+    assert not any("empty text" in r for r in outcome.reasons)
+
+
+def test_empty_alternative_text_still_fails_without_any_asset_or_segment():
+    # Confirms the fix is additive, never weakening the original guard: an
+    # alternative with neither real text, a figure_region_index, nor an
+    # asset-carrying segment is still a genuine mechanical defect.
+    alts = list(_FULL_ALTS[:4]) + [ExtractedAlternative(letter="E", text="")]
+    outcome = evaluate_extraction(
+        _extracted(alternatives=alts), rendered_assets=[], has_answer=True
+    )
+    assert any("empty text" in r for r in outcome.reasons)
+
+
 def test_missing_rendered_asset_for_detected_region_forces_needs_review():
     from enade.extraction.figures import VisualRegion
 

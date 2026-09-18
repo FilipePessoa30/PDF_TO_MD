@@ -31,7 +31,7 @@ from dataclasses import dataclass
 
 import pymupdf
 
-from enade.extraction.chrome import is_chrome_line
+from enade.extraction.chrome import is_chrome_line, is_exact_chrome_phrase
 from enade.extraction.fragment_reconstruction import (
     FragmentMergeTrace,
     RawLineFragment,
@@ -553,6 +553,27 @@ def _merge_orphan_markers(
             if j == i or j in used or other.page_number != ln.page_number:
                 continue
             if _is_orphan_marker(other, overrides, pdf_sha256, other.page_number):
+                continue
+            # PROMPT Fase 3W: an unambiguous, always-furniture exact phrase
+            # ("RASCUNHO" and the like - chrome.py's own already-vetted
+            # exact-line list, never the regex-based bare-number heuristic
+            # is_chrome_line also checks, which is genuinely ambiguous
+            # without geometry - see is_exact_chrome_phrase's own
+            # docstring) is never a legitimate orphan-marker partner -
+            # discovered when an alternative marker printed with nothing
+            # else on its own line (2008-b Q38's own "E", the marker for a
+            # purely-image alternative) happened to sit just under
+            # _ORPHAN_MARKER_MAX_DISTANCE from the scratch-space box's own
+            # label, merging "E" with "RASCUNHO" into one bogus line
+            # ("E\tRASCUNHO") that later leaked straight into the
+            # alternative's own text. 2008-b Q55's own analogous "E" escaped
+            # this only by 0.47pt of coincidental margin (20.04pt vs. the
+            # 20.0pt threshold) - not a sign the general behavior was ever
+            # safe. Using the full is_chrome_line here instead was tried
+            # and reverted: its own bare 1-3-digit-number pattern wrongly
+            # blocked 2008-b Q57's own legitimate numeric alternatives
+            # ("A"+"4", "B"+"8", ...) from ever merging.
+            if is_exact_chrome_phrase(other.text):
                 continue
             if _line_column(other, margins) != ln_column:
                 continue

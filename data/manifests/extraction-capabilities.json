@@ -832,25 +832,28 @@
     },
     {
       "capability_id": "declared_inline_vector_formula_preservation",
-      "description": "A hash+page+bbox-locked override declares a bbox as a proven inline vector-drawn formula; assembler.py re-verifies real vector-drawing content is genuinely present there (figures.verify_drawings_present - never trusted blindly) before building a dedicated VisualRegion for it, built and inserted entirely outside figures.detect_visual_regions's own merge/dedup pipeline (so it can never be swallowed by, or deduplicated against, an unrelated larger region that happens to geometrically overlap it). The region renders as its own tightly-cropped asset (type: equation, ~6pt fixed padding, never widened to the page's own column bounds - assets.render_region/VisualRegion.is_declared_inline_formula) and is placed inline, at the correct point in the surrounding text's own reading order, via a same-row-aware insertion rule (assembler._find_inline_formula_insertion_index) applied only to regions carrying this flag - modeled on the pre-existing per-alternative inline-formula mechanism (Phase 2F's _merge_alternative_reading_order), generalized here to a question's own main statement for the first time. The formula's own text representation (structured_content/canonical_representation) is never populated - it is preserved visually only, and that accessibility limitation is recorded, not hidden (data/manifests/source-token-ledger-2008.yaml, extraction_status: visual_only_verified).",
+      "description": "A hash+page+bbox-locked override declares a bbox as a proven inline vector-drawn formula; assembler.py re-verifies real vector-drawing content is genuinely present there (figures.verify_drawings_present - never trusted blindly) before building a dedicated VisualRegion for it, built and inserted entirely outside figures.detect_visual_regions's own merge/dedup pipeline (so it can never be swallowed by, or deduplicated against, an unrelated larger region that happens to geometrically overlap it). The region renders as its own tightly-cropped asset (type: equation, ~6pt fixed padding, never widened to the page's own column bounds - assets.render_region/VisualRegion.is_declared_inline_formula). PROMPT Fase 3S wired this into a question's own main statement (same-row-aware insertion, assembler._find_inline_formula_insertion_index). PROMPT Fase 3W proved, without any new detection/verification code, that the SAME declared regions also work as the source for _attach_alternative_formula_regions's own per-alternative slicing (previously only fed by is_small_formula candidates) - _is_alternative_formula_candidate already accepted them for free, since a declared region always carries is_small_formula=True (figures.py, unconditional) - the only real gap found was that the slicing step's own VisualRegion(...) reconstruction silently dropped is_declared_inline_formula, falling back to AssetType.DIAGRAM; fixed by copying the field through. This is the first time this capability has been exercised by a second, independent consumer (alternatives, not just statement segments) with zero changes to detection/verification, promoting it from a single-consumer to a two-consumer, cross-corpus-validated primitive. The formula's own text representation (structured_content/canonical_representation) is never populated - it is preserved visually only, and that accessibility limitation is recorded, not hidden (data/manifests/source-token-ledger-2008.yaml, extraction_status: visual_only_verified).",
       "trigger_features": [
         "an override declaring rule: declare_inline_formula_region for the exact source PDF hash/page/bbox",
         "page.get_drawings() confirms at least one real vector-drawing element genuinely overlapping that declared bbox on the actual page (never a bare literal bbox match alone)",
-        "the resulting region's own bbox sits between two already-extracted text lines on the same visual row, geometrically requiring same-row-aware (X-aware) insertion rather than the general Y-only rule"
+        "statement consumer: the resulting region's own bbox sits between two already-extracted text lines on the same visual row, geometrically requiring same-row-aware (X-aware) insertion rather than the general Y-only rule",
+        "alternative consumer (Fase 3W): the resulting region's own bbox overlaps an alternative whose own marker line has no real text following it (_EMPTY_ALTERNATIVE_TEXT_RE) - _attach_alternative_formula_regions slices it to that alternative's own row exactly as it already does for a small-formula candidate"
       ],
       "parameters": {
         "INLINE_FORMULA_RENDER_PADDING": "6.0pt - fixed, never widened to a column's own bounds like every other region"
       },
-      "scope": "figures.py (VisualRegion.is_declared_inline_formula, verify_drawings_present, INLINE_FORMULA_RENDER_PADDING); assembler.py (_build_declared_inline_formula_regions, _find_inline_formula_insertion_index, wired into the per-page region-collection loop and _build_statement_segments's own insertion-index computation); assets.py (render_region selects AssetType.EQUATION); layout_overrides.py (declare_inline_formula_region rule, declared_inline_formula_regions query)",
-      "generalization_level": "G1",
+      "scope": "figures.py (VisualRegion.is_declared_inline_formula, verify_drawings_present, INLINE_FORMULA_RENDER_PADDING); assembler.py (_build_declared_inline_formula_regions, _find_inline_formula_insertion_index, wired into the per-page region-collection loop and _build_statement_segments's own insertion-index computation; _attach_alternative_formula_regions now also propagates is_declared_inline_formula through its own per-alternative slice, Fase 3W); assets.py (render_region selects AssetType.EQUATION); layout_overrides.py (declare_inline_formula_region rule, declared_inline_formula_regions query)",
+      "generalization_level": "G2",
       "positive_fixtures": [
         "tests/test_extraction_assembler.py::test_find_inline_formula_insertion_index_lands_between_same_row_lines",
         "tests/test_extraction_assembler.py::test_build_declared_inline_formula_regions_builds_a_region_with_real_drawings",
         "tests/test_extraction_assembler.py::test_build_declared_inline_formula_regions_computes_owner_from_question_regions",
+        "tests/test_extraction_assembler.py::test_attach_alternative_formula_regions_preserves_declared_inline_formula_flag",
         "tests/test_layout_overrides.py::test_declared_inline_formula_regions_returns_the_matching_bbox",
         "tests/test_extraction_assets.py::test_render_region_declared_inline_formula_renders_as_equation",
         "tests/test_extraction_assets.py::test_render_region_declared_inline_formula_crop_stays_tight",
-        "tests/test_extraction_pipeline_2008.py::test_q45_item_iii_own_three_lines_are_now_complete"
+        "tests/test_extraction_pipeline_2008.py::test_q45_item_iii_own_three_lines_are_now_complete",
+        "tests/test_extraction_pipeline_2008.py::test_q55_alternatives_are_now_published_as_vector_formula_equations"
       ],
       "negative_fixtures": [
         "tests/test_extraction_figures.py::test_verify_drawings_present_zero_when_bbox_is_empty_space",
@@ -863,20 +866,22 @@
         "tests/test_extraction_assets.py::test_render_region_image_unaffected_by_new_equation_field",
         "tests/test_layout_overrides.py::test_declared_inline_formula_regions_empty_for_a_different_page",
         "tests/test_layout_overrides.py::test_declared_inline_formula_regions_empty_for_a_different_hash",
-        "tests/test_layout_overrides.py::test_declared_inline_formula_regions_ignores_unrelated_rule_kinds"
+        "tests/test_layout_overrides.py::test_declared_inline_formula_regions_ignores_unrelated_rule_kinds",
+        "tests/test_extraction_pipeline_2008.py::test_q38_remains_excluded_after_q55s_own_fix"
       ],
       "real_cases": [
-        "2008-b Q45's own item III (\"...o grafico de f(x) = sqrt(x) e as retas x = 0 e x = 2.\") - the function definition is 100% vector-drawn artwork (9 path elements, page.get_drawings()), with zero text-layer presence (page.get_text/get_texttrace confirm no chars in that x-range) - the sole bbox declared for this booklet"
+        "2008-b Q45's own item III (\"...o grafico de f(x) = sqrt(x) e as retas x = 0 e x = 2.\") - the function definition is 100% vector-drawn artwork (9 path elements, page.get_drawings()), with zero text-layer presence (page.get_text/get_texttrace confirm no chars in that x-range) - the sole bbox declared for this booklet in Fase 3S",
+        "2008-b Q55's own 5 alternatives (Fase 3W) - each an exponential-formula expression ('[1-e^-0.3t]^3' etc.), 100% vector-drawn, individually declared and attached as that alternative's own asset rather than a statement segment"
       ],
       "protected_cases": [
-        "2008-b (all 76 other published questions, confirmed byte-identical by full regeneration; D40's own relational-algebra tree symbols and the two other, still-unresolved vector-formula gaps in this same Q45 statement - the intro's '(f $ 0)' and 'como resultado da integral .' - deliberately left untouched, confirmed unchanged, since only the one previously-blocked bbox was declared)",
+        "2008-b (all 76 other published questions unaffected by Fase 3S; all 77 already-published questions confirmed byte-identical by full regeneration in Fase 3W - Q55 is the only content change; D40's own relational-algebra tree symbols and the two other, still-unresolved vector-formula gaps in Q45's own statement - the intro's '(f $ 0)' and 'como resultado da integral .' - deliberately left untouched; Q38's own equivalent attempt was tried and reverted, confirmed to leave zero trace in the published corpus; Q8 untouched, still excluded)",
         "2011 (all 55 questions, confirmed byte-identical by full regeneration)",
         "2021 (all three tracked courses, 120 questions total, confirmed byte-identical by full regeneration)"
       ],
-      "failure_behavior": "an override whose declared bbox has zero real vector-drawing content on the actual page produces no region at all (verify_drawings_present returns 0) - the gap it was meant to fill stays exactly as it was before this capability existed, never silently papered over; a formula with no same-row text on its own left falls back to the general Y-only insertion rule rather than crashing or mis-placing itself",
+      "failure_behavior": "an override whose declared bbox has zero real vector-drawing content on the actual page produces no region at all (verify_drawings_present returns 0) - the gap it was meant to fill stays exactly as it was before this capability existed, never silently papered over; a formula with no same-row text on its own left falls back to the general Y-only insertion rule rather than crashing or mis-placing itself; an alternative-consumer declaration with no matching empty alternative on its own page is simply never sliced/attached (silently inert, exactly like an unmatched small-formula candidate already was)",
       "profile_dependency": "none",
       "runtime_ai_dependency": "none",
-      "introduced_phase": "3S"
+      "introduced_phase": "3S; extended to alternatives in 3W"
     },
     {
       "capability_id": "visual_only_answer_standard",
@@ -951,6 +956,38 @@
       "profile_dependency": "none",
       "runtime_ai_dependency": "none",
       "introduced_phase": "3V"
+    },
+    {
+      "capability_id": "orphan_marker_chrome_partner_exclusion",
+      "description": "_merge_orphan_markers (layout.py) - the general mechanism that joins a bare-letter/digit marker line to its own nearest same-column partner line, e.g. a circled alternative marker whose real answer text prints a few points below it - now refuses to select an unambiguous, always-furniture exact phrase (chrome.is_exact_chrome_phrase: 'RASCUNHO' and the like, chrome.py's own already-vetted exact-line set) as that partner, on any page, for any marker. Found via 2008-b Q38's own alternative marker 'E' (bare, no text - a purely-image alternative): it sat 19.57pt from the 'RASCUNHO' scratch-space label's own y0, just under the existing _ORPHAN_MARKER_MAX_DISTANCE (20.0pt) tolerance, merging into a bogus 'E\\tRASCUNHO' line that later leaked straight into the alternative's own text once Q38 was no longer blocked from publishing entirely. 2008-b Q55's own analogous 'E' escaped this only by 0.47pt of coincidental margin against the same threshold - proof the prior behavior was never actually safe, just untested at this exact distance. Deliberately narrower than chrome.is_chrome_line as a whole: that function's own bare 1-3-digit-number regex (meant to catch a stray running page number) is genuinely ambiguous without geometric context, by its own documented caveat - using it here on a first attempt silently broke 2008-b Q57's own legitimate numeric alternatives ('A'+'4', 'B'+'8', ...), caught by the same full-corpus regeneration this capability's own shadow-mode discipline requires, and fixed by narrowing to the new is_exact_chrome_phrase helper (the unambiguous exact-match subset only).",
+      "trigger_features": [
+        "a bare orphan-marker-shaped line (_is_orphan_marker) whose nearest same-column candidate partner's own text exactly matches chrome.py's own _EXACT_CHROME_LINES set after normalization"
+      ],
+      "parameters": {},
+      "scope": "chrome.py (new is_exact_chrome_phrase helper, exposing only the exact-match subset of is_chrome_line's own checks); layout.py (_merge_orphan_markers's own partner-search loop, one additional exclusion check)",
+      "generalization_level": "G1",
+      "positive_fixtures": [
+        "tests/test_extraction_layout.py::test_merge_orphan_markers_never_picks_an_exact_chrome_phrase_as_partner",
+        "tests/test_extraction_chrome.py::test_is_exact_chrome_phrase_true_for_exact_furniture_lines"
+      ],
+      "negative_fixtures": [
+        "tests/test_extraction_layout.py::test_merge_orphan_markers_still_merges_a_bare_short_number_partner",
+        "tests/test_extraction_chrome.py::test_is_exact_chrome_phrase_false_for_everything_else",
+        "tests/test_extraction_chrome.py::test_rascunho_alone_as_an_alternative_marker_line_is_not_matched_by_the_new_regex"
+      ],
+      "real_cases": [
+        "2008-b Q38's own alternative marker 'E', previously merged into 'E\\tRASCUNHO' (19.57pt from the threshold)",
+        "2008-b Q57's own alternative markers 'A'-'E', each still correctly merged with their own real numeric answer ('4', '8', '16', '256', '65.536') - confirmed unaffected, the negative example that ruled out the broader is_chrome_line check"
+      ],
+      "protected_cases": [
+        "2008-b (all 78 published questions confirmed byte-identical by full regeneration except Q55/Q38's own targeted changes; Q38 itself remains excluded pending a separate, unrelated residual gap - see q38-unstructured-image-alternatives - this capability fixes two of its three defect layers, confirmed by regeneration, without publishing the question)",
+        "2011 (all 55 questions, confirmed byte-identical by full regeneration)",
+        "2021 (all three tracked courses, 120 questions total, confirmed byte-identical by full regeneration)"
+      ],
+      "failure_behavior": "an orphan marker whose nearest same-column candidate is real content (not an exact chrome phrase) merges exactly as before - this capability only ever removes chrome from partner candidacy, never changes the distance/column search itself; a marker with no other candidate at all still falls through to the pre-existing 'no plausible partner found; keep as-is' behavior",
+      "profile_dependency": "none",
+      "runtime_ai_dependency": "none",
+      "introduced_phase": "3W"
     }
   ]
 }

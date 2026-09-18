@@ -96,3 +96,45 @@ def test_rascunho_alone_as_an_alternative_marker_line_is_not_matched_by_the_new_
     # all, so it correctly falls through to being treated as real
     # (non-chrome) alternative content, same as before this phase.
     assert is_chrome_line("E\tRASCUNHO") is False
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "RASCUNHO",
+        "rascunho",
+        "  Rascunho  ",
+        "Área livre",
+        "CIÊNCIA DA COMPUTAÇÃO",
+        "Bacharelado",
+    ],
+)
+def test_is_exact_chrome_phrase_true_for_exact_furniture_lines(text):
+    from enade.extraction.chrome import is_exact_chrome_phrase
+
+    assert is_exact_chrome_phrase(text) is True
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "4",
+        "8",
+        "16",
+        "256",
+        "23",  # a bare page number - is_chrome_line's own regex catches this, not the exact set
+        "*R02202130*",
+        "RASCUNHO – QUESTÃO 39 - A",  # regex-only match, not an exact phrase
+        "E\tRASCUNHO",
+        "Texto real qualquer.",
+    ],
+)
+def test_is_exact_chrome_phrase_false_for_everything_else(text):
+    """PROMPT Fase 3W: the whole reason this narrower check exists - a bare
+    short number (a real numeric alternative answer, 2008-b Q57's own "4"/
+    "8"/"16"/"256") must never be treated as unambiguous furniture, unlike
+    is_chrome_line's own broader (and, for this exact use, unsafe) check.
+    """
+    from enade.extraction.chrome import is_exact_chrome_phrase
+
+    assert is_exact_chrome_phrase(text) is False
