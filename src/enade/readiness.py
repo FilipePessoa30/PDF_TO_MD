@@ -20,6 +20,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from enade.extraction.blocker_ledger import load_blocker_ledger, validate_ledger
+from enade.extraction.source_availability import (
+    SourceAvailabilityRecord,
+    is_confirmed_unavailable,
+    load_source_availability,
+    verify_source_hashes_match,
+)
 from enade.extraction.visual_audit import VisualAuditCoverage, assess_visual_audit_coverage
 from enade.gold import GoldDivergence, GoldManifest, verify_gold_manifest
 from enade.markdown_format import load_questions_directory
@@ -51,10 +57,33 @@ class ReadinessReport:
     gold_maturity: str
     gold_divergences: tuple[GoldDivergence, ...] = field(default_factory=tuple)
     visual_audit_coverage: VisualAuditCoverage | None = None
+    #: Every ``question_not_verified``/``missing_answer_standard`` finding
+    #: this report also lists in ``blockers`` (never removed from there -
+    #: PROMPT Fase 3Z Section 17: "nao esconda... apenas porque deixaram
+    #: de bloquear") whose own subject has a fully-evidenced
+    #: ``source_unavailable_confirmed`` record (see
+    #: ``source_availability.is_confirmed_unavailable``) - a documented,
+    #: permanent absence in the exact supplied source package, never a
+    #: pipeline defect. Paired 1:1 with the corresponding entries in
+    #: ``blockers`` (each has ``structural=False`` there) so a caller can
+    #: print "actionable blockers" versus "source limitations" as two
+    #: distinct, equally-visible sections rather than one undifferentiated
+    #: list.
+    source_limitations: tuple[SourceAvailabilityRecord, ...] = field(default_factory=tuple)
 
     @property
     def classification(self) -> str:
         return "READY_FOR_2011" if self.ready else "NOT_READY_FOR_2011"
+
+    @property
+    def source_completeness(self) -> str:
+        """PROMPT Fase 3Z Section 11: engineering readiness and documental
+        completeness are two different questions - this never feeds into
+        ``ready``/``classification``, it only reports, separately, whether
+        the corpus is missing an artifact the source package itself does
+        not supply. ``"complete"`` only when there is nothing to report.
+        """
+        return "incomplete" if self.source_limitations else "complete"
 
 
 def assess_readiness(
@@ -62,6 +91,8 @@ def assess_readiness(
     course_dir: Path,
     visual_audit_path: Path | None = None,
     blocker_ledger_path: Path | None = None,
+    source_availability_path: Path | None = None,
+    corpus_root: Path | None = None,
 ) -> ReadinessReport:
     """Compute a :class:`ReadinessReport` for the questions under
     ``course_dir`` against the locked ``manifest``.
@@ -104,8 +135,28 @@ def assess_readiness(
     never hidden, but never counted toward ``ready`` either. Every other
     blocker this function raises is `structural=True` unless the ledger
     says otherwise for that exact question.
+
+    ``source_availability_path`` (PROMPT Fase 3Z), when given together
+    with ``corpus_root``, adds a second, stricter non-structural
+    exemption: a subject whose ``question_not_verified``/
+    ``missing_answer_standard`` finding is caused by an artifact
+    confirmed, with full machine-re-verifiable evidence, absent from the
+    supplied source package (``source_availability.is_confirmed_unavailable``
+    - never trusted from the record's own label alone) is surfaced with
+    ``structural=False``, exactly like an ``accepted_non_material_difference``
+    - visible in ``blockers``, but excluded from ``ready``. Distinct from
+    that mechanism: this one additionally requires the referenced source
+    document(s) to still hash-match what the record itself claims
+    (``verify_source_hashes_match``) - a stale waiver against a document
+    since replaced with a new one (PROMPT Section 18) reverts to blocking
+    automatically, with a new, always-structural ``source_hash_mismatch``
+    finding explaining why. A record whose own ``availability_status`` is
+    ``source_ambiguous``/``source_not_checked`` is deliberately *never*
+    exempting - it raises its own always-structural finding instead
+    (PROMPT Section 14: incomplete evidence must keep blocking).
     """
     blockers: list[ReadinessBlocker] = []
+    source_limitations: list[SourceAvailabilityRecord] = []
 
     divergences = verify_gold_manifest(manifest, course_dir)
     for d in divergences:
@@ -131,6 +182,45 @@ def assess_readiness(
             for b in early_ledger.blockers
             if b.status == "accepted_non_material_difference"
         }
+
+    # Confirmed-unavailable subjects (PROMPT Fase 3Z) - a subject only
+    # enters this set after passing the full evidence gate *and* a fresh
+    # hash re-check against the real file(s) currently on disk; any
+    # record failing either check contributes nothing here (its subject
+    # stays fully blocking, the safe default) and, for a hash mismatch
+    # specifically, raises its own always-structural finding below.
+    confirmed_unavailable_subject_ids: set[str] = set()
+    if source_availability_path is not None:
+        availability_ledger = load_source_availability(source_availability_path)
+        for record in availability_ledger.records:
+            if record.availability_status in ("source_ambiguous", "source_not_checked"):
+                blockers.append(
+                    ReadinessBlocker(
+                        kind=f"source_{record.availability_status.split('_', 1)[1]}",
+                        detail=(
+                            f"{record.source_availability_id} ({record.subject_id}): "
+                            f"{record.artifact_type} availability is not yet confirmed "
+                            "either way - treated as blocking until resolved"
+                        ),
+                    )
+                )
+                continue
+            if not is_confirmed_unavailable(record, availability_ledger):
+                continue
+            # Without corpus_root there is no way to re-hash the real
+            # file(s) on disk (PROMPT Section 19) - the safe default is
+            # to grant no waiver at all, never to trust a record's own
+            # stored hash unconditionally.
+            if corpus_root is None:
+                continue
+            hash_issue = verify_source_hashes_match(record, availability_ledger, corpus_root)
+            if hash_issue is not None:
+                blockers.append(
+                    ReadinessBlocker(kind="source_hash_mismatch", detail=hash_issue.detail)
+                )
+                continue
+            confirmed_unavailable_subject_ids.add(record.subject_id)
+            source_limitations.append(record)
 
     questions = load_questions_directory(course_dir)
     verified_count = 0
@@ -175,7 +265,8 @@ def assess_readiness(
                 ReadinessBlocker(
                     kind="question_not_verified",
                     detail=f"{question_id}: extraction_status={question.extraction_status.value}",
-                    structural=question_id not in accepted_difference_question_ids,
+                    structural=question_id not in accepted_difference_question_ids
+                    and question_id not in confirmed_unavailable_subject_ids,
                 )
             )
 
@@ -202,7 +293,11 @@ def assess_readiness(
         elif question.question_type == QuestionType.DISCURSIVE:
             if question.answer_standard is None:
                 blockers.append(
-                    ReadinessBlocker(kind="missing_answer_standard", detail=question_id)
+                    ReadinessBlocker(
+                        kind="missing_answer_standard",
+                        detail=question_id,
+                        structural=question_id not in confirmed_unavailable_subject_ids,
+                    )
                 )
             else:
                 for asset in question.answer_standard.assets:
@@ -242,4 +337,5 @@ def assess_readiness(
         gold_maturity=manifest.maturity,
         gold_divergences=tuple(divergences),
         visual_audit_coverage=visual_coverage,
+        source_limitations=tuple(source_limitations),
     )

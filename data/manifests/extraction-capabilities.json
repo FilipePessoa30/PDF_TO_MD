@@ -247,7 +247,7 @@
         "tests/test_extraction_assembler.py::test_line_in_region_small_formula_region_swallows_the_line_below_without_override"
       ],
       "real_cases": [
-        "2008-b D10 (page 7, all three newspaper headlines/bodies/citations fully recovered - a pre-existing reading-order scramble of the same content remains, tracked separately as d10-newspaper-collage-reading-order-scramble)",
+        "2008-b D10 (page 7, all three newspaper headlines/bodies/citations fully recovered - a pre-existing reading-order scramble of the same content remained as of this capability's own introduction, tracked separately as d10-newspaper-collage-reading-order-scramble; that separate scramble was itself resolved two phases later by the zoned_reading_order capability, Phase 3K, generalized Phase 3L - this entry's own content-recovery claim was never affected either way)",
         "Q02/Q12/Q45/Q54/Q63/Q71/Q75 (own real statement text partially-to-substantially recovered; Q75's own statement now fully complete)",
         "Q01 (alternatives lead-in clause recovered), Q50 (spurious automatic_validation failure cleared, no content change)",
         "Q24 (garbled diagram-label fragments removed, though the question's own separate merged-region defect remains)",

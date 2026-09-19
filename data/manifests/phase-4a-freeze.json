@@ -1,0 +1,443 @@
+{
+  "schema_version": 1,
+  "created_for": "Fase 4A - PDF_TO_MD 2008-b pilot pre-commit freeze",
+  "branch": "feat/enade-2008-cc-b-pilot",
+  "head": "22e3e882046654193fedf21de296e5ae3c374cb3",
+  "master": "a5dfaab0c105150df3a7201c16547708cef45292",
+  "origin_master": "a5dfaab0c105150df3a7201c16547708cef45292",
+  "merge_base": "a5dfaab0c105150df3a7201c16547708cef45292",
+  "uncommitted_changes": [
+    {
+      "path": "data/manifests/blocker-ledger-2008.yaml",
+      "change_type": "modified",
+      "sha256": "7fcbf2c9b9cdea335572d17c5ea8763a4fd4c7c2c91d6ab5869ad5fcf6d26c34"
+    },
+    {
+      "path": "data/manifests/extraction-capabilities.json",
+      "change_type": "modified",
+      "sha256": "fbd864fb738e5bab6ab0a61e69fedd9e20fda4eb60c678c4e26a00877dc86d2b"
+    },
+    {
+      "path": "data/manifests/source-availability-2008.yaml",
+      "change_type": "untracked_new",
+      "sha256": "5bfcded57bf0bd408a60e49ccc9f49dd673af99bd466f4a177eb4ca98c58d77d"
+    },
+    {
+      "path": "docs/phase-3z-report.md",
+      "change_type": "untracked_new",
+      "sha256": "b10ff95f1ac1cb459d53e8c362aaafd88ba536b96a04e4748652e305aacd9ea3"
+    },
+    {
+      "path": "docs/phase-4a-report.md",
+      "change_type": "untracked_new",
+      "sha256": "78efde7f66f4dca3dcfd18efd4509b0d7fac506066930d1e10bc5d34dd70f5ad"
+    },
+    {
+      "path": "src/enade/cli.py",
+      "change_type": "modified",
+      "sha256": "a0c06319f1a7f68019b373f0963c0b4e9aff4b18273248be8ad3519b030b8288"
+    },
+    {
+      "path": "src/enade/extraction/blocker_ledger.py",
+      "change_type": "modified",
+      "sha256": "a60fcf7814f9a417e9c977394164fdbb181c657c9e65382baefa89e387ef10f6"
+    },
+    {
+      "path": "src/enade/extraction/source_availability.py",
+      "change_type": "untracked_new",
+      "sha256": "3b4cbc1d2af4a12e55bdaf73236a0ff01bd82cd6e3f6c7ac45f4e2c678ff8683"
+    },
+    {
+      "path": "src/enade/readiness.py",
+      "change_type": "modified",
+      "sha256": "21c49e0133dc07ddad049f2ad3cb99728eec3bc6a152e9fc65bef2b9ece3873f"
+    },
+    {
+      "path": "tests/test_phase4a_freeze.py",
+      "change_type": "untracked_new",
+      "sha256": "fd47bc250f2a754136229e82d7464d03ad15836aada218ca31897c7da7b94c98"
+    },
+    {
+      "path": "tests/test_readiness.py",
+      "change_type": "modified",
+      "sha256": "a67e1fc5b350e42aec61a7df995b0ddecca441e56bbf98b302a9756d15be135f"
+    },
+    {
+      "path": "tests/test_source_availability.py",
+      "change_type": "untracked_new",
+      "sha256": "caaf32adc0a831c7407a77bf35949169d300339239bc13c9aa6ad60d54e3a00f"
+    }
+  ],
+  "source_pdf_hashes": {
+    "2008-b": {
+      "b1_prova.pdf": "5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264",
+      "b2_gabarito.pdf": "707a326330c6982a9368957c6d9af1563b886d32d6c6720319faeb71803f2425",
+      "b3_padrao.pdf": "7021d115731ddcbad3c227da50f6d8c9c2c7f8a5a4b4d7dabce4b3726d0d35ef",
+      "e1_prova.pdf": "2c3f96b48dbb7943f46a4c91b4b7f8605bc649f96a9e6bac77fb2af73b224a14",
+      "e2_gabarito.pdf": "0eecb1058df30656867e6c26c6ec0358fffba35ef25f1048d3eefd79e94d2e6c",
+      "e3_padrao.pdf": "c2fcd0989022dfe22ad3ed85ecf7b2c4ca3e0e040d546537247a8b481c32b556"
+    },
+    "2011": {
+      "1_prova.pdf": "eb3b497f0d0967b1b6d063784c3012e719d1758ba182e4f6d6e6e47151934548",
+      "2_gabarito.pdf": "e799cac6ced431c0e5341e583592568d28db66e0e0c43c2f2e7757bdd807577b",
+      "3_padrao.pdf": "386353635a8e2fa8081dce177f37918bcaf9426d8ee6881b88aa739bdf0cd412"
+    },
+    "2021": {
+      "b1_prova.pdf": "0254b274cc4adddbb503cf18553ee70c26014cbb0848fe3c5b787c80137b11e8",
+      "b2_gabarito.pdf": "62e5d3812e9b639a2590dad07c30f32d96367ed0d0e6450f0b0a753e023f475b",
+      "b3_padrao.pdf": "c0348ce0006201f25e9f97502f59ad1b802c6c3e83c232b9c3c8330f6a6e7ded",
+      "l1_prova.pdf": "9537deb2d2d7f7e00eacd526a06b887e932fedf4b5e7abf9be6501138d561b72",
+      "l2_gabarito.pdf": "92874d01d2cfc5f622abc3523ab91f7c6c60ba9eed18fb550479d4f391d6eae5",
+      "l3_padrao.pdf": "e8083c85e549eefeb4a31ff9220fb52eb8c657f903c65d2fed221db985d6e53e",
+      "s1_prova.pdf": "13d81a46488d93fb66836e7c704f9de1ba722c3b130ccb4f0aa9d3522c855ba7",
+      "s2_gabarito.pdf": "aba7bbc12f549710bf0553ed2ac642423de22076418ff9ff06c810cd86092d85",
+      "s3_padrao.pdf": "4c9ea3b838717c88fec4512c60b10b894c92e982c8aefce630d97075c0f0473f"
+    }
+  },
+  "manifests": [
+    {
+      "path": "data/manifests/blocker-ledger-2008.yaml",
+      "sha256": "7fcbf2c9b9cdea335572d17c5ea8763a4fd4c7c2c91d6ab5869ad5fcf6d26c34"
+    },
+    {
+      "path": "data/manifests/blocker-ledger-2011.yaml",
+      "sha256": "c064e55fc83c3aca9a0f6997ef9e3ee4bb1320869c522002a48472f8c4b8b133"
+    },
+    {
+      "path": "data/manifests/content-assignment-2008-b.json",
+      "sha256": "b0135a292604a38bf63eaadc5b2e070164b9ebdad71599a1270c3dfa244c14c4"
+    },
+    {
+      "path": "data/manifests/exam-structure-2008.yaml",
+      "sha256": "524567c693c4b7930a6228f5699432cde8b43d979cf0122f20d763d6260555d7"
+    },
+    {
+      "path": "data/manifests/exam-structure-2011.yaml",
+      "sha256": "2608e1e8b101c64db91e16d02c5a5cd5eafeb6438dd077ae6ad86c064e301fae"
+    },
+    {
+      "path": "data/manifests/extraction-audit-2008-computing.csv",
+      "sha256": "0194c715ef43f8d228de705f8b3137dcc470fe16922237eff2417d2c417847ef"
+    },
+    {
+      "path": "data/manifests/extraction-audit-2008-computing.json",
+      "sha256": "ecf60d5fcaa1d1115d90a3b898ec6e6ab5d8000c8d04200cbf81cda43b06eb5f"
+    },
+    {
+      "path": "data/manifests/extraction-audit-2011-computing.csv",
+      "sha256": "8e4274ebdb396da0c992c21da0de703491ef07beb398792c4798997555fa979e"
+    },
+    {
+      "path": "data/manifests/extraction-audit-2011-computing.json",
+      "sha256": "e022dcec6b0d56e5a38eab63651cb9d3700ee40ecc3ecef12d9d2d3c42c98acd"
+    },
+    {
+      "path": "data/manifests/extraction-audit-2021-b.csv",
+      "sha256": "de02b76f8cfb11a181d6d4fe0657790abeaaeaaee3c9f2b813ca49a58e3d2703"
+    },
+    {
+      "path": "data/manifests/extraction-audit-2021-b.json",
+      "sha256": "06b6fbd738c623a19be70993726ed0f3b93e24463224727031b62b9565e88963"
+    },
+    {
+      "path": "data/manifests/extraction-audit-2021-l.csv",
+      "sha256": "1f9c1c7db70e0c716de51b93fd762c0c23a2a0496cdf59fca4ee3c81171ec5c6"
+    },
+    {
+      "path": "data/manifests/extraction-audit-2021-l.json",
+      "sha256": "71987fa4143a56ce1227c6fe0d6da9c77dda62e2de1187a5837668966804760e"
+    },
+    {
+      "path": "data/manifests/extraction-audit-2021-s.csv",
+      "sha256": "f9c3aa52f980b116a5ade9e9198be198f0873e0dfa93048531f7a0d5f7c7d9f4"
+    },
+    {
+      "path": "data/manifests/extraction-audit-2021-s.json",
+      "sha256": "2152def135979d12abdff0277a24f8510e47d3ecfea791929e28eb78435ba9bf"
+    },
+    {
+      "path": "data/manifests/extraction-capabilities.json",
+      "sha256": "fbd864fb738e5bab6ab0a61e69fedd9e20fda4eb60c678c4e26a00877dc86d2b"
+    },
+    {
+      "path": "data/manifests/gold-2008-computing.json",
+      "sha256": "d5f0f35e44643f9d04b044315e182de6c035cde91d94bd00bf54d696b347f1ee"
+    },
+    {
+      "path": "data/manifests/gold-2011-computing.json",
+      "sha256": "fcc656f03f8fcc8da4f92f4fbb7f1544c76c1c523fb5c78dec62f7d1081cdd34"
+    },
+    {
+      "path": "data/manifests/gold-2021-b.json",
+      "sha256": "44b080eb9313934eeac593aa40a4fbb0b213ca059bf974fcf9d2fb76ad188dfd"
+    },
+    {
+      "path": "data/manifests/layout-overrides.yaml",
+      "sha256": "167f8a8a3a5ba7a65f1e42fb9bb9ca54c16592e3f4f0ffafee1d34ab9a8e0d94"
+    },
+    {
+      "path": "data/manifests/protected-files-2011-2021.json",
+      "sha256": "a3c1258e13f222db235e41b6089e4262a72518bf49ed0219a5a452ea48e2cee2"
+    },
+    {
+      "path": "data/manifests/source-availability-2008.yaml",
+      "sha256": "5bfcded57bf0bd408a60e49ccc9f49dd673af99bd466f4a177eb4ca98c58d77d"
+    },
+    {
+      "path": "data/manifests/source-exams.yaml",
+      "sha256": "d0cb1930365f0347dcd248ca08c2c9c06a9c0b1ea0d72f6f1772c4dbcf6a7d19"
+    },
+    {
+      "path": "data/manifests/source-token-ledger-2008.yaml",
+      "sha256": "0ff0c08d3ee744490381ba7bf4ce641d1eeaad92b67810f2b280068302d7e086"
+    },
+    {
+      "path": "data/manifests/transformation-log-2008-computing.json",
+      "sha256": "f16184262a1b7cd95bee54822ab08cf7841ffe422f1c703209e0a34b5d850916"
+    },
+    {
+      "path": "data/manifests/transformation-log-2011-computing.json",
+      "sha256": "49d6b8a8bcb73c46f057fa6cae70c8e1ef577169d1406aaeef1559d4e4ccba90"
+    },
+    {
+      "path": "data/manifests/transformation-log-2021-b.json",
+      "sha256": "0bd088454b40fb11c99a6677370dda3ebb7efb5fe822ac39380121f5b921b65f"
+    },
+    {
+      "path": "data/manifests/transformation-log-2021-l.json",
+      "sha256": "5cb0c3eeb35a75738299ec33f6b5d04f3ecb5c8424ffba9338383c358795781e"
+    },
+    {
+      "path": "data/manifests/transformation-log-2021-s.json",
+      "sha256": "000a5ff21a9fa48fc8b28372713bdeb7ffa4622e1d0e8b80236423dc7458d997"
+    },
+    {
+      "path": "data/manifests/visual-audit-2008-computing.json",
+      "sha256": "ed4f88f5da935967b4ca62b8e4bb079c1346180fc33cdaaa5555f7cafd5e4703"
+    },
+    {
+      "path": "data/manifests/visual-audit-2011-computing.json",
+      "sha256": "1a3c785cf4c72013470fc875f0a48e2f0c8a27e0f7cc5c10297d6bf117479d9c"
+    },
+    {
+      "path": "data/manifests/visual-audit-2021-b.json",
+      "sha256": "7032b41718bb6503676da28651d2787dfcb87c5d0e8613d372f330fedec21354"
+    }
+  ],
+  "reports": [
+    {
+      "path": "docs/phase-1c-report.md",
+      "sha256": "e0d1f1cbbcbed7a654e04320258dee16b88508ccece643dcafa2d31b2a53b5f5"
+    },
+    {
+      "path": "docs/phase-2a-report.md",
+      "sha256": "d77bcdb5fa744dd7896c8a4380f3b5dcf52b23523c2e8b12040466e170eeed4b"
+    },
+    {
+      "path": "docs/phase-2b-report.md",
+      "sha256": "d27e89a3504d34b65c29a15e6bb2f6805a73ee42dd6711927faf25e6fde8bb35"
+    },
+    {
+      "path": "docs/phase-2c-report.md",
+      "sha256": "cd046522766a626a68004cbce0e431e10cac5109bc50cf4b2de8366406df063c"
+    },
+    {
+      "path": "docs/phase-2d-report.md",
+      "sha256": "178575ac068b9392ec98e0be95d8463dfc0a69af4c26ba304dd76b689a8be3ac"
+    },
+    {
+      "path": "docs/phase-2e-report.md",
+      "sha256": "47da2b7d4a1711aab80e8fcc7373da6c835abcf15676dc1e703b7012f85268f9"
+    },
+    {
+      "path": "docs/phase-2f-report.md",
+      "sha256": "7ebaf84072de93136430c590b2db24fef5279c69f5dda183c25e3044dd305be0"
+    },
+    {
+      "path": "docs/phase-3a-report.md",
+      "sha256": "b79a1228da6aa5bcbd0d384a63b4323edef5a644c0e53a4826d3b027e6dd77d6"
+    },
+    {
+      "path": "docs/phase-3b-report.md",
+      "sha256": "20b61ae26ee4ab17e2871022fab5602dce0c7d1d49ca85a6bb50b2d53d9f1e35"
+    },
+    {
+      "path": "docs/phase-3c-report.md",
+      "sha256": "d904e759417c81dbcb3c272f955cb7be1c383c82423ced1a47c4a35747ac3f93"
+    },
+    {
+      "path": "docs/phase-3d-report.md",
+      "sha256": "031bfb73fcbd7c29ed3fb1754785da032e981a906072993817e2dda00c7e0032"
+    },
+    {
+      "path": "docs/phase-3e-report.md",
+      "sha256": "2c63cb5fc6fee2700928cd22486f734efc4a2206a9f9ff1ac96873e789927b33"
+    },
+    {
+      "path": "docs/phase-3f-report.md",
+      "sha256": "8f6b3c5dabba7143165f5a5ea5a97e3fb167f8c35fd4848f6aacf9b498d0545b"
+    },
+    {
+      "path": "docs/phase-3g-report.md",
+      "sha256": "1ed265a0e591451e8bc19264645186d9d211d98ce72da3bff965df7d018e5226"
+    },
+    {
+      "path": "docs/phase-3h-report.md",
+      "sha256": "c0fdaf3163a8ef8fe2f3c21c70af7d080f4b01a91efb05b49f101481ddfcdc00"
+    },
+    {
+      "path": "docs/phase-3i-report.md",
+      "sha256": "63fb222ab87eab7ebba2d2cc2886e705c3b9dbc7c17b73abced6b2c2325c9c34"
+    },
+    {
+      "path": "docs/phase-3j-report.md",
+      "sha256": "ec11d05e0767d930367fc4596e09dd3e84ef67df7f349a8dfb96c8cc40f355f1"
+    },
+    {
+      "path": "docs/phase-3k-report.md",
+      "sha256": "a906645b84ee3b61e32b5836c34d7e007369f5a6b9c0836f1c90632f1eed30e4"
+    },
+    {
+      "path": "docs/phase-3l-report.md",
+      "sha256": "8192846f9df23f6e3dbbd5600df5ec83a75f09f6e2368658fc5a0b4f797fe253"
+    },
+    {
+      "path": "docs/phase-3m-report.md",
+      "sha256": "f50f6df643d871217125c2a4262b1f04da636a08a8f9be11d11310e6d1c5a929"
+    },
+    {
+      "path": "docs/phase-3n-report.md",
+      "sha256": "71320194102692b75aa2e66b261e816d4a95d4c99de713ed0ae109a7d1e0e322"
+    },
+    {
+      "path": "docs/phase-3o-report.md",
+      "sha256": "66c4c22c80f99763cd4a006b573912fd641f1557a14425a257546392037d112e"
+    },
+    {
+      "path": "docs/phase-3p-report.md",
+      "sha256": "76e914cf99c34132b6bb51cdc198d90ace40e701c013a2b134366effe8760fbe"
+    },
+    {
+      "path": "docs/phase-3q-report.md",
+      "sha256": "bba01dca0468cd3c903a02ea9a46885c9b7942d41debd3020de07ccf3554b695"
+    },
+    {
+      "path": "docs/phase-3r-report.md",
+      "sha256": "079e4f577a96efb6ed66004d0d2d500bdbebd2906368201471eb6a5c4fff8008"
+    },
+    {
+      "path": "docs/phase-3s-report.md",
+      "sha256": "e3eb76f51edad12e65dbaa669ddb698d0e0a723641a18a75e2d984409d6ab1f8"
+    },
+    {
+      "path": "docs/phase-3t-report.md",
+      "sha256": "1bc7399c5dfa233f3637b359bb2895e630c6ba35ba709feb09db13187a7e9f96"
+    },
+    {
+      "path": "docs/phase-3u-report.md",
+      "sha256": "25d2646914a280408fbf1fb19317ecfcc548eb5ae461eec81191d47b5db64af4"
+    },
+    {
+      "path": "docs/phase-3v-report.md",
+      "sha256": "7703e5a136f6748a7ea983d1db74dc1e56dc6951ec777d232964553d5cc255fe"
+    },
+    {
+      "path": "docs/phase-3w-report.md",
+      "sha256": "6a47295775873a21afbe2ef8d1992887f1429d8a9a2ec2c734b23b089384232b"
+    },
+    {
+      "path": "docs/phase-3x-report.md",
+      "sha256": "51931e1520a7a2ea7bec8e44a66872743edf5fe0448805b5e9cfdb38f31147d9"
+    },
+    {
+      "path": "docs/phase-3y-report.md",
+      "sha256": "33c3972dda51441eaea51f305f0f71ecdc913d83e185a40eed6d68289bb0fcc9"
+    },
+    {
+      "path": "docs/phase-3z-report.md",
+      "sha256": "b10ff95f1ac1cb459d53e8c362aaafd88ba536b96a04e4748652e305aacd9ea3"
+    },
+    {
+      "path": "docs/phase-4a-report.md",
+      "sha256": "78efde7f66f4dca3dcfd18efd4509b0d7fac506066930d1e10bc5d34dd70f5ad"
+    }
+  ],
+  "question_outputs": {
+    "2008-b": "b22aab9d28574428079a2f77680b15b007f76b4e37adf446a33ab921431b4d2f",
+    "2011": "dfd7204f278661c44d23ca93e3c06ee50ed9f694c75ecdad727a14fa6c829c84",
+    "2021-ciencia-da-computacao-bacharelado": "1b5b84f4ecd822de3f8331e8220ab6dc2834f9aa7c006243eae0fd2332020be2",
+    "2021-ciencia-da-computacao-licenciatura": "3ebb51cd64f4198dfe623dc5fccc604e11279087ba22e099cbddf94263d2bcf3",
+    "2021-sistemas-de-informacao": "356a6e15c8587f7a8382fb51b04ca1f2372098a4e4513afbfe3da4603f41eebe"
+  },
+  "protected_files": {
+    "path": "data/manifests/protected-files-2011-2021.json",
+    "sha256": "a3c1258e13f222db235e41b6089e4262a72518bf49ed0219a5a452ea48e2cee2",
+    "total_files": 288,
+    "question_file_count": 270,
+    "manifest_file_count": 18
+  },
+  "quality_gates": {
+    "pytest": {
+      "total": 881,
+      "passed": 881,
+      "failed": 0,
+      "skipped": 0
+    },
+    "ruff_check": "All checks passed!",
+    "ruff_format_check": "all files already formatted",
+    "mypy_src": "Success: no issues found in 61 source files",
+    "validate_schema": "13/13 fixture(s) valid",
+    "validate_manifest": "OK (0 warning(s))",
+    "audit_extraction": {
+      "2008-b": "80/80 OK",
+      "2011": "55/55 OK",
+      "2021-ciencia-da-computacao-bacharelado": "40/40 OK",
+      "2021-ciencia-da-computacao-licenciatura": "40/40 OK",
+      "2021-sistemas-de-informacao": "40/40 OK"
+    }
+  },
+  "readiness": {
+    "2008-b": {
+      "verdict": "READY_FOR_2008_ENGINEERING_TEST_WITH_SOURCE_LIMITATIONS",
+      "verified": 78,
+      "needs_review": 2,
+      "actionable_blockers": 0,
+      "source_limitations": 2,
+      "informational_findings": 0
+    },
+    "2011": {
+      "verdict": "READY_FOR_LEGACY_LAYOUT_TEST",
+      "verified": 54,
+      "needs_review": 1,
+      "actionable_blockers": 0,
+      "source_limitations": 0,
+      "informational_findings": 1
+    },
+    "2021-ciencia-da-computacao-bacharelado": {
+      "verdict": "READY_FOR_2011",
+      "verified": 40,
+      "needs_review": 0,
+      "actionable_blockers": 0,
+      "source_limitations": 0,
+      "informational_findings": 0
+    }
+  },
+  "source_limitations": [
+    {
+      "subject_id": "enade-2008-computing-d09",
+      "source_availability_id": "sa-2008-d09-answer-standard",
+      "status": "source_unavailable_confirmed"
+    },
+    {
+      "subject_id": "enade-2008-computing-d10",
+      "source_availability_id": "sa-2008-d10-answer-standard",
+      "status": "source_unavailable_confirmed"
+    }
+  ],
+  "aggregate_hashes": {
+    "manifests_combined": "6414dd37a3493619ec47738d4c6b8e16c1e15004f4488932a4d09c600a05c0a2",
+    "reports_combined": "4a33b1e4a73f13fd2c885b7b2a71e3e49bb99a5789c7ac69df6d282d54d0c9a6",
+    "question_outputs_combined": "6dd992804376f58f0a985655e3aeb7189cd2155cb9d3651699ae7a5e3c7b8804",
+    "overall": "f8fe5041ef978b81134cf01d5be8db402725446a0254eea6f2c797de5397fa5d"
+  }
+}

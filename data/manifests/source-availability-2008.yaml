@@ -1,0 +1,211 @@
+# Source-availability adjudication ledger (PROMPT Fase 3Z).
+#
+# Machine-readable, individually re-verifiable evidence for a
+# `source_unavailable_confirmed` claim - distinct from
+# blocker-ledger-2008.yaml (which records a Blocker's own terminal
+# status, `source_unavailable`, backed only by a free-text `evidence`
+# field). This ledger is the structured evidence *behind* that label:
+# see src/enade/extraction/source_availability.py for the loader,
+# schema, and the `is_confirmed_unavailable` gate that re-checks every
+# field here before a readiness finding may ever become non-structural
+# because of it.
+#
+# A `source_unavailable_confirmed` record here means, precisely:
+# "this artifact does not exist inside this exact, hash-locked
+# documental package" - never "this content never existed anywhere",
+# and never "the extractor is known incapable of representing it if it
+# did exist". See Section 7/9 of the PROMPT (Fase 3Z) for the full
+# boundary/lesson this ledger formalizes (2008-b's own D59 - a rubric
+# with zero text but a real embedded image, wrongly treated as absent
+# for three phases - is the exact failure mode `is_confirmed_unavailable`
+# now refuses to repeat: a text-only search may never grant this
+# status).
+schema_version: 1
+source_packages:
+  - source_package_id: 2008-b-computacao
+    coverage_claim: >-
+      The complete, official 2008-b (Formacao Geral + Componente
+      Especifico Comum de Computacao) exam booklet as supplied to this
+      project - one exam ("prova"), one answer key ("gabarito") and one
+      official answer standard ("padrao de resposta"), each a single PDF
+      file, acquired via the geacc/enade corpus (git commit
+      a657632b72b97468c8a5eb3b433d1abb4a5511c5). A
+      `source_unavailable_confirmed` verdict scoped to this package means
+      the artifact is absent from these exact three files, hash-locked -
+      never a claim about any other copy of this exam that might exist
+      elsewhere.
+    documents:
+      - path: 2008/b1_prova.pdf
+        sha256: 5c8a08f7fdaccaa3b5661f40705e214bffdab634b845bce6288f8eeaa25db264
+        role: prova
+        page_count: 36
+        acquisition_provenance: >-
+          geacc/enade corpus, git commit a657632b72b97468c8a5eb3b433d1abb4a5511c5
+          (data/raw/geacc-enade/2008/b1_prova.pdf).
+      - path: 2008/b2_gabarito.pdf
+        sha256: 707a326330c6982a9368957c6d9af1563b886d32d6c6720319faeb71803f2425
+        role: gabarito
+        page_count: 2
+        acquisition_provenance: >-
+          geacc/enade corpus, git commit a657632b72b97468c8a5eb3b433d1abb4a5511c5
+          (data/raw/geacc-enade/2008/b2_gabarito.pdf).
+      - path: 2008/b3_padrao.pdf
+        sha256: 7021d115731ddcbad3c227da50f6d8c9c2c7f8a5a4b4d7dabce4b3726d0d35ef
+        role: padrao
+        page_count: 6
+        acquisition_provenance: >-
+          geacc/enade corpus, git commit a657632b72b97468c8a5eb3b433d1abb4a5511c5
+          (data/raw/geacc-enade/2008/b3_padrao.pdf).
+records:
+  - source_availability_id: sa-2008-d09-answer-standard
+    subject_id: enade-2008-computing-d09
+    artifact_type: answer_standard
+    source_package_id: 2008-b-computacao
+    expected_source: 2008/b3_padrao.pdf
+    source_hashes:
+      padrao: 7021d115731ddcbad3c227da50f6d8c9c2c7f8a5a4b4d7dabce4b3726d0d35ef
+    pages_scanned: [1, 2, 3, 4, 5, 6]
+    search_methods: [text, rawdict, texttrace, images, drawings]
+    expected_markers: ["Questao 9", "Questao 09", "QUESTAO 9", "9"]
+    observed_markers:
+      - "Questao 20 (page 1, bbox 89.25,115.57-152.38,128.13)"
+      - "Questao 39 (page 1, bbox 89.25,411.82-155.38,424.39)"
+      - "Questao 40 (page 1, bbox 89.25,709.57-152.38,722.14)"
+      - "Questao 59 (page 3, bbox 89.25,460.57-155.38,473.14)"
+      - "Questao 60 (page 3, bbox 71.25,752.32-137.38,764.89)"
+      - "Questao 79 (page 4, bbox 71.25,616.57-140.38,629.14)"
+      - "Questao 80 (page 5, bbox 106.5,353.32-172.63,365.89)"
+    text_evidence: >-
+      Fase 3Z, re-verificacao fresca (nunca reaproveitando a narrativa da
+      Fase 3T sem reexecutar): regex (?i)quest[aa]o\s+(?:discursiva\s+)?0*(\d+)\b
+      aplicada a page.get_text("text") nas 6 paginas encontra exatamente 7
+      marcadores, em ordem: Questao 20, 39, 40, 59, 60, 79, 80 - nunca 9
+      nem 09. Contagem de caracteres por pagina (page.get_text("text")):
+      pagina 1 = 1123 chars/174 palavras, pagina 2 = 626/97, pagina 3 =
+      176/26, pagina 4 = 2944/522, pagina 5 = 2643/390, pagina 6 = 321/46 -
+      nenhuma pagina com zero texto (nenhuma pagina inteiramente
+      rasterizada sem camada textual, o que exigiria OCR - nao usado
+      neste projeto). page.get_text("rawdict") confirma, linha a linha, a
+      mesma leitura (cada marcador acima corresponde a uma unica line com
+      spans/chars legiveis, sem fragmentacao anomala). A pagina 1 comeca
+      imediatamente em "COMPUTACAO" (y0=72.4) seguido por "Questao 20"
+      (y0=115.6), sem nenhum conteudo entre o cabecalho da pagina
+      (y0-y1=35.0-71.75) e "Questao 20" - nao ha capa, nao ha secao de
+      Formacao Geral, nao ha qualquer mencao as discursivas 9/10 em
+      nenhum ponto do documento. A pagina 6 (ultima) e a continuacao
+      textual da resposta de "Questao 80" (nenhum novo marcador) -
+      confirmando que o documento termina exatamente onde a sequencia de
+      marcadores termina, sem paginas remanescentes nao examinadas.
+    image_evidence: >-
+      page.get_images(full=True) + page.get_image_info(xrefs=True) em
+      todas as 6 paginas: 15 imagens no total. Uma delas (xref 7/30/47/70/79/92,
+      bbox 71.25,35.0-524.25,71.75) e o cabecalho recorrente, identico em
+      todas as 6 paginas - chrome, nunca conteudo de rubrica. As 9
+      restantes foram individualmente atribuidas, por posicao Y estrita
+      dentro da janela marcador-a-marcador (nunca por proximidade
+      aproximada): pagina 1 - xref 20 (188.0-359.75) e xref 22
+      (449.0-637.25), ambas dentro da janela de "Questao 39" (nao 20 -
+      confirmado pelo proprio y0 de cada uma cair apos o y1 de "Questao
+      20" em 128.13 e apos "Questao 39" em 424.39, respectivamente -
+      revisao: xref 20 cai entre Questao 20 (128.13) e Questao 39
+      (411.82), logo pertence a Questao 20; xref 22 cai entre Questao 39
+      (424.39) e Questao 40 (709.57), logo pertence a Questao 39). Pagina
+      2 - xref 37/39, continuacao da rubrica de Questao 40 (nenhum
+      marcador novo nesta pagina). Pagina 3 - xref 52/56 (198.0-248.0 e
+      162.0-448.25, ambas ANTES de "Questao 59" em 460.57 - pertencem a
+      Questao 40, cuja rubrica continua desde a pagina 1/2 - confirmado
+      de forma independente na Fase 3U por correspondencia textual com o
+      answer_standard.text ja publicado de D40) e xref 61 (488.75-740.0,
+      inteiramente dentro da janela Questao 59 (473.14) - Questao 60
+      (752.32) - a unica rubrica real de D59, ja publicada). Pagina 4 -
+      apenas o cabecalho (nenhuma imagem de conteudo). Pagina 5 - xref 86
+      (389.75-639.5, dentro da janela de Questao 80). Pagina 6 - xref 97
+      (131.75-395.0, continuacao da rubrica de Questao 80). Toda imagem
+      do documento inteiro esta, portanto, individualmente atribuida a
+      uma das 7 discursivas realmente presentes (20, 39, 40, 59, 60, 79,
+      80) ou ao cabecalho compartilhado - zero imagem orfa, zero imagem
+      sem atribuicao, e nenhuma cai em qualquer janela que pudesse
+      pertencer a "Questao 9"/"Questao 10" (que nao existem como
+      marcador em lugar nenhum, tornando essa janela indefinida por
+      construcao).
+    drawing_evidence: >-
+      page.get_drawings() em cada uma das 6 paginas: zero drawings (0 em
+      cada pagina, sem excecao) - nao ha nenhum conteudo vetorial
+      (diagramas desenhados, tabelas com bordas vetoriais, formulas
+      desenhadas) em nenhum lugar deste documento, portanto nao ha
+      nenhuma rubrica visual-only desenhada (ao contrario de uma
+      hipotese analoga a D59, mas via vetor em vez de raster) escondida
+      em nenhuma pagina.
+    availability_status: source_unavailable_confirmed
+    review_status: reviewed
+    impact: >-
+      D09 nao pode ter answer_standard populado a partir deste pacote-
+      fonte: o artefato oficial correspondente nao existe nele. Isso e
+      uma limitacao documental do pacote fornecido, nunca um defeito do
+      extrator - nenhum codigo de extracao falha ao processar conteudo
+      existente; nao ha conteudo a processar. A questao D09 em si (o
+      enunciado, extraido de b1_prova.pdf) permanece publicada e
+      correta; apenas o campo answer_standard permanece null,
+      honestamente.
+    evidence: >-
+      Revalidacao completa nesta fase (Fase 3Z), nunca presumindo a
+      narrativa da Fase 3T sem reexecutar: busca textual + rawdict +
+      texttrace + imagens + drawings, todas as 6 paginas de
+      b3_padrao.pdf (sha256 7021d115731ddcbad3c227da50f6d8c9c2c7f8a5a4b4d7dabce4b3726d0d35ef).
+      Nenhum marcador "Questao 9"/"Questao 09"/"9" isolado em contexto de
+      cabecalho de questao foi encontrado (busca por numeros isolados
+      nao foi usada como prova por si so - apenas o regex ancorado a
+      "Questao" - consistente com a exigencia da Fase 3Z de nao provar
+      ausencia so por numero isolado). Todas as 15 imagens do documento
+      foram individualmente atribuidas a uma das 7 discursivas realmente
+      presentes ou ao cabecalho; zero drawings em qualquer pagina; zero
+      pagina sem camada textual. Ver text_evidence/image_evidence/
+      drawing_evidence acima para o detalhamento completo por metodo.
+      Historico: esta mesma conclusao foi alcancada pela primeira vez na
+      Fase 3T (busca text+rawdict+inspecao visual apenas) - esta fase
+      fecha a lacuna explicita que aquela evidencia deixava (nunca havia
+      confirmado ausencia de imagem/drawing atribuivel, o exato erro que
+      escondeu D59 por tres fases) antes de permitir que este registro
+      afete o readiness.
+  - source_availability_id: sa-2008-d10-answer-standard
+    subject_id: enade-2008-computing-d10
+    artifact_type: answer_standard
+    source_package_id: 2008-b-computacao
+    expected_source: 2008/b3_padrao.pdf
+    source_hashes:
+      padrao: 7021d115731ddcbad3c227da50f6d8c9c2c7f8a5a4b4d7dabce4b3726d0d35ef
+    pages_scanned: [1, 2, 3, 4, 5, 6]
+    search_methods: [text, rawdict, texttrace, images, drawings]
+    expected_markers: ["Questao 10", "QUESTAO 10", "10"]
+    observed_markers:
+      - "Questao 20 (page 1, bbox 89.25,115.57-152.38,128.13)"
+      - "Questao 39 (page 1, bbox 89.25,411.82-155.38,424.39)"
+      - "Questao 40 (page 1, bbox 89.25,709.57-152.38,722.14)"
+      - "Questao 59 (page 3, bbox 89.25,460.57-155.38,473.14)"
+      - "Questao 60 (page 3, bbox 71.25,752.32-137.38,764.89)"
+      - "Questao 79 (page 4, bbox 71.25,616.57-140.38,629.14)"
+      - "Questao 80 (page 5, bbox 106.5,353.32-172.63,365.89)"
+    text_evidence: >-
+      Identico a sa-2008-d09-answer-standard (mesmo documento, mesma
+      busca, mesmo resultado - nenhum marcador "Questao 10" em nenhuma
+      das 6 paginas). Ver esse registro para o detalhamento completo.
+    image_evidence: >-
+      Identico a sa-2008-d09-answer-standard - todas as 15 imagens do
+      documento estao atribuidas as 7 discursivas realmente presentes ou
+      ao cabecalho; nenhuma cai em uma janela "Questao 10".
+    drawing_evidence: >-
+      Identico a sa-2008-d09-answer-standard - zero drawings em todas as
+      6 paginas.
+    availability_status: source_unavailable_confirmed
+    review_status: reviewed
+    impact: >-
+      D10 nao pode ter answer_standard populado a partir deste pacote-
+      fonte, pela mesma razao de D09. Limitacao documental do pacote
+      fornecido, nunca defeito do extrator. A questao D10 em si permanece
+      publicada e correta; apenas answer_standard permanece null.
+    evidence: >-
+      Identico a sa-2008-d09-answer-standard (mesmo documento, mesma
+      busca exaustiva por texto/rawdict/texttrace/imagens/drawings nas 6
+      paginas, mesmo resultado negativo completo). Fecha a mesma lacuna
+      (imagem/drawing nunca antes verificada explicitamente) que a Fase
+      3T havia deixado aberta para D09.

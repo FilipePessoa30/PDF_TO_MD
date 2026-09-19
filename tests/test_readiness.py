@@ -435,3 +435,226 @@ def test_missing_ledger_file_is_treated_as_an_empty_ledger(ready_course_dir, tmp
     )
     assert report.ready is True
     assert not any(b.kind.startswith("blocker_ledger") for b in report.blockers)
+
+
+# --- PROMPT Fase 3Z: source-availability exemption (D09/D10's own real shape) ---
+
+
+def _source_unavailable_yaml(
+    tmp_path: Path,
+    padrao_path: Path,
+    *,
+    subject_id: str = "enade-2021-cc-b-d01",
+    availability_status: str = "source_unavailable_confirmed",
+    search_methods=("text", "rawdict", "texttrace", "images", "drawings"),
+    review_status: str = "reviewed",
+    image_evidence: str = "every image attributed to a present question",
+    drawing_evidence: str = "zero drawings on every page",
+) -> Path:
+    import hashlib
+
+    padrao_hash = hashlib.sha256(padrao_path.read_bytes()).hexdigest()
+    methods_yaml = "[" + ", ".join(search_methods) + "]"
+    path = tmp_path / "source-availability.yaml"
+    path.write_text(
+        "schema_version: 1\n"
+        "source_packages:\n"
+        "  - source_package_id: pkg-2021-b\n"
+        "    coverage_claim: test package\n"
+        "    documents:\n"
+        f"      - path: {padrao_path.relative_to(tmp_path).as_posix()}\n"
+        f"        sha256: {padrao_hash}\n"
+        "        role: padrao\n"
+        "        page_count: 6\n"
+        "        acquisition_provenance: test fixture\n"
+        "records:\n"
+        f"  - source_availability_id: sa-test-{subject_id}\n"
+        f"    subject_id: {subject_id}\n"
+        "    artifact_type: answer_standard\n"
+        "    source_package_id: pkg-2021-b\n"
+        f"    expected_source: {padrao_path.relative_to(tmp_path).as_posix()}\n"
+        f"    source_hashes: {{padrao: {padrao_hash}}}\n"
+        "    pages_scanned: [1, 2, 3, 4, 5, 6]\n"
+        f"    search_methods: {methods_yaml}\n"
+        "    expected_markers: [Questao 1]\n"
+        "    observed_markers: [Questao 20]\n"
+        "    text_evidence: no marker found anywhere\n"
+        f"    image_evidence: {image_evidence!r}\n"
+        f"    drawing_evidence: {drawing_evidence!r}\n"
+        f"    availability_status: {availability_status}\n"
+        f"    review_status: {review_status}\n"
+        "    impact: answer_standard stays null\n"
+        "    evidence: full negative search across all pages\n",
+        encoding="utf-8",
+    )
+    return path
+
+
+def _unavailable_discursive_course_dir(tmp_path: Path) -> Path:
+    # D09/D10's own real shape: extraction_status stays needs_review AND
+    # answer_standard stays None, simultaneously, for the same question -
+    # two independent readiness findings from one single fact.
+    course_dir = tmp_path / "questions" / "2021" / "ciencia-da-computacao-bacharelado"
+    course_dir.mkdir(parents=True)
+    write_question_markdown(_objective(), course_dir)
+    write_question_markdown(
+        _discursive(
+            extraction_status="needs_review",
+            automatic_validation="failed",
+            visual_validation="passed",
+            answer_standard=None,
+        ),
+        course_dir,
+    )
+    return course_dir
+
+
+def test_confirmed_source_unavailable_missing_answer_standard_is_non_structural(tmp_path: Path):
+    course_dir = _unavailable_discursive_course_dir(tmp_path)
+    manifest = _build(course_dir, tmp_path)
+    padrao_path = tmp_path / "s.pdf"
+    availability_path = _source_unavailable_yaml(tmp_path, padrao_path)
+    report = assess_readiness(
+        manifest,
+        course_dir,
+        source_availability_path=availability_path,
+        corpus_root=tmp_path,
+    )
+    assert report.ready is True
+    assert report.source_completeness == "incomplete"
+    missing_standard = [b for b in report.blockers if b.kind == "missing_answer_standard"]
+    assert len(missing_standard) == 1
+    assert missing_standard[0].structural is False
+    assert len(report.source_limitations) == 1
+    assert report.source_limitations[0].subject_id == "enade-2021-cc-b-d01"
+
+
+def test_confirmed_source_unavailable_question_not_verified_is_non_structural(tmp_path: Path):
+    course_dir = _unavailable_discursive_course_dir(tmp_path)
+    manifest = _build(course_dir, tmp_path)
+    padrao_path = tmp_path / "s.pdf"
+    availability_path = _source_unavailable_yaml(tmp_path, padrao_path)
+    report = assess_readiness(
+        manifest,
+        course_dir,
+        source_availability_path=availability_path,
+        corpus_root=tmp_path,
+    )
+    # Both independent findings for the SAME subject are exempted - never
+    # merged into one, never one silently dropped (PROMPT Section 16).
+    not_verified = [
+        b for b in report.blockers if b.kind == "question_not_verified" and "d01" in b.detail
+    ]
+    assert len(not_verified) == 1
+    assert not_verified[0].structural is False
+    # Still exactly one source_limitations entry - the exemption for two
+    # findings traces back to one single adjudicated fact, never counted
+    # twice.
+    assert len(report.source_limitations) == 1
+
+
+def test_source_unavailable_missing_a_search_method_still_blocks(tmp_path: Path):
+    # The D59 lesson (PROMPT Section 9): a record whose own evidence never
+    # actually checked for images/drawings must never grant a waiver,
+    # regardless of how confidently its own availability_status reads.
+    course_dir = _unavailable_discursive_course_dir(tmp_path)
+    manifest = _build(course_dir, tmp_path)
+    padrao_path = tmp_path / "s.pdf"
+    availability_path = _source_unavailable_yaml(
+        tmp_path, padrao_path, search_methods=("text", "rawdict")
+    )
+    report = assess_readiness(
+        manifest,
+        course_dir,
+        source_availability_path=availability_path,
+        corpus_root=tmp_path,
+    )
+    assert report.ready is False
+    assert report.source_limitations == ()
+    missing_standard = [b for b in report.blockers if b.kind == "missing_answer_standard"]
+    assert missing_standard[0].structural is True
+
+
+def test_source_unavailable_with_empty_image_evidence_still_blocks(tmp_path: Path):
+    # Same D59 lesson, narrower: search_methods claims images were
+    # checked, but the evidence field itself is empty ("not checked" must
+    # never look like "checked, found nothing").
+    course_dir = _unavailable_discursive_course_dir(tmp_path)
+    manifest = _build(course_dir, tmp_path)
+    padrao_path = tmp_path / "s.pdf"
+    availability_path = _source_unavailable_yaml(tmp_path, padrao_path, image_evidence="")
+    report = assess_readiness(
+        manifest,
+        course_dir,
+        source_availability_path=availability_path,
+        corpus_root=tmp_path,
+    )
+    assert report.ready is False
+
+
+def test_source_hash_mismatch_reopens_blocking(tmp_path: Path):
+    # PROMPT Section 18/19 - reversibility: the referenced document has
+    # since been replaced (a corrected/newly-supplied source with the
+    # same name) - the old waiver must never continue to silently apply.
+    course_dir = _unavailable_discursive_course_dir(tmp_path)
+    manifest = _build(course_dir, tmp_path)
+    padrao_path = tmp_path / "s.pdf"
+    availability_path = _source_unavailable_yaml(tmp_path, padrao_path)
+    # Mutate the real file on disk AFTER the record was written against
+    # its old hash - simulating a newly-supplied source.
+    padrao_path.write_bytes(b"a corrected padrao that now includes D09/D10")
+    report = assess_readiness(
+        manifest,
+        course_dir,
+        source_availability_path=availability_path,
+        corpus_root=tmp_path,
+    )
+    assert report.ready is False
+    assert report.source_limitations == ()
+    assert any(b.kind == "source_hash_mismatch" for b in report.blockers)
+    assert all(b.structural for b in report.blockers if b.kind == "source_hash_mismatch")
+
+
+def test_source_ambiguous_record_always_blocks_regardless_of_evidence(tmp_path: Path):
+    course_dir = _unavailable_discursive_course_dir(tmp_path)
+    manifest = _build(course_dir, tmp_path)
+    padrao_path = tmp_path / "s.pdf"
+    availability_path = _source_unavailable_yaml(
+        tmp_path, padrao_path, availability_status="source_ambiguous"
+    )
+    report = assess_readiness(
+        manifest,
+        course_dir,
+        source_availability_path=availability_path,
+        corpus_root=tmp_path,
+    )
+    assert report.ready is False
+    assert report.source_limitations == ()
+    assert any(b.kind == "source_ambiguous" for b in report.blockers)
+
+
+def test_corpus_root_omitted_grants_no_waiver_even_if_record_is_confirmed(tmp_path: Path):
+    course_dir = _unavailable_discursive_course_dir(tmp_path)
+    manifest = _build(course_dir, tmp_path)
+    padrao_path = tmp_path / "s.pdf"
+    availability_path = _source_unavailable_yaml(tmp_path, padrao_path)
+    report = assess_readiness(
+        manifest, course_dir, source_availability_path=availability_path, corpus_root=None
+    )
+    assert report.ready is False
+    assert report.source_limitations == ()
+
+
+def test_source_availability_path_omitted_leaves_readiness_unchanged(tmp_path: Path):
+    course_dir = _unavailable_discursive_course_dir(tmp_path)
+    manifest = _build(course_dir, tmp_path)
+    report = assess_readiness(manifest, course_dir)
+    assert report.ready is False
+    assert report.source_completeness == "complete"
+    assert report.source_limitations == ()
+
+
+def test_source_completeness_reports_complete_when_no_limitations(ready_course_dir, tmp_path):
+    manifest = _build(ready_course_dir, tmp_path)
+    report = assess_readiness(manifest, ready_course_dir)
+    assert report.source_completeness == "complete"

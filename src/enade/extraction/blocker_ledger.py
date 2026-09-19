@@ -117,6 +117,18 @@ class Blocker(BaseModel):
     #: Required, and must name another blocker's own id, when status is
     #: "superseded" - PROMPT Phase 2C section 3, rule 4.
     superseded_by: str | None = None
+    #: Cross-reference to a ``SourceAvailabilityRecord.source_availability_id``
+    #: (PROMPT Fase 3Z, Section 16/23) - set only when ``status ==
+    #: "source_unavailable"`` and a structured, machine-re-verifiable
+    #: evidence record exists in source-availability-<year>.yaml, rather
+    #: than only this entry's own free-text ``evidence`` string. Never
+    #: required (a "source_unavailable" blocker predating this field, or
+    #: one whose evidence was never promoted to a structured record,
+    #: keeps this ``None`` - it stays exactly as blocking/visible as
+    #: before), and never itself a readiness waiver - only
+    #: ``source_availability.is_confirmed_unavailable`` on the referenced
+    #: record decides that.
+    source_limitation_id: str | None = None
 
     @property
     def is_open(self) -> bool:

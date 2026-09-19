@@ -754,18 +754,32 @@ def assess_readiness_cmd(
         DEFAULT_QUESTIONS_DIR, help="directory of already-extracted question .md files"
     ),
     gold_dir: Path = typer.Option(DEFAULT_AUDIT_DIR, help="directory containing the gold manifest"),
+    corpus_root: Path = typer.Option(
+        DEFAULT_CORPUS_ROOT,
+        help="path to the cloned geacc/enade corpus - used only to re-hash a "
+        "source-availability record's own referenced document(s) (PROMPT Fase 3Z), "
+        "so a source_unavailable_confirmed waiver never survives a source swap",
+    ),
     ready_label: str = typer.Option(
         "READY_FOR_2011",
-        help="label printed when ready - override for a booklet whose readiness doesn't "
-        "mean 'ready to process 2011' (e.g. 2011 itself: READY_FOR_LEGACY_LAYOUT_TEST)",
+        help="label printed when ready with zero source limitations - override for a "
+        "booklet whose readiness doesn't mean 'ready to process 2011' (e.g. 2011 "
+        "itself: READY_FOR_LEGACY_LAYOUT_TEST)",
     ),
     not_ready_label: str = typer.Option("NOT_READY_FOR_2011", help="label printed when not ready"),
+    ready_with_source_limitations_label: str = typer.Option(
+        "READY_FOR_2011_WITH_SOURCE_LIMITATIONS",
+        help="label printed when ready but at least one confirmed, permanent source "
+        "limitation remains (PROMPT Fase 3Z) - never equivalent to full documental "
+        "completeness; see the 'Source limitations' section of the output",
+    ),
 ) -> None:
     """Readiness gate, separate from hash verification (PROMPT Phase 1C
     section 14): considers gold integrity, structural blockers, automatic
     and visual validation, asset integrity, answer linkage, and
     answer-standard coverage. Prints READY_FOR_2011/NOT_READY_FOR_2011 (or
-    the ``--ready-label``/``--not-ready-label`` override) and every
+    the ``--ready-label``/``--not-ready-label``/
+    ``--ready-with-source-limitations-label`` override) and every
     individual blocker - never a bare pass/fail count. Exits non-zero when
     not ready.
     """
@@ -780,14 +794,25 @@ def assess_readiness_cmd(
     course_dir = questions_dir / str(year) / naming.output_dir_name
     visual_audit_path = DEFAULT_AUDIT_DIR / f"visual-audit-{year}-{naming.file_slug}.json"
     blocker_ledger_path = DEFAULT_AUDIT_DIR / f"blocker-ledger-{year}.yaml"
+    source_availability_path = DEFAULT_AUDIT_DIR / f"source-availability-{year}.yaml"
     report = assess_readiness(
         manifest,
         course_dir,
         visual_audit_path=visual_audit_path,
         blocker_ledger_path=blocker_ledger_path if blocker_ledger_path.exists() else None,
+        source_availability_path=(
+            source_availability_path if source_availability_path.exists() else None
+        ),
+        corpus_root=corpus_root,
     )
 
-    typer.echo(f"assess-readiness: {ready_label if report.ready else not_ready_label}")
+    if report.ready and report.source_limitations:
+        label = ready_with_source_limitations_label
+    elif report.ready:
+        label = ready_label
+    else:
+        label = not_ready_label
+    typer.echo(f"assess-readiness: {label}")
     typer.echo(
         f"  {report.verified_count}/{report.total_questions} verified, "
         f"{report.needs_review_count} needs_review, gold maturity={report.gold_maturity}"
@@ -798,13 +823,29 @@ def assess_readiness_cmd(
             f"  visual audit: {cov.passed_count} passed, {cov.failed_count} failed, "
             f"{cov.not_performed_count} not_performed (fully_covered={cov.fully_covered})"
         )
-    if report.blockers:
-        typer.echo(f"  {len(report.blockers)} blocker(s):")
-        for b in report.blockers:
-            kind = "structural" if b.structural else "non-structural"
-            typer.echo(f"    - [{b.kind}, {kind}] {b.detail}")
-    else:
-        typer.echo("  no blockers")
+    typer.echo(f"  source completeness: {report.source_completeness}")
+
+    limitation_subject_ids = {r.subject_id for r in report.source_limitations}
+    actionable = [b for b in report.blockers if b.structural]
+    informational = [
+        b
+        for b in report.blockers
+        if not b.structural and not any(sid in b.detail for sid in limitation_subject_ids)
+    ]
+
+    typer.echo(f"  actionable blockers: {len(actionable)}")
+    for b in actionable:
+        typer.echo(f"    - [{b.kind}] {b.detail}")
+    typer.echo(f"  source limitations: {len(report.source_limitations)}")
+    for record in report.source_limitations:
+        typer.echo(
+            f"    - {record.source_availability_id} ({record.subject_id}, "
+            f"{record.artifact_type}): expected {record.expected_source} "
+            f"[{record.source_package_id}] - {record.impact}"
+        )
+    typer.echo(f"  informational findings: {len(informational)}")
+    for b in informational:
+        typer.echo(f"    - [{b.kind}] {b.detail}")
 
     if not report.ready:
         raise typer.Exit(code=1)

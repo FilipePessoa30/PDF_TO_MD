@@ -1270,15 +1270,57 @@ blockers:
     Formacao Geral discursivas D1/D2 - confirming this is not a shared,
     expected convention this project misunderstood, but a genuine
     document-specific absence in 2008-b's own b3_padrao.pdf.
+
+
+    RE-VERIFIED IN PHASE 3Z, never presuming Phase 3T's own text/rawdict-only
+    search remained sufficient (PROMPT Fase 3Z Section 9 - "nao repetir o
+    erro de D59": D59's own visual-only rubric was wrongly treated as absent
+    for three phases precisely because only a text search had ever been run
+    against it). This phase added the two checks Phase 3T's own evidence
+    never covered - page.get_images(full=True)/page.get_image_info(xrefs=True)
+    and page.get_drawings() - across all 6 pages, plus page.get_texttrace()
+    (confirms every text span is render-mode 0, normal visible fill text -
+    no hidden/invisible-mode text a plain get_text() could have missed
+    differently). Result: all 15 embedded images in the document are
+    individually attributed, by strict Y-position inside each marker-to-
+    marker window, to one of the 7 discursivas that are genuinely present
+    (20, 39, 40, 59, 60, 79, 80) or to the shared page-header chrome - zero
+    orphaned image, and critically, zero drawing of any kind on any page
+    (0 across all 6). A structured, machine-re-verifiable record of this
+    full evidence now lives in data/manifests/source-availability-2008.yaml
+    (source_availability_id sa-2008-d09-answer-standard), gated by
+    source_availability.is_confirmed_unavailable (never trusts the label
+    alone - requires review_status=reviewed, all 5 search methods present,
+    every evidence field non-empty, and the package's own hashes still
+    matching the file on disk). See docs/phase-3z-report.md.
   id: d09-answer-standard-absent-from-source
   question_id: enade-2008-computing-d09
-  regression_tests: []
-  resolution: null
+  regression_tests:
+  - tests/test_source_availability.py::test_is_confirmed_unavailable_true_for_a_fully_evidenced_record
+  - tests/test_source_availability.py::test_is_confirmed_unavailable_false_when_a_search_method_is_missing
+  - tests/test_source_availability.py::test_is_confirmed_unavailable_false_for_d59_shaped_evidence
+  - tests/test_readiness.py::test_confirmed_source_unavailable_question_not_verified_is_non_structural
+  - tests/test_readiness.py::test_confirmed_source_unavailable_missing_answer_standard_is_non_structural
+  resolution: >-
+    Not "resolved" (nothing was extracted; status remains source_unavailable,
+    permanently - PROMPT Fase 3Z explicitly forbids ever promoting this to
+    resolved). Decision recorded this phase (Fase 3Z): with the structured,
+    fully-evidenced source-availability record above passing
+    is_confirmed_unavailable, D09's own question_not_verified and
+    missing_answer_standard readiness findings are now surfaced as
+    non-structural (visible, never removed from the report, never counted
+    toward the READY/NOT_READY verdict) - see assess-readiness's own
+    "Source limitations" section. Reopens automatically (reverts to
+    structural/blocking) the moment source_availability.
+    verify_source_hashes_match detects that 2008/b3_padrao.pdf's own
+    sha256 has changed (a corrected or newly-supplied document), per
+    PROMPT Section 18.
   source_pages:
   - 1
+  source_limitation_id: sa-2008-d09-answer-standard
   status: source_unavailable
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets: []
   category: answer-standard-absent-from-source
   cause: >-
@@ -1308,15 +1350,36 @@ blockers:
     never 9 or 10, via page.get_text("text") regex search, page.get_text("rawdict")
     line-by-line substring search, and direct visual inspection of the full text
     dump). result: absent_from_supplied_source.
+
+
+    RE-VERIFIED IN PHASE 3Z, identical methodology and result to d09's own
+    (same document, same 6-page image/drawing/texttrace sweep - see that
+    entry's own evidence field for the full detail). A structured record
+    lives in data/manifests/source-availability-2008.yaml
+    (source_availability_id sa-2008-d10-answer-standard). See
+    docs/phase-3z-report.md.
   id: d10-answer-standard-absent-from-source
   question_id: enade-2008-computing-d10
-  regression_tests: []
-  resolution: null
+  regression_tests:
+  - tests/test_source_availability.py::test_is_confirmed_unavailable_true_for_a_fully_evidenced_record
+  - tests/test_source_availability.py::test_is_confirmed_unavailable_false_when_a_search_method_is_missing
+  - tests/test_source_availability.py::test_is_confirmed_unavailable_false_for_d59_shaped_evidence
+  - tests/test_readiness.py::test_confirmed_source_unavailable_question_not_verified_is_non_structural
+  - tests/test_readiness.py::test_confirmed_source_unavailable_missing_answer_standard_is_non_structural
+  resolution: >-
+    Not "resolved" - status remains source_unavailable, permanently.
+    Identical decision to d09-answer-standard-absent-from-source (see that
+    entry's own resolution field): question_not_verified and
+    missing_answer_standard readiness findings for D10 are now surfaced
+    as non-structural, never removed from the report, given the fully-
+    evidenced source-availability record. Reopens automatically if
+    2008/b3_padrao.pdf's own hash ever changes.
   source_pages:
   - 1
+  source_limitation_id: sa-2008-d10-answer-standard
   status: source_unavailable
   superseded_by: null
-  visual_validation: failed
+  visual_validation: passed
 - affected_assets: []
   category: table-reading-order-scramble
   cause: 'FURTHER IMPROVED IN PHASE 3D on top of Phase 3C''s own gains, root cause of the one residual defect
