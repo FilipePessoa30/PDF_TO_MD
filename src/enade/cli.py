@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import importlib.metadata
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -25,6 +26,7 @@ from enade.extraction.content_assignment import (
     ContentAssignment,
     detect_duplicate_assignments,
     detect_missing_assignments,
+    find_orphan_assets,
     generate_content_assignment_ledger,
     validate_ledger_against_corpus,
 )
@@ -781,12 +783,14 @@ def generate_content_assignment_cmd(
     missing = detect_missing_assignments(assignments)
     course_dir = questions_dir / str(year) / loc.output_dir_name
     corpus_issues = validate_ledger_against_corpus(payload, course_dir)
+    orphan_issues = find_orphan_assets(payload, course_dir)
 
     typer.echo(f"generate-content-assignment: {payload['assignment_count']} record(s) generated")
     typer.echo(
         f"  duplicate assignment finding(s): {len(duplicates)}   "
         f"missing assignment finding(s): {len(missing)}   "
-        f"corpus validation issue(s): {len(corpus_issues)}"
+        f"corpus validation issue(s): {len(corpus_issues)}   "
+        f"orphan asset(s): {len(orphan_issues)}"
     )
     for d in duplicates:
         typer.echo(f"    - [duplicate] {d.reason}")
@@ -794,14 +798,12 @@ def generate_content_assignment_cmd(
         typer.echo(f"    - [missing:{m.kind}] {m.question_id}: {m.reason}")
     for c in corpus_issues:
         typer.echo(f"    - [{c.kind}] {c.detail}")
+    for o in orphan_issues:
+        typer.echo(f"    - [{o.kind}] {o.detail}")
 
-    if duplicates or missing or corpus_issues:
+    if duplicates or missing or corpus_issues or orphan_issues:
         typer.echo("generate-content-assignment: FAILED (see finding(s) above) - nothing written")
         raise typer.Exit(code=1)
-
-    if check:
-        typer.echo("generate-content-assignment: --check OK (nothing written)")
-        return
 
     # PROMPT Fase 4B: the pre-existing 2008-b ledger has always lived at
     # content-assignment-2008-b.json (Fase 3J's own naming - the source
@@ -815,10 +817,41 @@ def generate_content_assignment_cmd(
         else loc.file_slug
     )
     output_path = output_dir / f"content-assignment-{year}-{slug}.json"
+    candidate_text = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
+
+    if check:
+        # PROMPT Fase 4C section 18: a --check that only re-validates the
+        # freshly generated candidate's own internal consistency (as this
+        # command did before this fix) can never catch the one failure
+        # mode this whole ledger exists to guard against - the published
+        # file silently drifting out of sync with what the pipeline would
+        # produce today (exactly how content-assignment-2008-b.json itself
+        # went stale for three phases before Fase 4B). Comparing against
+        # the currently-published file closes that gap.
+        if output_path.is_file() and output_path.read_text(encoding="utf-8") != candidate_text:
+            typer.echo(
+                f"generate-content-assignment: --check FAILED - {output_path} is stale "
+                "(a fresh regeneration differs from the published file; run --write)"
+            )
+            raise typer.Exit(code=1)
+        typer.echo("generate-content-assignment: --check OK (nothing written)")
+        return
+
+    # Atomic write (PROMPT Fase 4C section 18): a crash or interruption
+    # mid-write must never leave a truncated/partial JSON file at
+    # output_path, which every downstream gate (including the active
+    # freeze) reads as ground truth. Writing to a sibling temp file first
+    # and renaming into place is atomic on both POSIX and Windows for a
+    # same-directory, same-filesystem rename - the destination file is
+    # either the old complete content or the new complete content, never
+    # a partial write.
     output_dir.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(
-        json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-    )
+    tmp_path = output_path.with_name(f"{output_path.name}.tmp{os.getpid()}")
+    try:
+        tmp_path.write_text(candidate_text, encoding="utf-8")
+        os.replace(tmp_path, output_path)
+    finally:
+        tmp_path.unlink(missing_ok=True)
     typer.echo(f"generate-content-assignment: wrote {output_path}")
 
 

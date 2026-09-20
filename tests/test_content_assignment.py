@@ -8,10 +8,13 @@ copied PDF coordinates.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from enade.extraction.content_assignment import (
     ContentAssignment,
     detect_duplicate_assignments,
     detect_missing_assignments,
+    find_orphan_assets,
 )
 
 _BASE = dict(
@@ -276,3 +279,69 @@ def test_a_fix_that_removes_a_destination_without_moving_it_elsewhere_is_caught(
     # it is the honest "left unresolved" outcome the phase requires
     # (Section 19: "se a geometria permanecer ambígua, mantenha blocker").
     assert detect_missing_assignments(records) == []
+
+
+# --- orphan-asset gate (PROMPT Fase 4C section 22/23) ---------------------
+#
+# validate_ledger_against_corpus only ever checks ledger -> disk (every
+# asset record the ledger claims must exist for real). It has no way to
+# notice a real, published asset file that the ledger's own generator
+# silently never produced a record for - the reverse direction. A real
+# figure the pipeline created but the ledger is blind to would pass every
+# existing gate. find_orphan_assets closes that gap; these fixtures use a
+# real (tmp_path) filesystem, since the whole point is a disk-vs-ledger
+# comparison a synthetic-only fixture cannot exercise.
+
+
+def _write_question(tmp_path: Path, question_id: str, *asset_names: str) -> Path:
+    qdir = tmp_path / question_id
+    qdir.mkdir(parents=True, exist_ok=True)
+    for name in asset_names:
+        (qdir / name).write_bytes(b"\x89PNG\r\n")
+    return qdir
+
+
+def test_asset_on_disk_with_no_ledger_record_is_an_orphan(tmp_path: Path):
+    _write_question(tmp_path, "q1", "figure-01.png")
+    payload = {"assignments": []}  # the generator produced zero asset records for q1
+    issues = find_orphan_assets(payload, tmp_path)
+    assert len(issues) == 1
+    assert issues[0].kind == "asset_not_in_ledger"
+    assert issues[0].question_id == "q1"
+
+
+def test_asset_on_disk_with_a_matching_ledger_record_is_not_an_orphan(tmp_path: Path):
+    _write_question(tmp_path, "q1", "figure-01.png")
+    payload = {
+        "assignments": [
+            {"question_id": "q1", "source_type": "asset", "representation": "figure-01.png"}
+        ]
+    }
+    assert find_orphan_assets(payload, tmp_path) == []
+
+
+def test_answer_standard_assets_are_never_flagged_as_orphans(tmp_path: Path):
+    # D09/D10-style: an answer-standard asset the ledger never tracks by
+    # design (PROMPT Fase 4B section 6/N) must never be flagged here -
+    # this gate is scoped to the same asset universe the ledger itself
+    # claims to cover, never a silent scope expansion.
+    qdir = tmp_path / "d09" / "answer-standard"
+    qdir.mkdir(parents=True)
+    (qdir / "padrao-01.png").write_bytes(b"\x89PNG\r\n")
+    payload = {"assignments": []}
+    assert find_orphan_assets(payload, tmp_path) == []
+
+
+def test_multiple_orphans_across_questions_are_all_reported(tmp_path: Path):
+    _write_question(tmp_path, "q1", "figure-01.png", "figure-02.png")
+    _write_question(tmp_path, "q2", "figure-01.png")
+    payload = {
+        "assignments": [
+            {"question_id": "q1", "source_type": "asset", "representation": "figure-01.png"}
+        ]
+    }
+    issues = find_orphan_assets(payload, tmp_path)
+    assert {(i.question_id, i.kind) for i in issues} == {
+        ("q1", "asset_not_in_ledger"),
+        ("q2", "asset_not_in_ledger"),
+    }

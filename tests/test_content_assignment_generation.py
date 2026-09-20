@@ -9,17 +9,20 @@ failed, when that corpus is not present.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import pytest
+from typer.testing import CliRunner
 
-from enade.cli import _resolve_booklet_location
+from enade.cli import _resolve_booklet_location, app
 from enade.extraction.answer_key import parse_answer_key, parse_flat_item_gabarito
 from enade.extraction.content_assignment import (
     ContentAssignment,
     _naive_alternative_text,
     detect_duplicate_assignments,
     detect_missing_assignments,
+    find_orphan_assets,
     generate_content_assignment_ledger,
     validate_ledger_against_corpus,
 )
@@ -169,3 +172,120 @@ def test_ambiguous_records_never_claim_assigned_status(generated_2008b_payload):
     for r in generated_2008b_payload["assignments"]:
         if r["confidence"] == 0.0:
             assert r["status"] == "ambiguous"
+
+
+def test_zero_orphan_assets_against_the_published_2008b_corpus(generated_2008b_payload):
+    course_dir = QUESTIONS_DIR / "2008" / "all-computing"
+    assert find_orphan_assets(generated_2008b_payload, course_dir) == []
+
+
+# --- assignment_id stability (PROMPT Fase 4C section 8/9) ------------------
+#
+# Uniqueness alone (already covered by
+# test_generation_produces_ordered_deterministic_assignment_ids) is not
+# enough: an assignment_id built from a raw list position (an enumerate()
+# index over that question's own lines/figure regions) is technically
+# unique today, but churns for every record after it the moment an
+# unrelated line or asset is added/removed earlier in the very same
+# question - real audit-trail/freeze noise with no change in the record's
+# own content. Every assignment_id must instead be derivable from that
+# one record's own stable geometry (mirroring source_element_id, which
+# already had to solve this exact problem for the Q24/D10/D40/D59 cases).
+_POSITION_ONLY_ID = re.compile(r"^[^:]+(:asset)?:\d+$")
+
+
+def test_assignment_id_is_never_derived_from_raw_list_position(generated_2008b_payload):
+    offenders = [
+        r["assignment_id"]
+        for r in generated_2008b_payload["assignments"]
+        if _POSITION_ONLY_ID.match(r["assignment_id"])
+    ]
+    assert offenders == [], (
+        f"{len(offenders)} assignment_id(s) derived from raw list position, not stable "
+        f"geometry (would churn on any unrelated upstream change): {offenders[:5]}"
+    )
+
+
+def test_assignment_id_matches_source_element_id_for_every_line_and_asset_record(
+    generated_2008b_payload,
+):
+    # The simplest, strongest form of the stability requirement: for line
+    # and asset records, assignment_id and source_element_id should be
+    # exactly the same stable, geometry-derived string - two different
+    # identity schemes for the same record is itself a source of drift
+    # risk (as the discursive branch's own coarser x0/y0-only
+    # assignment_id, versus its full-bbox source_element_id, already
+    # demonstrated as a latent collision class before this fix).
+    for r in generated_2008b_payload["assignments"]:
+        if r["source_type"] in ("line", "asset", "annotation"):
+            assert r["assignment_id"] == r["source_element_id"], r["assignment_id"]
+
+
+# --- CLI --check staleness / --write atomicity (PROMPT Fase 4C section 18) -
+
+runner = CliRunner()
+_CLI_ARGS = ["--year", "2008", "--course", "all-computing"]
+
+
+def test_check_fails_when_the_output_dir_holds_a_stale_ledger(tmp_path: Path):
+    # Before this fix, --check only ever re-validated a freshly generated
+    # candidate's own internal consistency - it never compared that
+    # candidate against what is actually published, so a silently stale
+    # ledger (the exact failure this whole phase exists to prevent) would
+    # have been reported "OK" here.
+    stale_path = tmp_path / "content-assignment-2008-b.json"
+    stale_path.write_text(
+        json.dumps(
+            {"schema_version": 1, "generated_by": "stale", "assignment_count": 0, "assignments": []}
+        ),
+        encoding="utf-8",
+    )
+    result = runner.invoke(
+        app, ["generate-content-assignment", *_CLI_ARGS, "--output-dir", str(tmp_path), "--check"]
+    )
+    assert result.exit_code != 0
+    assert "stale" in result.stdout.lower()
+    # --check must never write, even when it fails.
+    assert stale_path.read_text(encoding="utf-8").startswith(
+        '{"schema_version": 1, "generated_by": "stale"'
+    )
+
+
+def test_check_passes_when_the_output_dir_already_holds_the_fresh_candidate(tmp_path: Path):
+    write_result = runner.invoke(
+        app, ["generate-content-assignment", *_CLI_ARGS, "--output-dir", str(tmp_path), "--write"]
+    )
+    assert write_result.exit_code == 0, write_result.stdout
+    check_result = runner.invoke(
+        app, ["generate-content-assignment", *_CLI_ARGS, "--output-dir", str(tmp_path), "--check"]
+    )
+    assert check_result.exit_code == 0, check_result.stdout
+    assert "OK" in check_result.stdout
+
+
+def test_check_still_passes_when_no_output_file_exists_yet(tmp_path: Path):
+    # No ledger has ever been published for this output_dir - --check must
+    # validate the candidate's own consistency without treating "nothing
+    # to compare against" as staleness.
+    result = runner.invoke(
+        app, ["generate-content-assignment", *_CLI_ARGS, "--output-dir", str(tmp_path), "--check"]
+    )
+    assert result.exit_code == 0, result.stdout
+    assert list(tmp_path.glob("*")) == []  # --check never creates the output dir either
+
+
+def test_write_is_atomic_and_never_leaves_a_partial_or_temp_file(tmp_path: Path, monkeypatch):
+    import enade.cli as cli_module
+
+    output_path = tmp_path / "content-assignment-2008-b.json"
+
+    def failing_replace(*_args, **_kwargs):
+        raise OSError("simulated crash between the temp write and the rename")
+
+    monkeypatch.setattr(cli_module.os, "replace", failing_replace)
+    result = runner.invoke(
+        app, ["generate-content-assignment", *_CLI_ARGS, "--output-dir", str(tmp_path), "--write"]
+    )
+    assert result.exit_code != 0
+    assert not output_path.exists()  # the destination was never touched
+    assert list(tmp_path.glob("*.tmp*")) == []  # the temp file was cleaned up, not left behind

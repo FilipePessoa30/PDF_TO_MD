@@ -446,12 +446,21 @@ def generate_content_assignment_ledger(
                         else:
                             destination, owner = "alternative_text", "alternative"
                             status, confidence, extra_reason = "assigned", 1.0, ""
+                    line_id = _line_id(question_id, ln.page_number, ln.x0, ln.y0, ln.x1, ln.y1)
                     records.append(
                         ContentAssignment(
-                            assignment_id=f"{question_id}:{i}",
-                            source_element_id=_line_id(
-                                question_id, ln.page_number, ln.x0, ln.y0, ln.x1, ln.y1
-                            ),
+                            # PROMPT Fase 4C section 8/9: never the raw
+                            # enumerate() index `i` - that shifts every
+                            # later record's own id whenever an unrelated
+                            # line earlier in this same question is
+                            # added/removed, even though this record's own
+                            # content never changed. Reusing the already
+                            # stable, geometry-derived source_element_id
+                            # here too (as every other branch already
+                            # does) makes assignment_id position-independent
+                            # everywhere, not just in this one branch.
+                            assignment_id=line_id,
+                            source_element_id=line_id,
                             source_type="line",
                             source_page=ln.page_number,
                             source_bbox=bbox,
@@ -514,18 +523,21 @@ def generate_content_assignment_ledger(
             for ln in content_lines:
                 is_annotation = ln.text in annotated_texts
                 survives = is_annotation or _survives_in_statement(ln)
+                # Two-column discursive layouts (a bullet/label glyph column
+                # and its own text column, e.g. D10's "-" bullets or D40's
+                # truth-table cells) legitimately place distinct lines at
+                # the same page/x0/y0 with a different x1/y1 (the same
+                # identity-collision class Q24 demonstrated) - using the
+                # full-bbox source_element_id for both fields (PROMPT Fase
+                # 4C section 8/9) closes this residual risk, rather than
+                # the narrower x0/y0-only id this branch used before.
+                discursive_line_id = _line_id(
+                    question_id, ln.page_number, ln.x0, ln.y0, ln.x1, ln.y1
+                )
                 records.append(
                     ContentAssignment(
-                        # Two-column discursive layouts (a bullet/label glyph
-                        # column and its own text column, e.g. D10's "-" bullets
-                        # or D40's truth-table cells) legitimately place distinct
-                        # lines at the same page/y0 - the same identity-collision
-                        # class fixed for source_element_id (see _line_id), now
-                        # fixed here too by including x0.
-                        assignment_id=f"{question_id}:p{ln.page_number}:{round(ln.x0, 1)}:{round(ln.y0, 1)}",
-                        source_element_id=_line_id(
-                            question_id, ln.page_number, ln.x0, ln.y0, ln.x1, ln.y1
-                        ),
+                        assignment_id=discursive_line_id,
+                        source_element_id=discursive_line_id,
                         source_type="annotation" if is_annotation else "line",
                         source_page=ln.page_number,
                         source_bbox=(ln.x0, ln.y0, ln.x1, ln.y1),
@@ -556,12 +568,18 @@ def generate_content_assignment_ledger(
 
         for region_index, region in enumerate(extracted.figure_regions):
             x0, y0, x1, y1 = region.bbox
+            # PROMPT Fase 4C section 8/9: never region_index (a raw
+            # enumerate() position - adding/removing an earlier figure
+            # region in this same question would silently renumber every
+            # later one, even though its own geometry never changed). The
+            # full bbox is already unique per region within a question (no
+            # two real figures occupy the same rectangle); reused for both
+            # fields, exactly like the line/annotation branches above.
+            asset_id = f"{question_id}:asset:p{region.page_number}:{round(x0, 1)}:{round(y0, 1)}:{round(x1, 1)}:{round(y1, 1)}"
             records.append(
                 ContentAssignment(
-                    assignment_id=f"{question_id}:asset:{region_index}",
-                    source_element_id=(
-                        f"{question_id}:asset:p{region.page_number}:{round(x0, 1)}:{round(y0, 1)}"
-                    ),
+                    assignment_id=asset_id,
+                    source_element_id=asset_id,
                     source_type="asset",
                     source_page=region.page_number,
                     source_bbox=(x0, y0, x1, y1),
@@ -642,6 +660,7 @@ class AssetAssignmentIssue:
         "asset_hash_mismatch",
         "asset_not_referenced_in_markdown",
         "owner_question_not_published",
+        "asset_not_in_ledger",
     ]
     question_id: str
     detail: str
@@ -700,6 +719,54 @@ def validate_ledger_against_corpus(
                     detail=(
                         f"{record['assignment_id']}: {question_id}/{asset_name} not referenced "
                         f"in {question_id}.md"
+                    ),
+                )
+            )
+    return issues
+
+
+def find_orphan_assets(payload: dict, published_questions_dir: Path) -> list[AssetAssignmentIssue]:
+    """The complementary direction to ``validate_ledger_against_corpus``
+    (PROMPT Fase 4C section 22/23): that function only ever checks
+    ledger -> disk (every asset record the ledger claims must exist for
+    real); it has no way to notice a real, published asset file that the
+    ledger's own generator silently produced no record for at all. A gap
+    in the generator's own coverage (a figure region some future
+    mechanism attaches without this generator's own instrumentation
+    knowing about it) would pass every existing gate undetected -
+    exactly the "lacuna escondida por um snapshot que passa" this check
+    exists to close.
+
+    Scoped to the same asset universe the ledger itself already claims to
+    cover: only direct ``<question_id>/<file>.png`` question-level
+    assets, never ``answer-standard/`` subdirectory assets (out of scope
+    for this ledger since Fase 3J/4B - see the module's own D59 case).
+    Never repairs - reports only, same discipline as every other gate
+    here.
+    """
+    ledger_assets: set[tuple[str, str]] = {
+        (record["question_id"], record["representation"])
+        for record in payload["assignments"]
+        if record["source_type"] == "asset"
+    }
+
+    issues: list[AssetAssignmentIssue] = []
+    if not published_questions_dir.is_dir():
+        return issues
+    for question_dir in sorted(published_questions_dir.iterdir()):
+        if not question_dir.is_dir():
+            continue
+        question_id = question_dir.name
+        for asset_path in sorted(question_dir.glob("*.png")):
+            if (question_id, asset_path.name) in ledger_assets:
+                continue
+            issues.append(
+                AssetAssignmentIssue(
+                    kind="asset_not_in_ledger",
+                    question_id=question_id,
+                    detail=(
+                        f"{question_id}/{asset_path.name} exists on disk but has no "
+                        "corresponding asset record in the ledger"
                     ),
                 )
             )
