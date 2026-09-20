@@ -345,3 +345,24 @@ def test_multiple_orphans_across_questions_are_all_reported(tmp_path: Path):
         ("q1", "asset_not_in_ledger"),
         ("q2", "asset_not_in_ledger"),
     }
+
+
+def test_asset_claimed_by_the_wrong_question_is_still_an_orphan_for_its_real_owner(
+    tmp_path: Path,
+):
+    # PROMPT Fase 4D section 13: "asset pertencente a questao errada" - a
+    # record that claims (q2, figure-01.png) never satisfies the real,
+    # on-disk file at q1/figure-01.png. The key is (question_id,
+    # representation) together, never representation alone - a record for
+    # the wrong owner must never silently "cover" a different question's
+    # real file just because the filename matches.
+    _write_question(tmp_path, "q1", "figure-01.png")
+    payload = {
+        "assignments": [
+            {"question_id": "q2", "source_type": "asset", "representation": "figure-01.png"}
+        ]
+    }
+    issues = find_orphan_assets(payload, tmp_path)
+    assert len(issues) == 1
+    assert issues[0].question_id == "q1"
+    assert issues[0].kind == "asset_not_in_ledger"

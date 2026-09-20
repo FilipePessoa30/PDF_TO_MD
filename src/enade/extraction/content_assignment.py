@@ -89,6 +89,20 @@ Destination = Literal[
     "blocked",
 ]
 
+#: PROMPT Fase 4D (finding F6): distinguishes a record that stands on its
+#: own (``"primary"`` - a figure region, a line, an annotation - the
+#: default for every source type this ledger already tracked before this
+#: phase) from one that is a secondary, derived view of a semantic unit
+#: some *other* record(s) already represent. Only ``"primary"`` and
+#: ``"visual_fallback"`` are ever produced today (the mandatory table
+#: crop next to its own structured GFM rendering,
+#: ``to_question.render_statement_markdown``'s own docstring, PROMPT
+#: Phase 1C section 5.2) - ``"derived_representation"``/``"shared"`` are
+#: declared for the same reason ``SourceType`` declares values this phase
+#: never produces: so the schema does not need to change shape again the
+#: next time a real, evidenced case of one of them appears.
+RepresentationRole = Literal["primary", "visual_fallback", "derived_representation", "shared"]
+
 
 @dataclass(frozen=True)
 class ContentAssignment:
@@ -124,6 +138,11 @@ class ContentAssignment:
     #: content_assignment.py's own module docstring on not fabricating
     #: unevidenced capability).
     duplication_mode: str | None = None
+    #: PROMPT Fase 4D (finding F6): "primary" for every record kind this
+    #: ledger already produced before this phase (backward compatible -
+    #: never changes the meaning of an existing record). Only a table's
+    #: own mandatory visual-fallback asset is ever "visual_fallback" today.
+    representation_role: RepresentationRole = "primary"
 
 
 @dataclass(frozen=True)
@@ -595,6 +614,54 @@ def generate_content_assignment_ledger(
                 )
             )
 
+        # PROMPT Fase 4D (finding F6): every DetectedTable gets a
+        # mandatory visual-fallback crop published right next to its own
+        # structured GFM rendering (pipeline.py's own "Mandatory visual
+        # fallback for every detected table" comment, PROMPT Phase 1C
+        # section 5.2 - rendered unconditionally, never gated on whether
+        # the structured reconstruction looks trustworthy). This asset is
+        # real, always published, and was never enumerated here before -
+        # only extracted.figure_regions was. Its own table.bbox is the
+        # same stable geometry pipeline.py itself already uses to render
+        # both the crop and (via consumed_lines) the structured rows, so
+        # reusing it here never risks colliding with a figure_region's
+        # own identity (different source_type prefix) or with another
+        # table's (distinct bbox, already proven unique the same way
+        # figure regions are).
+        for table_index, table in enumerate(extracted.tables):
+            tx0, ty0, tx1, ty1 = table.bbox
+            table_asset_id = (
+                f"{question_id}:table_asset:p{table.page_number}:"
+                f"{round(tx0, 1)}:{round(ty0, 1)}:{round(tx1, 1)}:{round(ty1, 1)}"
+            )
+            records.append(
+                ContentAssignment(
+                    assignment_id=table_asset_id,
+                    source_element_id=table_asset_id,
+                    source_type="asset",
+                    source_page=table.page_number,
+                    source_bbox=(tx0, ty0, tx1, ty1),
+                    canonical_owner="question",
+                    # Traces back to which table (by structural index into
+                    # extracted.tables) this crop derives from - never a
+                    # bare position with no semantic meaning attached.
+                    anchor=f"table:{table_index}",
+                    publication_destination="question_asset",
+                    representation=f"table-{table_index + 1:02d}.png",
+                    reason=(
+                        "mandatory visual-fallback crop of a structurally reconstructed table "
+                        "(PROMPT Phase 1C section 5.2) - a derived, secondary view of the same "
+                        "table already represented by its own consumed_lines, never independent "
+                        "content of its own"
+                    ),
+                    evidence="tables.DetectedTable + to_question.render_statement_markdown",
+                    confidence=1.0,
+                    status="assigned",
+                    question_id=question_id,
+                    representation_role="visual_fallback",
+                )
+            )
+
         return extracted
 
     assembler_mod.assemble_question = _record_question  # type: ignore[assignment]
@@ -647,6 +714,7 @@ def generate_content_assignment_ledger(
                 "confidence": r.confidence,
                 "status": r.status,
                 "question_id": r.question_id,
+                "representation_role": r.representation_role,
             }
             for r in sorted(records, key=lambda r: r.assignment_id)
         ],
