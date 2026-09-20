@@ -9,6 +9,7 @@ enade validate-schema     - validate fixtures against the data contracts
 from __future__ import annotations
 
 import importlib.metadata
+import json
 import shutil
 import subprocess
 import sys
@@ -20,6 +21,13 @@ import typer
 from enade import __version__
 from enade.extraction.answer_key import parse_answer_key, parse_flat_item_gabarito
 from enade.extraction.audit import build_audit_row, write_audit_csv, write_audit_json
+from enade.extraction.content_assignment import (
+    ContentAssignment,
+    detect_duplicate_assignments,
+    detect_missing_assignments,
+    generate_content_assignment_ledger,
+    validate_ledger_against_corpus,
+)
 from enade.extraction.exam_profile import (
     _RANGE_PATTERNS_2008_B,
     ExamStructureProfile,
@@ -700,6 +708,118 @@ def build_gold_cmd(
     gold_path = gold_dir / f"gold-{year}-{loc.file_slug}.json"
     write_gold_manifest(manifest, gold_path)
     typer.echo(f"Wrote {gold_path}")
+
+
+@app.command(name="generate-content-assignment")
+def generate_content_assignment_cmd(
+    year: int = typer.Option(..., help="exam year, e.g. 2008"),
+    course: str = typer.Option(..., help="course code, e.g. all-computing"),
+    corpus_root: Path = typer.Option(
+        DEFAULT_CORPUS_ROOT, help="path to the cloned geacc/enade corpus"
+    ),
+    questions_dir: Path = typer.Option(
+        DEFAULT_QUESTIONS_DIR,
+        help="directory of already-published question .md files, "
+        "used to validate asset/owner references (PROMPT Fase 4B section 16)",
+    ),
+    output_dir: Path = typer.Option(
+        DEFAULT_AUDIT_DIR, help="directory for the content-assignment-<year>-<letter>.json ledger"
+    ),
+    check: bool = typer.Option(
+        False, "--check", help="generate and validate a candidate, but never write it to disk"
+    ),
+    write: bool = typer.Option(
+        False, "--write", help="generate, validate, and write the candidate to output_dir"
+    ),
+) -> None:
+    """Regenerate the content-assignment ledger (PROMPT Fase 3J, restored
+    and generalized Fase 4B): a per-line/asset audit record of where each
+    published question's own content came from and where it was
+    published - never consumed by the live extraction pipeline, purely a
+    post-publication audit artifact. ``--check`` and ``--write`` are
+    mutually exclusive; exactly one must be given. ``--check`` never
+    modifies any file; ``--write`` only ever writes the one ledger file
+    this command owns - the published corpus itself is read-only input.
+    """
+    if check == write:
+        typer.echo("exactly one of --check or --write must be given")
+        raise typer.Exit(code=1)
+
+    loc = _resolve_booklet_location(year, course, corpus_root)
+    visual_audit_path = DEFAULT_AUDIT_DIR / f"visual-audit-{year}-{loc.file_slug}.json"
+    visual_audit = load_visual_audit(visual_audit_path)
+    table_cells_verified_ids = load_table_cell_verified_question_ids(visual_audit_path)
+    layout_overrides = load_layout_overrides(DEFAULT_AUDIT_DIR / "layout-overrides.yaml")
+
+    verification_page = 1
+    verification_patterns = None
+    if loc.structure_profile is not None and loc.structure_profile.year == 2008:
+        verification_page = 11
+        verification_patterns = _RANGE_PATTERNS_2008_B
+
+    payload = generate_content_assignment_ledger(
+        prova_path=loc.prova_path,
+        gabarito_path=loc.gabarito_path,
+        padrao_path=loc.padrao_path,
+        corpus_root=corpus_root,
+        exam_year=year,
+        exam_id=loc.exam_id,
+        questions_output_dir=DEFAULT_QUESTIONS_DIR,
+        course=None if loc.is_unified else loc.course_code,
+        structure_profile=loc.structure_profile,
+        structure_verification_page=verification_page,
+        structure_verification_patterns=verification_patterns,
+        output_dir_name=loc.course_code.value if loc.is_unified else None,
+        answer_key_parser=parse_flat_item_gabarito if loc.is_unified else parse_answer_key,
+        layout_overrides=layout_overrides,
+        visual_audit=visual_audit,
+        table_cells_verified_ids=table_cells_verified_ids,
+    )
+
+    assignments = [ContentAssignment(**record) for record in payload["assignments"]]
+    duplicates = detect_duplicate_assignments(assignments)
+    missing = detect_missing_assignments(assignments)
+    course_dir = questions_dir / str(year) / loc.output_dir_name
+    corpus_issues = validate_ledger_against_corpus(payload, course_dir)
+
+    typer.echo(f"generate-content-assignment: {payload['assignment_count']} record(s) generated")
+    typer.echo(
+        f"  duplicate assignment finding(s): {len(duplicates)}   "
+        f"missing assignment finding(s): {len(missing)}   "
+        f"corpus validation issue(s): {len(corpus_issues)}"
+    )
+    for d in duplicates:
+        typer.echo(f"    - [duplicate] {d.reason}")
+    for m in missing:
+        typer.echo(f"    - [missing:{m.kind}] {m.question_id}: {m.reason}")
+    for c in corpus_issues:
+        typer.echo(f"    - [{c.kind}] {c.detail}")
+
+    if duplicates or missing or corpus_issues:
+        typer.echo("generate-content-assignment: FAILED (see finding(s) above) - nothing written")
+        raise typer.Exit(code=1)
+
+    if check:
+        typer.echo("generate-content-assignment: --check OK (nothing written)")
+        return
+
+    # PROMPT Fase 4B: the pre-existing 2008-b ledger has always lived at
+    # content-assignment-2008-b.json (Fase 3J's own naming - the source
+    # booklet letter, e.g. "b" for b1_prova.pdf, never the file_slug
+    # "computing" every other 2008-b manifest uses) - preserved exactly so
+    # this command *updates* that one known file rather than orphaning it
+    # behind a second, differently-named ledger.
+    slug = (
+        loc.structure_profile.source_letter
+        if loc.structure_profile is not None and loc.structure_profile.source_letter
+        else loc.file_slug
+    )
+    output_path = output_dir / f"content-assignment-{year}-{slug}.json"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    typer.echo(f"generate-content-assignment: wrote {output_path}")
 
 
 @app.command(name="verify-gold")
