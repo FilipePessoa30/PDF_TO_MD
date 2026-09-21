@@ -137,6 +137,38 @@ def test_table_fallback_asset_id_is_geometry_derived_never_positional(generated_
     assert len(parts) >= 4
 
 
+def test_table_primary_lines_carry_a_reciprocal_table_anchor(generated_2011_payload):
+    # PROMPT Fase 4E section 5: "Este fallback representa qual unidade
+    # primaria?" is answerable from the fallback's own anchor
+    # (table:<index>) - but the REVERSE query ("quais registros primarios
+    # pertencem a esta tabela?") must also be answerable directly from the
+    # published ledger, never only by re-deriving tabled_lines yourself.
+    # Confirmed empirically before this fix: Q22's own header-letter lines
+    # ("A","B","C","D","S" - its real, structured, table-consumed content)
+    # carried the generic anchor="statement", identical to every other
+    # unrelated statement line, with no way to tell they belong to
+    # table:0 specifically.
+    fallback = _record_for_target(generated_2011_payload)
+    table_anchor = fallback["anchor"]
+    assert table_anchor.startswith("table:")
+    primary_table_lines = [
+        r
+        for r in generated_2011_payload["assignments"]
+        if r["question_id"] == TARGET_QUESTION
+        and r["source_type"] == "line"
+        and r["representation_role"] == "primary"
+        and r["anchor"] == table_anchor
+    ]
+    assert len(primary_table_lines) > 0, (
+        "no primary line record references the same table anchor as its own fallback - "
+        "the primary <-> derived relationship is not demonstrable from the ledger alone"
+    )
+    # The reciprocal tag is never applied to unrelated statement content -
+    # only to lines the table itself actually consumed.
+    header_letters = {r["representation"] for r in primary_table_lines}
+    assert header_letters == {"A", "B", "C", "D", "S"}
+
+
 def test_zero_orphan_assets_against_the_published_2011_corpus(generated_2011_payload):
     course_dir = QUESTIONS_DIR / "2011" / "all-computing"
     issues = find_orphan_assets(generated_2011_payload, course_dir)
@@ -173,3 +205,28 @@ def test_a_true_orphan_is_still_detected_when_synthetically_introduced(
     issues = find_orphan_assets(generated_2011_payload, isolated)
     orphan_paths = {i.detail for i in issues if i.kind == "asset_not_in_ledger"}
     assert any("figure-99.png" in d for d in orphan_paths)
+
+
+def test_no_asset_record_is_double_counted_as_both_figure_and_table_fallback(
+    generated_2011_payload,
+):
+    # PROMPT Fase 4E section 16: could the same real region ever be
+    # enumerated both as a figure_region asset and a table-fallback
+    # asset? Structurally no - assembler.py's own raw_candidate_lines
+    # (fed into detect_tables()) already excludes every line consumed by
+    # a visual region (_line_region_excluded), so a table can never be
+    # detected over ground a figure region already claimed. Verified here
+    # against real data rather than a fabricated fixture (an artificial
+    # fixture would misrepresent a scenario the real pipeline cannot
+    # produce): no two asset records for the same question ever share an
+    # identical source_bbox, regardless of source_type/representation_role.
+    by_question: dict[str, list[dict]] = {}
+    for r in generated_2011_payload["assignments"]:
+        if r["source_type"] == "asset":
+            by_question.setdefault(r["question_id"], []).append(r)
+    for question_id, assets in by_question.items():
+        bboxes = [tuple(a["source_bbox"]) for a in assets]
+        assert len(bboxes) == len(set(bboxes)), (
+            f"{question_id}: two asset records share an identical bbox - "
+            "a figure_region and a table fallback may have been double-counted"
+        )

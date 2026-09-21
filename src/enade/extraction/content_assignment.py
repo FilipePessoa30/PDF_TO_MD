@@ -402,6 +402,18 @@ def generate_content_assignment_ledger(
         # generic string ("S0", "S1") a substring check could false-match
         # on anyway.
         tabled_lines: frozenset = frozenset().union(*(t.consumed_lines for t in extracted.tables))
+        # PROMPT Fase 4E section 5: the fallback asset's own anchor
+        # (table:<index>) answers "which table does this crop derive
+        # from" - but the reverse question ("which primary records belong
+        # to this table") was not answerable from the published ledger at
+        # all before this map existed (every table-consumed line got the
+        # same generic anchor="statement" as any unrelated statement
+        # line, confirmed empirically on 2011 Q22's own header cells).
+        line_to_table_anchor: dict[Line, str] = {
+            ln: f"table:{table_index}"
+            for table_index, table in enumerate(extracted.tables)
+            for ln in table.consumed_lines
+        }
 
         def _survives_in_statement(line: Line) -> bool:
             stripped = line.text.strip()
@@ -435,7 +447,8 @@ def generate_content_assignment_ledger(
                     bbox = (ln.x0, ln.y0, ln.x1, ln.y1)
                     if i < cutoff:
                         if _survives_in_statement(ln):
-                            destination, owner, anchor = "statement", "question", "statement"
+                            destination, owner = "statement", "question"
+                            anchor = line_to_table_anchor.get(ln, "statement")
                             status, confidence, extra_reason = "assigned", 1.0, ""
                         else:
                             destination, owner, anchor = "blocked", "unresolved", "statement"
@@ -521,7 +534,7 @@ def generate_content_assignment_ledger(
                             source_page=ln.page_number,
                             source_bbox=(ln.x0, ln.y0, ln.x1, ln.y1),
                             canonical_owner="question" if survives else "unresolved",
-                            anchor="statement",
+                            anchor=line_to_table_anchor.get(ln, "statement"),
                             publication_destination="statement" if survives else "blocked",
                             representation=ln.text,
                             reason=(
@@ -561,7 +574,7 @@ def generate_content_assignment_ledger(
                         source_page=ln.page_number,
                         source_bbox=(ln.x0, ln.y0, ln.x1, ln.y1),
                         canonical_owner="question" if survives else "unresolved",
-                        anchor="statement",
+                        anchor=line_to_table_anchor.get(ln, "statement"),
                         publication_destination=(
                             "annotation"
                             if is_annotation

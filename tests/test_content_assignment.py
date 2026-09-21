@@ -366,3 +366,113 @@ def test_asset_claimed_by_the_wrong_question_is_still_an_orphan_for_its_real_own
     assert len(issues) == 1
     assert issues[0].question_id == "q1"
     assert issues[0].kind == "asset_not_in_ledger"
+
+
+# --- representation_role compatibility (PROMPT Fase 4E section 6) --------
+#
+# Syntactic compatibility (a missing/extra key does not raise) is not
+# the same as semantic compatibility (the default must never silently
+# turn a record that was always derived/secondary into a false claim of
+# primariness). Since every record kind this ledger produced *before*
+# Fase 4D was already a standalone, independent piece of content - never
+# a derived view of something else - "primary" is not merely a
+# syntactically convenient default here; it is the semantically correct
+# reading of every pre-existing record's own real history.
+
+
+def test_old_style_record_without_representation_role_defaults_to_primary():
+    # Simulates reconstructing a ContentAssignment from a ledger JSON
+    # written before Fase 4D (no "representation_role" key at all) -
+    # exactly what cli.py's own `ContentAssignment(**record)` does.
+    old_style_dict = {
+        **_BASE,
+        "assignment_id": "a1",
+        "source_element_id": "s1",
+        "source_type": "line",
+        "canonical_owner": "question",
+        "anchor": "statement",
+        "publication_destination": "statement",
+    }
+    assert "representation_role" not in old_style_dict
+    record = ContentAssignment(**old_style_dict)
+    assert record.representation_role == "primary"
+
+
+def test_new_style_record_round_trips_its_explicit_representation_role():
+    record = _assignment(
+        assignment_id="a1",
+        source_element_id="s1",
+        source_type="asset",
+        canonical_owner="question",
+        anchor="question_asset",
+        publication_destination="question_asset",
+        representation_role="visual_fallback",
+    )
+    as_dict = {
+        "assignment_id": record.assignment_id,
+        "source_element_id": record.source_element_id,
+        "source_type": record.source_type,
+        "source_page": record.source_page,
+        "source_bbox": record.source_bbox,
+        "canonical_owner": record.canonical_owner,
+        "anchor": record.anchor,
+        "publication_destination": record.publication_destination,
+        "representation": record.representation,
+        "reason": record.reason,
+        "evidence": record.evidence,
+        "confidence": record.confidence,
+        "status": record.status,
+        "question_id": record.question_id,
+        "representation_role": record.representation_role,
+    }
+    rebuilt = ContentAssignment(**as_dict)
+    assert rebuilt.representation_role == "visual_fallback"
+    assert rebuilt == record
+
+
+def test_an_unrecognized_representation_role_value_is_not_silently_normalized():
+    # This dataclass performs no runtime Literal validation for any of
+    # its fields (status/canonical_owner/etc. included) - consistent,
+    # never a special case introduced only for the newest field. An
+    # unrecognized value passes through unchanged rather than being
+    # coerced to "primary" or rejected - documented here so a future
+    # reader never assumes silent validation exists where it does not.
+    record = _assignment(
+        assignment_id="a1",
+        source_element_id="s1",
+        source_type="asset",
+        canonical_owner="question",
+        anchor="question_asset",
+        publication_destination="question_asset",
+        representation_role="totally-unknown-value",  # type: ignore[arg-type]
+    )
+    assert record.representation_role == "totally-unknown-value"
+
+
+def test_gates_are_unaffected_by_representation_role_since_none_reads_it():
+    # detect_duplicate_assignments/detect_missing_assignments only ever
+    # key off source_element_id/canonical_owner/status/source_type - an
+    # unknown or missing representation_role can never change a gate's
+    # own verdict, since none of them read this field at all today.
+    records = [
+        _assignment(
+            assignment_id="a1",
+            source_element_id="s1",
+            source_type="asset",
+            canonical_owner="question",
+            anchor="question_asset",
+            publication_destination="question_asset",
+            representation_role="visual_fallback",
+        ),
+        _assignment(
+            assignment_id="a2",
+            source_element_id="s1",
+            source_type="asset",
+            canonical_owner="question",
+            anchor="question_asset",
+            publication_destination="question_asset",
+            representation_role="primary",
+        ),
+    ]
+    assert detect_duplicate_assignments(records) == []
+    assert detect_missing_assignments(records) == []

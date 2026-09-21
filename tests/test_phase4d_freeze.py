@@ -1,19 +1,30 @@
-"""Phase-4D pre-commit freeze gate (PROMPT Fase 4D section 20).
+"""Phase-4D freeze - now a HISTORICAL snapshot (PROMPT Fase 4E).
 
-Supersedes ``tests/test_phase4c_freeze.py`` as the *live* freeze gate,
-for the same reason that file itself superseded
-``tests/test_phase4b_freeze.py`` in Fase 4C: the artifact it certified
-moved out from under it (an external commit absorbed its own declared
-uncommitted set), and this phase's own corrective fix (F6) changed the
-content-assignment ledger it had certified regardless. All three of
-``phase-4a-freeze.json``, ``phase-4b-freeze.json`` and
-``phase-4c-freeze.json`` are tracked here as historical snapshots,
-preserved byte-for-byte; only this file compares ``phase-4d-freeze.json``
-against live git/disk state - never two "active" freezes at once.
+Fase 4D's own freeze certified a specific, then-current working-tree
+state (HEAD recorded at Fase 4D's own end, 7 uncommitted files including
+the freshly regenerated content-assignment ledger and the new
+``representation_role``/table-fallback mechanism). That HEAD was
+superseded when those files were committed externally as ``6e78d5f``
+mid-session - the same class of event that superseded
+``phase-4a-freeze.json`` through ``phase-4c-freeze.json`` before it -
+and this phase's own corrective fixes (the reciprocal table anchor; the
+new ``freeze_contract`` module and its F7-hardening check) further
+changed the very ledger and tooling this freeze had certified.
 
-The working tree is not required to be clean (PROMPT: "registrar HEAD e
-refs sem fingir que o working tree esta limpo") - only that it contains
-*exactly* the uncommitted set this freeze itself declared.
+Rather than let the live-comparison gates this file used to run (HEAD
+match, per-manifest "still matches disk" checks, the ledger's own hash,
+"uncommitted set still exactly present") flag *expected, understood*
+drift as a regression, this file is rewritten - exactly as
+``tests/test_phase4a_freeze.py`` through ``tests/test_phase4c_freeze.py``
+were before it - to check only what a HISTORICAL record should still
+guarantee: that ``phase-4d-freeze.json`` itself was never silently
+edited after the fact, and that its own internally-recorded claims are
+self-consistent. The live equivalent of every check this file used to
+run now lives in ``tests/test_phase4e_freeze.py``, against
+``data/manifests/phase-4e-freeze.json`` - the one active freeze from here
+on. ``data/manifests/phase-4d-freeze.json`` itself is left byte-for-byte
+unedited on disk (PROMPT: "nunca alterando silenciosamente a semantica do
+antigo").
 """
 
 from __future__ import annotations
@@ -27,11 +38,7 @@ import pytest
 
 PROJECT_ROOT = Path(__file__).parent.parent
 FREEZE_PATH = PROJECT_ROOT / "data" / "manifests" / "phase-4d-freeze.json"
-OLD_FREEZE_PATHS = {
-    "4a": PROJECT_ROOT / "data" / "manifests" / "phase-4a-freeze.json",
-    "4b": PROJECT_ROOT / "data" / "manifests" / "phase-4b-freeze.json",
-    "4c": PROJECT_ROOT / "data" / "manifests" / "phase-4c-freeze.json",
-}
+NEW_FREEZE_PATH = PROJECT_ROOT / "data" / "manifests" / "phase-4e-freeze.json"
 
 pytestmark = pytest.mark.skipif(not FREEZE_PATH.exists(), reason="phase-4d-freeze.json not present")
 
@@ -44,15 +51,14 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def _git_status_porcelain() -> list[str]:
-    result = subprocess.run(
-        ["git", "status", "--porcelain=v1"],
-        cwd=PROJECT_ROOT,
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    return [line for line in result.stdout.splitlines() if line.strip()]
+def _historical_entry_for_4d(new_freeze: dict) -> dict:
+    return next(e for e in new_freeze["historical_freezes"] if e["phase"] == "4d")
+
+
+def test_freeze_file_is_still_present_and_valid_json():
+    assert FREEZE_PATH.is_file()
+    freeze = _load()
+    assert freeze["schema_version"] == 1
 
 
 def test_freeze_records_the_expected_branch_and_git_ancestry():
@@ -62,187 +68,19 @@ def test_freeze_records_the_expected_branch_and_git_ancestry():
     assert freeze["merge_base"] == freeze["master"]
 
 
-def test_freeze_declares_it_supersedes_the_phase_4c_freeze():
+def test_freeze_recorded_head_is_a_real_ancestor_commit_never_equality_with_current_head():
     freeze = _load()
-    assert freeze["supersedes"] == "data/manifests/phase-4c-freeze.json"
-    assert {e["phase"] for e in freeze["historical_freezes"]} == {"4a", "4b", "4c"}
-    for entry in freeze["historical_freezes"]:
-        assert entry["status"] == "superseded"
-
-
-def test_freeze_records_the_pre_existing_remote_commit_without_attributing_it_to_this_phase():
-    # PROMPT Fase 4D: the Fase 4C work (24dfe72) was already committed and
-    # pushed before this phase began, by an action outside any session's
-    # own git commands - recorded as a fact, never claimed as this
-    # phase's own doing.
-    freeze = _load()
-    entry = freeze["pre_existing_remote_commit"]
-    assert entry["sha"] == "24dfe722283f1fd59d143a4878fef1fdcf24ca1d"
-
-
-@pytest.mark.parametrize("phase", ["4a", "4b", "4c"])
-def test_historical_freeze_entry_hash_matches_the_real_file_unedited(phase):
-    # None of the three historical freezes must ever be silently
-    # rewritten (PROMPT section 19/20) - the hash this newer freeze
-    # recorded for each must still match the real file on disk.
-    freeze = _load()
-    entry = next(e for e in freeze["historical_freezes"] if e["phase"] == phase)
-    path = OLD_FREEZE_PATHS[phase]
-    assert path.is_file()
-    assert _sha256(path) == entry["sha256"]
-
-
-def test_freeze_head_matches_the_real_current_head():
-    freeze = _load()
+    assert len(freeze["head"]) == 40
+    subprocess.run(
+        ["git", "cat-file", "-e", f"{freeze['head']}^{{commit}}"],
+        cwd=PROJECT_ROOT,
+        check=True,
+    )
     result = subprocess.run(
-        ["git", "rev-parse", "HEAD"], cwd=PROJECT_ROOT, capture_output=True, text=True, check=True
+        ["git", "merge-base", "--is-ancestor", freeze["head"], "HEAD"],
+        cwd=PROJECT_ROOT,
     )
-    assert freeze["head"] == result.stdout.strip()
-
-
-def test_freeze_master_is_still_unchanged():
-    freeze = _load()
-    result = subprocess.run(
-        ["git", "rev-parse", "master"], cwd=PROJECT_ROOT, capture_output=True, text=True, check=True
-    )
-    assert freeze["master"] == result.stdout.strip()
-
-
-def test_every_listed_manifest_exists_and_matches_its_recorded_sha256():
-    freeze = _load()
-    missing: list[str] = []
-    mismatches: list[str] = []
-    for entry in freeze["manifests"]:
-        path = PROJECT_ROOT / entry["path"]
-        if not path.is_file():
-            missing.append(entry["path"])
-            continue
-        if _sha256(path) != entry["sha256"]:
-            mismatches.append(entry["path"])
-    assert not missing, f"manifest(s) missing since freeze: {missing}"
-    assert not mismatches, f"manifest(s) changed since freeze: {mismatches}"
-
-
-def test_every_listed_report_exists_and_matches_its_recorded_sha256():
-    freeze = _load()
-    missing: list[str] = []
-    mismatches: list[str] = []
-    for entry in freeze["reports"]:
-        path = PROJECT_ROOT / entry["path"]
-        if not path.is_file():
-            missing.append(entry["path"])
-            continue
-        if _sha256(path) != entry["sha256"]:
-            mismatches.append(entry["path"])
-    assert not missing, f"report(s) missing since freeze: {missing}"
-    assert not mismatches, f"report(s) changed since freeze: {mismatches}"
-
-
-def test_every_listed_review_exists_and_matches_its_recorded_sha256():
-    freeze = _load()
-    missing: list[str] = []
-    mismatches: list[str] = []
-    for entry in freeze.get("reviews", []):
-        path = PROJECT_ROOT / entry["path"]
-        if not path.is_file():
-            missing.append(entry["path"])
-            continue
-        if _sha256(path) != entry["sha256"]:
-            mismatches.append(entry["path"])
-    assert not missing, f"review(s) missing since freeze: {missing}"
-    assert not mismatches, f"review(s) changed since freeze: {mismatches}"
-
-
-def test_no_manifest_appeared_that_the_freeze_never_inventoried():
-    freeze = _load()
-    known = {entry["path"] for entry in freeze["manifests"]}
-    on_disk = {
-        p.relative_to(PROJECT_ROOT).as_posix()
-        for p in (PROJECT_ROOT / "data" / "manifests").glob("*")
-        if p.is_file() and p.name != "phase-4d-freeze.json"
-    }
-    assert on_disk == known, f"uninventoried manifest(s): {on_disk - known}"
-
-
-@pytest.mark.parametrize(
-    "label,subdir",
-    [
-        ("2008-b", "data/questions/2008/all-computing"),
-        ("2011", "data/questions/2011/all-computing"),
-        (
-            "2021-ciencia-da-computacao-bacharelado",
-            "data/questions/2021/ciencia-da-computacao-bacharelado",
-        ),
-        (
-            "2021-ciencia-da-computacao-licenciatura",
-            "data/questions/2021/ciencia-da-computacao-licenciatura",
-        ),
-        ("2021-sistemas-de-informacao", "data/questions/2021/sistemas-de-informacao"),
-    ],
-)
-def test_question_outputs_aggregate_hash_matches_current_disk_state(label, subdir):
-    freeze = _load()
-    root = PROJECT_ROOT / subdir
-    files = sorted(
-        (p for p in root.rglob("*") if p.is_file() and p.suffix in (".md", ".png")),
-        key=lambda p: p.relative_to(PROJECT_ROOT).as_posix(),
-    )
-    lines = [f"{_sha256(p)}  {p.relative_to(PROJECT_ROOT).as_posix()}" for p in files]
-    actual = hashlib.sha256("\n".join(lines).encode("utf-8")).hexdigest()
-    assert freeze["question_outputs"][label] == actual, (
-        f"{label} corpus drifted since the freeze was taken (output no longer "
-        "matches the frozen aggregate hash)"
-    )
-
-
-def test_content_assignment_ledger_hash_matches_current_disk_state():
-    freeze = _load()
-    entry = freeze["content_assignment_ledger"]
-    path = PROJECT_ROOT / entry["path"]
-    assert _sha256(path) == entry["sha256"]
-    payload = json.loads(path.read_text(encoding="utf-8"))
-    assert payload["assignment_count"] == entry["assignment_count"]
-
-
-def test_content_assignment_ledger_assignment_ids_are_geometry_derived():
-    import re
-
-    freeze = _load()
-    path = PROJECT_ROOT / freeze["content_assignment_ledger"]["path"]
-    payload = json.loads(path.read_text(encoding="utf-8"))
-    position_only = re.compile(r"^[^:]+(:asset)?:\d+$")
-    offenders = [
-        r["assignment_id"]
-        for r in payload["assignments"]
-        if position_only.match(r["assignment_id"])
-    ]
-    assert offenders == []
-
-
-def test_content_assignment_ledger_has_no_orphans_against_2008b():
-    from enade.extraction.content_assignment import find_orphan_assets
-
-    freeze = _load()
-    path = PROJECT_ROOT / freeze["content_assignment_ledger"]["path"]
-    payload = json.loads(path.read_text(encoding="utf-8"))
-    course_dir = PROJECT_ROOT / "data" / "questions" / "2008" / "all-computing"
-    assert find_orphan_assets(payload, course_dir) == []
-
-
-def test_generation_tooling_hashes_match_current_disk_state():
-    freeze = _load()
-    for entry in freeze["generation_tooling"]:
-        path = PROJECT_ROOT / entry["path"]
-        assert path.is_file()
-        assert _sha256(path) == entry["sha256"]
-
-
-def test_generation_tests_hashes_match_current_disk_state():
-    freeze = _load()
-    for entry in freeze["generation_tests"]:
-        path = PROJECT_ROOT / entry["path"]
-        assert path.is_file()
-        assert _sha256(path) == entry["sha256"]
+    assert result.returncode == 0, "the frozen HEAD is not an ancestor of the current HEAD"
 
 
 def test_source_limitations_still_present_and_never_resolved():
@@ -253,49 +91,43 @@ def test_source_limitations_still_present_and_never_resolved():
         assert entry["status"] == "source_unavailable_confirmed"
 
 
-def test_working_tree_uncommitted_set_matches_exactly_what_the_freeze_declared():
+def test_readiness_2008b_matches_the_frozen_verdict():
+    # Unlike phase-4c-freeze.json (F7), Fase 4D's own freeze did fill
+    # this field in correctly - still a true historical fact regardless
+    # of what Fase 4E later changed.
     freeze = _load()
-    frozen_paths = {e["path"] for e in freeze["uncommitted_changes"]}
-    current_lines = _git_status_porcelain()
-    current_paths = {line[3:].strip() for line in current_lines}
-    unexpected_missing = frozen_paths - current_paths
-    assert not unexpected_missing, (
-        f"file(s) the freeze declared uncommitted are no longer showing as "
-        f"changed: {unexpected_missing} (committed, reverted, or moved?)"
-    )
-    for entry in freeze["uncommitted_changes"]:
-        if entry["sha256"] is None:
-            continue
-        path = PROJECT_ROOT / entry["path"]
-        if not path.is_file():
-            continue
-        assert _sha256(path) == entry["sha256"], (
-            f"{entry['path']} changed since the freeze was taken "
-            f"(expected {entry['sha256']}, found {_sha256(path)})"
-        )
+    r = freeze["readiness"]["2008-b"]
+    assert r["verdict"] == "READY_FOR_2008_ENGINEERING_TEST_WITH_SOURCE_LIMITATIONS"
+    assert r["actionable_blockers"] == 0
+    assert r["source_limitations"] == 2
+    assert r["informational_findings"] == 0
 
 
-def test_git_status_porcelain_first_line_path_is_never_truncated_by_a_whole_blob_strip():
-    """Regression coverage for the Fase 4A generator bug class, carried
-    forward once more (PROMPT Fase 4D section 15: "a falha descoberta na
-    Fase 4A com .strip() nao reaparece"). Deterministic, synthetic
-    input - independent of the real repo's own current status.
+def test_recorded_content_assignment_ledger_count_is_the_fase_4d_value():
+    # A historical fact about what Fase 4D's own F6 fix produced (2296
+    # records, before Fase 4E's own reciprocal-anchor fix changed some
+    # records' anchor field without changing the total count).
+    freeze = _load()
+    assert freeze["content_assignment_ledger"]["assignment_count"] == 2296
+
+
+def test_freeze_was_never_silently_edited_after_being_superseded():
+    """The one gate this file still needs to be strict about: Fase 4D's
+    own freeze must remain byte-for-byte what it was when Fase 4E took
+    over - proven against the hash Fase 4E's own freeze recorded for it
+    (tests/test_phase4e_freeze.py asserts the reverse direction: that
+    recorded hash still matches this file).
     """
-    synthetic_porcelain = (
-        " M data/manifests/blocker-ledger-2008.yaml\n"
-        " M src/enade/cli.py\n"
-        "?? tests/test_new_file.py\n"
-    )
+    if not NEW_FREEZE_PATH.exists():
+        pytest.skip("phase-4e-freeze.json not present yet - nothing to cross-check against")
+    new_freeze = json.loads(NEW_FREEZE_PATH.read_text(encoding="utf-8"))
+    entry = _historical_entry_for_4d(new_freeze)
+    assert entry["path"] == "data/manifests/phase-4d-freeze.json"
+    assert _sha256(FREEZE_PATH) == entry["sha256"]
 
-    def naive_parse(raw: str) -> list[str]:
-        return [line[3:].strip() for line in raw.strip().splitlines() if line.strip()]
 
-    def correct_parse(raw: str) -> list[str]:
-        return [line[3:].strip() for line in raw.splitlines() if line.strip()]
-
-    naive_paths = naive_parse(synthetic_porcelain)
-    correct_paths = correct_parse(synthetic_porcelain)
-
-    assert naive_paths[0] == "ata/manifests/blocker-ledger-2008.yaml"
-    assert correct_paths[0] == "data/manifests/blocker-ledger-2008.yaml"
-    assert naive_paths[1:] == correct_paths[1:]
+def test_freeze_is_marked_superseded_in_the_active_freeze():
+    if not NEW_FREEZE_PATH.exists():
+        pytest.skip("phase-4e-freeze.json not present yet - nothing to cross-check against")
+    new_freeze = json.loads(NEW_FREEZE_PATH.read_text(encoding="utf-8"))
+    assert new_freeze["supersedes"] == "data/manifests/phase-4d-freeze.json"
