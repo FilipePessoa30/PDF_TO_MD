@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "created_for": "PROMPT Fase 5A - fundacao semantica para taxonomia, conceitos, palavras-chave e recomendacoes futuras",
+  "lineage": "semantic (separada da lineage de extracao 4A-4E - PROMPT Fase 5A secao 3: phase-4e-freeze.json permanece terminal)",
+  "branch": "feat/enade-2008-cc-b-pilot",
+  "head": "8e272cc0dd53031ddddc78d3f88c7efdce073a8f",
+  "master": "a5dfaab0c105150df3a7201c16547708cef45292",
+  "origin_master": "a5dfaab0c105150df3a7201c16547708cef45292",
+  "origin_branch": "8e272cc0dd53031ddddc78d3f88c7efdce073a8f",
+  "pre_existing_remote_commit": {
+    "sha": "8e272cc0dd53031ddddc78d3f88c7efdce073a8f",
+    "note": "Fase 4E (revisao adversarial F8 + freeze_contract.py) ja estava commitada e publicada em origin/feat/enade-2008-cc-b-pilot antes desta sessao de Fase 5A comecar - por uma acao externa, nunca pelos comandos git desta ou de qualquer sessao anterior. Registrado aqui como fato, nunca atribuido ao trabalho da Fase 5A."
+  },
+  "extraction_freeze_reference": {
+    "path": "data/manifests/phase-4e-freeze.json",
+    "sha256": "2efe8c47367b645fdd1a2b9e8daa3e2d8be6a7ae46610e3d0776672af352c80d",
+    "note": "phase-4e-freeze.json permanece o freeze TERMINAL da camada de extracao (PROMPT Fase 5A secao 3) - nunca editado, nunca superado por um phase-4f-freeze.json. Este hash detecta qualquer adulteracao futura do arquivo."
+  },
+  "artifacts": {
+    "taxonomy": {
+      "path": "data/taxonomy/computing-v1.yaml",
+      "sha256": "cad0204e9b04b1ff08780750cec7da086b7ee38c6956259bf796ae91672e751b"
+    },
+    "annotations": {
+      "path": "data/semantic/question-annotations-5a.json",
+      "sha256": "5bbf515da09cb46622efae67cd9c94fc7ed84d355ef48b62330c5442501bbbe7"
+    },
+    "pilot_selection": {
+      "path": "data/semantic/pilot-selection-5a.json",
+      "sha256": "d3418a867ccdcee1643957beec73ea406cbb2117eddb0321aaa15e6f36b9c59e"
+    },
+    "guidelines": {
+      "path": "docs/semantic-annotation-guidelines.md",
+      "sha256": "146201892f7b646aa6e440bb90f9255b0d4529d1c8c9d812d9e06f8456c5c1a3"
+    },
+    "review_packet": {
+      "path": "docs/semantic-pilot-review.md",
+      "sha256": "7584082c9317d3252095a968912d902b18573f34f854fbf0033b370f15130e8c"
+    },
+    "pilot_audit": {
+      "path": "data/semantic/semantic-audit-5a.json",
+      "sha256": "94da1a83991e9a3b3b0300f566a512e6e3c0e8f75c8c323915745edd97c5f480"
+    },
+    "generalization_scan": {
+      "path": "data/semantic/generalization-scan-5a.json",
+      "sha256": "1300cef0c0e938ab8691124343d03ac49a714796c43e8bb073a6575d83b54c6c"
+    }
+  },
+  "counts": {
+    "taxonomy_subjects": 13,
+    "taxonomy_topics": 35,
+    "taxonomy_concepts": 18,
+    "pilot_annotation_count": 30,
+    "pilot_status_counts": {
+      "unclassifiable": 10,
+      "proposed": 18,
+      "needs_review": 2
+    },
+    "shared_question_groups": 2,
+    "eligible_population_surveyed": 255,
+    "generalization_scan_total_questions": 255
+  },
+  "quality_gates": {
+    "pytest": {
+      "command": "pytest -q",
+      "exit_code": 0,
+      "passed": 1106,
+      "failed": 0,
+      "note": "execucao final, apos a criacao deste arquivo de freeze e do ajuste em test_phase4e_freeze.py (exclusao de phase-*-semantic-freeze.json do inventario de manifests) - inclui os 18 testes de tests/test_phase5a_semantic_freeze.py, todos passando contra este exato arquivo"
+    },
+    "ruff_check": {
+      "command": "ruff check .",
+      "exit_code": 0,
+      "result": "All checks passed!"
+    },
+    "ruff_format_check": {
+      "command": "ruff format --check .",
+      "exit_code": 0,
+      "result": "463 files already formatted"
+    },
+    "mypy": {
+      "command": "mypy src",
+      "exit_code": 0,
+      "result": "Success: no issues found in 73 source files"
+    },
+    "validate_schema": {
+      "command": "enade validate-schema",
+      "exit_code": 0,
+      "result": "13/13 fixture(s) valid"
+    },
+    "validate_manifest": {
+      "command": "enade validate-manifest",
+      "exit_code": 0,
+      "result": "OK (0 warnings)"
+    },
+    "audit_extraction": {
+      "command": "enade audit-extraction (5 targets)",
+      "exit_code": 0,
+      "result": "255/255 OK (80+55+40+40+40)"
+    },
+    "git_diff_check": {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    "phase_4e_freeze_test": {
+      "command": "pytest tests/test_phase4e_freeze.py",
+      "exit_code": 0,
+      "passed": 28,
+      "failed": 0
+    },
+    "validate_taxonomy": {
+      "command": "enade validate-taxonomy",
+      "exit_code": 0
+    },
+    "validate_semantic_annotations": {
+      "command": "enade validate-semantic-annotations",
+      "exit_code": 0,
+      "diagnostics": 0
+    },
+    "build_semantic_review": {
+      "command": "enade build-semantic-review",
+      "exit_code": 0,
+      "deterministic_ab_diff": "empty"
+    },
+    "content_assignment_check": {
+      "command": "enade generate-content-assignment --check (5 targets)",
+      "exit_code": 0,
+      "orphans": 0,
+      "duplicates": 0,
+      "missing": 0
+    },
+    "verify_gold": {
+      "command": "enade verify-gold (3/5 targets with gold manifest)",
+      "exit_code": 0,
+      "note": "2021-cc-l and 2021-si have no gold manifest yet - pre-existing fact, out of Fase 5A scope"
+    },
+    "assess_readiness": {
+      "command": "enade assess-readiness (3/5 targets)",
+      "exit_code": 0,
+      "actionable_blockers": 0
+    },
+    "phase5a_semantic_freeze_test": {
+      "command": "pytest tests/test_phase5a_semantic_freeze.py",
+      "exit_code": 0,
+      "passed": 18,
+      "failed": 0,
+      "note": "run against this exact freeze file's own real, final content"
+    }
+  },
+  "semantic_maturity": "provisional_pilot",
+  "human_review_status": "not_yet_reviewed",
+  "scope_notice": "Este freeze certifica apenas a fundacao semantica e o piloto de 30 questoes (PROMPT Fase 5A). Nao certifica nem afirma revisao humana das anotacoes, nem anotacao do corpus completo (255 questoes). Ver docs/phase-5a-report.md."
+}

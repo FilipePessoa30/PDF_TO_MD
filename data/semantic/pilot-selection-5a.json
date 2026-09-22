@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "method_notes": "O modulo src/enade/semantic/selection.py implementa selecao estratificada deterministica por hash-rank (select_pilot_sample), adequada para um futuro rollout em escala sobre todo o corpus (255 questoes), e e coberta por testes proprios. Para este piloto de 30 questoes, porem, a selecao final foi curada manualmente a partir dos mesmos 16 eixos de estratificacao (STRATA), pois dois casos reais de questao verbatim-compartilhada entre cursos (enade-2021-cc-b-q25/enade-2021-cc-l-q25 e enade-2021-cc-b-d01/enade-2021-si-d01) so foram identificados por leitura integral do texto - o predicado estrutural is_shared_across_courses nao os detecta (ele so e verdadeiro quando applicable_courses contem o alias ALL_COMPUTING, o que nunca ocorre nos livretos de 2021 divididos por curso, mesmo quando o enunciado publicado e byte-a-byte identico entre dois arquivos de curso diferentes). Garantir a presenca de AMBOS os membros de cada par no piloto era necessario para exercitar de verdade a checagem de consistencia entre questoes compartilhadas (validate_shared_question_consistency, PROMPT Fase 5A secao 10 e 23), o que uma amostra puramente mecanica poderia nunca cobrir. A cobertura real desta selecao manual contra todos os 16 eixos de STRATA foi verificada programaticamente (todas as 16 contagens sao > 0) antes de ser aceita - ver docs/phase-5a-report.md secao P.",
+  "selection": {
+    "selection_method": "manual_stratified_selection_verified_against_strata",
+    "seed": "n/a-manual-selection-not-hash-seeded",
+    "eligible_population": 255,
+    "strata": {
+      "target:2008-b": 5,
+      "target:2011": 11,
+      "target:2021-cc-b": 7,
+      "target:2021-cc-l": 1,
+      "target:2021-si": 6,
+      "type:multiple_choice": 23,
+      "type:discursive": 7,
+      "component:formacao_geral": 8,
+      "component:componente_especifico": 22,
+      "text_only": 19,
+      "has_table": 1,
+      "has_equation_asset": 1,
+      "has_diagram_or_image_asset": 9,
+      "has_alternative_asset": 3,
+      "source_limitation": 1,
+      "shared_across_courses": 8
+    },
+    "selected_ids": [
+      "enade-2008-computing-d09",
+      "enade-2008-computing-q04",
+      "enade-2008-computing-q14",
+      "enade-2008-computing-q30",
+      "enade-2008-computing-q55",
+      "enade-2011-computing-d03",
+      "enade-2011-computing-q01",
+      "enade-2011-computing-q14",
+      "enade-2011-computing-q23",
+      "enade-2011-computing-q27",
+      "enade-2011-computing-q31",
+      "enade-2011-computing-q33",
+      "enade-2011-computing-q39",
+      "enade-2011-computing-q43",
+      "enade-2011-computing-q46",
+      "enade-2011-computing-q49",
+      "enade-2021-cc-b-d01",
+      "enade-2021-cc-b-d03",
+      "enade-2021-cc-b-q01",
+      "enade-2021-cc-b-q18",
+      "enade-2021-cc-b-q22",
+      "enade-2021-cc-b-q25",
+      "enade-2021-cc-b-q29",
+      "enade-2021-cc-l-q25",
+      "enade-2021-si-d01",
+      "enade-2021-si-d02",
+      "enade-2021-si-d03",
+      "enade-2021-si-q05",
+      "enade-2021-si-q25",
+      "enade-2021-si-q34"
+    ],
+    "exclusions": [
+      "Bundle \"e\" e o corpus de 2005 nunca fizeram parte da populacao elegivel (fora do escopo de qualquer fase deste projeto, nao apenas da Fase 5A).",
+      "Nenhuma questao dos 5 alvos protegidos (2008-b/2011/2021-cc-b/2021-cc-l/2021-si) foi excluida da populacao elegivel considerada (255/255 elegiveis)."
+    ]
+  }
+}

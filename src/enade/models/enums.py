@@ -163,9 +163,28 @@ class VerificationStatus(StrEnum):
 
 
 class TaxonomyStatus(StrEnum):
-    """Maturity of a taxonomy document. Phase 0 only ever produces ``demo``."""
+    """Maturity of a taxonomy document. Phase 0 only ever produces ``demo``.
+
+    ``PROVISIONAL`` (PROMPT Fase 5A section 5) is distinct from ``DRAFT``:
+    it specifically signals that the taxonomy is grounded in real corpus
+    evidence but has not yet been cross-checked against a documented
+    external curricular source (e.g. an official ENADE/INEP conteúdo
+    programático) - never invented, never silently promoted to
+    ``reviewed``/``definitive`` just because a pilot passed.
+    """
 
     DEMO = "demo"
     DRAFT = "draft"
+    PROVISIONAL = "provisional"
     REVIEWED = "reviewed"
     DEFINITIVE = "definitive"
+
+
+class TaxonomyNodeStatus(StrEnum):
+    """Lifecycle of one taxonomy node (PROMPT Fase 5A section 8) - never
+    reused with a different meaning once ``deprecated``; a real change of
+    meaning requires a new id and a new taxonomy version instead.
+    """
+
+    ACTIVE = "active"
+    DEPRECATED = "deprecated"

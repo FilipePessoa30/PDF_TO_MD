@@ -1,0 +1,1542 @@
+{
+  "schema_version": 1,
+  "taxonomy_version": "computing-v1@1.0.0-pilot",
+  "generated_by": "manual pilot annotation, PROMPT Fase 5A",
+  "annotation_count": 30,
+  "shared_question_groups": [
+    [
+      "enade-2021-cc-b-q25",
+      "enade-2021-cc-l-q25"
+    ],
+    [
+      "enade-2021-cc-b-d01",
+      "enade-2021-si-d01"
+    ]
+  ],
+  "annotations": [
+    {
+      "question_id": "enade-2008-computing-d09",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "41398d48680abe07ef95793bba5c1b84fcf45657e045f653019c5c70bfac2a68",
+      "component": "formacao_geral",
+      "primary_topics": [],
+      "secondary_topics": [],
+      "concepts": [],
+      "context_tags": [],
+      "cognitive_skills": [],
+      "search_terms": [],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "41398d48680abe07ef95793bba5c1b84fcf45657e045f653019c5c70bfac2a68",
+          "text_excerpt": "selecione uma das concepções destacadas e esclareça por que ela representa um avanço para o exercício pleno da cidadania",
+          "excerpt_sha256": "1d89536a7e33f0d2db001072a009b658e3a58b1bcd16dd948293950155754f88",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "unclassifiable",
+      "confidence": "high",
+      "review_status": "pending",
+      "notes": "Direitos humanos/cidadania - fora do escopo da taxonomia de Computação (computing-v1)."
+    },
+    {
+      "question_id": "enade-2008-computing-q04",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "2af664d9a6f353af832d94fdf71581d754162f99256a216a56f5693ff0c17aa5",
+      "component": "formacao_geral",
+      "primary_topics": [],
+      "secondary_topics": [],
+      "concepts": [],
+      "context_tags": [],
+      "cognitive_skills": [],
+      "search_terms": [],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "2af664d9a6f353af832d94fdf71581d754162f99256a216a56f5693ff0c17aa5",
+          "text_excerpt": "São dois os temas mais específicos para essa legislação:",
+          "excerpt_sha256": "a9f033e3e20f7882faa3d3b3f9ec30a232146d79030abd3d44b45e9ffff1f4ed",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "unclassifiable",
+      "confidence": "high",
+      "review_status": "pending",
+      "notes": "Legislação/direitos das mulheres - fora do escopo de computing-v1."
+    },
+    {
+      "question_id": "enade-2008-computing-q14",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "2b17e02fa5b2594013023930e9c9a1c851af5f7f5e91c7371507b6ba3f320c6b",
+      "component": "componente_especifico",
+      "primary_topics": [
+        "arvores-e-estruturas-hierarquicas"
+      ],
+      "secondary_topics": [
+        "recursao-e-iteracao"
+      ],
+      "concepts": [
+        {
+          "concept_id": "percurso-em-arvore",
+          "role": "required",
+          "evidence_refs": [
+            {
+              "source_kind": "statement",
+              "source_locator": "statement",
+              "source_sha256": "2b17e02fa5b2594013023930e9c9a1c851af5f7f5e91c7371507b6ba3f320c6b",
+              "text_excerpt": "propôs um algoritmo não-recursivo para o percurso em preordem de uma árvore binária",
+              "excerpt_sha256": "667c018de6c4832d68c3e12237022b9ea18f8de60190c0d271d5b89cede89507",
+              "asset_path": null,
+              "asset_sha256": null,
+              "page": null,
+              "bbox": null
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "context_tags": [
+        "complexidade-de-algoritmos"
+      ],
+      "cognitive_skills": [
+        "analyze",
+        "evaluate"
+      ],
+      "search_terms": [
+        "árvore binária",
+        "percurso pré-ordem",
+        "algoritmo não recursivo",
+        "pilha"
+      ],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "2b17e02fa5b2594013023930e9c9a1c851af5f7f5e91c7371507b6ba3f320c6b",
+          "text_excerpt": "O algoritmo utiliza push() e pop() como funções auxiliares de empilhamento e desempilhamento",
+          "excerpt_sha256": "745bad188f97de5b3a504b306b6f21113ed6fd3e991905cf96c366522153bb0d",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "proposed",
+      "confidence": "high",
+      "review_status": "pending",
+      "notes": null
+    },
+    {
+      "question_id": "enade-2008-computing-q30",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "b4f88d56abc0c4dd4f876a2db1c0fd074c2078d21251ed25d7d218cf896df0e4",
+      "component": "componente_especifico",
+      "primary_topics": [
+        "meios-de-transmissao-e-redes-locais"
+      ],
+      "secondary_topics": [],
+      "concepts": [
+        {
+          "concept_id": "tecnicas-de-multiplo-acesso",
+          "role": "required",
+          "evidence_refs": [
+            {
+              "source_kind": "statement",
+              "source_locator": "statement",
+              "source_sha256": "b4f88d56abc0c4dd4f876a2db1c0fd074c2078d21251ed25d7d218cf896df0e4",
+              "text_excerpt": "técnicas de múltiplo acesso que permitam o compartilhamento da banda de freqüência",
+              "excerpt_sha256": "8cdd68c11f4fa3c43868a99025eee09221f5a35ce3ea4c5b7bae3a172a54a847",
+              "asset_path": null,
+              "asset_sha256": null,
+              "page": null,
+              "bbox": null
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "context_tags": [],
+      "cognitive_skills": [
+        "recall"
+      ],
+      "search_terms": [
+        "múltiplo acesso",
+        "CDMA",
+        "FDMA",
+        "TDMA",
+        "comunicação sem fio"
+      ],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "b4f88d56abc0c4dd4f876a2db1c0fd074c2078d21251ed25d7d218cf896df0e4",
+          "text_excerpt": "Na comunicação sem fio, o espectro de radiofreqüência adotado é um recurso finito",
+          "excerpt_sha256": "b21001855d4b934294d325650ba823db8e51f28cc29e2502bffa35ce72979534",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "proposed",
+      "confidence": "high",
+      "review_status": "pending",
+      "notes": null
+    },
+    {
+      "question_id": "enade-2008-computing-q55",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "8e31ed8bcba4634789a712be9111c517c37a83c7b0a949452286b065b9cc2006",
+      "component": "componente_especifico",
+      "primary_topics": [
+        "probabilidade-e-estatistica-aplicada"
+      ],
+      "secondary_topics": [],
+      "concepts": [
+        {
+          "concept_id": "confiabilidade-de-sistemas",
+          "role": "required",
+          "evidence_refs": [
+            {
+              "source_kind": "statement",
+              "source_locator": "statement",
+              "source_sha256": "8e31ed8bcba4634789a712be9111c517c37a83c7b0a949452286b065b9cc2006",
+              "text_excerpt": "três componentes montados em paralelo que funcionam independentemente",
+              "excerpt_sha256": "26a4ff3620df8dcf09c205c92e71d15f9e66fd0bd7b7840110a713ab03ba80fd",
+              "asset_path": null,
+              "asset_sha256": null,
+              "page": null,
+              "bbox": null
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "context_tags": [],
+      "cognitive_skills": [
+        "calculate",
+        "apply"
+      ],
+      "search_terms": [
+        "confiabilidade",
+        "probabilidade de falha",
+        "componentes em paralelo"
+      ],
+      "evidence": [
+        {
+          "source_kind": "asset",
+          "source_locator": "asset:figure-01",
+          "source_sha256": "8e31ed8bcba4634789a712be9111c517c37a83c7b0a949452286b065b9cc2006",
+          "text_excerpt": null,
+          "excerpt_sha256": null,
+          "asset_path": "enade-2008-computing-q55/figure-01.png",
+          "asset_sha256": "3d3784605fee187844610d33c7ebb6c77fe798ed669e9d6a346240bdad146262",
+          "page": null,
+          "bbox": null
+        },
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "8e31ed8bcba4634789a712be9111c517c37a83c7b0a949452286b065b9cc2006",
+          "text_excerpt": "Como os componentes estão montados em paralelo, o sistema falha no instante",
+          "excerpt_sha256": "b01f8bed77e811df584f28f92405d43bb695e06f267203c8801d4a469aedd7b2",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "proposed",
+      "confidence": "medium",
+      "review_status": "pending",
+      "notes": "Confiança media: as 5 alternativas são formulas em imagem (raster/vetor, Fase 3Y/4B) sem texto - o enunciado visivel confirma o topico com seguranca, mas o raciocinio matematico exato depende de conteudo visual nao transcrito aqui (nunca inventado)."
+    },
+    {
+      "question_id": "enade-2011-computing-d03",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "606ceca85e8038e411d132b67f6e361320e5d55ce95004b692d29b0ec2c6759b",
+      "component": "componente_especifico",
+      "primary_topics": [
+        "recursao-e-iteracao"
+      ],
+      "secondary_topics": [],
+      "concepts": [
+        {
+          "concept_id": "recursao",
+          "role": "required",
+          "evidence_refs": [
+            {
+              "source_kind": "statement",
+              "source_locator": "statement",
+              "source_sha256": "606ceca85e8038e411d132b67f6e361320e5d55ce95004b692d29b0ec2c6759b",
+              "text_excerpt": "Desenvolva dois algoritmos, um iterativo e outro recursivo",
+              "excerpt_sha256": "3b37c0c25e1539f537e8174e41ace73c13ae8567d1f4d3c05b8def678bdc0707",
+              "asset_path": null,
+              "asset_sha256": null,
+              "page": null,
+              "bbox": null
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "context_tags": [],
+      "cognitive_skills": [
+        "design",
+        "compare"
+      ],
+      "search_terms": [
+        "Fibonacci",
+        "recursão",
+        "iteração",
+        "relação de recorrência"
+      ],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "606ceca85e8038e411d132b67f6e361320e5d55ce95004b692d29b0ec2c6759b",
+          "text_excerpt": "Apresente as vantagens e desvantagens de cada algoritmo",
+          "excerpt_sha256": "a77b2b5279111f325d8ba57925c1a193a6e2afbf0cddbfca3743ac788a3f3d0a",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "proposed",
+      "confidence": "high",
+      "review_status": "pending",
+      "notes": null
+    },
+    {
+      "question_id": "enade-2011-computing-q01",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "3f393c7967444f4e700c5d7bc9ae43528f33cb16ba5594a991042198733d03ae",
+      "component": "formacao_geral",
+      "primary_topics": [],
+      "secondary_topics": [],
+      "concepts": [],
+      "context_tags": [],
+      "cognitive_skills": [],
+      "search_terms": [],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "3f393c7967444f4e700c5d7bc9ae43528f33cb16ba5594a991042198733d03ae",
+          "text_excerpt": "No poema, a autora sugere que",
+          "excerpt_sha256": "9371104fa691497e9b41ae71aaffb79f9d6dfad89c7507c01409457e707b7fff",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "unclassifiable",
+      "confidence": "high",
+      "review_status": "pending",
+      "notes": "Interpretação de poema - fora do escopo de computing-v1."
+    },
+    {
+      "question_id": "enade-2011-computing-q14",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "1439471e5565b514808b7e5c9c4f6f90bf00b8534069470598161e3a2fbc8999",
+      "component": "componente_especifico",
+      "primary_topics": [
+        "conjuntos-relacoes-e-funcoes"
+      ],
+      "secondary_topics": [],
+      "concepts": [],
+      "context_tags": [],
+      "cognitive_skills": [
+        "interpret"
+      ],
+      "search_terms": [
+        "diagrama de Venn",
+        "função",
+        "conjuntos"
+      ],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "1439471e5565b514808b7e5c9c4f6f90bf00b8534069470598161e3a2fbc8999",
+          "text_excerpt": "Observe o diagrama de Venn a seguir.",
+          "excerpt_sha256": "aa2461d327988a4d91b8d2f4ea90158f1b4525434ae32cb7255b8909a3997449",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        },
+        {
+          "source_kind": "asset",
+          "source_locator": "asset:figure-01",
+          "source_sha256": "1439471e5565b514808b7e5c9c4f6f90bf00b8534069470598161e3a2fbc8999",
+          "text_excerpt": null,
+          "excerpt_sha256": null,
+          "asset_path": "enade-2011-computing-q14/figure-01.png",
+          "asset_sha256": "ba5c522b3186c2ce6b7a8398b1af8c17ca07add5f78796802c96c7c09f9b8dde",
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "needs_review",
+      "confidence": "low",
+      "review_status": "pending",
+      "notes": "Confianca baixa deliberada: o enunciado visivel e quase inteiramente visual (diagrama de Venn + 7 assets, alternativas tambem sao apenas imagens) - o texto extraido por si so nao permite confirmar qual propriedade especifica da funcao (injetora/sobrejetora/bijetora/outra) esta sendo avaliada. Nenhum conceito especifico foi atribuido para nao fabricar uma leitura da figura nao verificada. Marcado needs_review para confirmacao humana com a figura em maos."
+    },
+    {
+      "question_id": "enade-2011-computing-q23",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "07513cf2b310ecdb34ca539caec31934bbbdf95b9d0b9649c21b082cffde1ded",
+      "component": "componente_especifico",
+      "primary_topics": [
+        "teoria-da-computacao"
+      ],
+      "secondary_topics": [
+        "compiladores-e-linguagens-formais"
+      ],
+      "concepts": [
+        {
+          "concept_id": "automato-finito",
+          "role": "required",
+          "evidence_refs": [
+            {
+              "source_kind": "statement",
+              "source_locator": "statement",
+              "source_sha256": "07513cf2b310ecdb34ca539caec31934bbbdf95b9d0b9649c21b082cffde1ded",
+              "text_excerpt": "Autômatos finitos possuem diversas aplicações práticas, como na detecção de sequências de caracteres",
+              "excerpt_sha256": "fe39ea31dfec75e4db38f7118a608a9b583c674c04e38b74f91b569b3fa5c743",
+              "asset_path": null,
+              "asset_sha256": null,
+              "page": null,
+              "bbox": null
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "context_tags": [],
+      "cognitive_skills": [
+        "analyze",
+        "compare"
+      ],
+      "search_terms": [
+        "autômato finito",
+        "gramática",
+        "linguagem regular",
+        "expressão regular"
+      ],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "07513cf2b310ecdb34ca539caec31934bbbdf95b9d0b9649c21b082cffde1ded",
+          "text_excerpt": "A figura abaixo apresenta um autômato que",
+          "excerpt_sha256": "e45242290b6656114881a446f449089dca5e846bc44d920042cf6c6033579205",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "needs_review",
+      "confidence": "medium",
+      "review_status": "pending",
+      "notes": "O enunciado esta fragmentado por figuras intercaladas (figure-01/02/03) que quebram o fluxo textual - a classificacao de topico (automatos/linguagens formais) e segura pelo vocabulario visivel, mas o detalhe exato da gramatica/linguagem depende das figuras. Marcado needs_review pela mesma razao de honestidade que enade-2011-computing-q14."
+    },
+    {
+      "question_id": "enade-2011-computing-q27",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "d8b81a4ace6231aae9a8ecc57e34bd5e2cc1ec6fe0644bc7fe642c5fe2b7e3e2",
+      "component": "componente_especifico",
+      "primary_topics": [
+        "processos-e-concorrencia"
+      ],
+      "secondary_topics": [],
+      "concepts": [
+        {
+          "concept_id": "paralelizacao-de-algoritmos",
+          "role": "required",
+          "evidence_refs": [
+            {
+              "source_kind": "statement",
+              "source_locator": "statement",
+              "source_sha256": "d8b81a4ace6231aae9a8ecc57e34bd5e2cc1ec6fe0644bc7fe642c5fe2b7e3e2",
+              "text_excerpt": "embaraçosamente paralelo",
+              "excerpt_sha256": "6b0bf9a93806d5ef69e2ce0cc4b4e1610ac98dfaacd7d0b800814d8e60901f17",
+              "asset_path": null,
+              "asset_sha256": null,
+              "page": null,
+              "bbox": null
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "context_tags": [
+        "estruturas-de-dados-e-algoritmos"
+      ],
+      "cognitive_skills": [
+        "analyze",
+        "evaluate"
+      ],
+      "search_terms": [
+        "paralelização",
+        "multiplicação de matrizes",
+        "processos concorrentes",
+        "memória compartilhada"
+      ],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "d8b81a4ace6231aae9a8ecc57e34bd5e2cc1ec6fe0644bc7fe642c5fe2b7e3e2",
+          "text_excerpt": "O objetivo é paralelizar esse código para que o tempo de execução seja reduzido em uma máquina com múltiplos processadores",
+          "excerpt_sha256": "cabb42ea1d6a97c4a109e15e22e578102a66f441c83fce8e46cfc98ddd5be719",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "proposed",
+      "confidence": "high",
+      "review_status": "pending",
+      "notes": null
+    },
+    {
+      "question_id": "enade-2011-computing-q31",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "a099f6197bac9758a2d733498af98d0ff52ae1a9234bc2bcbd7db92b94b60543",
+      "component": "componente_especifico",
+      "primary_topics": [],
+      "secondary_topics": [],
+      "concepts": [],
+      "context_tags": [],
+      "cognitive_skills": [],
+      "search_terms": [],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "a099f6197bac9758a2d733498af98d0ff52ae1a9234bc2bcbd7db92b94b60543",
+          "text_excerpt": "Considerando o currículo na perspectiva crítica da Educação, avalie as afirmações a seguir.",
+          "excerpt_sha256": "3cb2c3c80814953349ddce5fd54c372807a984d4fecec5e811c8daa7dde97ccb",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "unclassifiable",
+      "confidence": "high",
+      "review_status": "pending",
+      "notes": "Sociologia da educação/currículo pedagógico - conteúdo específico da Licenciatura (formação de professores), não Ciência da Computação - fora do escopo de computing-v1 (taxonomia escopada a Computação, nunca a Pedagogia)."
+    },
+    {
+      "question_id": "enade-2011-computing-q33",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "cd6487dca06d9f52e9504f306d1b69f842538fd98886b014e8c3b47b98508827",
+      "component": "componente_especifico",
+      "primary_topics": [],
+      "secondary_topics": [],
+      "concepts": [],
+      "context_tags": [],
+      "cognitive_skills": [],
+      "search_terms": [],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "cd6487dca06d9f52e9504f306d1b69f842538fd98886b014e8c3b47b98508827",
+          "text_excerpt": "Constata-se a necessidade de construção, em larga escala, em nível nacional, de escolas especializadas na Educação de Jovens e Adultos",
+          "excerpt_sha256": "e78a8b5ea3870ee1d7322ee7f75b994280def19054489b2a7502fdaac75bb12e",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "unclassifiable",
+      "confidence": "high",
+      "review_status": "pending",
+      "notes": "Demografia/projeção populacional aplicada à Educação de Jovens e Adultos - conteúdo específico da Licenciatura, não Ciência da Computação - fora do escopo de computing-v1."
+    },
+    {
+      "question_id": "enade-2011-computing-q39",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "3409e4a5ce2a56b5dd732a3fdeb41a08af586d008cfd9ec988e49289d8b87cee",
+      "component": "componente_especifico",
+      "primary_topics": [
+        "paradigmas-de-programacao"
+      ],
+      "secondary_topics": [],
+      "concepts": [
+        {
+          "concept_id": "tipo-de-dados-abstrato",
+          "role": "required",
+          "evidence_refs": [
+            {
+              "source_kind": "statement",
+              "source_locator": "statement",
+              "source_sha256": "3409e4a5ce2a56b5dd732a3fdeb41a08af586d008cfd9ec988e49289d8b87cee",
+              "text_excerpt": "O conceito de Tipo de Dados Abstrato (TDA) é popular em linguagens de programação",
+              "excerpt_sha256": "f9df30995568c28b1d05bdc2674204d195798a53286b38c4426e51730de240fd",
+              "asset_path": null,
+              "asset_sha256": null,
+              "page": null,
+              "bbox": null
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "context_tags": [],
+      "cognitive_skills": [
+        "analyze",
+        "evaluate"
+      ],
+      "search_terms": [
+        "TDA",
+        "tipo de dados abstrato",
+        "encapsulamento",
+        "herança",
+        "composição"
+      ],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "3409e4a5ce2a56b5dd732a3fdeb41a08af586d008cfd9ec988e49289d8b87cee",
+          "text_excerpt": "O encapsulamento em linguagens de programação orientadas a objetos é um efeito positivo do uso de TDA",
+          "excerpt_sha256": "a28523d51dcd8701e3cc122bb45589862ea37b662ec039a2bb769c28f3aa7267",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "proposed",
+      "confidence": "high",
+      "review_status": "pending",
+      "notes": null
+    },
+    {
+      "question_id": "enade-2011-computing-q43",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "e282d0ac2250e383a423519e557cfeb397d37431a30348e544472d7757276b2e",
+      "component": "componente_especifico",
+      "primary_topics": [
+        "organizacao-de-processadores"
+      ],
+      "secondary_topics": [
+        "logica-digital-e-circuitos-combinacionais"
+      ],
+      "concepts": [
+        {
+          "concept_id": "clock-e-temporizacao-de-circuitos-sincronos",
+          "role": "required",
+          "evidence_refs": [
+            {
+              "source_kind": "statement",
+              "source_locator": "statement",
+              "source_sha256": "e282d0ac2250e383a423519e557cfeb397d37431a30348e544472d7757276b2e",
+              "text_excerpt": "usa um registrador especializado, mostrado na figura, que mede e avalia os erros",
+              "excerpt_sha256": "0aec86859641a7f705316155016da7f530b07498740fe252c21c2bc832ccbe3e",
+              "asset_path": null,
+              "asset_sha256": null,
+              "page": null,
+              "bbox": null
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "context_tags": [],
+      "cognitive_skills": [
+        "analyze",
+        "evaluate"
+      ],
+      "search_terms": [
+        "razor",
+        "better-than-worst-case",
+        "clock",
+        "temporização de circuitos"
+      ],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "e282d0ac2250e383a423519e557cfeb397d37431a30348e544472d7757276b2e",
+          "text_excerpt": "O registrador do sistema mantém o valor chaveado e é comandado por um clock de sistema better-than-worst-case",
+          "excerpt_sha256": "120eb7066ce87eb33c0eb4e41716aca57c7ef057eec3392abefeeb75f0c8a852",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        },
+        {
+          "source_kind": "asset",
+          "source_locator": "asset:figure-01",
+          "source_sha256": "e282d0ac2250e383a423519e557cfeb397d37431a30348e544472d7757276b2e",
+          "text_excerpt": null,
+          "excerpt_sha256": null,
+          "asset_path": "enade-2011-computing-q43/figure-01.png",
+          "asset_sha256": "c1ad73328ed858ef4f8e62fc72001dfb658d78fc33bcd480592ae70ba6ddd45a",
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "proposed",
+      "confidence": "medium",
+      "review_status": "pending",
+      "notes": "Confianca media: conteudo tecnico denso (arquitetura razor) menos recorrente no corpus levantado - topico bem evidenciado, mas e um caso mais isolado que os demais."
+    },
+    {
+      "question_id": "enade-2011-computing-q46",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "d24922bc282910122f8921abdadc2de4515bf82e82ea7e85a47cb32d1aae250b",
+      "component": "componente_especifico",
+      "primary_topics": [
+        "sql-e-esquemas-relacionais"
+      ],
+      "secondary_topics": [],
+      "concepts": [
+        {
+          "concept_id": "sql-agregacao-group-by-having",
+          "role": "required",
+          "evidence_refs": [
+            {
+              "source_kind": "statement",
+              "source_locator": "statement",
+              "source_sha256": "d24922bc282910122f8921abdadc2de4515bf82e82ea7e85a47cb32d1aae250b",
+              "text_excerpt": "o comando mais simples para recuperar os códigos dos departamentos cuja média salarial seja maior que 2000",
+              "excerpt_sha256": "8b0e6be662a31a25bb0631cef97a62c8c91860c6c22c924e89a45525df113fb7",
+              "asset_path": null,
+              "asset_sha256": null,
+              "page": null,
+              "bbox": null
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "context_tags": [],
+      "cognitive_skills": [
+        "apply"
+      ],
+      "search_terms": [
+        "SQL",
+        "GROUP BY",
+        "HAVING",
+        "AVG",
+        "consulta relacional"
+      ],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "d24922bc282910122f8921abdadc2de4515bf82e82ea7e85a47cb32d1aae250b",
+          "text_excerpt": "DEPARTAMENTO (#CodDepartamento, NomeDepartamento)",
+          "excerpt_sha256": "61ab90357796d00465412bf0d67730726402c56ec79743e04af4bd3c33873fff",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "proposed",
+      "confidence": "high",
+      "review_status": "pending",
+      "notes": null
+    },
+    {
+      "question_id": "enade-2011-computing-q49",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "ef17ff087c0c18d5b225abf4b9fbeab2050e8401703c995e87e135d9e84eb784",
+      "component": "componente_especifico",
+      "primary_topics": [
+        "fundamentos-de-sistemas-de-informacao"
+      ],
+      "secondary_topics": [],
+      "concepts": [
+        {
+          "concept_id": "teoria-geral-de-sistemas",
+          "role": "required",
+          "evidence_refs": [
+            {
+              "source_kind": "statement",
+              "source_locator": "statement",
+              "source_sha256": "ef17ff087c0c18d5b225abf4b9fbeab2050e8401703c995e87e135d9e84eb784",
+              "text_excerpt": "Considerando o conceito de sistema, trazido pela Teoria Geral de Sistemas",
+              "excerpt_sha256": "749c70e100767f0168a17e00223ab0a80e196a2d3c240d535cfdd4deb778c232",
+              "asset_path": null,
+              "asset_sha256": null,
+              "page": null,
+              "bbox": null
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "context_tags": [
+        "engenharia-de-software"
+      ],
+      "cognitive_skills": [
+        "apply",
+        "interpret"
+      ],
+      "search_terms": [
+        "Teoria Geral de Sistemas",
+        "sistema aberto",
+        "entrada e saída do sistema"
+      ],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "ef17ff087c0c18d5b225abf4b9fbeab2050e8401703c995e87e135d9e84eb784",
+          "text_excerpt": "solicitações de mudanças originadas de um stakeholder externo",
+          "excerpt_sha256": "65ab030e6b8bd9a5e43512204a092e5985df95a1ce21ab57010c79e27901b54f",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "proposed",
+      "confidence": "high",
+      "review_status": "pending",
+      "notes": null
+    },
+    {
+      "question_id": "enade-2021-cc-b-d01",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "e7d49ef66b2ff4c19c437651f30ec69aa3723d7a147b19f9738f9347dc5f9bd6",
+      "component": "formacao_geral",
+      "primary_topics": [],
+      "secondary_topics": [],
+      "concepts": [],
+      "context_tags": [],
+      "cognitive_skills": [],
+      "search_terms": [],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "e7d49ef66b2ff4c19c437651f30ec69aa3723d7a147b19f9738f9347dc5f9bd6",
+          "text_excerpt": "discorra a respeito da relação entre arte, cultura e censura",
+          "excerpt_sha256": "8fea5cb5ea06f820ed475dfdc041dc18aa549b0d6ae4667683f8da2ee8cf0bd6",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "unclassifiable",
+      "confidence": "high",
+      "review_status": "pending",
+      "notes": "Arte, cultura e censura (Constituição Federal) - fora do escopo de computing-v1. Mesmo enunciado publicado também em enade-2021-si-d01 (questão compartilhada entre cursos, PROMPT seção 10) - mesma anotação (unclassifiable) atribuída a ambas."
+    },
+    {
+      "question_id": "enade-2021-cc-b-d03",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "912dfab52c63875cd772f3727503f2d4d0875fd60c7c4cbc33b097792988490c",
+      "component": "componente_especifico",
+      "primary_topics": [
+        "logica-proposicional"
+      ],
+      "secondary_topics": [],
+      "concepts": [
+        {
+          "concept_id": "tabela-verdade",
+          "role": "required",
+          "evidence_refs": [
+            {
+              "source_kind": "statement",
+              "source_locator": "statement",
+              "source_sha256": "912dfab52c63875cd772f3727503f2d4d0875fd60c7c4cbc33b097792988490c",
+              "text_excerpt": "Um corpo de conhecimento representado na lógica proposicional utiliza os conectivos lógicos",
+              "excerpt_sha256": "16713a69b5ed2b56c9b9e53bdf59dfbd0ea0e07a0ea39173bd8307618a7171ca",
+              "asset_path": null,
+              "asset_sha256": null,
+              "page": null,
+              "bbox": null
+            },
+            {
+              "source_kind": "asset",
+              "source_locator": "asset:table-01",
+              "source_sha256": "912dfab52c63875cd772f3727503f2d4d0875fd60c7c4cbc33b097792988490c",
+              "text_excerpt": null,
+              "excerpt_sha256": null,
+              "asset_path": "enade-2021-cc-b-d03/table-01.png",
+              "asset_sha256": "351e31a199403eec4c2db2bc12794492cd128b9fb7d878f0a80ed495405bb52a",
+              "page": null,
+              "bbox": null
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "context_tags": [],
+      "cognitive_skills": [
+        "analyze",
+        "justify"
+      ],
+      "search_terms": [
+        "lógica proposicional",
+        "tabela-verdade",
+        "tautologia",
+        "satisfazibilidade"
+      ],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "912dfab52c63875cd772f3727503f2d4d0875fd60c7c4cbc33b097792988490c",
+          "text_excerpt": "Uma fórmula é uma tautologia se e somente se, para toda atribuição de valores-verdade, sua avaliação é verdadeira.",
+          "excerpt_sha256": "15234141fcfac3d53a25099fb2ed1af74d49a706e10b3f0f5a19dd9b80c7fdec",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "proposed",
+      "confidence": "high",
+      "review_status": "pending",
+      "notes": null
+    },
+    {
+      "question_id": "enade-2021-cc-b-q01",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "2d1b8219f91334f68783814f145b2eca4dcb49b8b9baaea2cdeca4efacd9be54",
+      "component": "formacao_geral",
+      "primary_topics": [],
+      "secondary_topics": [],
+      "concepts": [],
+      "context_tags": [],
+      "cognitive_skills": [],
+      "search_terms": [],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "2d1b8219f91334f68783814f145b2eca4dcb49b8b9baaea2cdeca4efacd9be54",
+          "text_excerpt": "A partir das informações apresentadas, é correto afirmar que",
+          "excerpt_sha256": "0cd86226f8c9945037731080e87864ae6718e8b593e946a88c0bb4ca73b4b889",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "unclassifiable",
+      "confidence": "high",
+      "review_status": "pending",
+      "notes": "Mobilidade social e desigualdade - fora do escopo de computing-v1."
+    },
+    {
+      "question_id": "enade-2021-cc-b-q18",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "91e661cbdae0e3ea1013ca1aab1c31c0cf006a4ad17dda995f40fb5c2e6554e6",
+      "component": "componente_especifico",
+      "primary_topics": [
+        "aprendizado-de-maquina"
+      ],
+      "secondary_topics": [],
+      "concepts": [
+        {
+          "concept_id": "aprendizado-supervisionado-e-nao-supervisionado",
+          "role": "required",
+          "evidence_refs": [
+            {
+              "source_kind": "statement",
+              "source_locator": "statement",
+              "source_sha256": "91e661cbdae0e3ea1013ca1aab1c31c0cf006a4ad17dda995f40fb5c2e6554e6",
+              "text_excerpt": "podem ser divididas em dois principais tipos: os supervisionados e os não supervisionados",
+              "excerpt_sha256": "8f2e3f39aa74001861097e65b94919fffb8c18346975368ab3ab5ec0e74b96e6",
+              "asset_path": null,
+              "asset_sha256": null,
+              "page": null,
+              "bbox": null
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "context_tags": [],
+      "cognitive_skills": [
+        "analyze",
+        "evaluate"
+      ],
+      "search_terms": [
+        "aprendizado de máquina",
+        "aprendizado supervisionado",
+        "indução"
+      ],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "91e661cbdae0e3ea1013ca1aab1c31c0cf006a4ad17dda995f40fb5c2e6554e6",
+          "text_excerpt": "As técnicas de aprendizado de máquinas empregam um princípio de inferência denominado indução",
+          "excerpt_sha256": "a3d29d90a8669303b92333b645a31a8b07f7f77bddcfea7e9c8a1c47075fd212",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "proposed",
+      "confidence": "high",
+      "review_status": "pending",
+      "notes": null
+    },
+    {
+      "question_id": "enade-2021-cc-b-q22",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "4809925cc4a1d097dfd23d8ed24fb7ad4cb6aca450bd4a57c1d5124bc7563676",
+      "component": "componente_especifico",
+      "primary_topics": [
+        "modelagem-de-dados-er"
+      ],
+      "secondary_topics": [],
+      "concepts": [
+        {
+          "concept_id": "mapeamento-der-para-relacional",
+          "role": "required",
+          "evidence_refs": [
+            {
+              "source_kind": "statement",
+              "source_locator": "statement",
+              "source_sha256": "4809925cc4a1d097dfd23d8ed24fb7ad4cb6aca450bd4a57c1d5124bc7563676",
+              "text_excerpt": "A partir das regras de mapeamento do Modelo Conceitual para o Modelo Lógico Relacional",
+              "excerpt_sha256": "00de380244f4a1ec718f535368fc2cd6c56d470e2cee26e35d0d01627001ce4e",
+              "asset_path": null,
+              "asset_sha256": null,
+              "page": null,
+              "bbox": null
+            },
+            {
+              "source_kind": "asset",
+              "source_locator": "asset:figure-01",
+              "source_sha256": "4809925cc4a1d097dfd23d8ed24fb7ad4cb6aca450bd4a57c1d5124bc7563676",
+              "text_excerpt": null,
+              "excerpt_sha256": null,
+              "asset_path": "enade-2021-cc-b-q22/figure-01.png",
+              "asset_sha256": "6a36dcb4e410c1fd7fad80581d13eab7ed9501d85b92dfd4f1a77f00fe94ea75",
+              "page": null,
+              "bbox": null
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "context_tags": [],
+      "cognitive_skills": [
+        "apply"
+      ],
+      "search_terms": [
+        "DER",
+        "modelo entidade relacionamento",
+        "modelo lógico relacional"
+      ],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "4809925cc4a1d097dfd23d8ed24fb7ad4cb6aca450bd4a57c1d5124bc7563676",
+          "text_excerpt": "registra os pets (animais de estimação) amparados por ela, de acordo com o seguinte Diagrama Entidade Relacionamento (DER)",
+          "excerpt_sha256": "9a82d365c2b4a25fbbf2a5648db54077ac97c18f43177dd7d0c8f0e902b3024a",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "proposed",
+      "confidence": "high",
+      "review_status": "pending",
+      "notes": null
+    },
+    {
+      "question_id": "enade-2021-cc-b-q25",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "61c3a77ee448a8941c33bab0bfc7876fef4bddefcce52e0b08cf175a33ec0c76",
+      "component": "componente_especifico",
+      "primary_topics": [
+        "computacao-em-nuvem"
+      ],
+      "secondary_topics": [],
+      "concepts": [
+        {
+          "concept_id": "modelos-de-servico-saas-paas-iaas",
+          "role": "required",
+          "evidence_refs": [
+            {
+              "source_kind": "statement",
+              "source_locator": "statement",
+              "source_sha256": "61c3a77ee448a8941c33bab0bfc7876fef4bddefcce52e0b08cf175a33ec0c76",
+              "text_excerpt": "Os modelos de serviços são: Software como um Serviço (SaaS), Plataforma como um Serviço (PaaS) e Infraestrutura como um Serviço (IaaS)",
+              "excerpt_sha256": "0e6a05e64593ffe932526e7774e010c098aad68854970c1efd4d39d282d7aed6",
+              "asset_path": null,
+              "asset_sha256": null,
+              "page": null,
+              "bbox": null
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "context_tags": [],
+      "cognitive_skills": [
+        "analyze",
+        "evaluate"
+      ],
+      "search_terms": [
+        "computação em nuvem",
+        "SaaS",
+        "PaaS",
+        "IaaS",
+        "NIST",
+        "elasticidade"
+      ],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "61c3a77ee448a8941c33bab0bfc7876fef4bddefcce52e0b08cf175a33ec0c76",
+          "text_excerpt": "A computação em nuvem (cloud computing) pode ser definida como a infraestrutura de comunicação",
+          "excerpt_sha256": "cc10b81c7ace1f2dd18ed9b034d28dce0d3a3b1c7b7dbeb4964d209e9b8c50f2",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "proposed",
+      "confidence": "high",
+      "review_status": "pending",
+      "notes": "Questao com o MESMO enunciado publicado em enade-2021-cc-b-q25 e enade-2021-cc-l-q25 (questao compartilhada entre cursos, PROMPT Fase 5A secao 10) - mesma anotacao atribuida a ambas deliberadamente, ver docs/phase-5a-report.md secao I."
+    },
+    {
+      "question_id": "enade-2021-cc-b-q29",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "320b8ec74fbc481257c2a4db862e7cd329074d789ff946181d69a454b87828ad",
+      "component": "componente_especifico",
+      "primary_topics": [
+        "processamento-e-segmentacao-de-imagens"
+      ],
+      "secondary_topics": [],
+      "concepts": [
+        {
+          "concept_id": "operacoes-morfologicas-erosao-dilatacao",
+          "role": "required",
+          "evidence_refs": [
+            {
+              "source_kind": "statement",
+              "source_locator": "statement",
+              "source_sha256": "320b8ec74fbc481257c2a4db862e7cd329074d789ff946181d69a454b87828ad",
+              "text_excerpt": "Em relação às operações morfológicas de Erosão e Dilatação",
+              "excerpt_sha256": "c89b595e87624d4a3ccdd6480b2b7afc16934dd2e27252f798a8e4eaae589663",
+              "asset_path": null,
+              "asset_sha256": null,
+              "page": null,
+              "bbox": null
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "context_tags": [],
+      "cognitive_skills": [
+        "analyze",
+        "evaluate"
+      ],
+      "search_terms": [
+        "operações morfológicas",
+        "erosão",
+        "dilatação",
+        "processamento de imagens"
+      ],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "320b8ec74fbc481257c2a4db862e7cd329074d789ff946181d69a454b87828ad",
+          "text_excerpt": "As operações morfológicas aplicam um elemento estruturador B a uma imagem A de entrada",
+          "excerpt_sha256": "d0824c7068047bae3330e4993483836d2dc346d30367bb9d16dc60094d0f09b0",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "proposed",
+      "confidence": "high",
+      "review_status": "pending",
+      "notes": null
+    },
+    {
+      "question_id": "enade-2021-cc-l-q25",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "75d986bca026d4e5419e068852e9607f4504487830677019757da4a4c3404eb1",
+      "component": "componente_especifico",
+      "primary_topics": [
+        "computacao-em-nuvem"
+      ],
+      "secondary_topics": [],
+      "concepts": [
+        {
+          "concept_id": "modelos-de-servico-saas-paas-iaas",
+          "role": "required",
+          "evidence_refs": [
+            {
+              "source_kind": "statement",
+              "source_locator": "statement",
+              "source_sha256": "75d986bca026d4e5419e068852e9607f4504487830677019757da4a4c3404eb1",
+              "text_excerpt": "Os modelos de serviços são: Software como um Serviço (SaaS), Plataforma como um Serviço (PaaS) e Infraestrutura como um Serviço (IaaS)",
+              "excerpt_sha256": "0e6a05e64593ffe932526e7774e010c098aad68854970c1efd4d39d282d7aed6",
+              "asset_path": null,
+              "asset_sha256": null,
+              "page": null,
+              "bbox": null
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "context_tags": [],
+      "cognitive_skills": [
+        "analyze",
+        "evaluate"
+      ],
+      "search_terms": [
+        "computação em nuvem",
+        "SaaS",
+        "PaaS",
+        "IaaS",
+        "NIST",
+        "elasticidade"
+      ],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "75d986bca026d4e5419e068852e9607f4504487830677019757da4a4c3404eb1",
+          "text_excerpt": "A computação em nuvem (cloud computing) pode ser definida como a infraestrutura de comunicação",
+          "excerpt_sha256": "cc10b81c7ace1f2dd18ed9b034d28dce0d3a3b1c7b7dbeb4964d209e9b8c50f2",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "proposed",
+      "confidence": "high",
+      "review_status": "pending",
+      "notes": "Questao com o MESMO enunciado publicado em enade-2021-cc-b-q25 e enade-2021-cc-l-q25 (questao compartilhada entre cursos, PROMPT Fase 5A secao 10) - mesma anotacao atribuida a ambas deliberadamente, ver docs/phase-5a-report.md secao I."
+    },
+    {
+      "question_id": "enade-2021-si-d01",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "280d2a4a6c7db8a17479d731381659a50e6fd9866c860a71643587b3b7e29eb1",
+      "component": "formacao_geral",
+      "primary_topics": [],
+      "secondary_topics": [],
+      "concepts": [],
+      "context_tags": [],
+      "cognitive_skills": [],
+      "search_terms": [],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "280d2a4a6c7db8a17479d731381659a50e6fd9866c860a71643587b3b7e29eb1",
+          "text_excerpt": "discorra a respeito da relação entre arte, cultura e censura",
+          "excerpt_sha256": "8fea5cb5ea06f820ed475dfdc041dc18aa549b0d6ae4667683f8da2ee8cf0bd6",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "unclassifiable",
+      "confidence": "high",
+      "review_status": "pending",
+      "notes": "Arte, cultura e censura (Constituição Federal) - fora do escopo de computing-v1. Mesmo enunciado publicado também em enade-2021-cc-b-d01 (questão compartilhada entre cursos, PROMPT seção 10) - mesma anotação (unclassifiable) atribuída a ambas."
+    },
+    {
+      "question_id": "enade-2021-si-d02",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "486447a7793b45bdbc806d1301cc02831d8a52eb947db735de625987de6a1d49",
+      "component": "formacao_geral",
+      "primary_topics": [],
+      "secondary_topics": [],
+      "concepts": [],
+      "context_tags": [],
+      "cognitive_skills": [],
+      "search_terms": [],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "486447a7793b45bdbc806d1301cc02831d8a52eb947db735de625987de6a1d49",
+          "text_excerpt": "Explique de que modo as cidades inteligentes podem contribuir para a melhoria das questões relacionadas ao desenvolvimento sustentável.",
+          "excerpt_sha256": "e7db8c5125996324c4341ad08424becd33b0477456c09746e2d1ef6ce9c27cff",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "unclassifiable",
+      "confidence": "high",
+      "review_status": "pending",
+      "notes": "Cidades inteligentes discutidas na perspectiva de desenvolvimento sustentável/política urbana (não a perspectiva técnica de TIC/IoT) - fora do escopo de computing-v1. Contraste deliberado com enade-2021-si-q34 (mesmo tema, mas tratado tecnicamente - ver seção O do relatório)."
+    },
+    {
+      "question_id": "enade-2021-si-d03",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "aaf09017f0780e3451456755ace5d2611c2a6bdbd551a7a9d06ccb9390b344f2",
+      "component": "componente_especifico",
+      "primary_topics": [
+        "fundamentos-de-sistemas-de-informacao"
+      ],
+      "secondary_topics": [],
+      "concepts": [
+        {
+          "concept_id": "hierarquia-dado-informacao-conhecimento",
+          "role": "required",
+          "evidence_refs": [
+            {
+              "source_kind": "statement",
+              "source_locator": "statement",
+              "source_sha256": "aaf09017f0780e3451456755ace5d2611c2a6bdbd551a7a9d06ccb9390b344f2",
+              "text_excerpt": "Dados são uma descrição elementar de coisas, eventos, atividades ou transações",
+              "excerpt_sha256": "fb6ce426083a1fd44ef548d80c66acd4cedc8ddfeedb4128339c0a8700287c27",
+              "asset_path": null,
+              "asset_sha256": null,
+              "page": null,
+              "bbox": null
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "context_tags": [],
+      "cognitive_skills": [
+        "apply",
+        "interpret"
+      ],
+      "search_terms": [
+        "hierarquia dado-informação-conhecimento",
+        "pirâmide DIKW"
+      ],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "aaf09017f0780e3451456755ace5d2611c2a6bdbd551a7a9d06ccb9390b344f2",
+          "text_excerpt": "Informações podem ser analisadas para gerar conhecimento tácito ou explícito",
+          "excerpt_sha256": "62b2f3957ad3a149f6f3a814229e341c3c52987be4074ae732013a48dbf64562",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "proposed",
+      "confidence": "high",
+      "review_status": "pending",
+      "notes": null
+    },
+    {
+      "question_id": "enade-2021-si-q05",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "75437d753a2a60aee3d499737eff53263a600142ae18cdf43d1ba4d5a221f3ef",
+      "component": "formacao_geral",
+      "primary_topics": [],
+      "secondary_topics": [],
+      "concepts": [],
+      "context_tags": [],
+      "cognitive_skills": [],
+      "search_terms": [],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "75437d753a2a60aee3d499737eff53263a600142ae18cdf43d1ba4d5a221f3ef",
+          "text_excerpt": "Considerando as informações apresentadas e o alto índice de suicídio da população indígena, avalie as afirmações a seguir.",
+          "excerpt_sha256": "0ef968e44b64f3a34512bf593b060c797dcb7509d6715cdcaa8452829e09aba1",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "unclassifiable",
+      "confidence": "high",
+      "review_status": "pending",
+      "notes": "Epidemiologia do suicídio em populações indígenas - fora do escopo de computing-v1."
+    },
+    {
+      "question_id": "enade-2021-si-q25",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "893cca378ab986d0dff84be5dfd15faa5f342422539ed6b89a34cd61f9faa164",
+      "component": "componente_especifico",
+      "primary_topics": [
+        "principios-de-seguranca-da-informacao"
+      ],
+      "secondary_topics": [],
+      "concepts": [
+        {
+          "concept_id": "principios-cid-confidencialidade-integridade-disponibilidade",
+          "role": "required",
+          "evidence_refs": [
+            {
+              "source_kind": "statement",
+              "source_locator": "statement",
+              "source_sha256": "893cca378ab986d0dff84be5dfd15faa5f342422539ed6b89a34cd61f9faa164",
+              "text_excerpt": "Está amparada pelos preceitos de integridade, disponibilidade e confidencialidade",
+              "excerpt_sha256": "e32990f2c4cdd52fbd65bd4af746800549dddd7e5a6098ce290cb3b3d563e480",
+              "asset_path": null,
+              "asset_sha256": null,
+              "page": null,
+              "bbox": null
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "context_tags": [],
+      "cognitive_skills": [
+        "evaluate"
+      ],
+      "search_terms": [
+        "segurança da informação",
+        "confidencialidade",
+        "integridade",
+        "disponibilidade",
+        "ISO 27002"
+      ],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "893cca378ab986d0dff84be5dfd15faa5f342422539ed6b89a34cd61f9faa164",
+          "text_excerpt": "Em conformidade com a ABNT NBR ISO/IEC 27002 (2013), segurança da informação",
+          "excerpt_sha256": "57223f29c2dd38f22b21c4f8e6f761333731ed215860b1df5c571ef55c672f8a",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "proposed",
+      "confidence": "high",
+      "review_status": "pending",
+      "notes": null
+    },
+    {
+      "question_id": "enade-2021-si-q34",
+      "taxonomy_version": "computing-v1@1.0.0-pilot",
+      "source_hash": "6cadab7ad5837335e3e44fa24951f70f6a4fb2f791eb6d0199c9f44e58f2ba38",
+      "component": "componente_especifico",
+      "primary_topics": [
+        "internet-das-coisas-e-cidades-inteligentes"
+      ],
+      "secondary_topics": [],
+      "concepts": [
+        {
+          "concept_id": "internet-das-coisas",
+          "role": "required",
+          "evidence_refs": [
+            {
+              "source_kind": "statement",
+              "source_locator": "statement",
+              "source_sha256": "6cadab7ad5837335e3e44fa24951f70f6a4fb2f791eb6d0199c9f44e58f2ba38",
+              "text_excerpt": "as TIC podem ser empregadas para coletar e analisar uma grande quantidade de informações geradas por diversas fontes de dados da cidade",
+              "excerpt_sha256": "9405ef8eb53280d7bb4eab8a7ac553246aca7af95f1f33c4802c55444563457a",
+              "asset_path": null,
+              "asset_sha256": null,
+              "page": null,
+              "bbox": null
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "context_tags": [],
+      "cognitive_skills": [
+        "evaluate",
+        "analyze"
+      ],
+      "search_terms": [
+        "cidades inteligentes",
+        "Internet das Coisas",
+        "IoT",
+        "TIC"
+      ],
+      "evidence": [
+        {
+          "source_kind": "statement",
+          "source_locator": "statement",
+          "source_sha256": "6cadab7ad5837335e3e44fa24951f70f6a4fb2f791eb6d0199c9f44e58f2ba38",
+          "text_excerpt": "Tornar as cidades mais inteligentes pode ajudar a melhorar os serviços urbanos",
+          "excerpt_sha256": "833b55a3f03081ac4fe32de0e8eb614ded0f7faa5455909e848e9a6615e6cdaf",
+          "asset_path": null,
+          "asset_sha256": null,
+          "page": null,
+          "bbox": null
+        }
+      ],
+      "annotation_method": "manual_expert_reading_student_visible_content_only",
+      "annotation_status": "proposed",
+      "confidence": "high",
+      "review_status": "pending",
+      "notes": "Contraste deliberado com enade-2021-si-d02 (mesmo tema 'cidade inteligente', mas tratado ali na perspectiva de sustentabilidade/formacao geral, unclassifiable) - aqui a perspectiva e tecnica (TIC/IoT), componente especifico."
+    }
+  ]
+}

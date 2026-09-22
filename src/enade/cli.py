@@ -61,6 +61,15 @@ from enade.inventory.scanner import scan_corpus
 from enade.markdown_format import load_question_markdown
 from enade.models.enums import CourseCode, VisualValidationStatus
 from enade.readiness import assess_readiness
+from enade.semantic.artifacts import canonical_of_from_groups, load_annotations, load_taxonomy
+from enade.semantic.corpus_survey import resolve_question_directory
+from enade.semantic.review import build_review_markdown
+from enade.semantic.validators import (
+    validate_annotation_against_taxonomy,
+    validate_evidence_integrity,
+    validate_search_terms_have_provenance,
+    validate_shared_question_consistency,
+)
 from enade.validation.manifest_checks import check_manifest_matches_filesystem, validate_manifest
 from enade.validation.schema_checks import (
     validate_fixtures_directory,
@@ -79,6 +88,11 @@ DEFAULT_TAXONOMY_PATH = PROJECT_ROOT / "data" / "taxonomy" / "demo-taxonomy.yaml
 DEFAULT_MISCONCEPTIONS_PATH = PROJECT_ROOT / "data" / "taxonomy" / "demo-misconceptions.yaml"
 DEFAULT_QUESTIONS_DIR = PROJECT_ROOT / "data" / "questions"
 DEFAULT_AUDIT_DIR = PROJECT_ROOT / "data" / "manifests"
+DEFAULT_COMPUTING_TAXONOMY_PATH = PROJECT_ROOT / "data" / "taxonomy" / "computing-v1.yaml"
+DEFAULT_SEMANTIC_ANNOTATIONS_PATH = (
+    PROJECT_ROOT / "data" / "semantic" / "question-annotations-5a.json"
+)
+DEFAULT_SEMANTIC_REVIEW_PATH = PROJECT_ROOT / "docs" / "semantic-pilot-review.md"
 
 #: CourseCode -> source filename letter (inverse of COURSE_LETTER_MAP).
 COURSE_TO_LETTER = {code: letter for letter, code in COURSE_LETTER_MAP.items()}
@@ -1002,6 +1016,115 @@ def assess_readiness_cmd(
 
     if not report.ready:
         raise typer.Exit(code=1)
+
+
+@app.command(name="validate-taxonomy")
+def validate_taxonomy_cmd(
+    taxonomy_path: Path = typer.Option(
+        DEFAULT_COMPUTING_TAXONOMY_PATH, help="taxonomy YAML to validate (PROMPT Fase 5A)"
+    ),
+) -> None:
+    """Validate a semantic-layer taxonomy YAML: unique ids, resolvable
+    parents/related_ids, acyclic hierarchy, alias collisions, deterministic
+    ordering (``enade.models.taxonomy.Taxonomy``'s own validators). Never
+    writes. Never touches ``data/questions``.
+    """
+    if not taxonomy_path.exists():
+        typer.echo(f"taxonomy not found: {taxonomy_path}")
+        raise typer.Exit(code=1)
+
+    result = validate_taxonomy_yaml_file(taxonomy_path)
+    if result.ok:
+        typer.echo(f"[OK]   taxonomy {taxonomy_path}")
+        typer.echo("validate-taxonomy: OK")
+    else:
+        typer.echo(f"[FAIL] taxonomy {taxonomy_path}: {result.error}")
+        typer.echo("validate-taxonomy: FAILED")
+        raise typer.Exit(code=1)
+
+
+@app.command(name="validate-semantic-annotations")
+def validate_semantic_annotations_cmd(
+    taxonomy_path: Path = typer.Option(DEFAULT_COMPUTING_TAXONOMY_PATH, help="taxonomy YAML"),
+    annotations_path: Path = typer.Option(
+        DEFAULT_SEMANTIC_ANNOTATIONS_PATH, help="question-annotations JSON to validate"
+    ),
+    project_root: Path = typer.Option(
+        PROJECT_ROOT, help="repo root, used to resolve each question's own published directory"
+    ),
+) -> None:
+    """Cross-artifact validation of a semantic annotation set (PROMPT Fase
+    5A section 23): taxonomy references, evidence integrity against the
+    real files on disk, shared-question consistency, search-term
+    provenance. Read-only; never writes; deterministic; no network.
+    """
+    if not taxonomy_path.exists():
+        typer.echo(f"taxonomy not found: {taxonomy_path}")
+        raise typer.Exit(code=1)
+    if not annotations_path.exists():
+        typer.echo(f"annotations file not found: {annotations_path}")
+        raise typer.Exit(code=1)
+
+    taxonomy = load_taxonomy(taxonomy_path)
+    annotations, groups = load_annotations(annotations_path)
+    canonical_of = canonical_of_from_groups(groups)
+
+    if not annotations:
+        typer.echo(f"no annotations found in {annotations_path}")
+        raise typer.Exit(code=1)
+
+    taxonomy_version = annotations[0].taxonomy_version
+    diagnostics = []
+    for annotation in sorted(annotations, key=lambda a: a.question_id):
+        diagnostics += validate_annotation_against_taxonomy(annotation, taxonomy, taxonomy_version)
+        diagnostics += validate_evidence_integrity(
+            annotation, resolve_question_directory(annotation.question_id, project_root)
+        )
+        diagnostics += validate_search_terms_have_provenance(annotation)
+    diagnostics += validate_shared_question_consistency(annotations, canonical_of=canonical_of)
+
+    for diag in diagnostics:
+        typer.echo(f"  [FAIL] {diag.question_id} ({diag.field}): {diag.kind} - {diag.detail}")
+
+    typer.echo("")
+    typer.echo(
+        f"validate-semantic-annotations: {len(annotations)} annotation(s) checked, "
+        f"{len(diagnostics)} diagnostic(s)"
+    )
+    if diagnostics:
+        raise typer.Exit(code=1)
+
+
+@app.command(name="build-semantic-review")
+def build_semantic_review_cmd(
+    taxonomy_path: Path = typer.Option(DEFAULT_COMPUTING_TAXONOMY_PATH, help="taxonomy YAML"),
+    annotations_path: Path = typer.Option(
+        DEFAULT_SEMANTIC_ANNOTATIONS_PATH, help="question-annotations JSON"
+    ),
+    output_path: Path = typer.Option(
+        DEFAULT_SEMANTIC_REVIEW_PATH, help="Markdown review packet to (re)write"
+    ),
+) -> None:
+    """Render the human-review Markdown packet (PROMPT Fase 5A section
+    22). Purely a rendering step: never validates, never promotes
+    ``annotation_status``/``review_status``, never reads the gabarito
+    (the annotation model has no such field to read).
+    """
+    if not taxonomy_path.exists():
+        typer.echo(f"taxonomy not found: {taxonomy_path}")
+        raise typer.Exit(code=1)
+    if not annotations_path.exists():
+        typer.echo(f"annotations file not found: {annotations_path}")
+        raise typer.Exit(code=1)
+
+    taxonomy = load_taxonomy(taxonomy_path)
+    annotations, _groups = load_annotations(annotations_path)
+    taxonomy_version = annotations[0].taxonomy_version if annotations else "unknown"
+
+    markdown = build_review_markdown(annotations, taxonomy, taxonomy_version)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(markdown, encoding="utf-8")
+    typer.echo(f"build-semantic-review: wrote {len(annotations)} question(s) to {output_path}")
 
 
 if __name__ == "__main__":

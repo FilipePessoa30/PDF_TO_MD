@@ -1,0 +1,475 @@
+# PROMPT Fase 5A - the first real (though PROVISIONAL) Computing taxonomy.
+#
+# NOT the definitive ENADE Computing syllabus. `status: provisional` means:
+# grounded in real, directly-verified corpus evidence (every area/topic
+# below cites the exact questions that justify it - never invented, never
+# resolved by informally answering the question itself), but not yet
+# cross-checked against a documented official curricular source (e.g. an
+# INEP/ENADE "conteudo programatico" PDF) - see docs/phase-5a-report.md
+# section D/E for why that cross-check was not attempted this phase, and
+# `notice` below for the same disclosure inside the artifact itself.
+#
+# Depth is deliberately Area -> Topic only at this stage (PROMPT section
+# 9: neither superficial single-area coverage nor hundreds of concepts
+# minted from one occurrence). Concepts are added only where the Fase 5A
+# pilot annotation (data/semantic/question-annotations-5a.json) actually
+# needed one - each concept's own source_references cites the exact pilot
+# question(s) that motivated it, never a bare guess.
+#
+# Subjects/topics/concepts are ordered alphabetically by id throughout
+# (Taxonomy._check_deterministic_ordering, enforced because taxonomy_id
+# is set) - never by narrative/importance order.
+taxonomy_id: computing-v1
+version: "1.0.0-pilot"
+status: provisional
+notice: >-
+  Taxonomia provisoria (PROMPT Fase 5A): areas e topicos sao evidenciados
+  por recorrencia real no corpus publicado de 2008-b/2011/2021 (ver
+  source_references de cada no), nunca inventados. Conceitos existem
+  apenas onde o piloto de anotacao semantica desta fase realmente
+  precisou de um. Esta taxonomia NAO foi cruzada contra um documento
+  curricular oficial (INEP/ENADE) - permanece "provisional" ate que essa
+  fonte externa seja obtida e citada explicitamente. Nao usar como
+  autoridade curricular definitiva; usar apenas como base de trabalho
+  para o piloto e para revisao humana.
+language: pt-BR
+created_from:
+  - title: >-
+      Levantamento estrutural direto do corpus publicado (255 questoes:
+      2008-b=80, 2011=55, 2021-cc-b=40, 2021-cc-l=40, 2021-si=40) via
+      enade.semantic.corpus_survey, seguido de leitura do enunciado das
+      90 questoes de componente especifico de 2008-b e 2021-cc-b.
+subjects:
+  - id: arquitetura-e-organizacao-de-computadores
+    name: Arquitetura e Organização de Computadores
+    description: >-
+      Estrutura interna do computador: representação e aritmética
+      binária, lógica digital combinacional, organização de processadores
+      e sua evolução histórica.
+    inclusion_criteria:
+      - "Aritmética/representação binária, circuitos lógicos combinacionais, pipeline/organização de processador, ou história da arquitetura de computadores."
+    exclusion_criteria:
+      - "Álgebra booleana usada apenas como notação de lógica proposicional sem circuito real associado (ver matematica-discreta-e-logica)."
+    source_references:
+      - title: "Recorrência no corpus: enade-2008-computing-d39 (aritmética binária), q24/q38/q50/q57 (circuitos combinacionais), q43 (microcontrolador); enade-2021-cc-b-d04 (soma binária), q14 (história do ENIAC), q28 (pipeline)."
+    topics:
+      - id: aritmetica-computacional
+        name: Aritmética Computacional
+        description: Representação e operações aritméticas em sistemas binários.
+        source_references:
+          - title: "enade-2008-computing-d39; enade-2021-cc-b-d04"
+      - id: logica-digital-e-circuitos-combinacionais
+        name: Lógica Digital e Circuitos Combinacionais
+        description: Portas lógicas, decodificadores, tabelas-verdade de circuitos físicos.
+        source_references:
+          - title: "enade-2008-computing-q24, q38, q50, q57"
+      - id: organizacao-de-processadores
+        name: Organização e Pipeline de Processadores
+        description: Estágios de pipeline, unidades funcionais, evolução histórica de arquiteturas.
+        source_references:
+          - title: "enade-2021-cc-b-q14, q28; enade-2011-computing-q43 (razor, timing de clock)"
+        concepts:
+          - id: clock-e-temporizacao-de-circuitos-sincronos
+            name: Clock e Temporização de Circuitos Síncronos
+            keywords: ["clock", "temporizacao", "better-than-worst-case"]
+            source_references:
+              - title: "Motivado pelo piloto Fase 5A: enade-2011-computing-q43 (arquitetura razor)"
+
+  - id: banco-de-dados
+    name: Banco de Dados
+    description: Modelagem relacional, SQL e dependências funcionais.
+    inclusion_criteria:
+      - "Modelo entidade-relacionamento, esquema relacional, comando SQL, chave primária/estrangeira, ou dependência funcional/normalização como objeto central."
+    source_references:
+      - title: "enade-2008-computing-d40, q21, q23, q44, q68, q76; enade-2021-cc-b-q22."
+    topics:
+      - id: dependencias-funcionais-e-normalizacao
+        name: Dependências Funcionais e Normalização
+        source_references:
+          - title: "enade-2008-computing-q76"
+      - id: modelagem-de-dados-er
+        name: Modelagem de Dados (Entidade-Relacionamento)
+        source_references:
+          - title: "enade-2008-computing-d40, q23; enade-2021-cc-b-q22"
+        concepts:
+          - id: mapeamento-der-para-relacional
+            name: Mapeamento do Modelo Conceitual (DER) para o Modelo Lógico Relacional
+            keywords: ["DER", "modelo logico", "chave estrangeira"]
+            source_references:
+              - title: "Motivado pelo piloto Fase 5A: enade-2021-cc-b-q22"
+      - id: sql-e-esquemas-relacionais
+        name: SQL e Definição de Esquemas Relacionais
+        source_references:
+          - title: "enade-2008-computing-q21, q44, q68; enade-2011-computing-q46 (GROUP BY/HAVING)"
+        concepts:
+          - id: sql-agregacao-group-by-having
+            name: Agregação SQL (GROUP BY/HAVING)
+            keywords: ["SQL", "GROUP BY", "HAVING", "AVG"]
+            source_references:
+              - title: "Motivado pelo piloto Fase 5A: enade-2011-computing-q46"
+
+  - id: engenharia-de-software
+    name: Engenharia de Software
+    description: >-
+      Processos e metodologias de desenvolvimento, engenharia de
+      requisitos, qualidade e gestão de serviços/processos de TI.
+    inclusion_criteria:
+      - "Metodologia de desenvolvimento (ágil, iterativo, cascata), levantamento/engenharia de requisitos, métricas de qualidade (coesão/acoplamento), manutenção de sistemas legados, ou modelo de gestão de serviços de TI (ITIL/COBIT) como objeto central."
+    source_references:
+      - title: "enade-2008-computing-d79, q61, q62, q65, q66, q69, q71, q73, q74, q77, q78; enade-2021-cc-b-q13, q15, q19."
+    topics:
+      - id: engenharia-de-requisitos
+        name: Engenharia de Requisitos
+        source_references:
+          - title: "enade-2021-cc-b-q19"
+      - id: fundamentos-de-sistemas-de-informacao
+        name: Fundamentos de Sistemas de Informação
+        description: >-
+          Teoria Geral de Sistemas aplicada a projetos de software, e a
+          hierarquia dado-informação-conhecimento (DIKW) - conteúdo
+          fundamental recorrente nas provas do curso de Sistemas de
+          Informação, distinto de uma metodologia de desenvolvimento
+          específica.
+        source_references:
+          - title: "enade-2011-computing-q49 (Teoria Geral de Sistemas); enade-2021-si-d03 (dado/informação/conhecimento)"
+        concepts:
+          - id: hierarquia-dado-informacao-conhecimento
+            name: Hierarquia Dado-Informação-Conhecimento (DIKW)
+            keywords: ["hierarquia dado-informacao-conhecimento", "piramide DIKW", "dado informacao conhecimento"]
+            source_references:
+              - title: "Motivado pelo piloto Fase 5A: enade-2021-si-d03"
+          - id: teoria-geral-de-sistemas
+            name: Teoria Geral de Sistemas
+            keywords: ["teoria geral de sistemas", "sistema aberto", "entrada e saida do sistema"]
+            source_references:
+              - title: "Motivado pelo piloto Fase 5A: enade-2011-computing-q49"
+      - id: gestao-de-servicos-e-processos-de-ti
+        name: Gestão de Serviços e Processos de TI
+        description: Modelos de governança e gestão de serviços (ITIL, COBIT), ética profissional em auditoria de TI.
+        source_references:
+          - title: "enade-2008-computing-q61, q62, q66"
+      - id: processos-e-metodologias-de-desenvolvimento
+        name: Processos e Metodologias de Desenvolvimento
+        description: Ciclo de vida de software, metodologias ágeis e iterativas, manutenção de sistemas legados.
+        source_references:
+          - title: "enade-2021-cc-b-q13, q15; enade-2008-computing-q69, q74, q77"
+      - id: qualidade-e-metricas-de-software
+        name: Qualidade e Métricas de Software
+        description: Coesão, acoplamento, métricas de defeitos/tamanho de código.
+        source_references:
+          - title: "enade-2008-computing-q37, q71"
+
+  - id: estruturas-de-dados-e-algoritmos
+    name: Estruturas de Dados e Algoritmos
+    description: >-
+      Organização de dados em memória e os algoritmos que operam sobre
+      ela: árvores, ordenação, busca e análise de complexidade.
+    inclusion_criteria:
+      - "Estrutura de dados nomeada (árvore, heap, lista, fila, pilha, grafo) ou algoritmo clássico (ordenação, busca, caminho mínimo) como objeto central da questão."
+    source_references:
+      - title: "enade-2021-cc-b-d05 (heap binário), q10 (coleções Java), q23 (árvore binária de busca), q32 (ordenação), q34 (Dijkstra)."
+    topics:
+      - id: algoritmos-de-ordenacao-e-busca
+        name: Algoritmos de Ordenação e Busca
+        description: Complexidade e comportamento de algoritmos clássicos de ordenação/busca em grafos.
+        source_references:
+          - title: "enade-2021-cc-b-q32, q34"
+      - id: arvores-e-estruturas-hierarquicas
+        name: Árvores e Estruturas Hierárquicas
+        description: Árvores binárias, heaps, árvores de busca.
+        source_references:
+          - title: "enade-2021-cc-b-d05, q23; enade-2008-computing-q14 (percurso pré-ordem)"
+        concepts:
+          - id: percurso-em-arvore
+            name: Percurso em Árvore (Pré-ordem/Em-ordem/Pós-ordem)
+            keywords: ["preordem", "travessia", "traversal"]
+            source_references:
+              - title: "Motivado pelo piloto Fase 5A: enade-2008-computing-q14 (percurso pré-ordem não recursivo com pilha)"
+      - id: colecoes-e-tipos-abstratos-de-dados
+        name: Coleções e Tipos Abstratos de Dados
+        description: Listas, filas, pilhas e suas implementações em bibliotecas de linguagens reais.
+        source_references:
+          - title: "enade-2021-cc-b-q10"
+      - id: recursao-e-iteracao
+        name: Recursão e Iteração
+        description: >-
+          Comparação entre soluções recursivas e iterativas para o mesmo
+          problema - vantagens, desvantagens, custo de pilha.
+        source_references:
+          - title: "enade-2008-computing-q14 (traversal iterativo com pilha explícita); enade-2011-computing-d03 (Fibonacci iterativo vs. recursivo)"
+        concepts:
+          - id: recursao
+            name: Recursão
+            keywords: ["recursivo", "chamada recursiva", "caso base"]
+            source_references:
+              - title: "Motivado pelo piloto Fase 5A: enade-2011-computing-d03 (Fibonacci)"
+
+  - id: inteligencia-artificial
+    name: Inteligência Artificial
+    description: Busca, resolução de problemas e aprendizado de máquina.
+    inclusion_criteria:
+      - "Algoritmo de busca (heurística ou cega), árvore de decisão, ou princípio de aprendizado de máquina como objeto central."
+    source_references:
+      - title: "enade-2008-computing-q28, q31, q51; enade-2021-cc-b-q18."
+    topics:
+      - id: aprendizado-de-maquina
+        name: Aprendizado de Máquina
+        source_references:
+          - title: "enade-2008-computing-q28; enade-2021-cc-b-q18"
+        concepts:
+          - id: aprendizado-supervisionado-e-nao-supervisionado
+            name: Aprendizado Supervisionado e Não Supervisionado
+            keywords: ["supervisionado", "nao supervisionado", "inducao"]
+            source_references:
+              - title: "Motivado pelo piloto Fase 5A: enade-2021-cc-b-q18"
+      - id: busca-e-resolucao-de-problemas
+        name: Busca e Resolução de Problemas
+        source_references:
+          - title: "enade-2008-computing-q31, q51"
+
+  - id: interacao-humano-computador
+    name: Interação Humano-Computador
+    description: >-
+      Design de interfaces adaptativas e personalização de experiência de
+      usuário. Justificada por convenção curricular da área (tópico
+      padrão de currículos de Computação), não apenas por recorrência -
+      apenas uma ocorrência direta encontrada na leitura desta fase (ver
+      source_references) - marcada honestamente como caso raro (PROMPT
+      seção 9).
+    inclusion_criteria:
+      - "Interface de usuário adaptativa/personalizada como objeto central."
+    source_references:
+      - title: "enade-2021-cc-b-q26 (única ocorrência direta identificada nesta fase); inclusão também apoiada em convenção curricular de IHC como subárea padrão de Computação, nao verificada contra fonte documental externa nesta fase."
+    topics:
+      - id: interfaces-adaptativas
+        name: Interfaces Adaptativas e Personalização
+        source_references:
+          - title: "enade-2021-cc-b-q26"
+
+  - id: linguagens-de-programacao-e-teoria-da-computacao
+    name: Linguagens de Programação e Teoria da Computação
+    description: >-
+      Paradigmas de programação, compiladores, e os modelos formais que
+      fundamentam a computabilidade.
+    inclusion_criteria:
+      - "Paradigma de linguagem (lógico, imperativo, orientado a objetos), fase de compilação (léxica/sintática/semântica), gramática formal, autômato, ou máquina de Turing como objeto central."
+    source_references:
+      - title: "enade-2008-computing-q22, q29, q33, q52, q43; enade-2021-cc-b-q20, q30, q31, q33."
+    topics:
+      - id: compiladores-e-linguagens-formais
+        name: Compiladores e Linguagens Formais
+        description: Tradução, tratamento de erros, gramáticas de produção.
+        source_references:
+          - title: "enade-2008-computing-q22, q29, q33, q52; enade-2021-cc-b-q30"
+      - id: paradigmas-de-programacao
+        name: Paradigmas de Programação
+        description: Programação lógica, imperativa, e o uso de coleções/estruturas de linguagens reais (Java, C, PROLOG).
+        source_references:
+          - title: "enade-2021-cc-b-q20, q33; enade-2008-computing-q43; enade-2011-computing-q39 (TDA)"
+        concepts:
+          - id: tipo-de-dados-abstrato
+            name: Tipo de Dados Abstrato (TDA)
+            keywords: ["TDA", "encapsulamento", "heranca", "composicao", "subtipo"]
+            source_references:
+              - title: "Motivado pelo piloto Fase 5A: enade-2011-computing-q39"
+      - id: teoria-da-computacao
+        name: Teoria da Computação
+        description: Autômatos finitos, máquinas de Turing, computabilidade.
+        source_references:
+          - title: "enade-2021-cc-b-q31; enade-2011-computing-q23 (autômato finito e gramática)"
+        concepts:
+          - id: automato-finito
+            name: Autômato Finito
+            keywords: ["automato", "gramatica", "linguagem regular"]
+            source_references:
+              - title: "Motivado pelo piloto Fase 5A: enade-2011-computing-q23"
+
+  - id: matematica-aplicada-e-estatistica
+    name: Matemática Aplicada e Estatística
+    description: >-
+      Cálculo/métodos numéricos e probabilidade/estatística aplicados a
+      problemas de computação (desempenho, confiabilidade).
+    inclusion_criteria:
+      - "Integral/função contínua/método numérico de raízes, ou média/desvio-padrão/correlação/confiabilidade de sistema como objeto central."
+    source_references:
+      - title: "enade-2008-computing-q32, q37, q45, q46, q48, q53, q55."
+    topics:
+      - id: calculo-e-metodos-numericos
+        name: Cálculo e Métodos Numéricos
+        source_references:
+          - title: "enade-2008-computing-q45, q46, q48"
+      - id: probabilidade-e-estatistica-aplicada
+        name: Probabilidade e Estatística Aplicada
+        description: Estatística descritiva, correlação, confiabilidade de sistemas.
+        source_references:
+          - title: "enade-2008-computing-q32, q37, q53, q55"
+        concepts:
+          - id: confiabilidade-de-sistemas
+            name: Confiabilidade de Sistemas (Componentes em Paralelo/Série)
+            keywords: ["confiabilidade", "probabilidade de falha", "componentes em paralelo"]
+            source_references:
+              - title: "Motivado pelo piloto Fase 5A: enade-2008-computing-q55"
+
+  - id: matematica-discreta-e-logica
+    name: Matemática Discreta e Lógica
+    description: Lógica proposicional e álgebra booleana como notação formal (não circuito físico).
+    inclusion_criteria:
+      - "Lógica proposicional (conectivos, tabela-verdade abstrata) ou álgebra booleana como notação matemática, sem um circuito físico associado."
+    exclusion_criteria:
+      - "Circuito lógico combinacional real (ver arquitetura-e-organizacao-de-computadores > logica-digital-e-circuitos-combinacionais)."
+    source_references:
+      - title: "enade-2021-cc-b-d03 (lógica proposicional), q16 (álgebra booleana e circuitos)."
+    topics:
+      - id: conjuntos-relacoes-e-funcoes
+        name: Conjuntos, Relações e Funções
+        description: >-
+          Teoria de conjuntos, relações binárias e propriedades de
+          funções (injetora/sobrejetora/bijetora) - conteúdo
+          predominantemente visual no corpus (diagramas de Venn),
+          confiança de classificação tipicamente mais baixa quando pouco
+          texto acompanha a figura.
+        source_references:
+          - title: "enade-2011-computing-q14 (diagrama de Venn, única ocorrência direta - classificação de baixa confiança, ver docs/phase-5a-report.md secao Q)"
+      - id: logica-proposicional
+        name: Lógica Proposicional
+        source_references:
+          - title: "enade-2021-cc-b-d03"
+        concepts:
+          - id: tabela-verdade
+            name: Tabela-Verdade, Tautologia e Satisfazibilidade
+            keywords: ["tabela-verdade", "tautologia", "satisfazibilidade", "consequencia logica"]
+            source_references:
+              - title: "Motivado pelo piloto Fase 5A: enade-2021-cc-b-d03"
+
+  - id: processamento-de-imagens
+    name: Processamento de Imagens e Visão Computacional
+    description: Segmentação, operações morfológicas e imagens binárias.
+    inclusion_criteria:
+      - "Segmentação de imagens, detecção de bordas, ou operação morfológica sobre imagem como objeto central."
+    source_references:
+      - title: "enade-2008-computing-q25, q26, q49; enade-2021-cc-b-q29."
+    topics:
+      - id: processamento-e-segmentacao-de-imagens
+        name: Processamento e Segmentação de Imagens
+        source_references:
+          - title: "enade-2008-computing-q25, q26, q49; enade-2021-cc-b-q29"
+        concepts:
+          - id: operacoes-morfologicas-erosao-dilatacao
+            name: Operações Morfológicas (Erosão e Dilatação)
+            keywords: ["erosão", "dilatação", "elemento estruturador", "morfologia matemática"]
+            source_references:
+              - title: "enade-2021-cc-b-q29"
+
+  - id: redes-de-computadores
+    name: Redes de Computadores
+    description: >-
+      A área mais recorrente do corpus levantado: arquitetura em camadas,
+      protocolos, meios de transmissão, endereçamento e redes sem fio.
+    inclusion_criteria:
+      - "Protocolo de rede, camada OSI/TCP-IP, meio físico de transmissão, endereçamento IP/NAT, ou tecnologia de rede local/sem fio como objeto central."
+    source_references:
+      - title: "13 ocorrências diretas em enade-2008-computing: q27, q30, q34, q35, q36, q42, q47, q54, q56, q58, q67, q70, q75."
+    topics:
+      - id: arquitetura-em-camadas-e-protocolos
+        name: Arquitetura em Camadas e Protocolos
+        description: Modelo de camadas, protocolos de transporte/aplicação, encapsulamento.
+        source_references:
+          - title: "enade-2008-computing-q35, q42, q54, q67"
+      - id: computacao-em-nuvem
+        name: Computação em Nuvem
+        description: >-
+          Modelos de serviço (SaaS/PaaS/IaaS) e de implantação
+          (privada/pública/comunidade/híbrida) segundo a definição do
+          NIST.
+        source_references:
+          - title: "enade-2021-cc-b-q25 e enade-2021-cc-l-q25 (mesmo enunciado, questao compartilhada entre cursos - PROMPT Fase 5A secao 10; ver docs/phase-5a-report.md secao I)"
+        concepts:
+          - id: modelos-de-servico-saas-paas-iaas
+            name: Modelos de Serviço em Nuvem (SaaS/PaaS/IaaS)
+            keywords: ["SaaS", "PaaS", "IaaS", "NIST", "elasticidade"]
+            source_references:
+              - title: "Motivado pelo piloto Fase 5A: enade-2021-cc-b-q25/enade-2021-cc-l-q25"
+      - id: enderecamento-e-nat
+        name: Endereçamento IP e Tradução de Endereços
+        description: Endereçamento IP, NAT/NAPT.
+        source_references:
+          - title: "enade-2008-computing-q58, q75"
+      - id: internet-das-coisas-e-cidades-inteligentes
+        name: Internet das Coisas e Cidades Inteligentes
+        description: >-
+          Redes de sensores, heterogeneidade de dispositivos conectados,
+          desafios técnicos de escala urbana. Justificada por uma única
+          ocorrência direta nesta fase - marcada honestamente como caso
+          raro (PROMPT seção 9), como interacao-humano-computador.
+        source_references:
+          - title: "enade-2021-si-q34 (única ocorrência direta identificada nesta fase)"
+        concepts:
+          - id: internet-das-coisas
+            name: Internet das Coisas (IoT)
+            keywords: ["IoT", "sensores", "cidade inteligente"]
+            source_references:
+              - title: "Motivado pelo piloto Fase 5A: enade-2021-si-q34"
+      - id: meios-de-transmissao-e-redes-locais
+        name: Meios de Transmissão e Redes Locais/Sem Fio
+        description: Transmissão em cobre/fibra/rádio, Ethernet, Wi-Fi, modems.
+        source_references:
+          - title: "enade-2008-computing-q30, q34, q36, q47, q56, q70"
+        concepts:
+          - id: tecnicas-de-multiplo-acesso
+            name: Técnicas de Múltiplo Acesso (CDMA/FDMA/TDMA)
+            keywords: ["CDMA", "FDMA", "TDMA", "multiplo acesso"]
+            source_references:
+              - title: "Motivado pelo piloto Fase 5A: enade-2008-computing-q30"
+
+  - id: seguranca-da-informacao
+    name: Segurança da Informação
+    description: Criptografia, protocolos de comunicação segura, e princípios/normas de segurança da informação.
+    inclusion_criteria:
+      - "Criptografia, autenticação, protocolo de segurança (SSL/TLS/HTTPS), ou princípio normativo de segurança da informação (confidencialidade/integridade/disponibilidade, ISO 27002) como objeto central."
+    source_references:
+      - title: "enade-2008-computing-q42 (sessão SSL sobre HTTPS); enade-2021-cc-b-q24 (criptografia ponta a ponta); enade-2021-si-q25 (ISO 27002)."
+    topics:
+      - id: criptografia-e-protocolos-seguros
+        name: Criptografia e Protocolos Seguros
+        source_references:
+          - title: "enade-2008-computing-q42; enade-2021-cc-b-q24"
+      - id: principios-de-seguranca-da-informacao
+        name: Princípios de Segurança da Informação
+        description: Confidencialidade, integridade, disponibilidade, autenticidade - normas como a ABNT NBR ISO/IEC 27002.
+        source_references:
+          - title: "enade-2021-si-q25 (ABNT NBR ISO/IEC 27002)"
+        concepts:
+          - id: principios-cid-confidencialidade-integridade-disponibilidade
+            name: Princípios CID (Confidencialidade, Integridade, Disponibilidade)
+            keywords: ["CID", "confidencialidade", "integridade", "disponibilidade", "ISO 27002"]
+            source_references:
+              - title: "Motivado pelo piloto Fase 5A: enade-2021-si-q25"
+
+  - id: sistemas-operacionais
+    name: Sistemas Operacionais
+    description: >-
+      Gerência de processos, concorrência, exclusão mútua e
+      escalonamento, incluindo sistemas de tempo real.
+    inclusion_criteria:
+      - "Processos/threads, condições de corrida, exclusão mútua, ou políticas de escalonamento (inclusive tempo real) como objeto central."
+    source_references:
+      - title: "enade-2008-computing-d59 (escalonamento de tempo real); enade-2021-cc-b-q09, q17 (concorrência e condições de corrida)."
+    topics:
+      - id: escalonamento
+        name: Escalonamento
+        description: Políticas de escalonamento de tarefas, incluindo sistemas de tempo real.
+        source_references:
+          - title: "enade-2008-computing-d59"
+      - id: processos-e-concorrencia
+        name: Processos e Concorrência
+        description: >-
+          Múltiplos processos/threads competindo por recursos, condições
+          de corrida, e decomposição de algoritmos em tarefas paralelas.
+        source_references:
+          - title: "enade-2021-cc-b-q09, q17; enade-2011-computing-q27 (paralelização de multiplicação de matrizes)"
+        concepts:
+          - id: paralelizacao-de-algoritmos
+            name: Paralelização de Algoritmos
+            keywords: ["paralelo", "concorrente", "embaraçosamente paralelo"]
+            source_references:
+              - title: "Motivado pelo piloto Fase 5A: enade-2011-computing-q27"
