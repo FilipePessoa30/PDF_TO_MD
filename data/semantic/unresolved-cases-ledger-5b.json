@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "description": "Ledger machine-readable dos 12 casos nao-proposed do piloto da Fase 5A (10 unclassifiable + 2 needs_review) - PROMPT Fase 5B secao 6.",
+  "record_count": 12,
+  "allowed_causes": [
+    "taxonomy_gap",
+    "general_education_outside_computing_taxonomy",
+    "cross_domain_question",
+    "source_limitation",
+    "insufficient_evidence",
+    "annotation_error",
+    "component_metadata_error",
+    "genuinely_unclassifiable"
+  ],
+  "records": [
+    {
+      "question_id": "enade-2008-computing-d09",
+      "phase5a_status": "unclassifiable",
+      "component": "formacao_geral",
+      "candidate_cause": "general_education_outside_computing_taxonomy",
+      "evidence_reviewed": "Enunciado completo lido (discursiva sobre Declaracao Universal dos Direitos Humanos, integralidade de direitos); asset (figure-01, ilustracao decorativa) inspecionado, sem conteudo tecnico.",
+      "taxonomy_candidates": [],
+      "decision": "reclassify_to_general_education_v1",
+      "resolution": "general-education-v1 > formacao-geral > direitos-humanos-e-cidadania (proposed, confidence=high)",
+      "remaining_ambiguity": "nenhuma - conteudo e inequivocamente formacao geral",
+      "recommended_human_action": "Confirmar que direitos-humanos-e-cidadania e um topico adequado para revisao humana; sem necessidade de nova evidencia.",
+      "source_hash": "41398d48680abe07ef95793bba5c1b84fcf45657e045f653019c5c70bfac2a68"
+    },
+    {
+      "question_id": "enade-2008-computing-q04",
+      "phase5a_status": "unclassifiable",
+      "component": "formacao_geral",
+      "candidate_cause": "general_education_outside_computing_taxonomy",
+      "evidence_reviewed": "Enunciado e 5 alternativas completos lidos (legislacao de direitos das mulheres na Uniao Europeia); nenhum asset.",
+      "taxonomy_candidates": [],
+      "decision": "reclassify_to_general_education_v1",
+      "resolution": "general-education-v1 > formacao-geral > legislacao-e-direitos-sociais (proposed, confidence=high)",
+      "remaining_ambiguity": "nenhuma",
+      "recommended_human_action": "Confirmar topico; sem necessidade de nova evidencia.",
+      "source_hash": "2af664d9a6f353af832d94fdf71581d754162f99256a216a56f5693ff0c17aa5"
+    },
+    {
+      "question_id": "enade-2011-computing-q01",
+      "phase5a_status": "unclassifiable",
+      "component": "formacao_geral",
+      "candidate_cause": "general_education_outside_computing_taxonomy",
+      "evidence_reviewed": "Poema completo e 5 alternativas lidos (interpretacao de texto literario, Andresen); nenhum asset.",
+      "taxonomy_candidates": [],
+      "decision": "reclassify_to_general_education_v1",
+      "resolution": "general-education-v1 > formacao-geral > compreensao-e-interpretacao-textual (proposed, confidence=high)",
+      "remaining_ambiguity": "nenhuma",
+      "recommended_human_action": "Confirmar topico; sem necessidade de nova evidencia.",
+      "source_hash": "3f393c7967444f4e700c5d7bc9ae43528f33cb16ba5594a991042198733d03ae"
+    },
+    {
+      "question_id": "enade-2011-computing-q14",
+      "phase5a_status": "needs_review",
+      "component": "componente_especifico",
+      "candidate_cause": "annotation_error",
+      "evidence_reviewed": "TODOS os 7 assets inspecionados individualmente nesta fase (Fase 5A havia inspecionado apenas parcialmente): figure-01 (diagrama de Venn com 3 conjuntos, regiao sombreada = XOR de 3 conjuntos), figure-02 (continuacao textual pedindo a funcao logica f(x,y,z)), figure-03 a 07 (5 alternativas, todas expressoes booleanas AND/OR/NOT).",
+      "taxonomy_candidates": [
+        "conjuntos-relacoes-e-funcoes (classificacao original da Fase 5A - rejeitada: a questao nao pede uma propriedade de funcao)",
+        "logica-proposicional (classificacao final - aceita: a questao pede uma expressao booleana)"
+      ],
+      "decision": "reclassify_within_computing_v1_1",
+      "resolution": "computing-v1.1 > logica-proposicional (primario) + conjuntos-relacoes-e-funcoes (secundario) > novo concept expressao-booleana-de-regiao-de-conjuntos (proposed, confidence=high)",
+      "remaining_ambiguity": "nenhuma quanto ao topico; qual alternativa (A-E) e a correta permanece deliberadamente fora do escopo desta anotacao (gabarito nunca usado).",
+      "recommended_human_action": "Confirmar a reclassificacao com a Fase 5A - este e o achado mais significativo da auditoria adversarial da Fase 5B: um erro real de anotacao, nao apenas uma lacuna de taxonomia.",
+      "source_hash": "1439471e5565b514808b7e5c9c4f6f90bf00b8534069470598161e3a2fbc8999"
+    },
+    {
+      "question_id": "enade-2011-computing-q23",
+      "phase5a_status": "needs_review",
+      "component": "componente_especifico",
+      "candidate_cause": "insufficient_evidence",
+      "evidence_reviewed": "Todos os 5 assets inspecionados: figure-03 (contexto textual do automato), figure-01 (gramatica livre de contexto S/A/B), figure-02 (diagrama de automato finito de 6 estados sobre {a,b,c}), figure-04/05 (fragmentos das alternativas D/E).",
+      "taxonomy_candidates": [
+        "teoria-da-computacao + compiladores-e-linguagens-formais (classificacao original da Fase 5A - CONFIRMADA, nao contradita, pela inspecao visual completa)"
+      ],
+      "decision": "confirm_and_upgrade_confidence",
+      "resolution": "computing-v1.1 > teoria-da-computacao (primario) + compiladores-e-linguagens-formais (secundario) > automato-finito (proposed, confidence=high)",
+      "remaining_ambiguity": "nenhuma quanto ao topico; qual alternativa e correta permanece fora do escopo.",
+      "recommended_human_action": "Confirmar que a evidencia visual adicionada e suficiente para elevar confidence de medium para high.",
+      "source_hash": "07513cf2b310ecdb34ca539caec31934bbbdf95b9d0b9649c21b082cffde1ded"
+    },
+    {
+      "question_id": "enade-2011-computing-q31",
+      "phase5a_status": "unclassifiable",
+      "component": "componente_especifico",
+      "candidate_cause": "cross_domain_question",
+      "evidence_reviewed": "Enunciado completo lido (Sociologia da Educacao, curriculo, applicable_courses=ciencia-da-computacao-licenciatura); metadata de curso confirmada no front matter.",
+      "taxonomy_candidates": [],
+      "decision": "reclassify_to_general_education_v1",
+      "resolution": "general-education-v1 > pedagogia-e-formacao-de-professores > curriculo-e-sociologia-da-educacao (proposed, confidence=high)",
+      "remaining_ambiguity": "nenhuma quanto ao dominio (pedagogia, nao Computacao); decisao arquitetural de manter em taxonomia separada em vez de mesclar com formacao-geral e do revisor humano confirmar.",
+      "recommended_human_action": "Confirmar que a distincao 'pedagogia de Licenciatura' vs 'formacao geral' faz sentido como dois subjects separados dentro de general-education-v1.",
+      "source_hash": "a099f6197bac9758a2d733498af98d0ff52ae1a9234bc2bcbd7db92b94b60543"
+    },
+    {
+      "question_id": "enade-2011-computing-q33",
+      "phase5a_status": "unclassifiable",
+      "component": "componente_especifico",
+      "candidate_cause": "cross_domain_question",
+      "evidence_reviewed": "Enunciado completo e asset (figure-01, piramide etaria do IBGE) inspecionados; applicable_courses=ciencia-da-computacao-licenciatura confirmado.",
+      "taxonomy_candidates": [],
+      "decision": "reclassify_to_general_education_v1",
+      "resolution": "general-education-v1 > pedagogia-e-formacao-de-professores > demografia-aplicada-ao-planejamento-educacional (proposed, confidence=high)",
+      "remaining_ambiguity": "nenhuma quanto ao dominio",
+      "recommended_human_action": "Mesma confirmacao arquitetural do caso q31.",
+      "source_hash": "cd6487dca06d9f52e9504f306d1b69f842538fd98886b014e8c3b47b98508827"
+    },
+    {
+      "question_id": "enade-2021-cc-b-d01",
+      "phase5a_status": "unclassifiable",
+      "component": "formacao_geral",
+      "candidate_cause": "general_education_outside_computing_taxonomy",
+      "evidence_reviewed": "2 textos completos (ensaio sobre arte/cultura + Art. 5o da Constituicao Federal) e padrao de resposta oficial lidos (apenas para confirmar o dominio, nunca usado como evidencia da anotacao).",
+      "taxonomy_candidates": [],
+      "decision": "reclassify_to_general_education_v1",
+      "resolution": "general-education-v1 > formacao-geral > arte-cultura-e-liberdade-de-expressao (proposed, confidence=high)",
+      "remaining_ambiguity": "nenhuma",
+      "recommended_human_action": "Confirmar que a anotacao permanece identica ao par enade-2021-si-d01.",
+      "source_hash": "e7d49ef66b2ff4c19c437651f30ec69aa3723d7a147b19f9738f9347dc5f9bd6"
+    },
+    {
+      "question_id": "enade-2021-cc-b-q01",
+      "phase5a_status": "unclassifiable",
+      "component": "formacao_geral",
+      "candidate_cause": "general_education_outside_computing_taxonomy",
+      "evidence_reviewed": "Enunciado completo e 5 alternativas lidos (mobilidade social, estudo OCDE); nenhum asset.",
+      "taxonomy_candidates": [],
+      "decision": "reclassify_to_general_education_v1",
+      "resolution": "general-education-v1 > formacao-geral > mobilidade-social-e-desigualdade (proposed, confidence=high)",
+      "remaining_ambiguity": "nenhuma",
+      "recommended_human_action": "Confirmar topico; sem necessidade de nova evidencia.",
+      "source_hash": "2d1b8219f91334f68783814f145b2eca4dcb49b8b9baaea2cdeca4efacd9be54"
+    },
+    {
+      "question_id": "enade-2021-si-d01",
+      "phase5a_status": "unclassifiable",
+      "component": "formacao_geral",
+      "candidate_cause": "general_education_outside_computing_taxonomy",
+      "evidence_reviewed": "Confirmado texto identico (verbatim) a enade-2021-cc-b-d01, publicado em livreto de curso diferente (Sistemas de Informacao).",
+      "taxonomy_candidates": [],
+      "decision": "reclassify_to_general_education_v1",
+      "resolution": "general-education-v1 > formacao-geral > arte-cultura-e-liberdade-de-expressao (proposed, confidence=high)",
+      "remaining_ambiguity": "nenhuma",
+      "recommended_human_action": "Confirmar que a anotacao permanece identica ao par enade-2021-cc-b-d01.",
+      "source_hash": "280d2a4a6c7db8a17479d731381659a50e6fd9866c860a71643587b3b7e29eb1"
+    },
+    {
+      "question_id": "enade-2021-si-d02",
+      "phase5a_status": "unclassifiable",
+      "component": "formacao_geral",
+      "candidate_cause": "general_education_outside_computing_taxonomy",
+      "evidence_reviewed": "2 textos completos lidos (definicao de cidade inteligente + governanca urbana) e padrao de resposta oficial lido (apenas para confirmar o dominio); contraste explicito com enade-2021-si-q34 (mesmo tema, tratamento tecnico).",
+      "taxonomy_candidates": [
+        "internet-das-coisas-e-cidades-inteligentes (computing-v1.1) - rejeitado como topico primario: tecnologia e mencionada apenas como premissa/contexto, nunca o conhecimento avaliado (itens pedem explicacao de sustentabilidade e proposta de intervencao social, nao mecanismo tecnico)"
+      ],
+      "decision": "reclassify_to_general_education_v1_with_context_tag",
+      "resolution": "general-education-v1 > formacao-geral > sustentabilidade-e-desenvolvimento-urbano (proposed, confidence=high); context_tag registra a mencao tecnologica sem promove-la a topico principal",
+      "remaining_ambiguity": "a fronteira entre 'contexto tecnologico' e 'topico tecnico avaliado' e uma escolha editorial - documentada explicitamente para revisao humana, nao escondida.",
+      "recommended_human_action": "Confirmar que o uso de context_tag (em vez de secondary_topic) para a mencao a TIC/cidades inteligentes reflete corretamente o que a questao de fato avalia (sustentabilidade, nao tecnologia).",
+      "source_hash": "486447a7793b45bdbc806d1301cc02831d8a52eb947db735de625987de6a1d49"
+    },
+    {
+      "question_id": "enade-2021-si-q05",
+      "phase5a_status": "unclassifiable",
+      "component": "formacao_geral",
+      "candidate_cause": "general_education_outside_computing_taxonomy",
+      "evidence_reviewed": "2 textos, mapa (figure-01) e 5 alternativas lidos/inspecionados (epidemiologia do suicidio indigena); nenhuma conexao com Computacao encontrada.",
+      "taxonomy_candidates": [],
+      "decision": "reclassify_to_general_education_v1",
+      "resolution": "general-education-v1 > formacao-geral > saude-publica-e-populacoes-vulneraveis (proposed, confidence=high)",
+      "remaining_ambiguity": "nenhuma",
+      "recommended_human_action": "Confirmar topico; sem necessidade de nova evidencia.",
+      "source_hash": "75437d753a2a60aee3d499737eff53263a600142ae18cdf43d1ba4d5a221f3ef"
+    }
+  ]
+}

@@ -1,0 +1,174 @@
+# PROMPT Fase 5B - a taxonomy SEPARATE from computing-v1/computing-v1.1
+# (never merged into it - PROMPT section 8: "Nao absorva automaticamente
+# formacao geral dentro de areas de Computacao").
+#
+# Built because 9 of the 30 Fase 5A pilot questions were correctly marked
+# `unclassifiable` against computing-v1 (they genuinely contain zero
+# Computing knowledge) but were never given any positive classification at
+# all - an honest but incomplete result. Reading all 9 individually (Fase
+# 5B section 7) found a real, modest, recurring pattern: every one of them
+# belongs to one of two identifiable non-Computing domains actually
+# present in the ENADE exam structure itself, never invented for this
+# taxonomy:
+#
+#   - "formacao_geral": the general-education component every ENADE
+#     booklet administers regardless of course (citizenship, human
+#     rights, social/cultural/environmental topics, textual
+#     interpretation) - 7 of the 9 questions.
+#   - Licenciatura-specific pedagogy: the Licenciatura em Ciência da
+#     Computacao's OWN componente_especifico legitimately includes
+#     education-science content (curriculum theory, demographics applied
+#     to educational planning) that is not Computing either - 2 of the 9
+#     questions.
+#
+# This taxonomy exists to give those 9 questions a real, evidenced,
+# reviewable classification of their own - never to inflate
+# computing-v1's own scope, and never as a way to make "unclassifiable"
+# disappear from computing-v1 (they remain, correctly, absent from any
+# computing-v1/1.1 topic - see docs/phase-5b-report.md section I for the
+# full architectural discussion, including why a namespace prefix inside
+# computing-v1 itself was rejected in favor of a fully separate document).
+#
+# `taxonomy_version` on a QuestionAnnotation is the dispatch key: an
+# annotation whose taxonomy_version starts with "general-education-v1@"
+# is validated against THIS document, never against computing-v1/1.1 -
+# see enade.semantic.artifacts / the validate-semantic-annotations CLI
+# command for the actual dispatch logic. No change to the
+# QuestionAnnotation schema itself was needed for this (PROMPT Fase 5B
+# section 8's own "namespace separado" alternative, implemented as a
+# second taxonomy document rather than a schema field).
+taxonomy_id: general-education-v1
+version: "1.0.0-pilot"
+status: provisional
+notice: >-
+  Taxonomia provisoria e SEPARADA da taxonomia de Computacao (PROMPT Fase
+  5B). Cobre apenas os 9 casos reais, do piloto de 30 questoes da Fase
+  5A, que nao contem nenhum conhecimento de Computacao - nunca uma
+  tentativa de cobrir formacao geral ou pedagogia de forma exaustiva.
+  Cada topico cita a(s) questao(oes) real(is) que o motivou. Como
+  computing-v1, nao foi cruzada contra uma matriz de referencia oficial
+  do INEP para a formacao geral do ENADE - permanece "provisional" ate
+  que essa fonte externa seja obtida. Nao usar como autoridade curricular
+  definitiva.
+language: pt-BR
+created_from:
+  - title: >-
+      Leitura individual integral (PROMPT Fase 5B secao 7) das 10
+      questoes `unclassifiable` e 2 `needs_review` do piloto da Fase 5A -
+      9 delas confirmadas como genuinamente fora do escopo de Computacao
+      apos leitura completa do enunciado, alternativas e (quando
+      presente) padrao de resposta oficial.
+subjects:
+  - id: formacao-geral
+    name: Formação Geral (ENADE)
+    description: >-
+      O componente de formação geral que todo livreto ENADE administra,
+      independente do curso - cidadania, direitos humanos, cultura,
+      sustentabilidade, interpretação textual. Nunca usado para
+      classificar conteúdo de Computação: qualquer questão que mencione
+      tecnologia apenas como pano de fundo, sem testar conhecimento
+      técnico, pertence aqui, não a computing-v1/1.1.
+    inclusion_criteria:
+      - "Questão do próprio componente 'formação geral' do ENADE (section prefixo 'formacao-geral-' no front matter publicado), cujo conhecimento avaliado é social/cultural/cidadão, nunca técnico de Computação."
+    exclusion_criteria:
+      - "Questão que avalia conhecimento técnico de Computação mesmo que mencione um tema social como contexto (ver computing-v1.1, ex.: enade-2021-si-q34 sobre IoT/cidades inteligentes, que é componente específico técnico, não formação geral)."
+    source_references:
+      - title: "9 das 10 questões `unclassifiable` do piloto Fase 5A pertencem a este subject (a décima, q31/q33 de 2011, é pedagogia específica de Licenciatura - ver pedagogia-e-formacao-de-professores)."
+    topics:
+      - id: arte-cultura-e-liberdade-de-expressao
+        name: Arte, Cultura e Liberdade de Expressão
+        description: >-
+          Tensão entre arte, cultura e censura, à luz de garantias
+          constitucionais de liberdade de expressão artística.
+        source_references:
+          - title: "enade-2021-cc-b-d01 / enade-2021-si-d01 (mesmo enunciado, questão compartilhada entre cursos - PROMPT seção 10; ver docs/phase-5a-report.md seção I)."
+      - id: compreensao-e-interpretacao-textual
+        name: Compreensão e Interpretação Textual
+        description: >-
+          Interpretação de texto literário/poético como objeto central da
+          questão - habilidade de leitura crítica, não conhecimento de
+          Computação.
+        source_references:
+          - title: "enade-2011-computing-q01 (poema 'Retrato de uma princesa desconhecida', Andresen)."
+      - id: direitos-humanos-e-cidadania
+        name: Direitos Humanos e Cidadania
+        description: >-
+          Direitos humanos, sua integralidade/indivisibilidade, e o
+          exercício pleno da cidadania.
+        related_ids:
+          - saude-publica-e-populacoes-vulneraveis
+        source_references:
+          - title: "enade-2008-computing-d09 (Declaração Universal dos Direitos Humanos, integralidade dos direitos)."
+      - id: legislacao-e-direitos-sociais
+        name: Legislação e Direitos Sociais
+        description: >-
+          Legislação voltada à inclusão social de grupos específicos
+          (ex.: direitos das mulheres) - conteúdo jurídico/social, não
+          técnico.
+        source_references:
+          - title: "enade-2008-computing-q04 (legislação continental de direitos das mulheres, União Europeia)."
+      - id: mobilidade-social-e-desigualdade
+        name: Mobilidade Social e Desigualdade
+        description: Mobilidade social intergeracional, desigualdade de renda e acesso a oportunidades.
+        source_references:
+          - title: "enade-2021-cc-b-q01 (estudo OCDE sobre mobilidade social no Brasil)."
+      - id: saude-publica-e-populacoes-vulneraveis
+        name: Saúde Pública e Populações Vulneráveis
+        description: >-
+          Epidemiologia e políticas de saúde pública com recorte
+          étnico-racial/populações vulneráveis - nunca confundir com
+          bioinformática ou processamento de dados de saúde (que seria
+          computing-v1/1.1 se o objeto central fosse o sistema
+          computacional, não a política pública em si).
+        related_ids:
+          - direitos-humanos-e-cidadania
+        source_references:
+          - title: "enade-2021-si-q05 (suicídio em populações indígenas, Ministério da Saúde/CVV)."
+      - id: sustentabilidade-e-desenvolvimento-urbano
+        name: Sustentabilidade e Desenvolvimento Urbano
+        description: >-
+          Cidades inteligentes tratadas pela ótica de desenvolvimento
+          sustentável/política urbana e impacto social - distinto do
+          tratamento técnico do mesmo tema (IoT, heterogeneidade de
+          dispositivos, TIC) em computing-v1.1's
+          internet-das-coisas-e-cidades-inteligentes (related_ids não
+          suporta referência cruzada entre documentos de taxonomia
+          distintos - a relação fica registrada apenas em prosa aqui).
+        source_references:
+          - title: >-
+              enade-2021-si-d02 - contraste deliberado com
+              enade-2021-si-q34 (mesmo tema "cidade inteligente", mas
+              avaliado tecnicamente em componente específico; ver
+              docs/phase-5b-report.md seção J sobre a diferença entre
+              contexto e tópico principal)."
+
+  - id: pedagogia-e-formacao-de-professores
+    name: Pedagogia e Formação de Professores
+    description: >-
+      Conteúdo específico do curso de Licenciatura em Ciência da
+      Computação que é, ele próprio, sobre pedagogia/ciências da educação
+      - não sobre Computação. O front matter publicado rotula essas
+      questões como "componente_especifico" (corretamente, do ponto de
+      vista da estrutura do exame: são específicas da Licenciatura), mas
+      o CONHECIMENTO avaliado é Educação, um domínio tão distinto de
+      Computação quanto a formação geral - por isso vivem nesta mesma
+      taxonomia separada, nunca em computing-v1/1.1.
+    inclusion_criteria:
+      - "Questão do componente específico do curso de Licenciatura em Ciência da Computação (applicable_courses: ciencia-da-computacao-licenciatura) cujo conhecimento avaliado é pedagogia/ciências da educação, não Computação."
+    exclusion_criteria:
+      - "Questão de componente específico de Licenciatura sobre conteúdo técnico de Computação (ex.: algoritmos, redes) - essas pertencem normalmente a computing-v1/1.1, o curso sendo irrelevante para a classificação técnica."
+    source_references:
+      - title: "enade-2011-computing-q31, q33 (únicas 2 ocorrências diretas identificadas no piloto de 30 questões - caso raro, PROMPT seção 9, mas real e recorrente o suficiente para justificar 2 tópicos distintos)."
+    topics:
+      - id: curriculo-e-sociologia-da-educacao
+        name: Currículo e Sociologia da Educação
+        description: O currículo escolar analisado pela perspectiva crítica da Sociologia da Educação.
+        source_references:
+          - title: "enade-2011-computing-q31."
+      - id: demografia-aplicada-ao-planejamento-educacional
+        name: Demografia Aplicada ao Planejamento Educacional
+        description: >-
+          Uso de projeções demográficas (pirâmide etária) para planejar
+          politicas educacionais, ex.: Educação de Jovens e Adultos.
+        source_references:
+          - title: "enade-2011-computing-q33."

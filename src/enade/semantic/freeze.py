@@ -18,11 +18,28 @@ not apply here.
 
 from __future__ import annotations
 
-#: Every semantic freeze must name at least these artifacts, each with
-#: its own {"path", "sha256"} - PROMPT section 30's explicit list
-#: (taxonomia, anotacoes, selecao, diretrizes, pacote de revisao).
+#: Every Fase 5A-lineage semantic freeze must name at least these
+#: artifacts, each with its own {"path", "sha256"} - PROMPT Fase 5A
+#: section 30's explicit list (taxonomia, anotacoes, selecao, diretrizes,
+#: pacote de revisao).
 REQUIRED_ARTIFACT_KEYS = frozenset(
     {"taxonomy", "annotations", "pilot_selection", "guidelines", "review_packet"}
+)
+
+#: The Fase 5B freeze's own artifact set is different in kind (two
+#: taxonomies, a reconciled annotation set, a 12-case ledger, a migration
+#: log, a human-adjudication template) - PROMPT Fase 5B section 30's
+#: explicit list.
+REQUIRED_ARTIFACT_KEYS_5B = frozenset(
+    {
+        "taxonomy_computing",
+        "taxonomy_general_education",
+        "annotations",
+        "unresolved_cases_ledger",
+        "migration_log",
+        "human_adjudication_template",
+        "review_packet",
+    }
 )
 
 #: A semantic freeze may never claim the pilot was humanly approved
@@ -31,29 +48,19 @@ REQUIRED_ARTIFACT_KEYS = frozenset(
 ALLOWED_HUMAN_REVIEW_STATUS = frozenset({"not_yet_reviewed"})
 
 
-def validate_semantic_freeze_completeness(freeze: dict) -> list[str]:
-    """Returns human-readable violations; an empty list means the freeze
-    is structurally complete enough to be promoted to the active semantic
-    freeze. Purely structural - never re-derives or second-guesses the
-    verdicts themselves.
-    """
+def _validate_common_freeze_shape(
+    freeze: dict, required_artifact_keys: frozenset[str]
+) -> list[str]:
     violations: list[str] = []
 
     if not freeze.get("head"):
         violations.append("head must be a non-empty commit hash")
 
-    extraction_ref = freeze.get("extraction_freeze_reference")
-    if not isinstance(extraction_ref, dict) or not extraction_ref.get("sha256"):
-        violations.append(
-            "extraction_freeze_reference must be a dict with a non-empty 'sha256' "
-            "(hash of phase-4e-freeze.json at the time this freeze was built)"
-        )
-
     artifacts = freeze.get("artifacts")
     if not isinstance(artifacts, dict) or not artifacts:
         violations.append("artifacts must be a non-empty dict")
     else:
-        missing = REQUIRED_ARTIFACT_KEYS - set(artifacts)
+        missing = required_artifact_keys - set(artifacts)
         if missing:
             violations.append(f"artifacts missing required key(s): {sorted(missing)}")
         for name, entry in artifacts.items():
@@ -76,6 +83,51 @@ def validate_semantic_freeze_completeness(freeze: dict) -> list[str]:
         violations.append(
             f"human_review_status must be one of {sorted(ALLOWED_HUMAN_REVIEW_STATUS)} "
             f"(got: {human_review_status!r}) - this pilot has not been humanly reviewed"
+        )
+
+    return violations
+
+
+def validate_semantic_freeze_completeness(freeze: dict) -> list[str]:
+    """Returns human-readable violations; an empty list means the freeze
+    is structurally complete enough to be promoted to the active semantic
+    freeze. Purely structural - never re-derives or second-guesses the
+    verdicts themselves. Fase 5A shape (see ``REQUIRED_ARTIFACT_KEYS``).
+    """
+    violations = _validate_common_freeze_shape(freeze, REQUIRED_ARTIFACT_KEYS)
+
+    extraction_ref = freeze.get("extraction_freeze_reference")
+    if not isinstance(extraction_ref, dict) or not extraction_ref.get("sha256"):
+        violations.append(
+            "extraction_freeze_reference must be a dict with a non-empty 'sha256' "
+            "(hash of phase-4e-freeze.json at the time this freeze was built)"
+        )
+
+    return violations
+
+
+def validate_phase5b_freeze_completeness(freeze: dict) -> list[str]:
+    """Fase 5B shape (see ``REQUIRED_ARTIFACT_KEYS_5B``): references both
+    the terminal extraction freeze (transitively, via the Fase 5A
+    semantic freeze it must also reference) and the Fase 5A semantic
+    freeze it succeeds - never the extraction freeze directly, since Fase
+    5B's own lineage is "on top of" Fase 5A's semantic lineage, not a
+    sibling of it.
+    """
+    violations = _validate_common_freeze_shape(freeze, REQUIRED_ARTIFACT_KEYS_5B)
+
+    predecessor_ref = freeze.get("predecessor_semantic_freeze_reference")
+    if not isinstance(predecessor_ref, dict) or not predecessor_ref.get("sha256"):
+        violations.append(
+            "predecessor_semantic_freeze_reference must be a dict with a non-empty 'sha256' "
+            "(hash of phase-5a-semantic-freeze.json at the time this freeze was built)"
+        )
+
+    extraction_ref = freeze.get("extraction_freeze_reference")
+    if not isinstance(extraction_ref, dict) or not extraction_ref.get("sha256"):
+        violations.append(
+            "extraction_freeze_reference must be a dict with a non-empty 'sha256' "
+            "(hash of phase-4e-freeze.json at the time this freeze was built)"
         )
 
     return violations

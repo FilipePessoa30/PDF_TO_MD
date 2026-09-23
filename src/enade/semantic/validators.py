@@ -8,6 +8,7 @@ promote an annotation's own status (the same discipline
 
 from __future__ import annotations
 
+import unicodedata
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
@@ -213,6 +214,199 @@ def validate_shared_question_consistency(
                 )
             )
     return diagnostics
+
+
+#: An explicit denylist of common Portuguese dictionary words that carry
+#: essentially no discriminating power on their own (PROMPT Fase 5B
+#: section 14's own illustrative list, plus the exact words the real Fase
+#: 5A finding identified on ``teoria-geral-de-sistemas``). Deliberately
+#: NOT a length-based rule: a short technical acronym ("SQL", "DER",
+#: "TDA", "SaaS", "CDMA", "CID"...) is exactly as short as these words but
+#: has strong discriminating power precisely because it is *not* an
+#: ordinary dictionary word - conflating "short" with "generic" would
+#: flag the taxonomy's own best, most precise keywords as if they were
+#: the defect this validator exists to catch.
+_GENERIC_KEYWORD_DENYLIST = frozenset(
+    {
+        "sistema",
+        "processo",
+        "modelo",
+        "rede",
+        "estrutura",
+        "dados",
+        "programa",
+        "funcao",
+        "servico",
+        "informacao",
+        "ambiente",
+        "entrada",
+        "saida",
+        "feedback",
+    }
+)
+
+
+def _normalize_keyword(text: str) -> str:
+    decomposed = unicodedata.normalize("NFKD", text)
+    stripped = "".join(c for c in decomposed if not unicodedata.combining(c))
+    return stripped.strip().casefold()
+
+
+def validate_taxonomy_keywords_are_not_bare_generic_terms(taxonomy: Taxonomy) -> list[Diagnostic]:
+    """PROMPT Fase 5B section 14/25: a concept's own ``keywords``/``aliases``
+    must never be a single bare generic dictionary word with no
+    discriminating power - the exact defect Fase 5A found (and fixed) on
+    ``teoria-geral-de-sistemas``. Flags any node whose keyword/alias,
+    once normalized, exactly matches ``_GENERIC_KEYWORD_DENYLIST`` (a
+    multi-word phrase built from a generic word, e.g. "entrada e saida do
+    sistema", is fine - only a bare single generic word is flagged; a
+    short but specific acronym like "SQL"/"TDA"/"SaaS" is never flagged
+    just for being short).
+    """
+    diagnostics: list[Diagnostic] = []
+    for view in taxonomy.flatten():
+        all_labels = list(view.node.aliases) + list(getattr(view.node, "keywords", []) or [])
+        for label in all_labels:
+            normalized = _normalize_keyword(label)
+            if normalized in _GENERIC_KEYWORD_DENYLIST:
+                diagnostics.append(
+                    Diagnostic(
+                        kind="generic_keyword_without_context",
+                        question_id="<taxonomy>",
+                        field=f"{view.id}.keywords",
+                        detail=f"{label!r} is a bare generic dictionary term with no discriminating power",
+                    )
+                )
+    return diagnostics
+
+
+def validate_migration_entries_have_reason(migration_entries: list[dict]) -> list[Diagnostic]:
+    """PROMPT Fase 5B section 15/25: 'migracao sem razao' - every migration
+    log entry must record a non-trivial ``change_reason``, even for an
+    ``unchanged`` entry (which still must say *why* nothing changed, per
+    section 16: "questoes sem alteracao tambem devem aparecer como
+    unchanged, para provar que foram revisadas").
+    """
+    diagnostics: list[Diagnostic] = []
+    for entry in migration_entries:
+        reason = entry.get("change_reason")
+        if not reason or not str(reason).strip():
+            diagnostics.append(
+                Diagnostic(
+                    kind="migration_without_reason",
+                    question_id=entry.get("question_id", "<unknown>"),
+                    field="change_reason",
+                    detail="migration entry has an empty change_reason",
+                )
+            )
+    return diagnostics
+
+
+def validate_no_taxonomy_id_meaning_changed(old: Taxonomy, new: Taxonomy) -> list[Diagnostic]:
+    """PROMPT Fase 5B section 15/25: 'ID reutilizado com novo significado' -
+    any node id present in *both* taxonomy versions must keep the same
+    ``name`` (a coarse, structural proxy for "same meaning") and the same
+    ``kind`` (a subject must never become a topic under the same id, etc).
+    A real semantic change requires a brand-new id, never reusing an old
+    one - this is the automatable half of that rule (a full meaning check
+    is a human judgement call, but a renamed/reclassified node under an
+    unchanged id is always at least suspicious).
+    """
+    diagnostics: list[Diagnostic] = []
+    old_by_id = {view.id: view for view in old.flatten()}
+    new_by_id = {view.id: view for view in new.flatten()}
+    for node_id, old_view in old_by_id.items():
+        new_view = new_by_id.get(node_id)
+        if new_view is None:
+            continue  # removed - not a "reused with different meaning" case
+        if new_view.kind != old_view.kind:
+            diagnostics.append(
+                Diagnostic(
+                    kind="taxonomy_id_kind_changed",
+                    question_id="<taxonomy>",
+                    field=node_id,
+                    detail=f"{node_id!r} was a {old_view.kind!r}, is now a {new_view.kind!r}",
+                )
+            )
+        elif new_view.node.name != old_view.node.name:
+            diagnostics.append(
+                Diagnostic(
+                    kind="taxonomy_id_reused_with_different_meaning",
+                    question_id="<taxonomy>",
+                    field=node_id,
+                    detail=f"{node_id!r} name changed from {old_view.node.name!r} to {new_view.node.name!r}",
+                )
+            )
+    return diagnostics
+
+
+def validate_context_not_used_as_primary_topic(annotation: QuestionAnnotation) -> list[Diagnostic]:
+    """PROMPT Fase 5B section 10/25: a context tag and a primary/secondary
+    topic must never both point at the same node in the same annotation -
+    that would mean the same knowledge is simultaneously claimed to be
+    "just context" and "actually assessed", a direct contradiction.
+    """
+    diagnostics: list[Diagnostic] = []
+    overlap = set(annotation.context_tags) & (
+        set(annotation.primary_topics) | set(annotation.secondary_topics)
+    )
+    if overlap:
+        diagnostics.append(
+            Diagnostic(
+                kind="context_used_as_primary_topic",
+                question_id=annotation.question_id,
+                field="context_tags",
+                detail=f"id(s) {sorted(overlap)} appear as both a context_tag and a primary/secondary topic",
+            )
+        )
+    return diagnostics
+
+
+def validate_primary_evidence_not_alternative_only(
+    annotation: QuestionAnnotation, questions_dir: Path
+) -> list[Diagnostic]:
+    """PROMPT Fase 5B section 13/25: 'topico proveniente apenas de
+    alternativa isolada'. When an annotation has a primary_topic, at least
+    one of its own top-level evidence refs (or a ``required``-role
+    concept's evidence) must be a text excerpt found in the question's own
+    *statement* (never only inside "## Alternativas") - the conservative
+    rule section 13 asks for: a topic whose only textual grounding is one
+    isolated alternative is exactly the distractor-leakage risk this
+    guards against. Visual evidence (asset-based) is exempt, since an
+    alternative-only image is not the "single wrong-answer word" pattern
+    this rule targets.
+    """
+    if not annotation.primary_topics:
+        return []
+    md_path = questions_dir / f"{annotation.question_id}.md"
+    if not md_path.is_file():
+        return []
+    full_text = md_path.read_text(encoding="utf-8")
+    statement_text = full_text.split("## Alternativas")[0]
+
+    required_evidence = list(annotation.evidence)
+    for concept in annotation.concepts:
+        if concept.role == "required":
+            required_evidence += concept.evidence_refs
+
+    excerpts = [ref.text_excerpt for ref in required_evidence if ref.text_excerpt]
+    if not excerpts:
+        return []  # visual-only evidence is exempt
+
+    if any(excerpt in statement_text for excerpt in excerpts):
+        return []
+
+    return [
+        Diagnostic(
+            kind="primary_topic_grounded_only_in_alternatives",
+            question_id=annotation.question_id,
+            field="evidence",
+            detail=(
+                "every text-based required evidence excerpt was found only inside "
+                "'## Alternativas', never in the statement itself"
+            ),
+        )
+    ]
 
 
 def validate_search_terms_have_provenance(annotation: QuestionAnnotation) -> list[Diagnostic]:

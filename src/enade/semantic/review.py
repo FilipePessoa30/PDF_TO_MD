@@ -123,3 +123,122 @@ def build_review_markdown(
     ]
     body = [_render_question(a, taxonomy) for a in ordered]
     return "\n".join(header) + "\n---\n\n".join(body)
+
+
+def _label_for_any(node_id: str, taxonomies: list[Taxonomy]) -> str:
+    for taxonomy in taxonomies:
+        for view in taxonomy.flatten():
+            if view.id == node_id:
+                return f"{node_id} ({view.node.name})"
+    return f"{node_id} (não encontrado nas taxonomias carregadas)"
+
+
+def _render_reconciliation_question(
+    annotation_5b: QuestionAnnotation,
+    annotation_5a: dict,
+    migration_entry: dict,
+    taxonomies: list[Taxonomy],
+) -> str:
+    qid = annotation_5b.question_id
+    target = target_of_question_id(qid)
+    year, course_label = _TARGET_LABELS[target]
+    qtype = _question_type_label(qid)
+
+    def _fmt_topics(topics: list[str]) -> str:
+        return ", ".join(_label_for_any(t, taxonomies) for t in topics) if topics else "_(nenhum)_"
+
+    lines = [
+        f"## {qid}",
+        "",
+        f"- **Ano/curso:** {year} - {course_label}",
+        f"- **Tipo:** {qtype}",
+        f"- **Componente:** {annotation_5b.component}",
+        "",
+        "**Classificação Fase 5A (histórica):**",
+        f"- status: `{annotation_5a['annotation_status']}`",
+        f"- tópico(s) primário(s): {_fmt_topics(annotation_5a['primary_topics'])}",
+        "",
+        "**Classificação Fase 5B (proposta técnica):**",
+        f"- taxonomia: `{annotation_5b.taxonomy_version}`",
+        f"- status: `{annotation_5b.annotation_status}`",
+        f"- tópico(s) primário(s): {_fmt_topics(annotation_5b.primary_topics)}",
+        f"- tópico(s) secundário(s): {_fmt_topics(annotation_5b.secondary_topics)}",
+    ]
+    if annotation_5b.concepts:
+        lines.append("- conceitos:")
+        for concept in annotation_5b.concepts:
+            lines.append(
+                f"  - {_label_for_any(concept.concept_id, taxonomies)} "
+                f"(papel: {concept.role}, confiança: {concept.confidence})"
+            )
+    if annotation_5b.context_tags:
+        lines.append(
+            f"- contexto (não avaliado centralmente): {', '.join(annotation_5b.context_tags)}"
+        )
+    lines.append(
+        f"- habilidade(s) cognitiva(s): {', '.join(annotation_5b.cognitive_skills) or '_(nenhuma)_'}"
+    )
+    lines.append(f"- confiança: `{annotation_5b.confidence}`")
+
+    lines.append("")
+    lines.append(f"**Motivo da mudança (5A → 5B):** {migration_entry['change_reason']}")
+
+    if annotation_5b.evidence:
+        lines.append("")
+        lines.append("**Evidências:**")
+        for ref in annotation_5b.evidence:
+            if ref.text_excerpt:
+                lines.append(f'- ({ref.source_kind}/{ref.source_locator}) "{ref.text_excerpt}"')
+            else:
+                lines.append(f"- ({ref.source_kind}/{ref.source_locator}) asset: {ref.asset_path}")
+
+    if annotation_5b.notes:
+        lines.append("")
+        lines.append(f"**Notas técnicas:** {annotation_5b.notes}")
+
+    lines.append("")
+    lines.append(
+        "**Decisão humana pendente (preencher apenas em "
+        "`data/semantic/human-adjudication-template-5b.json`, nunca aqui):** "
+        "☐ approve ☐ correct ☐ reject ☐ defer"
+    )
+    lines.append("")
+    return "\n".join(lines)
+
+
+def build_reconciliation_review_markdown(
+    annotations_5b: list[QuestionAnnotation],
+    annotations_5a_by_id: dict[str, dict],
+    migration_by_id: dict[str, dict],
+    taxonomies: list[Taxonomy],
+) -> str:
+    """PROMPT Fase 5B section 22 - the reconciliation review packet.
+    Clearly separates 'proposta técnica' (everything computed here) from
+    'decisão humana pendente' (which lives only in the adjudication
+    template, never filled in by this function).
+    """
+    ordered = sorted(annotations_5b, key=lambda a: a.question_id)
+    header = [
+        "# Pacote de revisão humana - reconciliação do piloto (Fase 5B)",
+        "",
+        f"{len(ordered)} questão(ões) - reconciliação adversarial das 30 anotações "
+        "do piloto da Fase 5A, com foco nos 12 casos não-`proposed` "
+        "(10 `unclassifiable` + 2 `needs_review`) e auditoria das 18 `proposed`.",
+        "",
+        "Toda decisão marcada abaixo como 'proposta técnica' é apenas isso - uma "
+        "proposta. Nenhuma anotação aqui foi humanamente revisada; nenhuma tem "
+        "`review_status='reviewed'`. A decisão humana real (approve/correct/reject/"
+        "defer) só pode ser registrada em "
+        "`data/semantic/human-adjudication-template-5b.json`, nunca neste "
+        "documento. O gabarito e o padrão de resposta nunca aparecem aqui.",
+        "",
+        "---",
+        "",
+    ]
+    body = [
+        _render_reconciliation_question(
+            a, annotations_5a_by_id[a.question_id], migration_by_id[a.question_id], taxonomies
+        )
+        for a in ordered
+    ]
+    return "\n".join(header) + "\n---\n\n".join(body)

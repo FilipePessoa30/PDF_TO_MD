@@ -1,0 +1,662 @@
+{
+  "schema_version": 1,
+  "description": "Template de adjudicacao humana (PROMPT Fase 5B secao 21) - todos os campos human_* permanecem null ate revisao humana real.",
+  "allowed_human_decisions": [
+    "approve",
+    "correct",
+    "reject",
+    "defer"
+  ],
+  "entry_count": 30,
+  "entries": [
+    {
+      "question_id": "enade-2008-computing-d09",
+      "proposed_decision": {
+        "taxonomy_version": "general-education-v1@1.0.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "direitos-humanos-e-cidadania"
+        ],
+        "secondary_topics": [],
+        "concepts": [],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2008-computing-q04",
+      "proposed_decision": {
+        "taxonomy_version": "general-education-v1@1.0.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "legislacao-e-direitos-sociais"
+        ],
+        "secondary_topics": [],
+        "concepts": [],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2008-computing-q14",
+      "proposed_decision": {
+        "taxonomy_version": "computing-v1@1.1.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "arvores-e-estruturas-hierarquicas"
+        ],
+        "secondary_topics": [
+          "recursao-e-iteracao"
+        ],
+        "concepts": [
+          "percurso-em-arvore"
+        ],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2008-computing-q30",
+      "proposed_decision": {
+        "taxonomy_version": "computing-v1@1.1.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "meios-de-transmissao-e-redes-locais"
+        ],
+        "secondary_topics": [],
+        "concepts": [
+          "tecnicas-de-multiplo-acesso"
+        ],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2008-computing-q55",
+      "proposed_decision": {
+        "taxonomy_version": "computing-v1@1.1.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "probabilidade-e-estatistica-aplicada"
+        ],
+        "secondary_topics": [],
+        "concepts": [
+          "confiabilidade-de-sistemas"
+        ],
+        "confidence": "medium"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2011-computing-d03",
+      "proposed_decision": {
+        "taxonomy_version": "computing-v1@1.1.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "recursao-e-iteracao"
+        ],
+        "secondary_topics": [],
+        "concepts": [
+          "recursao"
+        ],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2011-computing-q01",
+      "proposed_decision": {
+        "taxonomy_version": "general-education-v1@1.0.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "compreensao-e-interpretacao-textual"
+        ],
+        "secondary_topics": [],
+        "concepts": [],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2011-computing-q14",
+      "proposed_decision": {
+        "taxonomy_version": "computing-v1@1.1.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "logica-proposicional"
+        ],
+        "secondary_topics": [
+          "conjuntos-relacoes-e-funcoes"
+        ],
+        "concepts": [
+          "expressao-booleana-de-regiao-de-conjuntos"
+        ],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2011-computing-q23",
+      "proposed_decision": {
+        "taxonomy_version": "computing-v1@1.1.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "teoria-da-computacao"
+        ],
+        "secondary_topics": [
+          "compiladores-e-linguagens-formais"
+        ],
+        "concepts": [
+          "automato-finito"
+        ],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2011-computing-q27",
+      "proposed_decision": {
+        "taxonomy_version": "computing-v1@1.1.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "processos-e-concorrencia"
+        ],
+        "secondary_topics": [],
+        "concepts": [
+          "paralelizacao-de-algoritmos"
+        ],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2011-computing-q31",
+      "proposed_decision": {
+        "taxonomy_version": "general-education-v1@1.0.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "curriculo-e-sociologia-da-educacao"
+        ],
+        "secondary_topics": [],
+        "concepts": [],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2011-computing-q33",
+      "proposed_decision": {
+        "taxonomy_version": "general-education-v1@1.0.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "demografia-aplicada-ao-planejamento-educacional"
+        ],
+        "secondary_topics": [],
+        "concepts": [],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2011-computing-q39",
+      "proposed_decision": {
+        "taxonomy_version": "computing-v1@1.1.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "paradigmas-de-programacao"
+        ],
+        "secondary_topics": [],
+        "concepts": [
+          "tipo-de-dados-abstrato"
+        ],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2011-computing-q43",
+      "proposed_decision": {
+        "taxonomy_version": "computing-v1@1.1.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "organizacao-de-processadores"
+        ],
+        "secondary_topics": [
+          "logica-digital-e-circuitos-combinacionais"
+        ],
+        "concepts": [
+          "clock-e-temporizacao-de-circuitos-sincronos"
+        ],
+        "confidence": "medium"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2011-computing-q46",
+      "proposed_decision": {
+        "taxonomy_version": "computing-v1@1.1.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "sql-e-esquemas-relacionais"
+        ],
+        "secondary_topics": [],
+        "concepts": [
+          "sql-agregacao-group-by-having"
+        ],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2011-computing-q49",
+      "proposed_decision": {
+        "taxonomy_version": "computing-v1@1.1.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "fundamentos-de-sistemas-de-informacao"
+        ],
+        "secondary_topics": [],
+        "concepts": [
+          "teoria-geral-de-sistemas"
+        ],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2021-cc-b-d01",
+      "proposed_decision": {
+        "taxonomy_version": "general-education-v1@1.0.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "arte-cultura-e-liberdade-de-expressao"
+        ],
+        "secondary_topics": [],
+        "concepts": [],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2021-cc-b-d03",
+      "proposed_decision": {
+        "taxonomy_version": "computing-v1@1.1.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "logica-proposicional"
+        ],
+        "secondary_topics": [],
+        "concepts": [
+          "tabela-verdade"
+        ],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2021-cc-b-q01",
+      "proposed_decision": {
+        "taxonomy_version": "general-education-v1@1.0.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "mobilidade-social-e-desigualdade"
+        ],
+        "secondary_topics": [],
+        "concepts": [],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2021-cc-b-q18",
+      "proposed_decision": {
+        "taxonomy_version": "computing-v1@1.1.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "aprendizado-de-maquina"
+        ],
+        "secondary_topics": [],
+        "concepts": [
+          "aprendizado-supervisionado-e-nao-supervisionado"
+        ],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2021-cc-b-q22",
+      "proposed_decision": {
+        "taxonomy_version": "computing-v1@1.1.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "modelagem-de-dados-er"
+        ],
+        "secondary_topics": [],
+        "concepts": [
+          "mapeamento-der-para-relacional"
+        ],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2021-cc-b-q25",
+      "proposed_decision": {
+        "taxonomy_version": "computing-v1@1.1.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "computacao-em-nuvem"
+        ],
+        "secondary_topics": [],
+        "concepts": [
+          "modelos-de-servico-saas-paas-iaas"
+        ],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2021-cc-b-q29",
+      "proposed_decision": {
+        "taxonomy_version": "computing-v1@1.1.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "processamento-e-segmentacao-de-imagens"
+        ],
+        "secondary_topics": [],
+        "concepts": [
+          "operacoes-morfologicas-erosao-dilatacao"
+        ],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2021-cc-l-q25",
+      "proposed_decision": {
+        "taxonomy_version": "computing-v1@1.1.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "computacao-em-nuvem"
+        ],
+        "secondary_topics": [],
+        "concepts": [
+          "modelos-de-servico-saas-paas-iaas"
+        ],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2021-si-d01",
+      "proposed_decision": {
+        "taxonomy_version": "general-education-v1@1.0.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "arte-cultura-e-liberdade-de-expressao"
+        ],
+        "secondary_topics": [],
+        "concepts": [],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2021-si-d02",
+      "proposed_decision": {
+        "taxonomy_version": "general-education-v1@1.0.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "sustentabilidade-e-desenvolvimento-urbano"
+        ],
+        "secondary_topics": [],
+        "concepts": [],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2021-si-d03",
+      "proposed_decision": {
+        "taxonomy_version": "computing-v1@1.1.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "fundamentos-de-sistemas-de-informacao"
+        ],
+        "secondary_topics": [],
+        "concepts": [
+          "hierarquia-dado-informacao-conhecimento"
+        ],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2021-si-q05",
+      "proposed_decision": {
+        "taxonomy_version": "general-education-v1@1.0.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "saude-publica-e-populacoes-vulneraveis"
+        ],
+        "secondary_topics": [],
+        "concepts": [],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2021-si-q25",
+      "proposed_decision": {
+        "taxonomy_version": "computing-v1@1.1.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "principios-de-seguranca-da-informacao"
+        ],
+        "secondary_topics": [],
+        "concepts": [
+          "principios-cid-confidencialidade-integridade-disponibilidade",
+          "legalidade-e-autenticidade-da-informacao"
+        ],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    },
+    {
+      "question_id": "enade-2021-si-q34",
+      "proposed_decision": {
+        "taxonomy_version": "computing-v1@1.1.0-pilot",
+        "annotation_status": "proposed",
+        "primary_topics": [
+          "internet-das-coisas-e-cidades-inteligentes"
+        ],
+        "secondary_topics": [],
+        "concepts": [
+          "internet-das-coisas"
+        ],
+        "confidence": "high"
+      },
+      "human_decision": null,
+      "human_primary_topics": null,
+      "human_secondary_topics": null,
+      "human_concepts": null,
+      "human_notes": null,
+      "reviewer": null,
+      "reviewed_at": null
+    }
+  ]
+}

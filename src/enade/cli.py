@@ -61,14 +61,20 @@ from enade.inventory.scanner import scan_corpus
 from enade.markdown_format import load_question_markdown
 from enade.models.enums import CourseCode, VisualValidationStatus
 from enade.readiness import assess_readiness
+from enade.semantic.adjudication import HumanAdjudicationEntry, build_adjudication_template
 from enade.semantic.artifacts import canonical_of_from_groups, load_annotations, load_taxonomy
 from enade.semantic.corpus_survey import resolve_question_directory
 from enade.semantic.review import build_review_markdown
 from enade.semantic.validators import (
     validate_annotation_against_taxonomy,
+    validate_context_not_used_as_primary_topic,
     validate_evidence_integrity,
+    validate_migration_entries_have_reason,
+    validate_no_taxonomy_id_meaning_changed,
+    validate_primary_evidence_not_alternative_only,
     validate_search_terms_have_provenance,
     validate_shared_question_consistency,
+    validate_taxonomy_keywords_are_not_bare_generic_terms,
 )
 from enade.validation.manifest_checks import check_manifest_matches_filesystem, validate_manifest
 from enade.validation.schema_checks import (
@@ -93,6 +99,17 @@ DEFAULT_SEMANTIC_ANNOTATIONS_PATH = (
     PROJECT_ROOT / "data" / "semantic" / "question-annotations-5a.json"
 )
 DEFAULT_SEMANTIC_REVIEW_PATH = PROJECT_ROOT / "docs" / "semantic-pilot-review.md"
+DEFAULT_COMPUTING_TAXONOMY_V11_PATH = PROJECT_ROOT / "data" / "taxonomy" / "computing-v1.1.yaml"
+DEFAULT_GENERAL_EDUCATION_TAXONOMY_PATH = (
+    PROJECT_ROOT / "data" / "taxonomy" / "general-education-v1.yaml"
+)
+DEFAULT_SEMANTIC_ANNOTATIONS_5B_PATH = (
+    PROJECT_ROOT / "data" / "semantic" / "question-annotations-5b.json"
+)
+DEFAULT_MIGRATION_5A_TO_5B_PATH = PROJECT_ROOT / "data" / "semantic" / "migration-5a-to-5b.json"
+DEFAULT_HUMAN_ADJUDICATION_PATH = (
+    PROJECT_ROOT / "data" / "semantic" / "human-adjudication-template-5b.json"
+)
 
 #: CourseCode -> source filename letter (inverse of COURSE_LETTER_MAP).
 COURSE_TO_LETTER = {code: letter for letter, code in COURSE_LETTER_MAP.items()}
@@ -1125,6 +1142,190 @@ def build_semantic_review_cmd(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(markdown, encoding="utf-8")
     typer.echo(f"build-semantic-review: wrote {len(annotations)} question(s) to {output_path}")
+
+
+@app.command(name="validate-semantic-migration")
+def validate_semantic_migration_cmd(
+    computing_taxonomy_path: Path = typer.Option(
+        DEFAULT_COMPUTING_TAXONOMY_V11_PATH, help="successor Computing taxonomy YAML"
+    ),
+    general_education_taxonomy_path: Path = typer.Option(
+        DEFAULT_GENERAL_EDUCATION_TAXONOMY_PATH, help="general-education taxonomy YAML"
+    ),
+    predecessor_annotations_path: Path = typer.Option(
+        DEFAULT_SEMANTIC_ANNOTATIONS_PATH, help="the prior phase's own question-annotations JSON"
+    ),
+    annotations_path: Path = typer.Option(
+        DEFAULT_SEMANTIC_ANNOTATIONS_5B_PATH, help="this phase's question-annotations JSON"
+    ),
+    migration_path: Path = typer.Option(
+        DEFAULT_MIGRATION_5A_TO_5B_PATH, help="the 5a->5b migration log JSON"
+    ),
+    project_root: Path = typer.Option(
+        PROJECT_ROOT, help="repo root, used to resolve each question's own published directory"
+    ),
+) -> None:
+    """Cross-artifact validation of a semantic reconciliation/migration
+    (PROMPT Fase 5B section 15/16/25): dispatches each annotation to the
+    Computing or general-education taxonomy by its own declared
+    ``taxonomy_version``, checks the migration log covers every question
+    with a real reason, checks no id changed meaning across the taxonomy
+    versions, and re-runs every Fase 5A-style evidence/consistency check.
+    Read-only; never writes; deterministic; no network.
+    """
+    missing = [
+        p
+        for p in (
+            computing_taxonomy_path,
+            general_education_taxonomy_path,
+            predecessor_annotations_path,
+            annotations_path,
+            migration_path,
+        )
+        if not p.exists()
+    ]
+    if missing:
+        for p in missing:
+            typer.echo(f"file not found: {p}")
+        raise typer.Exit(code=1)
+
+    predecessor_taxonomy_path = DEFAULT_COMPUTING_TAXONOMY_PATH
+    predecessor_taxonomy = load_taxonomy(predecessor_taxonomy_path)
+    computing_taxonomy = load_taxonomy(computing_taxonomy_path)
+    general_education_taxonomy = load_taxonomy(general_education_taxonomy_path)
+    taxonomies_by_version = {
+        f"{computing_taxonomy.taxonomy_id}@{computing_taxonomy.version}": computing_taxonomy,
+        f"{general_education_taxonomy.taxonomy_id}@{general_education_taxonomy.version}": general_education_taxonomy,
+    }
+
+    annotations, groups = load_annotations(annotations_path)
+    canonical_of = canonical_of_from_groups(groups)
+    predecessor_annotations, _predecessor_groups = load_annotations(predecessor_annotations_path)
+    migration_payload = json.loads(migration_path.read_text(encoding="utf-8"))
+    migration_entries = migration_payload["entries"]
+
+    diagnostics: list[str] = []
+
+    predecessor_ids = {a.question_id for a in predecessor_annotations}
+    current_ids = {a.question_id for a in annotations}
+    dropped = predecessor_ids - current_ids
+    if dropped:
+        diagnostics.append(
+            f"question(s) present in predecessor but missing from successor: {sorted(dropped)}"
+        )
+
+    migration_ids = {e["question_id"] for e in migration_entries}
+    unlogged = current_ids - migration_ids
+    if unlogged:
+        diagnostics.append(f"question(s) with no migration log entry: {sorted(unlogged)}")
+
+    for diag in validate_migration_entries_have_reason(migration_entries):
+        diagnostics.append(f"{diag.question_id} ({diag.field}): {diag.kind} - {diag.detail}")
+
+    for diag in validate_no_taxonomy_id_meaning_changed(predecessor_taxonomy, computing_taxonomy):
+        diagnostics.append(f"{diag.question_id} ({diag.field}): {diag.kind} - {diag.detail}")
+
+    for loaded_taxonomy in (computing_taxonomy, general_education_taxonomy):
+        for diag in validate_taxonomy_keywords_are_not_bare_generic_terms(loaded_taxonomy):
+            diagnostics.append(f"{diag.question_id} ({diag.field}): {diag.kind} - {diag.detail}")
+
+    for annotation in sorted(annotations, key=lambda a: a.question_id):
+        taxonomy = taxonomies_by_version.get(annotation.taxonomy_version)
+        if taxonomy is None:
+            diagnostics.append(
+                f"{annotation.question_id}: taxonomy_version {annotation.taxonomy_version!r} "
+                "does not match any loaded taxonomy"
+            )
+            continue
+        for diag in validate_annotation_against_taxonomy(
+            annotation, taxonomy, annotation.taxonomy_version
+        ):
+            diagnostics.append(f"{diag.question_id} ({diag.field}): {diag.kind} - {diag.detail}")
+        for diag in validate_evidence_integrity(
+            annotation, resolve_question_directory(annotation.question_id, project_root)
+        ):
+            diagnostics.append(f"{diag.question_id} ({diag.field}): {diag.kind} - {diag.detail}")
+        for diag in validate_search_terms_have_provenance(annotation):
+            diagnostics.append(f"{diag.question_id} ({diag.field}): {diag.kind} - {diag.detail}")
+        for diag in validate_context_not_used_as_primary_topic(annotation):
+            diagnostics.append(f"{diag.question_id} ({diag.field}): {diag.kind} - {diag.detail}")
+        for diag in validate_primary_evidence_not_alternative_only(
+            annotation, resolve_question_directory(annotation.question_id, project_root)
+        ):
+            diagnostics.append(f"{diag.question_id} ({diag.field}): {diag.kind} - {diag.detail}")
+
+    for diag in validate_shared_question_consistency(annotations, canonical_of=canonical_of):
+        diagnostics.append(f"{diag.question_id} ({diag.field}): {diag.kind} - {diag.detail}")
+
+    for message in diagnostics:
+        typer.echo(f"  [FAIL] {message}")
+
+    typer.echo("")
+    typer.echo(
+        f"validate-semantic-migration: {len(annotations)} annotation(s), "
+        f"{len(migration_entries)} migration entrie(s) checked, {len(diagnostics)} diagnostic(s)"
+    )
+    if diagnostics:
+        raise typer.Exit(code=1)
+
+
+@app.command(name="build-human-adjudication")
+def build_human_adjudication_cmd(
+    annotations_path: Path = typer.Option(
+        DEFAULT_SEMANTIC_ANNOTATIONS_5B_PATH,
+        help="question-annotations JSON to build a template from",
+    ),
+    output_path: Path = typer.Option(
+        DEFAULT_HUMAN_ADJUDICATION_PATH, help="human-adjudication template JSON to (re)write"
+    ),
+    force: bool = typer.Option(
+        False,
+        help="overwrite even if the existing output file already has a human decision recorded",
+    ),
+) -> None:
+    """Render the human-adjudication template (PROMPT Fase 5B section 21).
+    Purely a rendering step: every ``human_*`` field is written as
+    ``null``; never promotes any status; never reads the gabarito. Refuses
+    to overwrite an existing output file that already has at least one
+    real human decision recorded, unless ``--force`` is given - rebuilding
+    the template must never silently discard a reviewer's work.
+    """
+    if not annotations_path.exists():
+        typer.echo(f"annotations file not found: {annotations_path}")
+        raise typer.Exit(code=1)
+
+    if output_path.exists() and not force:
+        existing = json.loads(output_path.read_text(encoding="utf-8"))
+        has_human_decision = any(
+            entry.get("human_decision") is not None for entry in existing.get("entries", [])
+        )
+        if has_human_decision:
+            typer.echo(
+                f"{output_path} already has at least one recorded human_decision - "
+                "refusing to overwrite (use --force to override)"
+            )
+            raise typer.Exit(code=1)
+
+    annotations, _groups = load_annotations(annotations_path)
+    entries = build_adjudication_template(annotations)
+    for entry in entries:
+        HumanAdjudicationEntry(**entry)  # re-validate before ever writing
+
+    payload = {
+        "schema_version": 1,
+        "description": (
+            "Template de adjudicacao humana (PROMPT Fase 5B secao 21) - todos os "
+            "campos human_* permanecem null ate revisao humana real."
+        ),
+        "allowed_human_decisions": ["approve", "correct", "reject", "defer"],
+        "entry_count": len(entries),
+        "entries": entries,
+    }
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    typer.echo(f"build-human-adjudication: wrote {len(entries)} entrie(s) to {output_path}")
 
 
 if __name__ == "__main__":

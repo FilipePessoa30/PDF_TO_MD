@@ -1,0 +1,408 @@
+{
+  "schema_version": 1,
+  "predecessor": "data/semantic/question-annotations-5a.json",
+  "successor": "data/semantic/question-annotations-5b.json",
+  "entry_count": 30,
+  "entries": [
+    {
+      "question_id": "enade-2008-computing-d09",
+      "previous_status": "unclassifiable",
+      "new_status": "proposed",
+      "previous_topics": [],
+      "new_topics": [
+        "direitos-humanos-e-cidadania"
+      ],
+      "change_reason": "Fase 5B secao 7/8: diagnostico individual confirmou conteudo genuino de formacao geral, nunca Computacao - reclassificado para a taxonomia separada general-education-v1 em vez de permanecer unclassifiable.",
+      "taxonomy_change": "computing-v1@1.0.0-pilot (unclassifiable) -> general-education-v1@1.0.0-pilot (proposed)",
+      "evidence_change": "evidencia textual mantida (mesmo excerto da Fase 5A), agora associada a um topico real em vez de uma anotacao vazia"
+    },
+    {
+      "question_id": "enade-2008-computing-q04",
+      "previous_status": "unclassifiable",
+      "new_status": "proposed",
+      "previous_topics": [],
+      "new_topics": [
+        "legislacao-e-direitos-sociais"
+      ],
+      "change_reason": "Fase 5B secao 7/8: diagnostico individual confirmou conteudo genuino de formacao geral, nunca Computacao - reclassificado para a taxonomia separada general-education-v1 em vez de permanecer unclassifiable.",
+      "taxonomy_change": "computing-v1@1.0.0-pilot (unclassifiable) -> general-education-v1@1.0.0-pilot (proposed)",
+      "evidence_change": "evidencia textual mantida (mesmo excerto da Fase 5A), agora associada a um topico real em vez de uma anotacao vazia"
+    },
+    {
+      "question_id": "enade-2008-computing-q14",
+      "previous_status": "proposed",
+      "new_status": "proposed",
+      "previous_topics": [
+        "arvores-e-estruturas-hierarquicas"
+      ],
+      "new_topics": [
+        "arvores-e-estruturas-hierarquicas"
+      ],
+      "change_reason": "unchanged - adversarial audit (PROMPT Fase 5B secao 12) found no defect; carried forward under the new taxonomy version.",
+      "taxonomy_change": "computing-v1.yaml (taxonomy_version computing-v1@1.0.0-pilot) -> computing-v1.1.yaml (taxonomy_version computing-v1@1.1.0-pilot) (version bump only, no id/topic change)",
+      "evidence_change": "unchanged"
+    },
+    {
+      "question_id": "enade-2008-computing-q30",
+      "previous_status": "proposed",
+      "new_status": "proposed",
+      "previous_topics": [
+        "meios-de-transmissao-e-redes-locais"
+      ],
+      "new_topics": [
+        "meios-de-transmissao-e-redes-locais"
+      ],
+      "change_reason": "unchanged - adversarial audit (PROMPT Fase 5B secao 12) found no defect; carried forward under the new taxonomy version.",
+      "taxonomy_change": "computing-v1.yaml (taxonomy_version computing-v1@1.0.0-pilot) -> computing-v1.1.yaml (taxonomy_version computing-v1@1.1.0-pilot) (version bump only, no id/topic change)",
+      "evidence_change": "unchanged"
+    },
+    {
+      "question_id": "enade-2008-computing-q55",
+      "previous_status": "proposed",
+      "new_status": "proposed",
+      "previous_topics": [
+        "probabilidade-e-estatistica-aplicada"
+      ],
+      "new_topics": [
+        "probabilidade-e-estatistica-aplicada"
+      ],
+      "change_reason": "unchanged - adversarial audit (PROMPT Fase 5B secao 12) found no defect; carried forward under the new taxonomy version.",
+      "taxonomy_change": "computing-v1.yaml (taxonomy_version computing-v1@1.0.0-pilot) -> computing-v1.1.yaml (taxonomy_version computing-v1@1.1.0-pilot) (version bump only, no id/topic change)",
+      "evidence_change": "unchanged"
+    },
+    {
+      "question_id": "enade-2011-computing-d03",
+      "previous_status": "proposed",
+      "new_status": "proposed",
+      "previous_topics": [
+        "recursao-e-iteracao"
+      ],
+      "new_topics": [
+        "recursao-e-iteracao"
+      ],
+      "change_reason": "unchanged - adversarial audit (PROMPT Fase 5B secao 12) found no defect; carried forward under the new taxonomy version.",
+      "taxonomy_change": "computing-v1.yaml (taxonomy_version computing-v1@1.0.0-pilot) -> computing-v1.1.yaml (taxonomy_version computing-v1@1.1.0-pilot) (version bump only, no id/topic change)",
+      "evidence_change": "unchanged"
+    },
+    {
+      "question_id": "enade-2011-computing-q01",
+      "previous_status": "unclassifiable",
+      "new_status": "proposed",
+      "previous_topics": [],
+      "new_topics": [
+        "compreensao-e-interpretacao-textual"
+      ],
+      "change_reason": "Fase 5B secao 7/8: diagnostico individual confirmou conteudo genuino de formacao geral, nunca Computacao - reclassificado para a taxonomia separada general-education-v1 em vez de permanecer unclassifiable.",
+      "taxonomy_change": "computing-v1@1.0.0-pilot (unclassifiable) -> general-education-v1@1.0.0-pilot (proposed)",
+      "evidence_change": "evidencia textual mantida (mesmo excerto da Fase 5A), agora associada a um topico real em vez de uma anotacao vazia"
+    },
+    {
+      "question_id": "enade-2011-computing-q14",
+      "previous_status": "needs_review",
+      "new_status": "proposed",
+      "previous_topics": [
+        "conjuntos-relacoes-e-funcoes"
+      ],
+      "new_topics": [
+        "logica-proposicional"
+      ],
+      "change_reason": "Fase 5B auditoria adversarial (secao 11): needs_review resolvido - inspecao visual integral dos 7 assets revelou que a Fase 5A classificou incorretamente (leitura incompleta do enunciado fragmentado). Reclassificado de conjuntos-relacoes-e-funcoes para logica-proposicional (com conjuntos-relacoes-e-funcoes mantido como secundario, pois o diagrama de Venn ainda e o veiculo de representacao).",
+      "taxonomy_change": "computing-v1.yaml (taxonomy_version computing-v1@1.0.0-pilot) -> computing-v1.1.yaml (taxonomy_version computing-v1@1.1.0-pilot); novo concept expressao-booleana-de-regiao-de-conjuntos adicionado especificamente para este caso",
+      "evidence_change": "evidencia visual real substituiu a ausencia de concept da Fase 5A; 2 novos assets citados como evidencia do concept, 1 asset adicional (figure-03) citado como evidencia de nivel de anotacao"
+    },
+    {
+      "question_id": "enade-2011-computing-q23",
+      "previous_status": "needs_review",
+      "new_status": "proposed",
+      "previous_topics": [
+        "teoria-da-computacao"
+      ],
+      "new_topics": [
+        "teoria-da-computacao"
+      ],
+      "change_reason": "Fase 5B auditoria adversarial (secao 11): needs_review resolvido - inspecao visual integral confirmou (nao contradisse) a classificacao original da Fase 5A.",
+      "taxonomy_change": "computing-v1.yaml (taxonomy_version computing-v1@1.0.0-pilot) -> computing-v1.1.yaml (taxonomy_version computing-v1@1.1.0-pilot) (version bump only, topico/concept inalterados)",
+      "evidence_change": "2 evidencias visuais adicionadas (gramatica e automato), confirmando a classificacao textual ja existente"
+    },
+    {
+      "question_id": "enade-2011-computing-q27",
+      "previous_status": "proposed",
+      "new_status": "proposed",
+      "previous_topics": [
+        "processos-e-concorrencia"
+      ],
+      "new_topics": [
+        "processos-e-concorrencia"
+      ],
+      "change_reason": "unchanged - adversarial audit (PROMPT Fase 5B secao 12) found no defect; carried forward under the new taxonomy version.",
+      "taxonomy_change": "computing-v1.yaml (taxonomy_version computing-v1@1.0.0-pilot) -> computing-v1.1.yaml (taxonomy_version computing-v1@1.1.0-pilot) (version bump only, no id/topic change)",
+      "evidence_change": "unchanged"
+    },
+    {
+      "question_id": "enade-2011-computing-q31",
+      "previous_status": "unclassifiable",
+      "new_status": "proposed",
+      "previous_topics": [],
+      "new_topics": [
+        "curriculo-e-sociologia-da-educacao"
+      ],
+      "change_reason": "Fase 5B secao 7/8: diagnostico individual confirmou conteudo genuino de pedagogia de Licenciatura, nunca Computacao - reclassificado para a taxonomia separada general-education-v1 em vez de permanecer unclassifiable.",
+      "taxonomy_change": "computing-v1@1.0.0-pilot (unclassifiable) -> general-education-v1@1.0.0-pilot (proposed)",
+      "evidence_change": "evidencia textual mantida (mesmo excerto da Fase 5A), agora associada a um topico real em vez de uma anotacao vazia"
+    },
+    {
+      "question_id": "enade-2011-computing-q33",
+      "previous_status": "unclassifiable",
+      "new_status": "proposed",
+      "previous_topics": [],
+      "new_topics": [
+        "demografia-aplicada-ao-planejamento-educacional"
+      ],
+      "change_reason": "Fase 5B secao 7/8: diagnostico individual confirmou conteudo genuino de pedagogia de Licenciatura, nunca Computacao - reclassificado para a taxonomia separada general-education-v1 em vez de permanecer unclassifiable.",
+      "taxonomy_change": "computing-v1@1.0.0-pilot (unclassifiable) -> general-education-v1@1.0.0-pilot (proposed)",
+      "evidence_change": "evidencia textual mantida (mesmo excerto da Fase 5A), agora associada a um topico real em vez de uma anotacao vazia"
+    },
+    {
+      "question_id": "enade-2011-computing-q39",
+      "previous_status": "proposed",
+      "new_status": "proposed",
+      "previous_topics": [
+        "paradigmas-de-programacao"
+      ],
+      "new_topics": [
+        "paradigmas-de-programacao"
+      ],
+      "change_reason": "unchanged - adversarial audit (PROMPT Fase 5B secao 12) found no defect; carried forward under the new taxonomy version.",
+      "taxonomy_change": "computing-v1.yaml (taxonomy_version computing-v1@1.0.0-pilot) -> computing-v1.1.yaml (taxonomy_version computing-v1@1.1.0-pilot) (version bump only, no id/topic change)",
+      "evidence_change": "unchanged"
+    },
+    {
+      "question_id": "enade-2011-computing-q43",
+      "previous_status": "proposed",
+      "new_status": "proposed",
+      "previous_topics": [
+        "organizacao-de-processadores"
+      ],
+      "new_topics": [
+        "organizacao-de-processadores"
+      ],
+      "change_reason": "unchanged - adversarial audit (PROMPT Fase 5B secao 12) found no defect; carried forward under the new taxonomy version.",
+      "taxonomy_change": "computing-v1.yaml (taxonomy_version computing-v1@1.0.0-pilot) -> computing-v1.1.yaml (taxonomy_version computing-v1@1.1.0-pilot) (version bump only, no id/topic change)",
+      "evidence_change": "unchanged"
+    },
+    {
+      "question_id": "enade-2011-computing-q46",
+      "previous_status": "proposed",
+      "new_status": "proposed",
+      "previous_topics": [
+        "sql-e-esquemas-relacionais"
+      ],
+      "new_topics": [
+        "sql-e-esquemas-relacionais"
+      ],
+      "change_reason": "unchanged - adversarial audit (PROMPT Fase 5B secao 12) found no defect; carried forward under the new taxonomy version.",
+      "taxonomy_change": "computing-v1.yaml (taxonomy_version computing-v1@1.0.0-pilot) -> computing-v1.1.yaml (taxonomy_version computing-v1@1.1.0-pilot) (version bump only, no id/topic change)",
+      "evidence_change": "unchanged"
+    },
+    {
+      "question_id": "enade-2011-computing-q49",
+      "previous_status": "proposed",
+      "new_status": "proposed",
+      "previous_topics": [
+        "fundamentos-de-sistemas-de-informacao"
+      ],
+      "new_topics": [
+        "fundamentos-de-sistemas-de-informacao"
+      ],
+      "change_reason": "unchanged - adversarial audit (PROMPT Fase 5B secao 12) found no defect; carried forward under the new taxonomy version.",
+      "taxonomy_change": "computing-v1.yaml (taxonomy_version computing-v1@1.0.0-pilot) -> computing-v1.1.yaml (taxonomy_version computing-v1@1.1.0-pilot) (version bump only, no id/topic change)",
+      "evidence_change": "unchanged"
+    },
+    {
+      "question_id": "enade-2021-cc-b-d01",
+      "previous_status": "unclassifiable",
+      "new_status": "proposed",
+      "previous_topics": [],
+      "new_topics": [
+        "arte-cultura-e-liberdade-de-expressao"
+      ],
+      "change_reason": "Fase 5B secao 7/8: diagnostico individual confirmou conteudo genuino de formacao geral, nunca Computacao - reclassificado para a taxonomia separada general-education-v1 em vez de permanecer unclassifiable.",
+      "taxonomy_change": "computing-v1@1.0.0-pilot (unclassifiable) -> general-education-v1@1.0.0-pilot (proposed)",
+      "evidence_change": "evidencia textual mantida (mesmo excerto da Fase 5A), agora associada a um topico real em vez de uma anotacao vazia"
+    },
+    {
+      "question_id": "enade-2021-cc-b-d03",
+      "previous_status": "proposed",
+      "new_status": "proposed",
+      "previous_topics": [
+        "logica-proposicional"
+      ],
+      "new_topics": [
+        "logica-proposicional"
+      ],
+      "change_reason": "unchanged - adversarial audit (PROMPT Fase 5B secao 12) found no defect; carried forward under the new taxonomy version.",
+      "taxonomy_change": "computing-v1.yaml (taxonomy_version computing-v1@1.0.0-pilot) -> computing-v1.1.yaml (taxonomy_version computing-v1@1.1.0-pilot) (version bump only, no id/topic change)",
+      "evidence_change": "unchanged"
+    },
+    {
+      "question_id": "enade-2021-cc-b-q01",
+      "previous_status": "unclassifiable",
+      "new_status": "proposed",
+      "previous_topics": [],
+      "new_topics": [
+        "mobilidade-social-e-desigualdade"
+      ],
+      "change_reason": "Fase 5B secao 7/8: diagnostico individual confirmou conteudo genuino de formacao geral, nunca Computacao - reclassificado para a taxonomia separada general-education-v1 em vez de permanecer unclassifiable.",
+      "taxonomy_change": "computing-v1@1.0.0-pilot (unclassifiable) -> general-education-v1@1.0.0-pilot (proposed)",
+      "evidence_change": "evidencia textual mantida (mesmo excerto da Fase 5A), agora associada a um topico real em vez de uma anotacao vazia"
+    },
+    {
+      "question_id": "enade-2021-cc-b-q18",
+      "previous_status": "proposed",
+      "new_status": "proposed",
+      "previous_topics": [
+        "aprendizado-de-maquina"
+      ],
+      "new_topics": [
+        "aprendizado-de-maquina"
+      ],
+      "change_reason": "unchanged - adversarial audit (PROMPT Fase 5B secao 12) found no defect; carried forward under the new taxonomy version.",
+      "taxonomy_change": "computing-v1.yaml (taxonomy_version computing-v1@1.0.0-pilot) -> computing-v1.1.yaml (taxonomy_version computing-v1@1.1.0-pilot) (version bump only, no id/topic change)",
+      "evidence_change": "unchanged"
+    },
+    {
+      "question_id": "enade-2021-cc-b-q22",
+      "previous_status": "proposed",
+      "new_status": "proposed",
+      "previous_topics": [
+        "modelagem-de-dados-er"
+      ],
+      "new_topics": [
+        "modelagem-de-dados-er"
+      ],
+      "change_reason": "unchanged - adversarial audit (PROMPT Fase 5B secao 12) found no defect; carried forward under the new taxonomy version.",
+      "taxonomy_change": "computing-v1.yaml (taxonomy_version computing-v1@1.0.0-pilot) -> computing-v1.1.yaml (taxonomy_version computing-v1@1.1.0-pilot) (version bump only, no id/topic change)",
+      "evidence_change": "unchanged"
+    },
+    {
+      "question_id": "enade-2021-cc-b-q25",
+      "previous_status": "proposed",
+      "new_status": "proposed",
+      "previous_topics": [
+        "computacao-em-nuvem"
+      ],
+      "new_topics": [
+        "computacao-em-nuvem"
+      ],
+      "change_reason": "unchanged - adversarial audit (PROMPT Fase 5B secao 12) found no defect; carried forward under the new taxonomy version.",
+      "taxonomy_change": "computing-v1.yaml (taxonomy_version computing-v1@1.0.0-pilot) -> computing-v1.1.yaml (taxonomy_version computing-v1@1.1.0-pilot) (version bump only, no id/topic change)",
+      "evidence_change": "unchanged"
+    },
+    {
+      "question_id": "enade-2021-cc-b-q29",
+      "previous_status": "proposed",
+      "new_status": "proposed",
+      "previous_topics": [
+        "processamento-e-segmentacao-de-imagens"
+      ],
+      "new_topics": [
+        "processamento-e-segmentacao-de-imagens"
+      ],
+      "change_reason": "unchanged - adversarial audit (PROMPT Fase 5B secao 12) found no defect; carried forward under the new taxonomy version.",
+      "taxonomy_change": "computing-v1.yaml (taxonomy_version computing-v1@1.0.0-pilot) -> computing-v1.1.yaml (taxonomy_version computing-v1@1.1.0-pilot) (version bump only, no id/topic change)",
+      "evidence_change": "unchanged"
+    },
+    {
+      "question_id": "enade-2021-cc-l-q25",
+      "previous_status": "proposed",
+      "new_status": "proposed",
+      "previous_topics": [
+        "computacao-em-nuvem"
+      ],
+      "new_topics": [
+        "computacao-em-nuvem"
+      ],
+      "change_reason": "unchanged - adversarial audit (PROMPT Fase 5B secao 12) found no defect; carried forward under the new taxonomy version.",
+      "taxonomy_change": "computing-v1.yaml (taxonomy_version computing-v1@1.0.0-pilot) -> computing-v1.1.yaml (taxonomy_version computing-v1@1.1.0-pilot) (version bump only, no id/topic change)",
+      "evidence_change": "unchanged"
+    },
+    {
+      "question_id": "enade-2021-si-d01",
+      "previous_status": "unclassifiable",
+      "new_status": "proposed",
+      "previous_topics": [],
+      "new_topics": [
+        "arte-cultura-e-liberdade-de-expressao"
+      ],
+      "change_reason": "Fase 5B secao 7/8: diagnostico individual confirmou conteudo genuino de formacao geral, nunca Computacao - reclassificado para a taxonomia separada general-education-v1 em vez de permanecer unclassifiable.",
+      "taxonomy_change": "computing-v1@1.0.0-pilot (unclassifiable) -> general-education-v1@1.0.0-pilot (proposed)",
+      "evidence_change": "evidencia textual mantida (mesmo excerto da Fase 5A), agora associada a um topico real em vez de uma anotacao vazia"
+    },
+    {
+      "question_id": "enade-2021-si-d02",
+      "previous_status": "unclassifiable",
+      "new_status": "proposed",
+      "previous_topics": [],
+      "new_topics": [
+        "sustentabilidade-e-desenvolvimento-urbano"
+      ],
+      "change_reason": "Fase 5B secao 7/8: diagnostico individual confirmou conteudo genuino de formacao geral, nunca Computacao - reclassificado para a taxonomia separada general-education-v1 em vez de permanecer unclassifiable.",
+      "taxonomy_change": "computing-v1@1.0.0-pilot (unclassifiable) -> general-education-v1@1.0.0-pilot (proposed)",
+      "evidence_change": "evidencia textual mantida (mesmo excerto da Fase 5A), agora associada a um topico real em vez de uma anotacao vazia"
+    },
+    {
+      "question_id": "enade-2021-si-d03",
+      "previous_status": "proposed",
+      "new_status": "proposed",
+      "previous_topics": [
+        "fundamentos-de-sistemas-de-informacao"
+      ],
+      "new_topics": [
+        "fundamentos-de-sistemas-de-informacao"
+      ],
+      "change_reason": "unchanged - adversarial audit (PROMPT Fase 5B secao 12) found no defect; carried forward under the new taxonomy version.",
+      "taxonomy_change": "computing-v1.yaml (taxonomy_version computing-v1@1.0.0-pilot) -> computing-v1.1.yaml (taxonomy_version computing-v1@1.1.0-pilot) (version bump only, no id/topic change)",
+      "evidence_change": "unchanged"
+    },
+    {
+      "question_id": "enade-2021-si-q05",
+      "previous_status": "unclassifiable",
+      "new_status": "proposed",
+      "previous_topics": [],
+      "new_topics": [
+        "saude-publica-e-populacoes-vulneraveis"
+      ],
+      "change_reason": "Fase 5B secao 7/8: diagnostico individual confirmou conteudo genuino de formacao geral, nunca Computacao - reclassificado para a taxonomia separada general-education-v1 em vez de permanecer unclassifiable.",
+      "taxonomy_change": "computing-v1@1.0.0-pilot (unclassifiable) -> general-education-v1@1.0.0-pilot (proposed)",
+      "evidence_change": "evidencia textual mantida (mesmo excerto da Fase 5A), agora associada a um topico real em vez de uma anotacao vazia"
+    },
+    {
+      "question_id": "enade-2021-si-q25",
+      "previous_status": "proposed",
+      "new_status": "proposed",
+      "previous_topics": [
+        "principios-de-seguranca-da-informacao"
+      ],
+      "new_topics": [
+        "principios-de-seguranca-da-informacao"
+      ],
+      "change_reason": "Fase 5B auditoria adversarial (secao 12): a questao testa 5 afirmacoes (I-V), nao apenas a triade CID (I-III) - adicionado concept de suporte para legalidade/autenticidade (IV/V).",
+      "taxonomy_change": "computing-v1.yaml (taxonomy_version computing-v1@1.0.0-pilot) -> computing-v1.1.yaml (taxonomy_version computing-v1@1.1.0-pilot) (new sibling concept legalidade-e-autenticidade-da-informacao added under the same, unchanged topic)",
+      "evidence_change": "added 1 evidence ref for the new supporting concept; primary concept's own evidence unchanged"
+    },
+    {
+      "question_id": "enade-2021-si-q34",
+      "previous_status": "proposed",
+      "new_status": "proposed",
+      "previous_topics": [
+        "internet-das-coisas-e-cidades-inteligentes"
+      ],
+      "new_topics": [
+        "internet-das-coisas-e-cidades-inteligentes"
+      ],
+      "change_reason": "unchanged - adversarial audit (PROMPT Fase 5B secao 12) found no defect; carried forward under the new taxonomy version.",
+      "taxonomy_change": "computing-v1.yaml (taxonomy_version computing-v1@1.0.0-pilot) -> computing-v1.1.yaml (taxonomy_version computing-v1@1.1.0-pilot) (version bump only, no id/topic change)",
+      "evidence_change": "unchanged"
+    }
+  ]
+}

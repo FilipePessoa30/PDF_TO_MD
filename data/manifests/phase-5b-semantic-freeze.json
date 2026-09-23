@@ -1,0 +1,187 @@
+{
+  "schema_version": 1,
+  "created_for": "PROMPT Fase 5B - auditoria adversarial do piloto, reconciliacao dos 12 casos nao propostos e preparacao da adjudicacao humana",
+  "lineage": "semantic (sucessora de phase-5a-semantic-freeze.json - PROMPT Fase 5B secao 4/30: freezes 4E e 5A permanecem terminais/historicos, nunca editados)",
+  "branch": "feat/enade-2008-cc-b-pilot",
+  "head": "4ca2a82be4e01188e09563f83e2bec1f2d0f3677",
+  "master": "a5dfaab0c105150df3a7201c16547708cef45292",
+  "origin_master": "a5dfaab0c105150df3a7201c16547708cef45292",
+  "origin_branch": "4ca2a82be4e01188e09563f83e2bec1f2d0f3677",
+  "pre_existing_remote_commit": {
+    "sha": "4ca2a82be4e01188e09563f83e2bec1f2d0f3677",
+    "note": "Fase 5A (fundacao semantica completa) ja estava commitada e publicada em origin/feat/enade-2008-cc-b-pilot antes desta sessao de Fase 5B comecar - por uma acao externa, nunca pelos comandos git desta ou de qualquer sessao anterior. Registrado aqui como fato, nunca atribuido ao trabalho da Fase 5B."
+  },
+  "predecessor_semantic_freeze_reference": {
+    "path": "data/manifests/phase-5a-semantic-freeze.json",
+    "sha256": "063d65f57159ad8fb0f3588aa9b2260ceb2bb69090381699d7413710b6781e9b",
+    "note": "phase-5a-semantic-freeze.json permanece intocado - este freeze apenas o referencia por hash."
+  },
+  "extraction_freeze_reference": {
+    "path": "data/manifests/phase-4e-freeze.json",
+    "sha256": "2efe8c47367b645fdd1a2b9e8daa3e2d8be6a7ae46610e3d0776672af352c80d",
+    "note": "phase-4e-freeze.json permanece o freeze TERMINAL da camada de extracao - nunca editado, nunca superado."
+  },
+  "phase_5a_artifacts_verified_byte_identical": {
+    "taxonomy": "cad0204e9b04b1ff08780750cec7da086b7ee38c6956259bf796ae91672e751b",
+    "annotations": "5bbf515da09cb46622efae67cd9c94fc7ed84d355ef48b62330c5442501bbbe7",
+    "pilot_selection": "d3418a867ccdcee1643957beec73ea406cbb2117eddb0321aaa15e6f36b9c59e",
+    "guidelines": "146201892f7b646aa6e440bb90f9255b0d4529d1c8c9d812d9e06f8456c5c1a3",
+    "review_packet": "7584082c9317d3252095a968912d902b18573f34f854fbf0033b370f15130e8c",
+    "pilot_audit": "94da1a83991e9a3b3b0300f566a512e6e3c0e8f75c8c323915745edd97c5f480",
+    "generalization_scan": "1300cef0c0e938ab8691124343d03ac49a714796c43e8bb073a6575d83b54c6c"
+  },
+  "artifacts": {
+    "taxonomy_computing": {
+      "path": "data/taxonomy/computing-v1.1.yaml",
+      "sha256": "7df7dd9804962dac64c139edf10e1300dfe7e2deba0ea257e45b39b86307101c"
+    },
+    "taxonomy_general_education": {
+      "path": "data/taxonomy/general-education-v1.yaml",
+      "sha256": "1e48beb21c6ad5eff07f7371202fd657e613bd1b26d4c07e5f4ebe926d0814ea"
+    },
+    "annotations": {
+      "path": "data/semantic/question-annotations-5b.json",
+      "sha256": "3bad56e2617a685d596bf3dbb967cb0482aeb8486d7099d4ce626daf817dbc57"
+    },
+    "unresolved_cases_ledger": {
+      "path": "data/semantic/unresolved-cases-ledger-5b.json",
+      "sha256": "3580e988462597f21ae6e7571a2f88a0899d028084b610f74112226691e4d996"
+    },
+    "migration_log": {
+      "path": "data/semantic/migration-5a-to-5b.json",
+      "sha256": "06ae54e232521474d6ac680bf3cfa361693eb3b9e9c5dd9cf77495d1e8f32e88"
+    },
+    "human_adjudication_template": {
+      "path": "data/semantic/human-adjudication-template-5b.json",
+      "sha256": "2b94ecf0966b6fd35e0c243a663df8da540902edde5cceb992d73678f1c53a52"
+    },
+    "review_packet": {
+      "path": "docs/semantic-pilot-review-5b.md",
+      "sha256": "5fbdd0081e78061152856099c1ae6ad9af44703ea78ef07e5d2d5e11feda2af0"
+    },
+    "generalization_scan": {
+      "path": "data/semantic/generalization-scan-5b.json",
+      "sha256": "57315622c232433cfce08afa3fccb9be145d87efd27f394ffc19c5c6ecee1bd6"
+    }
+  },
+  "counts": {
+    "computing_v11_subjects": 13,
+    "computing_v11_topics": 35,
+    "computing_v11_concepts": 20,
+    "general_education_v1_subjects": 2,
+    "general_education_v1_topics": 9,
+    "general_education_v1_concepts": 0,
+    "annotation_count": 30,
+    "annotation_status_counts": {
+      "proposed": 30
+    },
+    "taxonomy_version_counts": {
+      "general-education-v1@1.0.0-pilot": 10,
+      "computing-v1@1.1.0-pilot": 20
+    },
+    "confidence_counts": {
+      "high": 28,
+      "medium": 2
+    },
+    "unresolved_cases_reconciled": 12,
+    "previously_unclassifiable_now_classified": 10,
+    "previously_needs_review_now_resolved": 2,
+    "proposed_questions_audited_unchanged": 17,
+    "proposed_questions_audited_with_added_concept": 1
+  },
+  "quality_gates": {
+    "ruff_check": {
+      "command": "ruff check .",
+      "exit_code": 0,
+      "result": "All checks passed!"
+    },
+    "ruff_format_check": {
+      "command": "ruff format --check .",
+      "exit_code": 0,
+      "result": "474 files already formatted"
+    },
+    "mypy": {
+      "command": "mypy src",
+      "exit_code": 0,
+      "result": "Success: no issues found in 74 source files"
+    },
+    "validate_schema": {
+      "command": "enade validate-schema",
+      "exit_code": 0,
+      "result": "13/13 fixture(s) valid"
+    },
+    "validate_manifest": {
+      "command": "enade validate-manifest",
+      "exit_code": 0,
+      "result": "OK (0 warnings)"
+    },
+    "audit_extraction": {
+      "command": "enade audit-extraction (5 targets)",
+      "exit_code": 0,
+      "result": "255/255 OK (80+55+40+40+40)"
+    },
+    "validate_taxonomy_computing_v11": {
+      "command": "enade validate-taxonomy --taxonomy-path data/taxonomy/computing-v1.1.yaml",
+      "exit_code": 0
+    },
+    "validate_taxonomy_general_education": {
+      "command": "enade validate-taxonomy --taxonomy-path data/taxonomy/general-education-v1.yaml",
+      "exit_code": 0
+    },
+    "validate_semantic_migration": {
+      "command": "enade validate-semantic-migration",
+      "exit_code": 0,
+      "diagnostics": 0
+    },
+    "build_human_adjudication": {
+      "command": "enade build-human-adjudication",
+      "exit_code": 0,
+      "deterministic_ab_diff": "empty"
+    },
+    "content_assignment_check": {
+      "command": "enade generate-content-assignment --check (5 targets)",
+      "exit_code": 0,
+      "orphans": 0,
+      "duplicates": 0,
+      "missing": 0
+    },
+    "verify_gold": {
+      "command": "enade verify-gold (3/5 targets with gold manifest)",
+      "exit_code": 0,
+      "note": "2021-cc-l and 2021-si have no gold manifest yet - pre-existing fact, out of Fase 5B scope"
+    },
+    "assess_readiness": {
+      "command": "enade assess-readiness (3/5 targets)",
+      "exit_code": 0,
+      "actionable_blockers": 0
+    },
+    "phase_4e_freeze_test": {
+      "command": "pytest tests/test_phase4e_freeze.py",
+      "exit_code": 0
+    },
+    "phase_5a_semantic_freeze_test": {
+      "command": "pytest tests/test_phase5a_semantic_freeze.py",
+      "exit_code": 0
+    },
+    "phase5b_protection_test": {
+      "command": "pytest tests/test_phase5b_protection.py",
+      "exit_code": 0
+    },
+    "reproducibility_ab": {
+      "migration_validation": "identical (0 diagnostics both runs)",
+      "human_adjudication_build": "byte-identical",
+      "reconciliation_review_build": "byte-identical",
+      "generalization_scan": "identical dataclass content"
+    },
+    "pytest": {
+      "command": "pytest -q",
+      "exit_code": 0,
+      "passed": 1225,
+      "failed": 0,
+      "note": "execucao final apos a criacao deste proprio arquivo de freeze; a execucao real anterior (antes deste campo ser preenchido) mostrou 1224 passed, 1 failed - a unica falha era exatamente tests/test_phase5b_semantic_freeze.py::test_quality_gates_pytest_entry_is_filled_in_and_passing, esperada ate este campo ser preenchido com valores reais (o mesmo padrao de bootstrapping ja documentado na Fase 5A)"
+    }
+  },
+  "semantic_maturity": "provisional_reconciled_pilot",
+  "human_review_status": "not_yet_reviewed",
+  "scope_notice": "Este freeze certifica a reconciliacao adversarial do piloto de 30 questoes (PROMPT Fase 5B). Nao certifica nem afirma revisao humana das anotacoes, nem anotacao do corpus completo (255 questoes), nem autoriza rollout completo. Ver docs/phase-5b-report.md."
+}
